@@ -115,7 +115,15 @@ export default async function AdminSearchPage({
                   </td>
                   <td className="px-4 py-3.5 font-mono text-[13px] text-muted">{row.yearsExperience}y</td>
                   <td className="px-4 py-3.5 text-right">
-                    <ShortlistButton candidateId={row.id} />
+                    <span className="flex items-center justify-end gap-2">
+                      <Link
+                        href={`/admin/review/${result.sample ? 'sample' : row.id}`}
+                        className="t-colors rounded-[8px] border border-line-strong bg-surface px-3 py-1.5 text-[13px] no-underline text-ink hover:border-employer"
+                      >
+                        CV review
+                      </Link>
+                      <ShortlistButton candidateId={row.id} />
+                    </span>
                   </td>
                 </tr>
               ))}
