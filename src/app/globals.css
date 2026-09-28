@@ -1,0 +1,163 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Avsar design tokens - Direction A (primary)
+   Source: design_handoff_avsar_platform/README.md
+   ========================================================================== */
+@theme {
+  /* Surfaces */
+  --color-paper: #f7f5f0;
+  --color-canvas: #e9e6de;
+  --color-surface: #ffffff;
+  --color-surface-subtle: #fbfaf7;
+  --color-surface-hover: #faf9f6;
+
+  /* Ink */
+  --color-ink: #1b1a17;
+  --color-ink-2: #4a4740;
+  --color-muted: #6b675f;
+
+  /* Lines */
+  --color-line: #e4e0d6;
+  --color-line-strong: #d9d4c8;
+  --color-line-soft: #efece5;
+  --color-dark-line: #3a3833;
+  --color-dark-muted: #a8a397;
+  --color-dark-muted-2: #c9c4b8;
+
+  /* Accents */
+  --color-accent: oklch(0.56 0.14 40);
+  --color-accent-deep: oklch(0.46 0.14 40);
+  --color-accent-tint: oklch(0.94 0.03 40);
+  --color-employer: oklch(0.56 0.14 250);
+  --color-employer-deep: oklch(0.46 0.14 250);
+  --color-success: oklch(0.62 0.14 150);
+
+  /* Type. The --font-* variables come from next/font in the root layout. */
+  --font-sans: var(--font-schibsted), var(--font-devanagari), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+
+  /* Radius */
+  --radius-card: 16px;
+  --radius-card-lg: 20px;
+  --radius-image: 24px;
+  --radius-band: 28px;
+}
+
+/* --------------------------------------------------------------------------
+   Direction B tokens, scoped so the two directions never bleed into each
+   other. Applied via [data-variant="b"] on the page root.
+   -------------------------------------------------------------------------- */
+[data-variant="b"] {
+  --b-bg: #f5f6f8;
+  --b-outside: #dfe3ea;
+  --b-ink: #121826;
+  --b-body: #3d4556;
+  --b-muted: #5b6475;
+  --b-line: #cfd5df;
+  --b-azulejo: oklch(0.42 0.13 262);
+  --b-tint: oklch(0.95 0.02 262);
+  --b-radius: 4px;
+  --b-font-heading: var(--font-dm-serif), var(--font-noto-serif-devanagari), ui-serif, Georgia, serif;
+  --b-font-body: var(--font-dm-sans), var(--font-noto-serif-devanagari), ui-sans-serif, system-ui, sans-serif;
+
+  background: var(--b-bg);
+  color: var(--b-ink);
+  font-family: var(--b-font-body);
+}
+
+[data-variant="b"] h1,
+[data-variant="b"] h2,
+[data-variant="b"] h3 {
+  font-family: var(--b-font-heading);
+  font-weight: 400;
+}
+
+/* Direction B's azulejo divider: a 14px checkered blue and white strip. */
+[data-variant="b"] .azulejo-strip {
+  height: 14px;
+  background-image:
+    linear-gradient(45deg, var(--b-azulejo) 25%, transparent 25%, transparent 75%, var(--b-azulejo) 75%),
+    linear-gradient(45deg, var(--b-azulejo) 25%, transparent 25%, transparent 75%, var(--b-azulejo) 75%);
+  background-size: 14px 14px;
+  background-position: 0 0, 7px 7px;
+  background-color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+   Base
+   -------------------------------------------------------------------------- */
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+input,
+select,
+button,
+textarea {
+  font: inherit;
+}
+
+/* The prototype sizes everything against the page container, not the
+   viewport, so every clamp() below can keep using cqi units. */
+.avsar-root {
+  container-type: inline-size;
+  background: var(--color-paper);
+  min-height: 100vh;
+}
+
+/* Links follow the prototype: ink with an offset underline, accent on hover. */
+.prose-link {
+  color: var(--color-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.prose-link:hover {
+  color: var(--color-accent);
+}
+
+/* Striped placeholders stand in for photography that does not exist yet. */
+.placeholder-stripes {
+  background: repeating-linear-gradient(135deg, #ece8df 0 5px, #e4e0d6 5px 10px);
+}
+
+/* Colour and border transitions only, per the handoff: 150-200ms ease. */
+@media (prefers-reduced-motion: no-preference) {
+  .t-colors {
+    transition:
+      background-color 180ms ease,
+      border-color 180ms ease,
+      color 180ms ease,
+      opacity 180ms ease;
+  }
+}
+
+/* Horizontal scroll container for the admin results table on narrow screens. */
+.scroll-x {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Visually hidden, still announced by screen readers. */
+.sr-only-focusable:not(:focus):not(:focus-within) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
