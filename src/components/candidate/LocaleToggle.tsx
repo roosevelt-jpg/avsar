@@ -3,6 +3,7 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 import { locales, localeLabels, type Locale } from '@/lib/i18n';
+import { rememberLocale } from '@/lib/i18n/locale-cookie';
 
 /**
  * EN / हिं pill. Swaps the locale segment in the current path and writes a
@@ -15,7 +16,7 @@ export function LocaleToggle({ locale }: { locale: Locale }) {
 
   function switchTo(next: Locale) {
     if (next === locale) return;
-    document.cookie = `avsar_locale=${next}; path=/; max-age=31536000; samesite=lax`;
+    rememberLocale(next);
     const segments = pathname.split('/');
     segments[1] = next;
     startTransition(() => router.push(segments.join('/') || `/${next}`));

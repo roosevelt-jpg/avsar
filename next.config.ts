@@ -6,7 +6,6 @@ const nextConfig: NextConfig = {
      root and file tracing walks the wrong tree. */
   outputFileTracingRoot: __dirname,
   poweredByHeader: false,
-  eslint: { ignoreDuringBuilds: false },
   async redirects() {
     return [{ source: '/', destination: '/en', permanent: false }];
   },

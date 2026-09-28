@@ -4,6 +4,7 @@ import { getDictionary, isLocale } from '@/lib/i18n';
 import { itemsForSection, toClientItem, type SectionId } from '@/lib/assessment/items';
 import { SECTOR_SLUGS, type SectorSlug } from '@/lib/data/sectors';
 import { getServerSupabase } from '@/lib/supabase/server';
+import { secondsUntil } from '@/lib/clock';
 
 export const metadata = { title: 'Assessment' };
 
@@ -49,8 +50,7 @@ export default async function AssessmentPage({
 
     if (data) {
       attemptId = data.id as string;
-      const expiresAt = new Date(data.expires_at as string).getTime();
-      secondsRemaining = Math.max(0, Math.floor((expiresAt - Date.now()) / 1000));
+      secondsRemaining = secondsUntil(data.expires_at as string);
     }
   }
 
