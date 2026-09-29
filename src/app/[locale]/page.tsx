@@ -12,7 +12,8 @@ import {
   BRAND,
   CONTRACT_YEARS,
   RESPONSE_DAYS,
-  SELECTION_RATE,
+  SELECTION_FUNNEL,
+  applicantHireRate,
   ASSESSMENT_FEE,
   CANDIDATE_PAYS_NO_PLACEMENT_FEE,
 } from '@/lib/data/brand';
@@ -23,6 +24,16 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
   const t = getDictionary(locale);
 
   const money = { days: RESPONSE_DAYS, years: CONTRACT_YEARS, inr: formatInr(activePrice().totalPaise) };
+
+  const stages = SELECTION_FUNNEL.perHundredApplicants;
+  const funnelValues = {
+    complete: stages.completeAssessment,
+    call: stages.reachAssessmentCall,
+    presented: stages.presentedToEmployer,
+    hired: stages.hired,
+    applicantRate: applicantHireRate(),
+    fee: formatInr(activePrice().totalPaise),
+  };
 
   return (
     <>
@@ -127,13 +138,6 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
 
           <p className="mt-7 border-t border-line pt-5 text-[14px] leading-[1.55] text-muted">
             {fill(t.placeFine, money)}{' '}
-            {/* The selection rate is published only once it has a documented
-                basis. See SELECTION_RATE in brand.ts. */}
-            {SELECTION_RATE.visible && (
-              <span className="text-ink">
-                About {SELECTION_RATE.percent} in every 100 applicants are hired.{' '}
-              </span>
-            )}
             <Link href={`/${locale}/selection-rules`} className="prose-link">
               {t.selectionRules}
             </Link>
@@ -142,6 +146,59 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
 
         <Placeholder label="photo · staff accommodation, Portugal" className="aspect-[4/5] w-full" />
       </section>
+
+      {/* -------------------------------------------------------------- funnel */}
+      {SELECTION_FUNNEL.visible && (
+        <section className="px-[clamp(20px,4cqi,56px)] pb-[clamp(56px,8cqi,104px)]">
+          <div className="rounded-[28px] border border-line bg-surface p-[clamp(24px,4cqi,56px)]">
+            <h2 className="m-0 max-w-[22ch] text-[clamp(26px,3.6cqi,44px)] font-semibold leading-[1.1] tracking-[-0.03em]">
+              {t.funnelTitle}
+            </h2>
+            <p className="mt-4 mb-8 max-w-[58ch] text-[17px] leading-[1.55] text-ink-2">
+              {fill(t.rateLine, { rate: SELECTION_FUNNEL.presentedToHirePercent })}
+            </p>
+
+            <Mono className="mb-4 block text-muted">{t.funnelLead}</Mono>
+
+            <ol className="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(210px,1fr))] gap-4 p-0">
+              {t.funnelStages.map(([title, body], index) => {
+                const stage = [
+                  SELECTION_FUNNEL.perHundredApplicants.completeAssessment,
+                  SELECTION_FUNNEL.perHundredApplicants.reachAssessmentCall,
+                  SELECTION_FUNNEL.perHundredApplicants.presentedToEmployer,
+                  SELECTION_FUNNEL.perHundredApplicants.hired,
+                ][index] ?? 0;
+                const last = index === t.funnelStages.length - 1;
+                return (
+                  <li
+                    key={title}
+                    className={`rounded-[16px] p-5 ${last ? 'bg-ink text-paper' : 'bg-surface-subtle'}`}
+                  >
+                    {/* Bar width is the stage share, so the drop is visible
+                        rather than something the reader has to infer. */}
+                    <div className={`mb-4 h-1.5 overflow-hidden rounded-full ${last ? 'bg-dark-line' : 'bg-line-soft'}`}>
+                      <div
+                        className={`h-full rounded-full ${last ? 'bg-success' : 'bg-accent'}`}
+                        style={{ width: `${Math.max(3, stage)}%` }}
+                      />
+                    </div>
+                    <p className="m-0 mb-1.5 text-[17px] font-semibold leading-[1.3]">
+                      {fill(title, funnelValues)}
+                    </p>
+                    <p className={`m-0 text-[14px] leading-[1.55] ${last ? 'text-dark-muted-2' : 'text-ink-2'}`}>
+                      {fill(body, funnelValues)}
+                    </p>
+                  </li>
+                );
+              })}
+            </ol>
+
+            <p className="mt-8 mb-0 max-w-[66ch] border-t border-line pt-6 text-[14px] leading-[1.6] text-muted">
+              {fill(t.funnelNote, funnelValues)}
+            </p>
+          </div>
+        </section>
+      )}
 
       {/* ------------------------------------------------------------ documents */}
       <section className="bg-surface-subtle px-[clamp(20px,4cqi,56px)] py-[clamp(56px,8cqi,104px)]">

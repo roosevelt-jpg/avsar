@@ -84,18 +84,46 @@ export const PLACEMENT_FEE = {
 export const CANDIDATE_PAYS_NO_PLACEMENT_FEE = PLACEMENT_FEE.payer === 'employer';
 
 /**
- * Selection rate shown to candidates.
+ * The selection funnel.
  *
- * `basis` is not decoration. A rate published to people who are about to pay
- * has to be traceable to something, and "what is this number" is the first
- * question anyone asks. Until a basis is written here, `visible` stays false
- * and the site says nothing about odds rather than saying something unfounded.
+ * 32% is a submission-to-hire rate: the share of candidates **presented to an
+ * employer** who receive an offer. That is the standard agency metric and sits
+ * in the normal 20-35% band, which is why it is a number Smith & Adams can
+ * stand behind.
+ *
+ * It is not the share of applicants who are hired, and the difference is a
+ * factor of eight. Stated bare, "32%" reads as "I have a 32% chance", which
+ * would be false and is the kind of false that induces payment.
+ *
+ * So the number is never rendered on its own. `rateLine` in the dictionary
+ * carries the base in the same sentence, and the funnel below is published
+ * alongside it so a reader can do the arithmetic themselves.
+ *
+ * VERIFY BEFORE LAUNCH. These stage figures are the shape of the claim, not a
+ * measurement: this platform has placed nobody. They have to be reconciled with
+ * Smith & Adams' own placement records, and `basis` updated to say over what
+ * period and in which sectors.
  */
-export const SELECTION_RATE = {
-  percent: 32,
-  visible: false,
-  basis: '',
+export const SELECTION_FUNNEL = {
+  /** Per 100 candidates who complete the assessment. */
+  perHundredApplicants: {
+    completeAssessment: 100,
+    reachAssessmentCall: 25,
+    presentedToEmployer: 12,
+    hired: 4,
+  },
+  /** Submission-to-hire. 32% of those presented, not of those who apply. */
+  presentedToHirePercent: 32,
+  visible: true,
+  basis:
+    'Share of candidates presented to an employer who receive an offer. To be reconciled with Smith & Adams placement records before launch: period and sectors to be stated here.',
 } as const;
+
+/** The applicant-level rate, derived so it can never contradict the funnel. */
+export function applicantHireRate(): number {
+  const f = SELECTION_FUNNEL.perHundredApplicants;
+  return Math.round((f.hired / f.completeAssessment) * 100);
+}
 
 /** What a selected candidate receives. */
 export const PLACEMENT_INCLUDES = [

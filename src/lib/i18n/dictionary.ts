@@ -49,6 +49,12 @@ export type Dictionary = {
   placeFine: string;
   selectionRules: string;
   noPlacementFee: string;
+  /* The rate and its base, always in one string. See SELECTION_FUNNEL. */
+  rateLine: string;
+  funnelTitle: string;
+  funnelLead: string;
+  funnelStages: readonly Pair[];
+  funnelNote: string;
   ctaTitle: string;
 
   includes: readonly Pair[];
@@ -317,6 +323,18 @@ const en: Dictionary = {
   selectionRules: 'Selection rules',
   noPlacementFee:
     'You never pay us for the job itself. The assessment fee is the only thing you pay. The employer pays our placement fee, not you.',
+  rateLine:
+    '{rate}% of the candidates we put in front of an employer are hired. Getting to that stage is the hard part, and this is what it looks like.',
+  funnelTitle: 'Where people actually get to',
+  funnelLead: 'Out of every 100 people who complete the assessment:',
+  funnelStages: [
+    ['{complete} complete the assessment', 'Everyone who pays and finishes.'],
+    ['{call} reach an assessment call', 'A recruiter calls you about the work. Roughly one in four.'],
+    ['{presented} are presented to an employer', 'Your profile and report go to a company with a live vacancy.'],
+    ['{hired} are hired', 'That is {applicantRate} in 100 of everyone who applies.'],
+  ],
+  funnelNote:
+    'We publish this because the number that matters to you is the last one, not the first. If those odds are not worth {fee} to you, do not apply: the assessment and the report are what the fee buys, and a placement is not guaranteed.',
   ctaTitle: 'Applications are open.',
 
   includes: [
@@ -684,6 +702,18 @@ const hi: Dictionary = {
   selectionRules: 'चयन नियम',
   noPlacementFee:
     'नौकरी के लिए आप हमें कभी भुगतान नहीं करते। आप केवल मूल्यांकन शुल्क देते हैं। हमारी प्लेसमेंट फ़ीस नियोक्ता देता है, आप नहीं।',
+  rateLine:
+    'जिन उम्मीदवारों को हम नियोक्ता के सामने रखते हैं, उनमें से {rate}% को नौकरी मिलती है। मुश्किल हिस्सा उस चरण तक पहुँचना है, और वह ऐसा दिखता है।',
+  funnelTitle: 'लोग असल में कहाँ तक पहुँचते हैं',
+  funnelLead: 'मूल्यांकन पूरा करने वाले हर 100 लोगों में से:',
+  funnelStages: [
+    ['{complete} मूल्यांकन पूरा करते हैं', 'हर वह व्यक्ति जो भुगतान करके पूरा करता है।'],
+    ['{call} को मूल्यांकन कॉल मिलती है', 'रिक्रूटर आपसे काम के बारे में बात करता है। लगभग चार में से एक।'],
+    ['{presented} नियोक्ता के सामने रखे जाते हैं', 'आपकी प्रोफ़ाइल और रिपोर्ट किसी खुली रिक्ति वाली कंपनी को जाती है।'],
+    ['{hired} को नौकरी मिलती है', 'यानी आवेदन करने वाले हर 100 में से {applicantRate}।'],
+  ],
+  funnelNote:
+    'हम यह इसलिए बताते हैं क्योंकि आपके लिए अहम आख़िरी संख्या है, पहली नहीं। अगर ये संभावनाएँ आपके लिए {fee} के लायक़ नहीं हैं, तो आवेदन न करें: फ़ीस से मूल्यांकन और रिपोर्ट मिलती है, प्लेसमेंट की गारंटी नहीं।',
   ctaTitle: 'आवेदन खुले हैं।',
 
   includes: [

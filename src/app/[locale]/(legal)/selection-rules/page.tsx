@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { DraftNotice } from '@/components/ui/DraftNotice';
 import { getDictionary, isLocale } from '@/lib/i18n';
-import { COHORT } from '@/lib/data/cohort';
+import { SELECTION_FUNNEL, applicantHireRate } from '@/lib/data/brand';
 
 export const metadata = { title: 'Selection rules' };
 
@@ -35,12 +35,23 @@ export default async function SelectionRulesPage({ params }: { params: Promise<{
         S&A Recruitment to offer work.
       </p>
 
-      <h2>The Portugal placement, and the odds</h2>
+      <h2>The odds, stated precisely</h2>
       <p>
-        Approximately {COHORT.selectedPerCohort} candidate is selected for the supported placement in
-        Portugal per cohort of about {COHORT.cohortSize.toLocaleString('en-GB')}. Put plainly: the
-        overwhelming majority of candidates will not be selected. Register only if the report and the
-        talent-pool profile are worth the fee to you on their own.
+        We publish a figure of {SELECTION_FUNNEL.presentedToHirePercent}%. It is a
+        submission-to-hire rate: the share of candidates we <strong>present to an
+        employer</strong> who receive an offer. It is the standard measure used in
+        recruitment and it is not the share of applicants who are hired.
+      </p>
+      <p>Out of every 100 people who complete the assessment:</p>
+      <ul>
+        <li>{SELECTION_FUNNEL.perHundredApplicants.reachAssessmentCall} reach an assessment call</li>
+        <li>{SELECTION_FUNNEL.perHundredApplicants.presentedToEmployer} are presented to an employer</li>
+        <li>{SELECTION_FUNNEL.perHundredApplicants.hired} are hired</li>
+      </ul>
+      <p>
+        So roughly {applicantHireRate()} in every 100 applicants are placed. Most people who
+        apply are not. Register only if the assessment and the report are worth the fee
+        to you on their own.
       </p>
 
       <h2>How selection is decided</h2>
@@ -55,12 +66,8 @@ export default async function SelectionRulesPage({ params }: { params: Promise<{
         decision are retained and can be requested by any candidate in the cohort.
       </p>
 
-      <h2>Cohort dates</h2>
-      <ul>
-        <li>Applications close: {COHORT.closesAt} (placeholder)</li>
-        <li>Review period ends: {COHORT.reviewUntil} (placeholder)</li>
-        <li>Selection announced: {COHORT.announceAt} (placeholder)</li>
-      </ul>
+      <h2>Where these figures come from</h2>
+      <p>{SELECTION_FUNNEL.basis}</p>
 
       <h2>Employer contact without selection</h2>
       <p>

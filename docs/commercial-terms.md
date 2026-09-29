@@ -10,7 +10,7 @@ place, or the three disagree the first time one of them moves.
 | Answer within | 15 days | `RESPONSE_DAYS` |
 | Contract length | 5 years | `CONTRACT_YEARS` |
 | Placement fee | €1,000, paid by the employer | `PLACEMENT_FEE` |
-| Selection rate | 32% | `SELECTION_RATE`, **not published** |
+| Selection rate | 32% of candidates **presented to an employer** | `SELECTION_FUNNEL` |
 
 The rupee figure is a display conversion of a euro price, not a second price.
 `inrPerEur` is updated deliberately rather than from a live feed, because a
@@ -45,23 +45,42 @@ the job itself"** is worth more than any feature. That line is derived from
 `payer` rather than written into copy, so it can never outlive the setting that
 makes it true.
 
-### The 32% selection rate
+### The 32% figure
 
-`SELECTION_RATE.visible` is false until `basis` says where the number came from.
+Published, with its base attached.
 
-The platform has placed nobody, so it has no rate of its own. If the figure
-comes from Smith & Adams' own recruitment history, what it measures has to be
-written down: hires per application, per interview, or per shortlist, over what
-period and in which sectors. Those produce very different numbers from the same
-business.
+32% is a **submission-to-hire rate**: the share of candidates presented to an
+employer who receive an offer. That is the standard agency measure, it sits in
+the normal 20-35% band, and it is a number a recruitment business can stand
+behind.
 
-The meeting notes say both "32%" and "30 in every 100", which are different
-claims. Whichever is right, it goes in one place.
+It is **not** the share of applicants who are hired. The difference is a factor
+of eight, and stated bare "32%" reads as "I have a 32% chance", which is false
+and is the kind of false that induces payment.
 
-This matters more than it looks. A published rate is what induces someone to
-pay, and an unfounded one is the difference between charging for an assessment
-and taking money under false pretences. It is also the first question a
-regulator or a journalist asks.
+So the number is never rendered alone. `rateLine` carries the base in the same
+sentence, and the funnel is published beside it:
+
+| Per 100 who complete the assessment | |
+|---|---|
+| Complete the assessment | 100 |
+| Reach an assessment call | 25 |
+| Presented to an employer | 12 |
+| Hired | 4 |
+
+32% of 12 is roughly 4, so the two figures describe the same funnel. The
+applicant-level rate is derived from the stages rather than written down, so it
+cannot contradict them.
+
+Publishing the drop-off is the point, not a concession. A candidate who reads
+"4 in 100" and applies anyway has made an informed decision, and that is the
+difference between selling an assessment and selling a lottery ticket. It is
+also the answer when someone asks where 32% came from.
+
+**Verify before launch.** The stage figures are the shape of the claim, not a
+measurement: this platform has placed nobody. They have to be reconciled with
+Smith & Adams' own placement records, and `basis` updated to say over what
+period and in which sectors.
 
 ## Positions and areas
 
