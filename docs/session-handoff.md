@@ -4,6 +4,53 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 4 - 2026-09-29 10:30 WEST - abilio.diz@smithandadams.com (Claude Opus 5)
+
+### Ambiente local a funcionar
+
+Supabase ligado, login de staff a funcionar. Projeto Supabase do Avsar:
+`wxuucmvlvotagwptarbd` (NÃO confundir com `ytpunwmowptmiaddxixb`, que é o
+hygge-checkin). Migrations 0001, 0002 e 0003 corridas. Staff user criado.
+
+Usadas as chaves **legacy** (JWT, `eyJhbGci...`), não as novas
+`sb_publishable_`/`sb_secret_`. Funcionam. Nunca clicar em "Disable JWT-based
+API keys" no painel, que desliga exactamente estas.
+
+### Bug corrigido: proxy no sítio errado
+
+O `middleware.ts` estava na raiz do projeto. Com pasta `src/`, o Next
+**ignora-o em silêncio**: sem erro, sem aviso. A auth parecia funcionar porque
+login e redirect não dependem dele; só quando o token expirasse, uma hora
+depois, é que o candidato era atirado para fora a meio da avaliação, com o
+`expires_at` da tentativa a continuar a correr.
+
+Movido para `src/proxy.ts` e renomeado de `middleware` para `proxy`, que é a
+convenção do Next 16. Confirmado em execução: os tempos de cada pedido passaram
+a mostrar `proxy.ts: Nms`.
+
+### Quase-incidente
+
+O Abílio esteve a copiar chaves de API com o seletor do Supabase no
+`hygge-checkin`. Se as migrations tivessem corrido lá, o Hygge de produção
+ficava com as tabelas do Avsar e com um trigger em `auth.users` a disparar em
+cada registo. Não aconteceu. Fica a nota: **confirmar sempre o projeto no
+seletor do topo antes de correr SQL ou copiar chaves.**
+
+Risco associado que continua a existir: a 0001 tem
+`create or replace function touch_updated_at()`, nome genérico o suficiente
+para colidir com outros projetos se alguma vez for corrida no sítio errado.
+
+### Próximo buraco funcional
+
+Nada escreve em `reports`. O candidato paga, faz a avaliação, e o dashboard
+diz-lhe sempre "a tua relatório ainda não está pronta" - que é exactamente
+aquilo por que ele pagou e que as páginas legais prometem. É o próximo passo.
+
+Depois: bucket `cvs` no Storage + ecrã de upload, variáveis no Vercel,
+webhook do Stripe para produção.
+
+---
+
 ## Bloco 3 - 2026-09-29 - abilio.diz@smithandadams.com (Claude Opus 5)
 
 ### Autenticação implementada
