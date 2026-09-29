@@ -22,6 +22,15 @@ email and then choosing.** Choosing would mean revealing whether an address
 belongs to staff before anyone has proved who they are, which turns sign-in into
 a directory of who works here.
 
+### Guards send signed-in people home, never back to sign-in
+
+A guard that bounces an authenticated viewer to sign-in creates a loop: the
+sign-in page sees a session and sends them straight back. `requireCandidate`,
+`requireStaff` and `requireStaffOrEmployer` therefore check whether *anyone* is
+signed in before redirecting, and send a viewer of the wrong role to their own
+home instead. `canReach()` holds the single definition of which role may open
+which path, and both the sign-in page and `/auth/route` consult it.
+
 ### Where you land is decided server side
 
 `/auth/route` reads the session and redirects. The form never states a

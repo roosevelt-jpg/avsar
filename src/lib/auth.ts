@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { getServerSupabase } from '@/lib/supabase/server';
-import type { Locale } from '@/lib/i18n';
+import { defaultLocale, type Locale } from '@/lib/i18n';
 
 /**
  * Session helpers.
@@ -55,10 +55,15 @@ export async function requireCandidate(
   returnTo: string,
 ): Promise<SessionCandidate> {
   const candidate = await getSessionCandidate();
-  if (!candidate) {
-    redirect(`/${locale}/signin?next=${encodeURIComponent(returnTo)}`);
-  }
-  return candidate;
+  if (candidate) return candidate;
+
+  /* Someone signed in who is not a candidate goes to their own home, not to
+     sign-in. Sending them to sign-in would be both untrue and a loop: the
+     sign-in page sees a session and sends them straight back here. */
+  const viewer = await getViewer();
+  if (viewer.role !== 'anonymous') redirect(homeFor(viewer, locale));
+
+  redirect(`/${locale}/signin?next=${encodeURIComponent(returnTo)}`);
 }
 
 export type StaffUser = { userId: string; email: string; role: string };
@@ -90,8 +95,14 @@ export async function getSessionStaff(): Promise<StaffUser | null> {
 
 export async function requireStaff(returnTo: string): Promise<StaffUser> {
   const staff = await getSessionStaff();
-  if (!staff) redirect(`/en/signin?next=${encodeURIComponent(returnTo)}`);
-  return staff;
+  if (staff) return staff;
+
+  /* Signed in but not staff: send them home rather than to sign-in, which
+     would be untrue and would bounce them straight back here. */
+  const viewer = await getViewer();
+  if (viewer.role !== 'anonymous') redirect(homeFor(viewer, defaultLocale));
+
+  redirect(`/${defaultLocale}/signin?next=${encodeURIComponent(returnTo)}`);
 }
 
 export type EmployerUser = { userId: string; employerId: string; name: string; role: string };
@@ -149,6 +160,27 @@ export async function getViewer(): Promise<Viewer> {
   return { role: 'anonymous' };
 }
 
+/** Whether a role is allowed on a given path at all. */
+export function canReach(viewer: Viewer, path: string): boolean {
+  if (path.startsWith('/admin')) return viewer.role === 'staff' || viewer.role === 'employer';
+  if (path.includes('/assessment') || path.includes('/dashboard')) return viewer.role === 'candidate';
+  return true;
+}
+
+/**
+ * Where to send a signed-in viewer, honouring an explicit destination only when
+ * it is same-origin AND their role can actually reach it.
+ *
+ * The role check is what stops a redirect loop: without it, a staff member
+ * following a link to the assessment gets bounced to sign-in, which sees a
+ * session and sends them back to the assessment, for ever.
+ */
+export function resolveDestination(viewer: Viewer, next: string | undefined, locale: Locale): string {
+  const home = homeFor(viewer, locale);
+  if (!next || !next.startsWith('/') || next.startsWith('//')) return home;
+  return canReach(viewer, next) ? next : home;
+}
+
 /** Where a signed-in viewer belongs when no explicit destination was asked for. */
 export function homeFor(viewer: Viewer, locale: Locale): string {
   switch (viewer.role) {
@@ -174,5 +206,10 @@ export async function requireStaffOrEmployer(
   const viewer = await getViewer();
   if (viewer.role === 'staff') return { isStaff: true, label: viewer.staff.email };
   if (viewer.role === 'employer') return { isStaff: false, label: viewer.employer.name };
-  redirect(`/en/signin?next=${encodeURIComponent(returnTo)}`);
+
+  /* A signed-in candidate goes to their dashboard, not to a sign-in page that
+     would tell them to authenticate when they already have. */
+  if (viewer.role === 'candidate') redirect(homeFor(viewer, defaultLocale));
+
+  redirect(`/${defaultLocale}/signin?next=${encodeURIComponent(returnTo)}`);
 }

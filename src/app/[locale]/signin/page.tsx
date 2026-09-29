@@ -2,7 +2,7 @@ import { notFound, redirect } from 'next/navigation';
 import { Wordmark } from '@/components/ui/Wordmark';
 import { SignInForm } from '@/components/auth/SignInForm';
 import { getDictionary, isLocale } from '@/lib/i18n';
-import { getViewer, homeFor } from '@/lib/auth';
+import { getViewer, resolveDestination } from '@/lib/auth';
 
 export const metadata = { title: 'Sign in' };
 
@@ -20,10 +20,7 @@ export default async function SignInPage({
   const t = getDictionary(locale);
 
   const viewer = await getViewer();
-  if (viewer.role !== 'anonymous') {
-    const safeNext = next && next.startsWith('/') && !next.startsWith('//') ? next : null;
-    redirect(safeNext ?? homeFor(viewer, locale));
-  }
+  if (viewer.role !== 'anonymous') redirect(resolveDestination(viewer, next, locale));
 
   return (
     <>

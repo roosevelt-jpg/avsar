@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { getViewer, homeFor } from '@/lib/auth';
+import { getViewer, resolveDestination } from '@/lib/auth';
 import { defaultLocale, isLocale, type Locale } from '@/lib/i18n';
 
 /**
@@ -22,14 +22,5 @@ export default async function AuthRoutePage({
   const viewer = await getViewer();
   if (viewer.role === 'anonymous') redirect(`/${locale}/signin`);
 
-  const home = homeFor(viewer, locale);
-
-  /* Same-origin only. An open redirect here is how a credential-phishing link
-     gets to look legitimate. */
-  if (!next || !next.startsWith('/') || next.startsWith('//')) redirect(home);
-
-  const wantsAdmin = next.startsWith('/admin');
-  const allowed = wantsAdmin ? viewer.role === 'staff' || viewer.role === 'employer' : true;
-
-  redirect(allowed ? next : home);
+  redirect(resolveDestination(viewer, next, locale));
 }
