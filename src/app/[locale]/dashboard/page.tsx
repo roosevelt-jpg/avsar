@@ -5,14 +5,32 @@ import { Wordmark } from '@/components/ui/Wordmark';
 import { VisibilityToggle } from '@/components/candidate/VisibilityToggle';
 import { fill, getDictionary, isLocale } from '@/lib/i18n';
 import { initials } from '@/lib/data/candidates';
+import { requireCandidate } from '@/lib/auth';
+import { isSupabaseConfigured } from '@/lib/supabase/config';
+import { getServerSupabase } from '@/lib/supabase/server';
+import { sectorLabel, SECTOR_SLUGS, type SectorSlug } from '@/lib/data/sectors';
 
 export const metadata = { title: 'Your report' };
 
 /**
- * Placeholder report for the signed-out preview. Once auth is wired this comes
- * from `reports` for the signed-in candidate.
+ * Shown when Supabase is not configured, so the screen stays reviewable in a
+ * bare checkout. With Supabase present this is replaced by the signed-in
+ * candidate's own report.
  */
-const SAMPLE_REPORT = {
+type DashboardReport = {
+  name: string;
+  overall: number;
+  percentile: number;
+  english: string;
+  skills: number;
+  experienceScore: number;
+  years: number;
+  sector: string;
+  breakdown: number[];
+  timeline: readonly { date: string; state: 'done' | 'now' | 'next' }[];
+};
+
+const SAMPLE_REPORT: DashboardReport = {
   name: 'Arjun Nair',
   overall: 78,
   percentile: 12,
@@ -29,14 +47,57 @@ const SAMPLE_REPORT = {
     { date: 'Until 15 Dec 2026', state: 'now' },
     { date: '15 Jan 2027', state: 'next' },
   ],
-} as const;
+};
 
 export default async function DashboardPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const t = getDictionary(locale);
   const d = t.dash;
-  const r = SAMPLE_REPORT;
+
+  let r: DashboardReport = SAMPLE_REPORT;
+  let visible = true;
+  let reportReady = true;
+
+  if (isSupabaseConfigured()) {
+    const candidate = await requireCandidate(locale, `/${locale}/dashboard`);
+    visible = candidate.visibleToEmployers;
+
+    const supabase = await getServerSupabase();
+    const { data: report } = (await supabase
+      ?.from('reports')
+      .select('overall_score, english_cefr, skills_score, experience_score, percentile, breakdown')
+      .eq('candidate_id', candidate.id)
+      .maybeSingle()) ?? { data: null };
+
+    const sector: SectorSlug = (SECTOR_SLUGS as readonly string[]).includes(candidate.sector)
+      ? (candidate.sector as SectorSlug)
+      : SECTOR_SLUGS[0];
+
+    if (report) {
+      const breakdown = Array.isArray(report.breakdown)
+        ? (report.breakdown as { score?: number }[]).map((entry) => entry.score ?? 0)
+        : [];
+      r = {
+        name: candidate.fullName,
+        overall: report.overall_score as number,
+        percentile: (report.percentile as number | null) ?? 0,
+        english: report.english_cefr as string,
+        skills: report.skills_score as number,
+        experienceScore: report.experience_score as number,
+        years: [0, 2, 4, 6][candidate.yearsBand] ?? 0,
+        sector: sectorLabel(sector),
+        breakdown,
+        timeline: SAMPLE_REPORT.timeline,
+      };
+    } else {
+      /* Paid but not assessed yet, or assessed but not scored. Showing a
+         placeholder score to a real candidate would be a lie about their
+         standing, so the page says plainly that it is not ready. */
+      reportReady = false;
+      r = { ...SAMPLE_REPORT, name: candidate.fullName };
+    }
+  }
 
   const stats = [
     { label: d.overall, value: String(r.overall), suffix: '/100', note: fill(d.overallNote, { percentile: r.percentile }), dark: true },
@@ -56,11 +117,21 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
           <span>{d.navReport}</span>
           <span>{d.navProfile}</span>
         </nav>
-        <span
-          aria-hidden
-          className="flex size-[34px] items-center justify-center rounded-full bg-ink font-mono text-[12px] text-paper"
-        >
-          {initials(r.name)}
+        <span className="flex items-center gap-3">
+          <form action="/auth/signout" method="post">
+            <button
+              type="submit"
+              className="t-colors cursor-pointer border-0 bg-transparent p-0 text-[14px] text-muted hover:text-ink"
+            >
+              {t.auth.signOut}
+            </button>
+          </form>
+          <span
+            aria-hidden
+            className="flex size-[34px] items-center justify-center rounded-full bg-ink font-mono text-[12px] text-paper"
+          >
+            {initials(r.name)}
+          </span>
         </span>
       </header>
 
@@ -68,7 +139,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
         <Mono className="text-muted">{fill(d.greeting, { name: r.name.split(' ')[0] ?? r.name })}</Mono>
         <div className="mt-3 mb-9 flex flex-wrap items-end justify-between gap-4">
           <h1 className="m-0 text-[clamp(28px,4cqi,48px)] font-semibold leading-[1.1] tracking-[-0.03em]">
-            {d.title}
+            {reportReady ? d.title : d.pending}
           </h1>
           <Link
             href={`/${locale}/dashboard/report.pdf`}
@@ -78,7 +149,14 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
           </Link>
         </div>
 
+        {!reportReady && (
+          <p className="mt-0 mb-9 max-w-[62ch] rounded-[16px] border border-line bg-surface px-5 py-4 text-[15px] leading-[1.6] text-ink-2">
+            {d.pendingNote}
+          </p>
+        )}
+
         {/* stat cards */}
+        {reportReady && (
         <ul className="m-0 mb-10 grid list-none grid-cols-[repeat(auto-fit,minmax(170px,1fr))] gap-3 p-0">
           {stats.map((stat) => (
             <li
@@ -100,6 +178,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
             </li>
           ))}
         </ul>
+        )}
 
         <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-[clamp(20px,3cqi,40px)]">
           {/* cohort timeline */}
@@ -135,7 +214,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
           </section>
 
           {/* report breakdown */}
-          <section>
+          <section hidden={!reportReady}>
             <h2 className="m-0 mb-5 text-[21px] font-semibold">{d.breakdown}</h2>
             <ul className="m-0 flex list-none flex-col gap-4 p-0">
               {d.breakdownLabels.map((label, index) => {
@@ -157,7 +236,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
         </div>
 
         <div className="mt-10">
-          <VisibilityToggle label={d.visible} note={d.visibleNote} />
+          <VisibilityToggle label={d.visible} note={d.visibleNote} initial={visible} />
         </div>
       </main>
     </>

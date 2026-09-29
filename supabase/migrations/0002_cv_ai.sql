@@ -15,8 +15,15 @@
 --     criterion and is not optional.
 -- ============================================================================
 
-create type cv_review_outcome as enum ('advance', 'hold', 'reject', 'needs_more_info');
-create type cv_processing_state as enum ('uploaded', 'extracting', 'rating', 'ready', 'failed');
+-- Guarded: a failed earlier run may already have created these. Postgres has no
+-- `create type if not exists`, so the exception block is the idiomatic form.
+do $$ begin
+  create type cv_review_outcome as enum ('advance', 'hold', 'reject', 'needs_more_info');
+exception when duplicate_object then null; end $$;
+
+do $$ begin
+  create type cv_processing_state as enum ('uploaded', 'extracting', 'rating', 'ready', 'failed');
+exception when duplicate_object then null; end $$;
 
 -- ------------------------------------------------------------- documents ---
 create table cv_documents (

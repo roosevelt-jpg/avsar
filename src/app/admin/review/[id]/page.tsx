@@ -7,6 +7,8 @@ import { getAdminSupabase } from '@/lib/supabase/admin';
 import { rubricFor, RUBRIC_VERSION } from '@/lib/cv/rubric';
 import { SECTOR_SLUGS, sectorLabel, type SectorSlug } from '@/lib/data/sectors';
 import { SAMPLE_ASSESSMENT } from '@/lib/cv/sample';
+import { requireStaff } from '@/lib/auth';
+import { isSupabaseConfigured } from '@/lib/supabase/config';
 
 export const metadata = { title: 'CV review' };
 
@@ -18,6 +20,9 @@ export const metadata = { title: 'CV review' };
  */
 export default async function CvReviewPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+
+  if (isSupabaseConfigured()) await requireStaff(`/admin/review/${id}`);
+
   const supabase = getAdminSupabase();
 
   let row = SAMPLE_ASSESSMENT;

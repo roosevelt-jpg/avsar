@@ -21,6 +21,7 @@ const GROUPS: { title: string; note: string; rows: [string, string, string][] }[
       ['/en', '01 Landing', 'hero selector, fee breakdown, odds disclosure'],
       ['/hi', '01 Landing, Hindi', 'same page, full Hindi dictionary'],
       ['/en/signup', '03 Sign-up + pay', '3 steps, order summary, mandatory consent'],
+      ['/en/signin', 'Sign in', 'one-time code to the registered email'],
       ['/en/assessment', '04 Assessment', 'server timer, autosave, A-D keys'],
       ['/en/dashboard', '05 Dashboard', 'report, cohort timeline, visibility switch'],
       ['/en/pricing', '07 Pricing + FAQ', '3 plans, accordion'],
@@ -40,6 +41,7 @@ const GROUPS: { title: string; note: string; rows: [string, string, string][] }[
     rows: [
       ['/employers', '02 Employer landing', 'plain-language search, sample results'],
       ['/admin', '06 Talent search', 'parsed query, filters in the URL, pagination'],
+      ['/admin/signin', 'Staff sign-in', 'email and password, needs a staff_users row'],
       ['/admin/review/sample', 'CV review (AI-assisted)', 'scores with evidence, then a human decision'],
     ],
   },

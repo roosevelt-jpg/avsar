@@ -9,6 +9,8 @@ import { parseQuery, describeQuery } from '@/lib/assessment/query-parser';
 import { SECTOR_SLUGS, sectorLabel, type SectorSlug } from '@/lib/data/sectors';
 import { DEFAULT_EMPLOYER_QUERY, initials, type Cefr } from '@/lib/data/candidates';
 import { COHORT } from '@/lib/data/cohort';
+import { requireStaff } from '@/lib/auth';
+import { isSupabaseConfigured } from '@/lib/supabase/config';
 
 export const metadata = { title: 'Talent pool' };
 
@@ -20,6 +22,10 @@ export default async function AdminSearchPage({
   searchParams: Promise<{ q?: string; sector?: string; minEnglish?: string; page?: string }>;
 }) {
   const query = await searchParams;
+
+  /* Without Supabase there is no auth to enforce and the page shows sample
+     data, so the gate would only get in the way of reviewing the screen. */
+  if (isSupabaseConfigured()) await requireStaff('/admin');
 
   const q = query.q ?? DEFAULT_EMPLOYER_QUERY;
   const sector: SectorSlug | undefined =

@@ -1,10 +1,12 @@
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { AssessmentRunner } from '@/components/candidate/AssessmentRunner';
 import { getDictionary, isLocale } from '@/lib/i18n';
 import { itemsForSection, toClientItem, type SectionId } from '@/lib/assessment/items';
 import { SECTOR_SLUGS, type SectorSlug } from '@/lib/data/sectors';
 import { getServerSupabase } from '@/lib/supabase/server';
 import { secondsUntil } from '@/lib/clock';
+import { requireCandidate } from '@/lib/auth';
+import { isSupabaseConfigured } from '@/lib/supabase/config';
 
 export const metadata = { title: 'Assessment' };
 
@@ -16,7 +18,7 @@ export default async function AssessmentPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ section?: string; sector?: string }>;
+  searchParams: Promise<{ section?: string }>;
 }) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
@@ -24,33 +26,49 @@ export default async function AssessmentPage({
   const t = getDictionary(locale);
 
   const section: SectionId = isSection(query.section) ? query.section : 'english';
-  const sector: SectorSlug =
-    query.sector && (SECTOR_SLUGS as readonly string[]).includes(query.sector)
-      ? (query.sector as SectorSlug)
-      : SECTOR_SLUGS[0];
+
+  /* The sector comes from the candidate record, not the query string: it
+     decides which items they are scored on, so it is not theirs to pick here. */
+  let sector: SectorSlug = SECTOR_SLUGS[0];
 
   /**
    * The attempt and its deadline are server state. Without Supabase there is no
    * attempt to resume, so the runner keeps answers in memory and the timer
    * starts from the full budget.
    */
-  const supabase = await getServerSupabase();
   let attemptId: string | null = null;
   let secondsRemaining = SECTION_SECONDS;
 
-  if (supabase) {
-    const { data } = await supabase
-      .from('assessment_attempts')
-      .select('id, expires_at')
-      .eq('section', section)
-      .is('submitted_at', null)
-      .order('started_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
+  if (isSupabaseConfigured()) {
+    const candidate = await requireCandidate(locale, `/${locale}/assessment?section=${section}`);
 
-    if (data) {
-      attemptId = data.id as string;
-      secondsRemaining = secondsUntil(data.expires_at as string);
+    if ((SECTOR_SLUGS as readonly string[]).includes(candidate.sector)) {
+      sector = candidate.sector as SectorSlug;
+    }
+
+    /* Paying is what buys the assessment, so an unpaid candidate goes back to
+       checkout rather than being handed a set of questions. */
+    if (candidate.paymentStatus !== 'paid') {
+      redirect(`/${locale}/signup?sector=${sector}`);
+    }
+
+    const supabase = await getServerSupabase();
+
+    /* start_assessment_attempt is idempotent and sets expires_at itself. The
+       candidate cannot choose their own deadline, which is the entire point of
+       a server-side timer. */
+    const { data, error } = (await supabase?.rpc('start_assessment_attempt', {
+      p_section: section,
+    })) ?? { data: null, error: null };
+
+    if (error) {
+      console.error('[assessment] could not start attempt', error);
+    }
+
+    const attempt = Array.isArray(data) ? data[0] : data;
+    if (attempt) {
+      attemptId = attempt.id as string;
+      secondsRemaining = secondsUntil(attempt.expires_at as string);
     }
   }
 

@@ -4,6 +4,70 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 3 - 2026-09-29 - abilio.diz@smithandadams.com (Claude Opus 5)
+
+### Autenticação implementada
+
+Era o bloqueio de tudo. Detalhe em `docs/auth.md`.
+
+- `middleware.ts` + `src/lib/supabase/middleware.ts` - refresh da sessão em cada
+  pedido. Server Components não podem escrever cookies, por isso é o único sítio
+  onde os cookies de auth são escritos.
+- `src/lib/auth.ts` - `getSessionCandidate`, `requireCandidate`,
+  `getSessionStaff`, `requireStaff`.
+- `/[locale]/signin` - candidato, OTP para o email registado.
+  `shouldCreateUser: false`: quem nunca se inscreveu não pode criar conta a
+  pedir um código.
+- `/admin/signin` - staff, email + password.
+- `/auth/signout` - POST only.
+
+Email e não SMS porque SMS na Índia exige registo DLT na TRAI e provedor
+contratado. O caminho do telefone está documentado e são três alterações.
+
+### Ligações a dados reais
+
+- Dashboard lê o candidato da sessão e o `reports` dele. Sem relatório mostra
+  "ainda não está pronta" em vez de um score falso.
+- Avaliação cria a tentativa por `start_assessment_attempt()`. O sector vem do
+  registo do candidato, não da query string. Candidato não pago é reencaminhado
+  para o checkout.
+- `/admin` e `/admin/review` exigem `requireStaff()` quando há Supabase.
+
+### Dois buracos de segurança fechados na 0003
+
+1. `attempts_self_all` da 0001 permitia `for all`, ou seja o candidato inseria a
+   própria tentativa e escolhia o próprio `expires_at`. Um temporizador que o
+   candidato define não é um temporizador. Agora só leitura + RPC security
+   definer.
+2. `cv_decisions_insert_staff` da 0002 só verificava `reviewer = auth.uid()`.
+   Qualquer utilizador autenticado podia registar uma decisão sobre qualquer
+   avaliação. Agora exige também `is_staff()`.
+
+### Migrations
+
+0001, 0002 e 0003 todas corridas com sucesso pelo Abílio. Staff user criado.
+
+### Por fazer
+
+1. Bucket `cvs` no Supabase Storage + ecrã de upload de CV. A API
+   `/api/cv/assess` assume o ficheiro já em storage.
+2. Variáveis no Vercel: `./scripts/push-env.sh` (a secret key exposta no chat
+   foi rodada).
+3. Webhook do Stripe para o URL de produção.
+4. Geração do relatório: não há nada que escreva em `reports`, por isso o
+   dashboard mostra sempre "não pronta" com dados reais.
+5. Recuperação de conta para candidato sem acesso ao email.
+6. Deployment Protection no Vercel enquanto não houver revisão jurídica.
+
+### Estado
+
+- `npx tsc --noEmit` limpo
+- `npx eslint .` limpo
+- `npx next build` limpo, 38 páginas
+- Não testado em browser
+
+---
+
 ## Bloco 2 - 2026-09-28 12:00-12:55 WEST - abilio.diz@smithandadams.com (Claude Opus 5)
 
 ### Publicado

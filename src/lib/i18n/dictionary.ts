@@ -127,6 +127,8 @@ export type Dictionary = {
     navProfile: string;
     greeting: string;
     title: string;
+    pending: string;
+    pendingNote: string;
     download: string;
     overall: string;
     overallNote: string;
@@ -142,6 +144,25 @@ export type Dictionary = {
     timeline: readonly string[];
     visible: string;
     visibleNote: string;
+  };
+
+  /* Sign-in */
+  auth: {
+    title: string;
+    lead: string;
+    emailLabel: string;
+    sendCode: string;
+    codeSent: string;
+    codeLabel: string;
+    verify: string;
+    resend: string;
+    signOut: string;
+    notRegistered: string;
+    registerCta: string;
+    errEmail: string;
+    errCode: string;
+    errGeneric: string;
+    phoneSoon: string;
   };
 
   /* Pricing + FAQ */
@@ -294,6 +315,9 @@ const en: Dictionary = {
     navProfile: 'Profile',
     greeting: 'Namaste, {name}',
     title: 'Your report is ready',
+    pending: 'Your report is not ready yet',
+    pendingNote:
+      'Once you complete the assessment, your skills report and talent-pool profile are ready within 7 days. We will message you when it is.',
     download: 'Download report (PDF)',
     overall: 'Overall score',
     overallNote: 'Top {percentile}% of Cohort 01',
@@ -321,6 +345,24 @@ const en: Dictionary = {
     ],
     visible: 'Visible to employers',
     visibleNote: 'Vetted employers in Portugal and Europe can find your profile.',
+  },
+
+  auth: {
+    title: 'Sign in',
+    lead: 'Enter the email address you registered with. We will send you a 6-digit code.',
+    emailLabel: 'Email',
+    sendCode: 'Send code',
+    codeSent: 'We sent a 6-digit code to {email}. It expires in 10 minutes.',
+    codeLabel: '6-digit code',
+    verify: 'Sign in',
+    resend: 'Send another code',
+    signOut: 'Sign out',
+    notRegistered: 'Not registered yet?',
+    registerCta: 'Start the assessment',
+    errEmail: 'Enter a valid email address.',
+    errCode: 'That code is not right, or it has expired.',
+    errGeneric: 'Something went wrong. Please try again.',
+    phoneSoon: 'Signing in by WhatsApp or SMS is coming. For now, use the email address you registered with.',
   },
 
   pricing: {
@@ -504,6 +546,9 @@ const hi: Dictionary = {
     navProfile: 'प्रोफ़ाइल',
     greeting: 'नमस्ते, {name}',
     title: 'आपकी रिपोर्ट तैयार है',
+    pending: 'आपकी रिपोर्ट अभी तैयार नहीं है',
+    pendingNote:
+      'मूल्यांकन पूरा करने के बाद, आपकी स्किल्स रिपोर्ट और टैलेंट पूल प्रोफ़ाइल 7 दिनों के भीतर तैयार हो जाती है। तैयार होने पर हम आपको संदेश भेजेंगे।',
     download: 'रिपोर्ट डाउनलोड करें (PDF)',
     overall: 'कुल स्कोर',
     overallNote: 'कोहॉर्ट 01 के शीर्ष {percentile}%',
@@ -525,6 +570,24 @@ const hi: Dictionary = {
     ],
     visible: 'नियोक्ताओं को दिखाई दे',
     visibleNote: 'पुर्तगाल और यूरोप के जाँचे-परखे नियोक्ता आपकी प्रोफ़ाइल देख सकते हैं।',
+  },
+
+  auth: {
+    title: 'साइन इन',
+    lead: 'वही ईमेल पता डालें जिससे आपने रजिस्टर किया था। हम आपको 6 अंकों का कोड भेजेंगे।',
+    emailLabel: 'ईमेल',
+    sendCode: 'कोड भेजें',
+    codeSent: 'हमने {email} पर 6 अंकों का कोड भेजा है। यह 10 मिनट में समाप्त हो जाएगा।',
+    codeLabel: '6 अंकों का कोड',
+    verify: 'साइन इन करें',
+    resend: 'दूसरा कोड भेजें',
+    signOut: 'साइन आउट',
+    notRegistered: 'अभी तक रजिस्टर नहीं किया?',
+    registerCta: 'मूल्यांकन शुरू करें',
+    errEmail: 'मान्य ईमेल पता डालें।',
+    errCode: 'यह कोड सही नहीं है, या इसकी अवधि समाप्त हो गई है।',
+    errGeneric: 'कुछ गड़बड़ हो गई। कृपया दोबारा कोशिश करें।',
+    phoneSoon: 'WhatsApp या SMS से साइन इन जल्द आ रहा है। फ़िलहाल वही ईमेल पता इस्तेमाल करें जिससे रजिस्टर किया था।',
   },
 
   pricing: {
