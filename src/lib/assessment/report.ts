@@ -9,6 +9,7 @@
 
 import { score, cefrFromScore, type AnswerMap } from './scoring';
 import { CEFR, type Cefr } from '@/lib/data/candidates';
+import type { SectorSlug } from '@/lib/data/sectors';
 
 export type ReportRow = {
   overall_score: number;
@@ -24,8 +25,8 @@ export type ReportRow = {
   breakdown: { label: string; score: number }[];
 };
 
-export function buildReport(answers: AnswerMap): ReportRow {
-  const result = score(answers);
+export function buildReport(answers: AnswerMap, sector: SectorSlug): ReportRow {
+  const result = score(answers, sector);
   const cefr = cefrFromScore(result.sections.english ?? 0);
 
   return {

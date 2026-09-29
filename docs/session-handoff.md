@@ -4,6 +4,61 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 9 - 2026-09-29 - abilio.diz@smithandadams.com (Claude Opus 5)
+
+Os quatro pontos cosméticos que eu próprio tinha listado, fechados.
+
+### 1. Fila de CVs
+
+`/admin/cvs`, staff only. Lista todos os CVs carregados, estado no pipeline, e
+botão para disparar a leitura por AI. Continua a ser disparo manual: cada
+leitura custa por documento e quem carrega o ficheiro errado quatro vezes não
+deve ser quatro avaliações. A página avisa se faltar `ANTHROPIC_API_KEY`.
+
+### 2. Banco de itens: 11 -> 75
+
+Um ficheiro por sector em `src/lib/assessment/bank/`, para um supervisor de
+hospitality poder ler o ficheiro de hospitality e dizer se as perguntas são
+justas. Ninguém revê utilmente uma lista de cem.
+
+**Bug que isto expôs e que corrigi:** a pontuação percorria o banco inteiro, por
+isso um candidato de hospitality era avaliado contra perguntas de andaimes que
+nunca viu, e o denominador afundava todos os scores. `score()` passou a receber
+o sector.
+
+### 3. PDF do relatório
+
+`/[locale]/dashboard/report.pdf`, com @react-pdf/renderer. Gerado a pedido e não
+guardado: o percentil muda quando a cohort é re-ordenada, e uma cópia velha num
+bucket significa o candidato a mostrar um número que já não bate com o que o
+empregador vê.
+
+Candidato só descarrega o seu. Staff descarrega qualquer um com `?candidate=`.
+
+### 4. Inglês: junção para fornecedor externo
+
+`src/lib/english/provider.ts` com a interface e sem adaptador, porque o
+adaptador é um contrato comercial. `0006_english.sql` acrescenta a proveniência
+ao relatório: `english_source`, `english_certified` (coluna **gerada**, nunca
+true para `internal`), referência de certificado e validade.
+
+O `talent_pool` trata certificado expirado como não certificado. O PDF diz por
+palavras se há ou não um terceiro a responder pelo número.
+
+Comparação dos três fornecedores e a recomendação de duas fases (banco interno
+para todos, teste certificado só para shortlist) em `docs/english-assessment.md`.
+
+### Por correr
+
+- `0005_profiles.sql` (do bloco anterior)
+- `0006_english.sql`
+
+### Falta configurar
+
+`ANTHROPIC_API_KEY` no `.env.local` e no Vercel, senão a fila de CVs não lê nada.
+
+---
+
 ## Bloco 8 - 2026-09-29 - abilio.diz@smithandadams.com (Claude Opus 5)
 
 Direcção do Abílio: **transformar isto em ferramenta funcional de ponta a ponta,

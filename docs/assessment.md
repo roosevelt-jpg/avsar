@@ -1,0 +1,61 @@
+# Assessment
+
+## What it measures, and what it does not
+
+Four sections: sector skills, work experience, English, and a profile section
+that is recorded but not scored.
+
+The bank holds 75 items across six sectors. That is enough to order candidates
+roughly and to give a report that says something. It is **not** a calibrated
+instrument, and nothing in the product should imply otherwise.
+
+What is missing before a score can carry weight:
+
+- **Calibration.** Difficulty and discrimination per item come from watching
+  real responses. Until then, every item counts the same, which is wrong: a
+  question nearly everyone gets right carries no information.
+- **Review by people who do the work.** The items are split into one file per
+  sector precisely so a hospitality supervisor can read the hospitality file and
+  say whether the questions are fair. Nobody can usefully review one list of a
+  hundred.
+- **Proctoring.** The test is unsupervised. Someone can sit it for someone else.
+
+## Scoring is scoped to the sector
+
+`score(answers, sector)` only considers items the candidate could have been
+shown. This matters now the bank spans six trades: without it, a housekeeper is
+marked against scaffolding questions they were never asked and every score
+collapses.
+
+An unanswered scorable item counts as wrong. Skipping is a choice, and scoring
+only what was attempted would reward selective guessing.
+
+## Weights
+
+| Section | Weight |
+|---|---|
+| Skills | 0.40 |
+| English | 0.40 |
+| Experience | 0.20 |
+| Profile | 0 |
+
+In `scoring.ts`, one place, so changing them is a decision rather than an edit
+scattered across the codebase. They are a starting position, not a finding: the
+right weights come from which sections predict a placement that lasts, and that
+needs placements first.
+
+## The English section is not a qualification
+
+See `docs/english-assessment.md`. The short version: the internal bank measures
+whether someone can follow written workplace English, there is no speaking
+component, and `reports.english_certified` exists so that an in-house estimate
+and a certified result are never stored or shown as the same thing.
+
+## Adding items
+
+One file per sector in `src/lib/assessment/bank/`. An item needs `correct` to be
+scored; leave it off for questions that record something about the candidate
+rather than test them, like which licence categories they hold.
+
+`axis` is what appears on the report breakdown. Keep the set small: five or six
+axes a person can act on beats twenty they cannot.

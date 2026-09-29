@@ -57,6 +57,9 @@ export default async function AdminSearchPage({
           </Link>
           {access.isStaff && (
             <>
+              <Link href="/admin/cvs" className="no-underline hover:text-employer t-colors">
+                CV queue
+              </Link>
               <Link href="/admin/cohorts" className="no-underline hover:text-employer t-colors">
                 Cohorts
               </Link>

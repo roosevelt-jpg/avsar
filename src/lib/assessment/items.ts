@@ -36,147 +36,33 @@ export type Item = {
   axis?: string;
 };
 
+import { EXPERIENCE_ITEMS, ENGLISH_ITEMS, PROFILE_ITEMS } from './bank/shared';
+import {
+  HOSPITALITY_ITEMS,
+  PROPERTY_ITEMS,
+  CLEANING_ITEMS,
+  DRIVER_ITEMS,
+  MAINTENANCE_ITEMS,
+  CONSTRUCTION_ITEMS,
+} from './bank/sectors';
+
+/**
+ * The bank, assembled from the per-sector files.
+ *
+ * Split by sector so each set stays reviewable by someone who knows that trade.
+ * A hospitality supervisor can read the hospitality file and say whether the
+ * questions are fair; nobody can usefully review one list of a hundred.
+ */
 export const ITEM_BANK: readonly Item[] = [
-  /* ---------------------------------------------------------------- skills */
-  {
-    id: 'skl-hosp-01',
-    section: 'skills',
-    label: 'SKILLS · GUEST SERVICE',
-    prompt: 'A guest complains that their room was not cleaned. What do you do first?',
-    options: [
-      'Explain that the housekeeper was busy',
-      'Apologise, then arrange for the room to be cleaned immediately',
-      'Ask the guest to come back later',
-      'Tell the guest to call the manager',
-    ],
-    correct: 1,
-    sector: 'hospitality',
-    axis: 'Guest service',
-  },
-  {
-    id: 'skl-hosp-02',
-    section: 'skills',
-    label: 'SKILLS · HOUSEKEEPING',
-    prompt: 'Which order is correct when servicing an occupied guest room?',
-    options: [
-      'Bathroom, then dusting, then beds, then floors',
-      'Beds, then dusting, then bathroom, then floors',
-      'Floors, then beds, then bathroom, then dusting',
-      'Dusting, then floors, then beds, then bathroom',
-    ],
-    correct: 1,
-    sector: 'hospitality',
-    axis: 'Housekeeping standards',
-  },
-  {
-    id: 'skl-safety-01',
-    section: 'skills',
-    label: 'SKILLS · HEALTH AND SAFETY',
-    prompt: 'You find a chemical bottle with no label in a storage cupboard. What is correct?',
-    options: [
-      'Use it only for floors',
-      'Pour it away in the sink',
-      'Do not use it and report it to your supervisor',
-      'Mix it with water to make it safer',
-    ],
-    correct: 2,
-    axis: 'Health and safety',
-  },
-  {
-    id: 'skl-safety-02',
-    section: 'skills',
-    label: 'SKILLS · HEALTH AND SAFETY',
-    prompt: 'A wet floor sign is missing after you mop a corridor. What do you do?',
-    options: [
-      'Carry on, the floor dries quickly',
-      'Stop and get a sign before leaving the area',
-      'Warn the next person you see',
-      'Mop again more lightly',
-    ],
-    correct: 1,
-    axis: 'Health and safety',
-  },
-
-  /* ------------------------------------------------------------ experience */
-  {
-    id: 'exp-01',
-    section: 'experience',
-    label: 'EXPERIENCE · ROLE HISTORY',
-    prompt: 'In your most recent job, how many people did you work with on a typical shift?',
-    options: ['I worked alone', '2 to 4 people', '5 to 10 people', 'More than 10 people'],
-    axis: 'Guest service',
-  },
-  {
-    id: 'exp-02',
-    section: 'experience',
-    label: 'EXPERIENCE · RESPONSIBILITY',
-    prompt: 'Have you been responsible for training or supervising other staff?',
-    options: ['No', 'Informally, when asked', 'Yes, as part of my role', 'Yes, I managed a team'],
-    axis: 'Guest service',
-  },
-
-  /* --------------------------------------------------------------- english */
-  /* Verbatim from the prototype. */
-  {
-    id: 'eng-read-01',
-    section: 'english',
-    label: 'ENGLISH · READING',
-    passage:
-      'Message from a guest: "Our flight lands at 23:40. Please keep our room and leave the key at reception."',
-    prompt: 'What should the reception team do?',
-    options: [
-      'Cancel the booking',
-      'Hold the room for a late arrival',
-      'Move the guest to another hotel',
-      'Charge a no-show fee',
-    ],
-    correct: 1,
-    axis: 'English: reading',
-  },
-  {
-    id: 'eng-gram-01',
-    section: 'english',
-    label: 'ENGLISH · GRAMMAR',
-    prompt: 'Choose the correct sentence.',
-    options: [
-      'I have worked here since 2021.',
-      'I am working here since 2021.',
-      'I work here since 2021.',
-      'I worked here since 2021 year.',
-    ],
-    correct: 0,
-    axis: 'English: reading',
-  },
-  {
-    id: 'eng-work-01',
-    section: 'english',
-    label: 'ENGLISH · WORKPLACE',
-    prompt: 'A guest reports a leaking tap at 22:00. What do you do first?',
-    options: [
-      'Tell them to wait until morning',
-      'Log it and inform the maintenance person on duty',
-      'Fix it yourself without telling anyone',
-      'Ignore it if the guest leaves tomorrow',
-    ],
-    correct: 1,
-    axis: 'English: reading',
-  },
-
-  /* --------------------------------------------------------------- profile */
-  {
-    id: 'pro-01',
-    section: 'profile',
-    label: 'PROFILE · AVAILABILITY',
-    prompt: 'How soon could you start a job abroad?',
-    options: ['Within 1 month', '1 to 3 months', '3 to 6 months', 'More than 6 months'],
-  },
-  {
-    id: 'pro-02',
-    section: 'profile',
-    label: 'PROFILE · MOBILITY',
-    prompt: 'Would you accept shared staff accommodation?',
-    options: ['Yes', 'Yes, if I have my own room', 'Only for the first months', 'No'],
-  },
+  ...HOSPITALITY_ITEMS,
+  ...PROPERTY_ITEMS,
+  ...CLEANING_ITEMS,
+  ...DRIVER_ITEMS,
+  ...MAINTENANCE_ITEMS,
+  ...CONSTRUCTION_ITEMS,
+  ...EXPERIENCE_ITEMS,
+  ...ENGLISH_ITEMS,
+  ...PROFILE_ITEMS,
 ];
 
 /** Shape sent to the browser. Never includes `correct`. */

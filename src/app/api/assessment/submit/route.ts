@@ -6,6 +6,7 @@ import { getSessionCandidate } from '@/lib/auth';
 import { SECTION_ORDER } from '@/lib/assessment/items';
 import { buildReport } from '@/lib/assessment/report';
 import type { AnswerMap } from '@/lib/assessment/scoring';
+import { SECTOR_SLUGS, type SectorSlug } from '@/lib/data/sectors';
 
 export const runtime = 'nodejs';
 
@@ -71,9 +72,13 @@ export async function POST(request: Request) {
     answers[row.item_id as string] = row.option_index as number;
   }
 
-  /* Sector already decided which items the candidate saw, so scoring does not
-     need it again: the answers only reference items from their own bank. */
-  const report = buildReport(answers);
+  /* Scoring is scoped to the sector. Without it a housekeeper would be marked
+     against scaffolding questions they were never asked. */
+  const sector: SectorSlug = (SECTOR_SLUGS as readonly string[]).includes(candidate.sector)
+    ? (candidate.sector as SectorSlug)
+    : SECTOR_SLUGS[0];
+
+  const report = buildReport(answers, sector);
 
   const { error: reportError } = await admin
     .from('reports')
