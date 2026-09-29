@@ -48,6 +48,7 @@ export type Dictionary = {
   placeEyebrow: string;
   placeFine: string;
   selectionRules: string;
+  noPlacementFee: string;
   ctaTitle: string;
 
   includes: readonly Pair[];
@@ -314,6 +315,8 @@ const en: Dictionary = {
   placeEyebrow: 'FOR THE SELECTED CANDIDATE',
   placeFine: 'Selection is not guaranteed. You receive an answer within {days} days of completing your application.',
   selectionRules: 'Selection rules',
+  noPlacementFee:
+    'You never pay us for the job itself. The assessment fee is the only thing you pay. The employer pays our placement fee, not you.',
   ctaTitle: 'Applications are open.',
 
   includes: [
@@ -679,6 +682,8 @@ const hi: Dictionary = {
   placeEyebrow: 'चुने गए उम्मीदवार के लिए',
   placeFine: 'चयन की गारंटी नहीं है। आवेदन पूरा करने के {days} दिनों के भीतर आपको उत्तर मिलता है।',
   selectionRules: 'चयन नियम',
+  noPlacementFee:
+    'नौकरी के लिए आप हमें कभी भुगतान नहीं करते। आप केवल मूल्यांकन शुल्क देते हैं। हमारी प्लेसमेंट फ़ीस नियोक्ता देता है, आप नहीं।',
   ctaTitle: 'आवेदन खुले हैं।',
 
   includes: [

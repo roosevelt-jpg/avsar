@@ -125,6 +125,22 @@ const SECTOR_SPECIFIC: Record<SectorSlug, Criterion[]> = {
       weight: 0.1,
     },
   ],
+  it: [
+    {
+      id: 'technical_depth',
+      label: 'Technical depth',
+      definition:
+        'Depth in the tools the role actually uses: SQL and a reporting tool for an analyst, test design and defect tracking for a tester. Judge what they built or tested, not the list of technologies on the page.',
+      weight: 0.2,
+    },
+    {
+      id: 'communication',
+      label: 'Written communication',
+      definition:
+        'Evidence of explaining technical findings to people who are not technical. This role reports to a business, not to engineers.',
+      weight: 0.1,
+    },
+  ],
   construction: [
     {
       id: 'trade_depth',

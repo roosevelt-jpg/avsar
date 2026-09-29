@@ -56,9 +56,32 @@ export const RESPONSE_DAYS = 15;
  */
 export const PLACEMENT_FEE = {
   eur: 1000,
-  visible: false,
-  payer: 'candidate' as 'candidate' | 'employer',
+  payer: 'employer' as 'candidate' | 'employer',
+  /**
+   * Published to employers, never to candidates.
+   *
+   * With the employer paying, every objection above disappears: the fee is in
+   * the normal range for a fully relocated hire in these sectors, it is paid by
+   * someone who can pay it without borrowing, and none of the prohibitions
+   * apply. Same money, different payer.
+   *
+   * Setting `payer` back to 'candidate' re-opens all of it. Read
+   * docs/commercial-terms.md before doing that.
+   */
+  get visibleToCandidates(): boolean {
+    return this.payer === 'candidate';
+  },
 } as const;
+
+/**
+ * "You never pay us for the job itself."
+ *
+ * True only while the employer pays, so it is derived rather than written into
+ * copy. In a market where most candidates have been charged by an agent at some
+ * point, this is the strongest claim the product has, and it must never appear
+ * on a page while the opposite is configured.
+ */
+export const CANDIDATE_PAYS_NO_PLACEMENT_FEE = PLACEMENT_FEE.payer === 'employer';
 
 /**
  * Selection rate shown to candidates.

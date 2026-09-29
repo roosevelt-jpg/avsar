@@ -41,11 +41,20 @@ export type Item = {
   scale?: boolean;
   /** Restricts an item to one sector. Undefined means it applies to all. */
   sector?: SectorSlug;
+  /**
+   * Narrows further, to specific positions within that sector.
+   *
+   * A data analyst and a QA tester share a sector and not a job. Scoping by
+   * position avoids a new enum value for every role, which is exactly the churn
+   * `positions.ts` exists to prevent.
+   */
+  positions?: readonly string[];
   /** Report axis this item feeds, matched against `dash.breakdownLabels`. */
   axis?: string;
 };
 
 import { EXPERIENCE_ITEMS, ENGLISH_ITEMS, PROFILE_ITEMS } from './bank/shared';
+import { IT_ITEMS } from './bank/it';
 import {
   HOSPITALITY_ITEMS,
   PROPERTY_ITEMS,
@@ -69,6 +78,7 @@ export const ITEM_BANK: readonly Item[] = [
   ...DRIVER_ITEMS,
   ...MAINTENANCE_ITEMS,
   ...CONSTRUCTION_ITEMS,
+  ...IT_ITEMS,
   ...EXPERIENCE_ITEMS,
   ...ENGLISH_ITEMS,
   ...PROFILE_ITEMS,
@@ -89,9 +99,17 @@ export function toClientItem(item: Item): ClientItem {
  * Randomisation is seeded by candidate id so a reload returns the same order:
  * the handoff requires resume-after-disconnect, and a reshuffle would break it.
  */
-export function itemsForSection(section: SectionId, sector: SectorSlug, seed: string): Item[] {
+export function itemsForSection(
+  section: SectionId,
+  sector: SectorSlug,
+  seed: string,
+  position?: string,
+): Item[] {
   const pool = ITEM_BANK.filter(
-    (item) => item.section === section && (item.sector === undefined || item.sector === sector),
+    (item) =>
+      item.section === section &&
+      (item.sector === undefined || item.sector === sector) &&
+      (item.positions === undefined || (position !== undefined && item.positions.includes(position))),
   );
   return shuffleSeeded(pool, `${seed}:${section}`);
 }

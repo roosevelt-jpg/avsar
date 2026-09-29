@@ -3,7 +3,6 @@ import { AssessmentRunner } from '@/components/candidate/AssessmentRunner';
 import { getDictionary, isLocale } from '@/lib/i18n';
 import { itemsForSection, toClientItem, SECTION_ORDER, type SectionId } from '@/lib/assessment/items';
 import { SECTOR_SLUGS, type SectorSlug } from '@/lib/data/sectors';
-import { itemSectorFor } from '@/lib/data/positions';
 import { getServerSupabase } from '@/lib/supabase/server';
 import { secondsUntil } from '@/lib/clock';
 import { requireCandidate } from '@/lib/auth';
@@ -33,6 +32,7 @@ export default async function AssessmentPage({
   /* The sector comes from the candidate record, not the query string: it
      decides which items they are scored on, so it is not theirs to pick here. */
   let sector: SectorSlug = SECTOR_SLUGS[0];
+  let position: string | undefined;
 
   /**
    * The attempt and its deadline are server state. Without Supabase there is no
@@ -49,6 +49,7 @@ export default async function AssessmentPage({
     if ((SECTOR_SLUGS as readonly string[]).includes(candidate.sector)) {
       sector = candidate.sector as SectorSlug;
     }
+    position = candidate.position ?? undefined;
 
     /* Paying is what buys the assessment, so an unpaid candidate goes back to
        checkout rather than being handed a set of questions. */
@@ -103,7 +104,7 @@ export default async function AssessmentPage({
   }
 
   /* `toClientItem` strips the answer key before the items cross to the browser. */
-  const items = itemsForSection(section, sector, attemptId ?? 'preview').map(toClientItem);
+  const items = itemsForSection(section, sector, attemptId ?? 'preview', position).map(toClientItem);
 
   return (
     <AssessmentRunner

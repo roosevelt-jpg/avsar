@@ -28,6 +28,7 @@ const SECTOR_HINTS: Record<SectorSlug, readonly string[]> = {
   drivers: ['driver', 'drivers', 'chauffeur', 'delivery'],
   maintenance: ['maintenance', 'technician', 'tech', 'plumber', 'electrician', 'handyman'],
   construction: ['construction', 'builder', 'mason', 'carpenter', 'scaffolder', 'crew'],
+  it: ['data analyst', 'analyst', 'qa', 'tester', 'testing', 'sql', 'developer', 'it'],
 };
 
 const PORTUGAL_PLACES = [

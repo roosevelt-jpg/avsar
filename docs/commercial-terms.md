@@ -9,7 +9,7 @@ place, or the three disagree the first time one of them moves.
 | Assessment fee | €25, shown as ₹2,299 | `ASSESSMENT_FEE` |
 | Answer within | 15 days | `RESPONSE_DAYS` |
 | Contract length | 5 years | `CONTRACT_YEARS` |
-| Placement fee | €1,000 | `PLACEMENT_FEE`, **not published** |
+| Placement fee | €1,000, paid by the employer | `PLACEMENT_FEE` |
 | Selection rate | 32% | `SELECTION_RATE`, **not published** |
 
 The rupee figure is a display conversion of a euro price, not a second price.
@@ -19,10 +19,10 @@ up charged more than the site said.
 
 ## Two terms are switched off, and why
 
-### The €1,000 placement fee
+### The €1,000 placement fee: the employer pays it
 
-`PLACEMENT_FEE.visible` is false. Turning it on is a decision to take with
-counsel, not a config change.
+`PLACEMENT_FEE.payer` is `employer`. That resolves everything below, and
+switching it back to `candidate` re-opens all of it.
 
 - **EU.** Directive 2008/104 Art. 6(3) and Portugal's DL 260/2009 prohibit an
   employment agency charging a worker for placement.
@@ -35,10 +35,15 @@ counsel, not a config change.
   is a reputational exposure, not only a legal one, and it attaches to the
   Smith & Adams name rather than to a standalone brand.
 
-**The version that works is the employer paying it.** Portuguese employers in
-these sectors already pay placement fees, the amount is in the normal range for
-a fully relocated hire, and it removes every item above. `PLACEMENT_FEE.payer`
-exists so the switch is one word.
+Portuguese employers in these sectors already pay placement fees, €1,000 is in
+the normal range for a fully relocated hire, and the payer can afford it without
+borrowing. Same money, different payer, none of the objections.
+
+It also buys the strongest claim the product has. In a market where most
+candidates have been charged by an agent at some point, **"you never pay us for
+the job itself"** is worth more than any feature. That line is derived from
+`payer` rather than written into copy, so it can never outlive the setting that
+makes it true.
 
 ### The 32% selection rate
 
@@ -69,5 +74,6 @@ Candidates pick a **position**. It is what they call themselves, what an
 employer searches for, and what decides which assessment they take. Areas are
 navigation.
 
-IT has no assessment bank yet. A data analyst currently receives hospitality
-items, which is wrong and has to be fixed before that position is advertised.
+IT has its own bank. A data analyst and a QA tester share the sector and not the
+job, so items inside it are scoped with `positions` rather than by adding an
+enum value per role. Both get four shared IT items and six of their own.

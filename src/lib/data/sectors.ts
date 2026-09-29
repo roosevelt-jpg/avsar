@@ -12,6 +12,7 @@ export const SECTOR_SLUGS = [
   'drivers',
   'maintenance',
   'construction',
+  'it',
 ] as const;
 
 export type SectorSlug = (typeof SECTOR_SLUGS)[number];
@@ -36,4 +37,5 @@ export const SECTOR_PHOTO_NOTES: Record<SectorSlug, string> = {
   drivers: 'photo · Drivers',
   maintenance: 'photo · Maintenance',
   construction: 'photo · Construction',
+  it: 'photo · IT',
 };
