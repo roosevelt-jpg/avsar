@@ -86,8 +86,25 @@ no link and lands with no candidate record. That is correct behaviour, not a bug
 
 ## Things that are deliberate
 
-**`shouldCreateUser: false`.** An address that never registered and paid must not
-be able to conjure an account by asking for a code.
+**The code is requested server side, through `/api/auth/request-code`.** It has
+to be: whether an address may receive a code depends on whether it belongs to a
+registered candidate, that needs the service role to answer, and the answer must
+not reach the browser.
+
+One `signInWithOtp` call covers all three cases, with `shouldCreateUser` set
+from whether a candidate row exists:
+
+| Case | `shouldCreateUser` | Result |
+|---|---|---|
+| Registered candidate, no account yet | `true` | Account created, code sent |
+| Existing account (staff wanting a code) | `false` | Code sent |
+| Neither | `false` | No user, nothing created, nothing sent |
+
+An earlier version had the browser call Supabase directly with
+`shouldCreateUser: false` always. That looked like a sensible protection and was
+a lockout: a candidate registers and pays *before* any auth account exists, so
+Supabase found no user, sent nothing, and reported nothing. Every legitimate
+candidate was shut out, silently.
 
 **Sign-in never says whether an address exists.** Same message either way, on both
 forms. Otherwise sign-in becomes a way to test who has registered.
@@ -125,6 +142,22 @@ on conflict (auth_user_id) do update set role = 'admin';
 Having an account is not enough. Without this row, `/admin` and the CV review
 redirect to sign-in, which is the intended behaviour: staff access is granted
 explicitly, never as a side effect of having signed up.
+
+## Email delivery
+
+Supabase's built-in email is for development only. It is rate limited to a
+handful of messages an hour and is not a deliverability path for a product that
+will send twenty thousand codes.
+
+Configure custom SMTP before any real cohort: Authentication → Emails → SMTP
+Settings. AWS SES is already in use elsewhere in this account and is the obvious
+choice. That needs a verified sending domain, so it is blocked on Avsar having a
+domain at all.
+
+Deliverability to Indian consumer inboxes is its own problem, not a side effect
+of picking a provider: SPF, DKIM and DMARC all have to line up, and a brand new
+sending domain has no reputation. Budget for a warm-up rather than sending the
+first cohort's codes on day one.
 
 ## Not built yet
 

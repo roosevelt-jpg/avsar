@@ -71,20 +71,23 @@ export function SignInForm({
   async function sendCode() {
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.trim())) return setError(a.errEmail);
 
-    const supabase = getBrowserSupabase();
-    if (!supabase) return fail(a.errGeneric);
-
     setBusy(true);
     setError('');
-    /* shouldCreateUser: false. An address that never registered and paid must
-       not be able to conjure an account by asking for a code. */
-    const { error: sendError } = await supabase.auth.signInWithOtp({
-      email: email.trim(),
-      options: { shouldCreateUser: false },
-    });
-    setBusy(false);
 
-    if (sendError) console.error('[signin] otp send failed', sendError);
+    /* Sent server side. Whether an address may receive a code depends on
+       whether it belongs to a registered candidate, which needs the service
+       role to answer, and the answer must not reach the browser. */
+    try {
+      await fetch('/api/auth/request-code', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+    } catch (sendError) {
+      console.error('[signin] request-code failed', sendError);
+    }
+
+    setBusy(false);
     setSent(true);
   }
 
