@@ -5,7 +5,12 @@ import { getAdminSupabase } from '@/lib/supabase/admin';
 
 export const runtime = 'nodejs';
 
-const schema = z.object({ email: z.string().trim().email().max(200) });
+const schema = z.object({
+  email: z.string().trim().email().max(200),
+  /** Same-origin path to return to after the link is followed. */
+  next: z.string().max(300).optional(),
+  locale: z.string().max(5).optional(),
+});
 
 /**
  * Sends a one-time code, server side.
@@ -26,6 +31,14 @@ export async function POST(request: Request) {
   if (!parsed.success) return NextResponse.json({ sent: true });
 
   const email = parsed.data.email.toLowerCase();
+  const origin = new URL(request.url).origin;
+
+  const next = parsed.data.next;
+  const safeNext = next && next.startsWith('/') && !next.startsWith('//') ? next : undefined;
+
+  const callback = new URL('/auth/callback', origin);
+  if (safeNext) callback.searchParams.set('next', safeNext);
+  if (parsed.data.locale) callback.searchParams.set('locale', parsed.data.locale);
   const anon = getAnonSupabase();
   const admin = getAdminSupabase();
 
@@ -47,7 +60,13 @@ export async function POST(request: Request) {
    */
   const { error } = await anon.auth.signInWithOtp({
     email,
-    options: { shouldCreateUser: Boolean(candidate) },
+    options: {
+      shouldCreateUser: Boolean(candidate),
+      /* Where the link in the email goes. Must also be listed under
+         Authentication -> URL Configuration -> Redirect URLs, or Supabase
+         silently falls back to the Site URL. */
+      emailRedirectTo: callback.toString(),
+    },
   });
 
   /* Logged, never returned. A delivery failure and an unknown address must

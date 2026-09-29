@@ -81,7 +81,7 @@ export function SignInForm({
       await fetch('/api/auth/request-code', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ email: email.trim() }),
+        body: JSON.stringify({ email: email.trim(), next, locale }),
       });
     } catch (sendError) {
       console.error('[signin] request-code failed', sendError);

@@ -143,6 +143,32 @@ Having an account is not enough. Without this row, `/admin` and the CV review
 redirect to sign-in, which is the intended behaviour: staff access is granted
 explicitly, never as a side effect of having signed up.
 
+## Supabase dashboard settings this depends on
+
+Three things live in the dashboard, not in this repository, and the flow is
+broken without them.
+
+**Authentication → URL Configuration**
+- Site URL: the production origin.
+- Redirect URLs: add `<origin>/auth/callback` for every origin in use,
+  including `http://localhost:3000/auth/callback`. If the callback is not
+  listed, Supabase silently falls back to the Site URL and the visitor lands on
+  the home page instead of where they were going.
+
+**Authentication → Emails → templates**
+
+A brand-new user created through OTP receives the *Confirm signup* template, not
+*Magic Link*. Both default to a link only. For the six-digit code to arrive, the
+template body has to include `{{ .Token }}`:
+
+```html
+<p>Your Avsar sign-in code is <strong>{{ .Token }}</strong>. It expires in 10 minutes.</p>
+<p>Or <a href="{{ .ConfirmationURL }}">open this link</a> instead.</p>
+```
+
+Both work: the code and the link are the same grant delivered two ways, and both
+end at `/auth/callback`, which routes by role.
+
 ## Email delivery
 
 Supabase's built-in email is for development only. It is rate limited to a
