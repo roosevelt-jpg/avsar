@@ -9,7 +9,9 @@
 -- only honest options are to hide the level entirely or to overstate it.
 -- ============================================================================
 
-create type english_source as enum ('internal', 'duolingo', 'englishscore', 'versant');
+do $$ begin
+  create type english_source as enum ('internal', 'duolingo', 'englishscore', 'versant');
+exception when duplicate_object then null; end $$;
 
 alter table reports
   add column if not exists english_source english_source not null default 'internal',
