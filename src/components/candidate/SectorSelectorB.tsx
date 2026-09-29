@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
-import { SECTOR_SLUGS } from '@/lib/data/sectors';
+import { POSITIONS } from '@/lib/data/positions';
 import type { Dictionary, Locale } from '@/lib/i18n';
 
 /** Direction B's white selector card. Same behaviour as A, different skin. */
@@ -25,12 +25,12 @@ export function SectorSelectorB({ locale, t }: { locale: Locale; t: Dictionary }
         </span>
       </div>
 
-      <div className="flex flex-col gap-1.5" role="radiogroup" aria-label={t.askWork}>
+      <div className="flex max-h-[340px] flex-col gap-1.5 overflow-y-auto" role="radiogroup" aria-label={t.askWork}>
         {t.sectors.map((label, index) => {
           const active = selected === index;
           return (
             <button
-              key={SECTOR_SLUGS[index]}
+              key={POSITIONS[index]?.slug ?? index}
               type="button"
               role="radio"
               aria-checked={active}
@@ -54,7 +54,9 @@ export function SectorSelectorB({ locale, t }: { locale: Locale; t: Dictionary }
         disabled={pending}
         onClick={() =>
           startTransition(() =>
-            router.push(`/${locale}/signup?sector=${SECTOR_SLUGS[selected] ?? SECTOR_SLUGS[0]}`),
+            router.push(
+              `/${locale}/signup?position=${POSITIONS[selected]?.slug ?? POSITIONS[0].slug}`,
+            ),
           )
         }
         className="t-colors mt-5 w-full cursor-pointer border-0 px-5 py-3.5 text-[15px] font-medium text-white disabled:opacity-60"

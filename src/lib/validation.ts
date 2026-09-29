@@ -16,7 +16,7 @@ export const signupAccountSchema = z.object({
 });
 
 export const signupProfileSchema = z.object({
-  sector: z.enum(SECTOR_SLUGS),
+  position: z.string().min(1).max(40),
   yearsExperience: z.number().int().min(0).max(3),
   englishSelf: z.number().int().min(0).max(2),
   cityState: z.string().trim().min(2).max(120),

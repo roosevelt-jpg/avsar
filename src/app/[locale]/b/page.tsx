@@ -4,7 +4,7 @@ import { Placeholder } from '@/components/ui/Placeholder';
 import { LocaleToggle } from '@/components/candidate/LocaleToggle';
 import { SectorSelectorB } from '@/components/candidate/SectorSelectorB';
 import { getDictionary, isLocale } from '@/lib/i18n';
-import { SECTOR_SLUGS } from '@/lib/data/sectors';
+import { POSITIONS } from '@/lib/data/positions';
 
 export const metadata = { title: 'Direction B · candidate landing' };
 
@@ -36,7 +36,7 @@ export default async function CandidateLandingB({ params }: { params: Promise<{ 
             className="size-[22px] shrink-0"
             style={{ background: 'var(--b-azulejo)', borderRadius: 'var(--b-radius)' }}
           />
-          Avsar
+          S&A Recruitment
           <span className="text-[0.72em] font-normal" style={{ color: 'var(--b-muted)' }} lang="hi">
             अवसर
           </span>
@@ -175,7 +175,7 @@ export default async function CandidateLandingB({ params }: { params: Promise<{ 
         <ul className="m-0 flex list-none flex-wrap gap-2.5 p-0">
           {t.sectors.map((label, index) => (
             <li
-              key={SECTOR_SLUGS[index]}
+              key={POSITIONS[index]?.slug ?? index}
               className="px-4 py-2.5 text-[15px]"
               style={{ border: '1px solid var(--b-line)', borderRadius: 'var(--b-radius)', background: '#fff' }}
             >
@@ -207,12 +207,12 @@ export default async function CandidateLandingB({ params }: { params: Promise<{ 
         style={{ color: 'var(--b-muted)', borderTop: '1px solid var(--b-line)' }}
       >
         <p className="m-0 mb-2 text-[16px]" style={{ color: 'var(--b-ink)' }}>
-          Avsar
+          S&A Recruitment
         </p>
         <p className="m-0">
           {t.selectionRules} · {t.footerRefund} · {t.footerPrivacy}
         </p>
-        <p className="m-0 mt-2">© 2026 Avsar</p>
+        <p className="m-0 mt-2">© 2026 S&A Recruitment</p>
       </footer>
     </div>
   );

@@ -1,5 +1,5 @@
 /**
- * Avsar copy dictionary.
+ * S&A Recruitment copy dictionary.
  *
  * The landing-page strings are reproduced verbatim from the `T` object in
  * `Avsar Platform A.dc.html`, as the handoff requires. The handoff also asks
@@ -145,6 +145,31 @@ export type Dictionary = {
     visibleNote: string;
   };
 
+  /* How it works: the six steps */
+  process: {
+    title: string;
+    lead: string;
+    steps: readonly Pair[];
+    responseNote: string;
+  };
+
+  /* What a selected candidate receives */
+  offer: {
+    title: string;
+    lead: string;
+    items: readonly Pair[];
+  };
+
+  /* Documents */
+  documents: {
+    title: string;
+    lead: string;
+    required: string;
+    optional: string;
+    items: readonly Pair[];
+    optionalNote: string;
+  };
+
   /* Sign-in */
   auth: {
     title: string;
@@ -273,28 +298,28 @@ const en: Dictionary = {
   navEmployers: 'For employers',
   signIn: 'Sign in',
 
-  eyebrow: 'Cohort 01 · India → Portugal · Applications open',
-  heroTitle: 'Prove your skills. Get seen by employers in Europe.',
+  eyebrow: 'India → Portugal · Applications open',
+  heroTitle: 'Work in Portugal. We handle everything after you are selected.',
   heroSub:
-    'A professional assessment of your skills, experience and English. You get a detailed skills report and a verified profile in our talent pool. The top candidate in each cohort is selected for a fully supported job in Portugal.',
-  askWork: 'What kind of work do you do?',
-  cta: 'Start assessment · ₹1,999',
-  fine: 'Includes your skills report and a verified talent-pool profile. Selection for Portugal is an extra opportunity for top performers and is not guaranteed.',
-  heroMeta: '₹1,999 · 60–90 min · online',
+    'A professional assessment of your skills, experience and English. Selected candidates receive a contract with a Portuguese employer, accommodation, meals and legal support through the whole visa process.',
+  askWork: 'What position are you applying for?',
+  cta: 'Start your application',
+  fine: 'You pay the assessment fee once, after you have seen what the assessment involves. Selection is not guaranteed, and we tell you either way within {days} days.',
+  heroMeta: '{inr} · 60–90 min · online',
 
   includesTitle: 'What your fee includes',
   howTitle: 'How it works',
-  placeTitle: 'The Portugal placement',
-  sectorsTitle: 'Sectors we hire for',
+  placeTitle: 'What a selected candidate receives',
+  sectorsTitle: 'Positions we are hiring for',
   placeEyebrow: 'FOR THE SELECTED CANDIDATE',
-  placeFine: 'About 1 candidate is selected per cohort of ~20,000.',
+  placeFine: 'Selection is not guaranteed. You receive an answer within {days} days of completing your application.',
   selectionRules: 'Selection rules',
-  ctaTitle: 'Cohort 01 closes on 30 November.',
+  ctaTitle: 'Applications are open.',
 
   includes: [
-    ['Professional assessment', 'Online test of 60–90 minutes covering your skills, work experience and English.'],
+    ['Professional assessment', 'Online assessment of 60–90 minutes covering your skills, work experience and English.'],
     ['Skills report', 'A scored breakdown of your strengths and gaps. It is yours to keep and share.'],
-    ['Talent-pool profile', 'A verified profile that vetted employers in Portugal and Europe can find.'],
+    ['An answer, either way', 'We tell you within {days} days whether you are moving forward. You are not left waiting.'],
   ],
   steps: [
     ['Register and pay', 'Create your account and pay the ₹1,999 assessment fee by UPI or card.'],
@@ -303,19 +328,32 @@ const en: Dictionary = {
     ['Selection', 'The top candidate in each cohort is offered a full placement in Portugal.'],
   ],
   place: [
-    'Job contract with a partner employer',
+    '{years}-year employment contract with a Portuguese employer',
     'Monthly salary',
-    'Housing',
+    'Accommodation',
     'Meals',
-    'Visa and immigration support',
-    'Arrival and integration support',
+    'Legal support through the entire visa process',
+    'Residence permit and paperwork after arrival',
   ],
-  sectors: ['Hospitality', 'Property management', 'Cleaning', 'Drivers', 'Maintenance', 'Construction'],
+  sectors: [
+    'Chef',
+    'Food and beverage service',
+    'Cleaner',
+    'Property management',
+    'Driver',
+    'Logistics',
+    'Construction worker',
+    'Electrician',
+    'Plumber',
+    'Welder',
+    'Data analyst',
+    'QA tester',
+  ],
 
   footerRefund: 'Refund policy',
   footerPrivacy: 'Privacy',
   footerContact: 'Contact',
-  footerLegal: '© 2026 Avsar · Lisbon · New Delhi',
+  footerLegal: '© 2026 S&A Recruitment, a Smith & Adams company · Lisbon · New Delhi',
 
   signup: {
     help: 'Need help? WhatsApp +91 80 0000 0000',
@@ -415,6 +453,47 @@ const en: Dictionary = {
     ],
     visible: 'Visible to employers',
     visibleNote: 'Vetted employers in Portugal and Europe can find your profile.',
+  },
+
+  process: {
+    title: 'How it works',
+    lead: 'Six steps, and you know where you stand at every one of them.',
+    steps: [
+      ['Register', 'Create your account with your name, mobile and email. It takes two minutes.'],
+      ['Upload your CV and documents', 'A CV and a photo are all we need to start. Adding your passport and supporting documents lets us tell you sooner whether your file is ready for a visa.'],
+      ['Take the first assessment', 'An online assessment of your skills, work experience and English. Sixty to ninety minutes, from your phone or a computer, whenever suits you.'],
+      ['Pay the assessment fee', 'Pay once, after you have seen what the assessment involves.'],
+      ['Assessment call', 'If you are shortlisted, one of our recruiters calls you. This is a real conversation about the work, not a formality.'],
+      ['Confirmation letter', 'If you are selected, you receive a confirmation letter to sign, and we begin the visa process with you.'],
+    ],
+    responseNote: 'You get an answer within {days} days of completing your application. Not a queue with no end: an answer.',
+  },
+
+  offer: {
+    title: 'What a selected candidate receives',
+    lead: 'Everything needed to arrive and start work, arranged before you travel.',
+    items: [
+      ['Employment contract', 'A {years}-year contract with a Portuguese employer, signed before you leave.'],
+      ['Accommodation', 'Housing arranged and ready on arrival.'],
+      ['Meals', 'Provided as part of the placement.'],
+      ['Legal support', 'The visa, the residence permit and the paperwork after arrival, handled with you throughout.'],
+    ],
+  },
+
+  documents: {
+    title: 'What to send',
+    lead: 'A CV and a photo are all we need to start. Everything else helps us move faster and none of it is required.',
+    required: 'Required',
+    optional: 'Helps us move faster',
+    items: [
+      ['CV', 'In any format. If you do not have one, fill in your profile instead and we will build it with you.'],
+      ['Photograph', 'A clear, recent photograph of your face.'],
+      ['Passport', 'The photo page. If you have not applied yet, say so and we will tell you when to start.'],
+      ['Qualifications', 'Certificates, trade cards, training records.'],
+      ['Work references', 'Employment letters, contracts or payslips.'],
+      ['Police clearance', 'Needed later for the visa. Useful to have early.'],
+    ],
+    optionalNote: 'Sending documents is optional and does not affect your assessment score. It affects how quickly we can tell you whether your file is ready to start a visa application.',
   },
 
   auth: {
@@ -542,26 +621,37 @@ const en: Dictionary = {
     questions: 'Questions',
     faq: [
       [
-        'What does the ₹1,999 fee pay for?',
-        'Your full assessment (skills, experience and English), your personal skills report, and a verified profile in the talent pool for 12 months. These are delivered to every candidate who completes the assessment.',
+        'What does the assessment fee pay for?',
+        'Your full assessment of skills, work experience and English, your personal skills report, and a decision within {days} days. You pay once, after you have seen what the assessment involves.',
       ],
       [
-        'How many candidates are selected for Portugal?',
-        'About 1 candidate per cohort of roughly 20,000. Selection goes to the highest overall score after interview and document checks. Most candidates will not be selected, so please only register if the report and profile are useful to you on their own.',
+        'What happens after I pay?',
+        'You complete the assessment. If you are shortlisted, one of our recruiters calls you for a real conversation about the work. If you are selected, you receive a confirmation letter to sign and we begin the visa process with you.',
       ],
       [
-        'What does the Portugal placement include?',
-        'A job contract with one of our companies or partners, a monthly salary, housing, meals, visa and immigration support, and help settling in after arrival.',
+        'How long until I hear back?',
+        'Within {days} days of completing your application. Whether the answer is yes or no, you get one. You are not left in a queue.',
       ],
       [
-        'Can employers contact me if I am not selected?',
-        'Yes. If your profile is visible, vetted employers can find you and invite you to interview. You can hide your profile at any time from your dashboard.',
+        'Is selection guaranteed?',
+        'No. The fee pays for the assessment and the report, not for a placement. If you are not selected, you keep the report and we tell you why.',
+      ],
+      [
+        'Do I have to send my documents?',
+        'No. A CV and a photograph are all we need to start. Sending your passport and supporting documents does not change your assessment score; it lets us tell you sooner whether your file is ready to begin a visa application.',
+      ],
+      [
+        'What does the placement include?',
+        'A {years}-year employment contract with a Portuguese employer, a monthly salary, accommodation, meals, and legal support through the visa process and the paperwork after you arrive.',
       ],
       [
         'Can I get a refund?',
-        'You get a full refund if you cancel before starting the assessment. After you start, the fee is not refundable because the assessment and report are being delivered.',
+        'You get a full refund if you cancel before starting the assessment. After you start, the fee is not refundable, because the assessment and the report are being delivered.',
       ],
-      ['Is Avsar a licensed recruitment agency?', 'Registration details for India and Portugal will be listed here.'],
+      [
+        'Is S&A Recruitment a licensed recruitment agency?',
+        'Registration details for India and Portugal will be listed here before applications open.',
+      ],
     ],
   },
 };
@@ -573,28 +663,28 @@ const hi: Dictionary = {
   navEmployers: 'नियोक्ताओं के लिए',
   signIn: 'साइन इन',
 
-  eyebrow: 'कोहॉर्ट 01 · भारत → पुर्तगाल · आवेदन खुले हैं',
-  heroTitle: 'अपना हुनर साबित करें। यूरोप के नियोक्ताओं की नज़र में आएँ।',
+  eyebrow: 'भारत → पुर्तगाल · आवेदन खुले हैं',
+  heroTitle: 'पुर्तगाल में काम करें। चुने जाने के बाद सब कुछ हम संभालते हैं।',
   heroSub:
-    'आपके कौशल, अनुभव और अंग्रेज़ी का पेशेवर मूल्यांकन। आपको एक विस्तृत स्किल्स रिपोर्ट और हमारे टैलेंट पूल में सत्यापित प्रोफ़ाइल मिलती है। हर कोहॉर्ट के सर्वश्रेष्ठ उम्मीदवार को पुर्तगाल में पूरी सहायता के साथ नौकरी के लिए चुना जाता है।',
-  askWork: 'आप किस तरह का काम करते हैं?',
-  cta: 'मूल्यांकन शुरू करें · ₹1,999',
-  fine: 'इसमें आपकी स्किल्स रिपोर्ट और टैलेंट पूल में सत्यापित प्रोफ़ाइल शामिल है। पुर्तगाल के लिए चयन सर्वश्रेष्ठ उम्मीदवारों के लिए एक अतिरिक्त अवसर है और इसकी गारंटी नहीं है।',
-  heroMeta: '₹1,999 · 60–90 मिनट · ऑनलाइन',
+    'आपके कौशल, अनुभव और अंग्रेज़ी का पेशेवर मूल्यांकन। चुने गए उम्मीदवारों को पुर्तगाली नियोक्ता के साथ अनुबंध, आवास, भोजन और पूरी वीज़ा प्रक्रिया में क़ानूनी सहायता मिलती है।',
+  askWork: 'आप किस पद के लिए आवेदन कर रहे हैं?',
+  cta: 'अपना आवेदन शुरू करें',
+  fine: 'मूल्यांकन शुल्क एक बार देना होता है, और वह भी मूल्यांकन देखने के बाद। चयन की गारंटी नहीं है, और {days} दिनों के भीतर हम आपको दोनों हालात में बताते हैं।',
+  heroMeta: '{inr} · 60–90 मिनट · ऑनलाइन',
 
   includesTitle: 'आपकी फ़ीस में क्या शामिल है',
   howTitle: 'यह कैसे काम करता है',
-  placeTitle: 'पुर्तगाल प्लेसमेंट',
-  sectorsTitle: 'जिन क्षेत्रों में हम भर्ती करते हैं',
+  placeTitle: 'चुने गए उम्मीदवार को क्या मिलता है',
+  sectorsTitle: 'जिन पदों के लिए हम भर्ती कर रहे हैं',
   placeEyebrow: 'चुने गए उम्मीदवार के लिए',
-  placeFine: 'लगभग 20,000 उम्मीदवारों के हर कोहॉर्ट में से 1 उम्मीदवार चुना जाता है।',
+  placeFine: 'चयन की गारंटी नहीं है। आवेदन पूरा करने के {days} दिनों के भीतर आपको उत्तर मिलता है।',
   selectionRules: 'चयन नियम',
-  ctaTitle: 'कोहॉर्ट 01 के आवेदन 30 नवंबर को बंद होंगे।',
+  ctaTitle: 'आवेदन खुले हैं।',
 
   includes: [
-    ['पेशेवर मूल्यांकन', '60–90 मिनट की ऑनलाइन परीक्षा, जिसमें आपके कौशल, कार्य अनुभव और अंग्रेज़ी की जाँच होती है।'],
+    ['पेशेवर मूल्यांकन', '60–90 मिनट का ऑनलाइन मूल्यांकन, जिसमें आपके कौशल, कार्य अनुभव और अंग्रेज़ी की जाँच होती है।'],
     ['स्किल्स रिपोर्ट', 'आपकी ताक़त और कमियों का अंकों सहित विवरण। यह आपकी है, आप इसे रख और साझा कर सकते हैं।'],
-    ['टैलेंट पूल प्रोफ़ाइल', 'एक सत्यापित प्रोफ़ाइल, जिसे पुर्तगाल और यूरोप के जाँचे-परखे नियोक्ता देख सकते हैं।'],
+    ['उत्तर, दोनों हालात में', '{days} दिनों के भीतर हम बताते हैं कि आप आगे बढ़ रहे हैं या नहीं। आपको इंतज़ार में नहीं छोड़ा जाता।'],
   ],
   steps: [
     ['रजिस्टर करें और भुगतान करें', 'अपना खाता बनाएँ और UPI या कार्ड से ₹1,999 मूल्यांकन शुल्क चुकाएँ।'],
@@ -603,19 +693,32 @@ const hi: Dictionary = {
     ['चयन', 'हर कोहॉर्ट के सर्वश्रेष्ठ उम्मीदवार को पुर्तगाल में पूरा प्लेसमेंट दिया जाता है।'],
   ],
   place: [
-    'पार्टनर नियोक्ता के साथ नौकरी का अनुबंध',
+    'पुर्तगाली नियोक्ता के साथ {years} साल का रोज़गार अनुबंध',
     'मासिक वेतन',
     'आवास',
     'भोजन',
-    'वीज़ा और इमिग्रेशन सहायता',
-    'आगमन और एकीकरण सहायता',
+    'पूरी वीज़ा प्रक्रिया में क़ानूनी सहायता',
+    'आगमन के बाद निवास परमिट और काग़ज़ात',
   ],
-  sectors: ['आतिथ्य', 'प्रॉपर्टी मैनेजमेंट', 'सफ़ाई', 'ड्राइवर', 'रखरखाव', 'निर्माण'],
+  sectors: [
+    'शेफ़',
+    'फ़ूड एंड बेवरेज सेवा',
+    'सफ़ाईकर्मी',
+    'प्रॉपर्टी मैनेजमेंट',
+    'ड्राइवर',
+    'लॉजिस्टिक्स',
+    'निर्माण कर्मी',
+    'इलेक्ट्रिशियन',
+    'प्लंबर',
+    'वेल्डर',
+    'डेटा एनालिस्ट',
+    'QA टेस्टर',
+  ],
 
   footerRefund: 'रिफ़ंड नीति',
   footerPrivacy: 'गोपनीयता',
   footerContact: 'संपर्क',
-  footerLegal: '© 2026 Avsar · लिस्बन · नई दिल्ली',
+  footerLegal: '© 2026 S&A Recruitment, a Smith & Adams company · लिस्बन · नई दिल्ली',
 
   signup: {
     help: 'मदद चाहिए? WhatsApp +91 80 0000 0000',
@@ -715,6 +818,47 @@ const hi: Dictionary = {
     ],
     visible: 'नियोक्ताओं को दिखाई दे',
     visibleNote: 'पुर्तगाल और यूरोप के जाँचे-परखे नियोक्ता आपकी प्रोफ़ाइल देख सकते हैं।',
+  },
+
+  process: {
+    title: 'यह कैसे काम करता है',
+    lead: 'छह चरण, और हर चरण पर आपको पता रहता है कि आप कहाँ हैं।',
+    steps: [
+      ['रजिस्टर करें', 'अपने नाम, मोबाइल और ईमेल से खाता बनाएँ। दो मिनट लगते हैं।'],
+      ['CV और दस्तावेज़ अपलोड करें', 'शुरू करने के लिए एक CV और एक फ़ोटो काफ़ी है। पासपोर्ट और अन्य दस्तावेज़ जोड़ने से हम जल्दी बता पाते हैं कि आपकी फ़ाइल वीज़ा के लिए तैयार है या नहीं।'],
+      ['पहला मूल्यांकन दें', 'आपके कौशल, अनुभव और अंग्रेज़ी का ऑनलाइन मूल्यांकन। 60 से 90 मिनट, फ़ोन या कंप्यूटर से, आपकी सुविधा के समय।'],
+      ['मूल्यांकन शुल्क भरें', 'एक बार भुगतान, और वह भी मूल्यांकन देखने के बाद।'],
+      ['मूल्यांकन कॉल', 'शॉर्टलिस्ट होने पर हमारा रिक्रूटर आपको कॉल करता है। यह औपचारिकता नहीं, काम के बारे में असली बातचीत है।'],
+      ['पुष्टि पत्र', 'चुने जाने पर आपको हस्ताक्षर के लिए पुष्टि पत्र मिलता है, और हम आपके साथ वीज़ा प्रक्रिया शुरू करते हैं।'],
+    ],
+    responseNote: 'आवेदन पूरा करने के {days} दिनों के भीतर आपको उत्तर मिलता है। अंतहीन क़तार नहीं: उत्तर।',
+  },
+
+  offer: {
+    title: 'चुने गए उम्मीदवार को क्या मिलता है',
+    lead: 'पहुँचने और काम शुरू करने के लिए सब कुछ, यात्रा से पहले ही तय।',
+    items: [
+      ['रोज़गार अनुबंध', 'पुर्तगाली नियोक्ता के साथ {years} साल का अनुबंध, आपके जाने से पहले हस्ताक्षरित।'],
+      ['आवास', 'पहुँचने पर तैयार आवास।'],
+      ['भोजन', 'प्लेसमेंट का हिस्सा।'],
+      ['क़ानूनी सहायता', 'वीज़ा, निवास परमिट और पहुँचने के बाद के काग़ज़ात, पूरे रास्ते आपके साथ।'],
+    ],
+  },
+
+  documents: {
+    title: 'क्या भेजें',
+    lead: 'शुरू करने के लिए एक CV और एक फ़ोटो काफ़ी है। बाक़ी सब हमें तेज़ी से आगे बढ़ने में मदद करता है और कुछ भी अनिवार्य नहीं है।',
+    required: 'आवश्यक',
+    optional: 'तेज़ी लाने में मदद करता है',
+    items: [
+      ['CV', 'किसी भी रूप में। अगर आपके पास नहीं है, तो प्रोफ़ाइल भरें और हम आपके साथ मिलकर बनाएँगे।'],
+      ['फ़ोटो', 'आपके चेहरे की साफ़, हाल की तस्वीर।'],
+      ['पासपोर्ट', 'फ़ोटो वाला पृष्ठ। अगर अभी आवेदन नहीं किया, तो बताएँ और हम कहेंगे कब शुरू करना है।'],
+      ['योग्यताएँ', 'प्रमाणपत्र, ट्रेड कार्ड, प्रशिक्षण रिकॉर्ड।'],
+      ['कार्य संदर्भ', 'रोज़गार पत्र, अनुबंध या वेतन पर्चियाँ।'],
+      ['पुलिस क्लीयरेंस', 'वीज़ा के लिए बाद में ज़रूरी। पहले से होना उपयोगी है।'],
+    ],
+    optionalNote: 'दस्तावेज़ भेजना वैकल्पिक है और इससे आपका मूल्यांकन स्कोर नहीं बदलता। इससे यह बदलता है कि हम कितनी जल्दी बता पाते हैं कि आपकी फ़ाइल वीज़ा आवेदन के लिए तैयार है।',
   },
 
   auth: {
@@ -842,26 +986,37 @@ const hi: Dictionary = {
     questions: 'सवाल',
     faq: [
       [
-        '₹1,999 की फ़ीस किस चीज़ के लिए है?',
-        'आपका पूरा मूल्यांकन (कौशल, अनुभव और अंग्रेज़ी), आपकी व्यक्तिगत स्किल्स रिपोर्ट, और 12 महीने के लिए टैलेंट पूल में सत्यापित प्रोफ़ाइल। ये हर उस उम्मीदवार को मिलते हैं जो मूल्यांकन पूरा करता है।',
+        'मूल्यांकन शुल्क किस चीज़ के लिए है?',
+        'आपके कौशल, कार्य अनुभव और अंग्रेज़ी का पूरा मूल्यांकन, आपकी व्यक्तिगत स्किल्स रिपोर्ट, और {days} दिनों के भीतर निर्णय। भुगतान एक बार, और वह भी मूल्यांकन देखने के बाद।',
       ],
       [
-        'पुर्तगाल के लिए कितने उम्मीदवार चुने जाते हैं?',
-        'लगभग 20,000 के हर कोहॉर्ट में से लगभग 1 उम्मीदवार। चयन साक्षात्कार और दस्तावेज़ जाँच के बाद सबसे ऊँचे कुल स्कोर के आधार पर होता है। ज़्यादातर उम्मीदवार नहीं चुने जाएँगे, इसलिए कृपया तभी रजिस्टर करें जब रिपोर्ट और प्रोफ़ाइल अपने आप में आपके लिए उपयोगी हों।',
+        'भुगतान के बाद क्या होता है?',
+        'आप मूल्यांकन पूरा करते हैं। शॉर्टलिस्ट होने पर हमारा रिक्रूटर आपको काम के बारे में असली बातचीत के लिए कॉल करता है। चुने जाने पर आपको हस्ताक्षर के लिए पुष्टि पत्र मिलता है और हम आपके साथ वीज़ा प्रक्रिया शुरू करते हैं।',
       ],
       [
-        'पुर्तगाल प्लेसमेंट में क्या शामिल है?',
-        'हमारी कंपनियों या पार्टनरों में से एक के साथ नौकरी का अनुबंध, मासिक वेतन, आवास, भोजन, वीज़ा और इमिग्रेशन सहायता, और पहुँचने के बाद बसने में मदद।',
+        'उत्तर कब तक मिलेगा?',
+        'आवेदन पूरा करने के {days} दिनों के भीतर। उत्तर हाँ हो या ना, आपको मिलता है। आपको क़तार में नहीं छोड़ा जाता।',
       ],
       [
-        'अगर मैं नहीं चुना जाता तो क्या नियोक्ता मुझसे संपर्क कर सकते हैं?',
-        'हाँ। अगर आपकी प्रोफ़ाइल दिखाई दे रही है, तो जाँचे-परखे नियोक्ता आपको ढूँढ सकते हैं और साक्षात्कार के लिए बुला सकते हैं। आप अपने डैशबोर्ड से कभी भी प्रोफ़ाइल छिपा सकते हैं।',
+        'क्या चयन की गारंटी है?',
+        'नहीं। फ़ीस मूल्यांकन और रिपोर्ट के लिए है, प्लेसमेंट के लिए नहीं। न चुने जाने पर भी रिपोर्ट आपकी रहती है और हम आपको कारण बताते हैं।',
+      ],
+      [
+        'क्या दस्तावेज़ भेजना ज़रूरी है?',
+        'नहीं। शुरू करने के लिए एक CV और एक फ़ोटो काफ़ी है। पासपोर्ट और अन्य दस्तावेज़ भेजने से आपका मूल्यांकन स्कोर नहीं बदलता; इससे हम जल्दी बता पाते हैं कि आपकी फ़ाइल वीज़ा आवेदन शुरू करने के लिए तैयार है या नहीं।',
+      ],
+      [
+        'प्लेसमेंट में क्या शामिल है?',
+        'पुर्तगाली नियोक्ता के साथ {years} साल का रोज़गार अनुबंध, मासिक वेतन, आवास, भोजन, और वीज़ा प्रक्रिया तथा पहुँचने के बाद के काग़ज़ात में क़ानूनी सहायता।',
       ],
       [
         'क्या मुझे रिफ़ंड मिल सकता है?',
-        'मूल्यांकन शुरू करने से पहले रद्द करने पर आपको पूरा रिफ़ंड मिलता है। शुरू करने के बाद फ़ीस वापस नहीं होती, क्योंकि मूल्यांकन और रिपोर्ट दी जा रही होती है।',
+        'मूल्यांकन शुरू करने से पहले रद्द करने पर पूरा रिफ़ंड मिलता है। शुरू करने के बाद फ़ीस वापस नहीं होती, क्योंकि मूल्यांकन और रिपोर्ट दी जा रही होती है।',
       ],
-      ['क्या Avsar एक लाइसेंस प्राप्त भर्ती एजेंसी है?', 'भारत और पुर्तगाल के लिए रजिस्ट्रेशन विवरण यहाँ सूचीबद्ध किए जाएँगे।'],
+      [
+        'क्या S&A Recruitment एक लाइसेंस प्राप्त भर्ती एजेंसी है?',
+        'आवेदन खुलने से पहले भारत और पुर्तगाल के रजिस्ट्रेशन विवरण यहाँ सूचीबद्ध किए जाएँगे।',
+      ],
     ],
   },
 };

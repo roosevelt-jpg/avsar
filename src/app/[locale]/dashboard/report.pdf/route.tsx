@@ -62,7 +62,7 @@ export async function GET(request: Request) {
     englishCertified: Boolean(report.english_certified),
     englishNote: report.english_certified
       ? 'Certified assessment'
-      : 'Avsar assessment, not certified',
+      : 'S&A assessment, not certified',
     skills: report.skills_score as number,
     experience: report.experience_score as number,
     breakdown: Array.isArray(report.breakdown)

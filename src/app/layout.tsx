@@ -58,12 +58,12 @@ const bDevanagari = Noto_Serif_Devanagari({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Avsar · India → Portugal talent and mobility',
-    template: '%s · Avsar',
+    default: 'S&A Recruitment · Work in Portugal',
+    template: '%s · S&A Recruitment',
   },
   description:
-    'A professional assessment of your skills, experience and English, with a verified profile in a talent pool employers in Portugal and Europe can search.',
-  metadataBase: new URL('https://avsar.example'),
+    'A recruitment agency under the Smith & Adams brand, hiring in India for jobs in Portugal. Assessment, contract, accommodation, meals and legal support through the whole visa process.',
+  metadataBase: new URL('https://avsar-platform-bay.vercel.app'),
 };
 
 export const viewport: Viewport = {

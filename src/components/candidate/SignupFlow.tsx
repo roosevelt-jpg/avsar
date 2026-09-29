@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
 import { Mono } from '@/components/ui/Mono';
-import { SECTOR_SLUGS, type SectorSlug } from '@/lib/data/sectors';
+import { AREAS, POSITIONS, positionsInArea, type PositionSlug } from '@/lib/data/positions';
 import { formatInr, activePrice } from '@/lib/data/cohort';
 import { fill, type Dictionary, type Locale } from '@/lib/i18n';
 
@@ -30,7 +30,7 @@ type Errors = Partial<Record<'fullName' | 'mobile' | 'email' | 'cityState' | 'co
 export function SignupFlow({
   locale,
   t,
-  initialSector,
+  initialPosition,
   /** Set when the browser has come back from Checkout with a confirmed payment. */
   confirmedReceipt,
   /**
@@ -42,7 +42,7 @@ export function SignupFlow({
 }: {
   locale: Locale;
   t: Dictionary;
-  initialSector: SectorSlug;
+  initialPosition: PositionSlug;
   confirmedReceipt?: string;
   availableMethods: readonly Method[];
 }) {
@@ -60,7 +60,7 @@ export function SignupFlow({
   const [email, setEmail] = useState('');
   const [hasPassport, setHasPassport] = useState<boolean | null>(null);
 
-  const [sector, setSector] = useState<SectorSlug>(initialSector);
+  const [position, setPosition] = useState<PositionSlug>(initialPosition);
   const [years, setYears] = useState(0);
   const [englishSelf, setEnglishSelf] = useState(0);
   const [cityState, setCityState] = useState('');
@@ -95,7 +95,7 @@ export function SignupFlow({
           mobile: mobile.replace(/[\s-]/g, ''),
           email: email.trim(),
           hasPassport: hasPassport ?? false,
-          sector,
+          position,
           yearsExperience: years,
           englishSelf,
           cityState: cityState.trim(),
@@ -270,25 +270,36 @@ export function SignupFlow({
         <div className="flex flex-col gap-6">
           <fieldset className="m-0 border-0 p-0">
             <legend className="mb-2.5 p-0 text-[15px] font-medium">{s.mainSector}</legend>
-            <div className="flex flex-wrap gap-2" role="radiogroup" aria-label={s.mainSector}>
-              {t.sectors.map((label, index) => {
-                const slug = SECTOR_SLUGS[index] ?? SECTOR_SLUGS[0];
-                const active = sector === slug;
+            <div className="flex flex-col gap-3.5" role="radiogroup" aria-label={s.mainSector}>
+              {AREAS.map((area) => {
+                const positions = positionsInArea(area.slug);
+                if (positions.length === 0) return null;
                 return (
-                  <button
-                    key={slug}
-                    type="button"
-                    role="radio"
-                    aria-checked={active}
-                    onClick={() => setSector(slug)}
-                    className={`t-colors cursor-pointer rounded-full border px-[14px] py-2 text-[14px] ${
-                      active
-                        ? 'border-ink bg-ink text-white'
-                        : 'border-line-strong bg-surface text-ink hover:border-ink'
-                    }`}
-                  >
-                    {label}
-                  </button>
+                  <div key={area.slug}>
+                    <Mono className="mb-1.5 block text-muted">{area.label.toUpperCase()}</Mono>
+                    <div className="flex flex-wrap gap-2">
+                      {positions.map((option) => {
+                        const index = POSITIONS.findIndex((item) => item.slug === option.slug);
+                        const active = position === option.slug;
+                        return (
+                          <button
+                            key={option.slug}
+                            type="button"
+                            role="radio"
+                            aria-checked={active}
+                            onClick={() => setPosition(option.slug)}
+                            className={`t-colors cursor-pointer rounded-full border px-[14px] py-2 text-[14px] ${
+                              active
+                                ? 'border-ink bg-ink text-white'
+                                : 'border-line-strong bg-surface text-ink hover:border-ink'
+                            }`}
+                          >
+                            {t.sectors[index] ?? option.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
                 );
               })}
             </div>

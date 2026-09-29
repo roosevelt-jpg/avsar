@@ -20,7 +20,7 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
         <li>Identity and contact details: name, mobile, email, city and state.</li>
         <li>Profile: sector, years of experience, self-rated English, passport status.</li>
         <li>Assessment answers, scores and the resulting report.</li>
-        <li>Payment records. Card details are never seen or stored by Avsar.</li>
+        <li>Payment records. Card details are never seen or stored by S&A Recruitment.</li>
       </ul>
 
       <h2>Who can see a profile</h2>

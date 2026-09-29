@@ -1,11 +1,13 @@
 import Link from 'next/link';
+import { BRAND } from '@/lib/data/brand';
 
 /**
- * Text wordmark plus a 22px accent circle. A placeholder until a real logo
- * exists, per the handoff's Assets section.
+ * Wordmark. A placeholder until a real logo exists.
  *
- * `tone` switches the Devanagari subtitle and label colour for the ink-coloured
- * footers; `accent` switches the dot for the employer and admin surfaces.
+ * The parent brand is carried in the mark rather than only in the footer,
+ * because that association is the reason a candidate in India has any reason to
+ * trust this at all. Hiding it in small print would waste the only credibility
+ * the product starts with.
  */
 export function Wordmark({
   href,
@@ -20,23 +22,19 @@ export function Wordmark({
 }) {
   const inner = (
     <span
-      className={`flex items-center gap-2.5 text-[20px] font-bold tracking-[-0.02em] ${
+      className={`flex flex-wrap items-baseline gap-x-2.5 gap-y-0.5 text-[20px] font-bold tracking-[-0.02em] ${
         tone === 'dark' ? 'text-paper' : 'text-ink'
       }`}
     >
-      <span
-        aria-hidden
-        className={`size-[22px] shrink-0 rounded-full ${accent === 'employer' ? 'bg-employer' : 'bg-accent'}`}
-      />
-      avsar
-      <span
-        className={`text-[0.72em] font-medium ${tone === 'dark' ? 'text-dark-muted' : 'text-muted'}`}
-        lang="hi"
-      >
-        अवसर
+      <span className="flex items-center gap-2.5">
+        <span
+          aria-hidden
+          className={`size-[22px] shrink-0 rounded-full ${accent === 'employer' ? 'bg-employer' : 'bg-accent'}`}
+        />
+        {BRAND.name}
       </span>
       {suffix ? (
-        <span className={`text-[0.72em] font-medium ${tone === 'dark' ? 'text-dark-muted' : 'text-muted'}`}>
+        <span className={`text-[0.7em] font-medium ${tone === 'dark' ? 'text-dark-muted' : 'text-muted'}`}>
           {suffix}
         </span>
       ) : null}

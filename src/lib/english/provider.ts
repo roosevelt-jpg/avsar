@@ -82,9 +82,9 @@ export function describeEnglish(result: EnglishResult): string {
       duolingo: 'Duolingo English Test',
       englishscore: 'EnglishScore',
       versant: 'Versant',
-      internal: 'Avsar',
+      internal: 'S&A Recruitment',
     }[result.source];
     return `${result.cefr} · certified by ${provider}`;
   }
-  return `${result.cefr} · Avsar assessment, not a certified qualification`;
+  return `${result.cefr} · S&A Recruitment assessment, not a certified qualification`;
 }

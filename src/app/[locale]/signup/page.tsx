@@ -4,7 +4,7 @@ import { Wordmark } from '@/components/ui/Wordmark';
 import { SignupFlow } from '@/components/candidate/SignupFlow';
 import { OrderSummary } from '@/components/candidate/OrderSummary';
 import { getDictionary, isLocale } from '@/lib/i18n';
-import { SECTOR_SLUGS, type SectorSlug } from '@/lib/data/sectors';
+import { POSITIONS, positionBySlug, type PositionSlug } from '@/lib/data/positions';
 import { availablePaymentMethods, getPaymentProvider } from '@/lib/payments';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 
@@ -15,18 +15,17 @@ export default async function SignupPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ sector?: string; status?: string; receipt?: string; session_id?: string }>;
+  searchParams: Promise<{ position?: string; status?: string; receipt?: string; session_id?: string }>;
 }) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const query = await searchParams;
   const t = getDictionary(locale);
 
-  /* Sector carried over from the landing page's selector. */
-  const initialSector: SectorSlug =
-    query.sector && (SECTOR_SLUGS as readonly string[]).includes(query.sector)
-      ? (query.sector as SectorSlug)
-      : SECTOR_SLUGS[0];
+  /* Position carried over from the landing page's selector. */
+  const initialPosition: PositionSlug = positionBySlug(query.position ?? '')
+    ? (query.position as PositionSlug)
+    : POSITIONS[0].slug;
 
   /**
    * The success screen is only shown after the session is confirmed with the
@@ -71,7 +70,7 @@ export default async function SignupPage({
         <SignupFlow
           locale={locale}
           t={t}
-          initialSector={initialSector}
+          initialPosition={initialPosition}
           confirmedReceipt={confirmedReceipt}
           availableMethods={availablePaymentMethods()}
         />

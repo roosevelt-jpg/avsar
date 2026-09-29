@@ -1,6 +1,82 @@
-# Session handoff - Avsar platform
+# Session handoff - S&A Recruitment platform
 
 Newest entry first. Each entry carries date, time and the authoring account.
+
+---
+
+## Bloco 11 - 2026-09-29 - abilio.diz@smithandadams.com (Claude Opus 5)
+
+Notas de reunião do Abílio implementadas.
+
+### Rebrand
+
+Avsar -> **S&A Recruitment**, agência de recrutamento sob a marca Smith &
+Adams. Wordmark, metadados, rodapés, PDF, emails de contacto
+(candidates@ / employers@ / report@ smithandadams.com).
+
+A marca-mãe vai no próprio wordmark e não só no rodapé: essa associação é a
+única razão pela qual um candidato na Índia tem motivo para confiar nisto.
+
+### Termos comerciais centralizados
+
+Tudo o que uma reunião pode mudar vive em `src/lib/data/brand.ts`:
+taxa €25 (mostrada ₹2.299), resposta em 15 dias, contrato de 5 anos.
+
+O preço em rupias é **conversão de apresentação** de um preço em euros, não um
+segundo preço, e `inrPerEur` actualiza-se deliberadamente. Um preço que muda
+entre ler e pagar é como alguém acaba a pagar mais do que o site dizia.
+
+### Posições
+
+Quatro áreas e dez posições das notas não encaixavam: soldadores e logística
+não pertencem a food & beverage nem a IT. `positions.ts` tem **cinco** áreas,
+com um grupo de trades e logística, porque a alternativa era arquivar um
+soldador em property management.
+
+O candidato escolhe **posição**; áreas são navegação. `0007_positions.sql`
+acrescenta `position` a `candidates` (text, não enum: a lista muda sempre que
+o negócio abre um cargo) e faz backfill a partir do sector antigo.
+
+**IT não tem banco de itens.** Um data analyst recebe neste momento perguntas
+de hospitality. Tem de ser resolvido antes de anunciar essa posição.
+
+### Dois termos implementados mas DESLIGADOS
+
+**`PLACEMENT_FEE` (€1.000), `visible: false`.** Cobrar a um trabalhador para
+finalizar a colocação viola a Directiva 2008/104 e o DL 260/2009 em Portugal,
+excede quatro a cinco vezes o tecto do Emigration Act indiano
+(₹20.000 ou 45 dias de salário, o menor), contraria os princípios ILO, e é o
+padrão que os quadros anti-tráfico tratam como indicador de servidão por
+dívida. Com a marca Smith & Adams em cima, a exposição é da empresa.
+A versão que funciona é o **empregador** pagar; `PLACEMENT_FEE.payer` existe
+para isso ser uma palavra.
+
+**`SELECTION_RATE` (32%), `visible: false`** até `basis` dizer de onde vem o
+número. A plataforma não colocou ninguém, logo não tem taxa própria. As notas
+dizem 32% e "30 em cada 100", que são afirmações diferentes. Uma taxa publicada
+é o que induz alguém a pagar; sem fundamento é a diferença entre cobrar por uma
+avaliação e receber dinheiro sob falso pretexto.
+
+Detalhe em `docs/commercial-terms.md`.
+
+### Copy nova
+
+Seis passos (registar, documentos, avaliação, pagamento, chamada, carta de
+confirmação), o que o candidato recebe (contrato 5 anos, alojamento,
+alimentação, apoio legal), secção de documentos com o que é obrigatório e o que
+acelera, e FAQ reescrita. Tudo em EN e HI.
+
+Referência a "1 em 20.000" removida. No lugar ficou a resposta em 15 dias, que
+é uma promessa verificável.
+
+### Stripe do Dubai com UPI: não existe
+
+Repetido ao Abílio. UPI na Stripe só existe em contas registadas na Índia. O
+caminho real é um fornecedor com licença PA-CB do RBI.
+
+### Por correr
+
+`supabase/migrations/0007_positions.sql`.
 
 ---
 

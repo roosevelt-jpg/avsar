@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { signupSchema } from '@/lib/validation';
 import { ACTIVE_TIER, COHORT, activePrice } from '@/lib/data/cohort';
+import { BRAND } from '@/lib/data/brand';
+import { itemSectorFor } from '@/lib/data/positions';
 import { getPaymentProvider, receiptNumber } from '@/lib/payments';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { identityHash } from '@/lib/hash';
@@ -54,7 +56,10 @@ export async function POST(request: Request) {
           phone_hash: identityHash(input.mobile),
           email: input.email,
           has_passport: input.hasPassport,
-          sector: input.sector,
+          position: input.position,
+          /* The enum the item bank is keyed on, derived rather than sent: a
+             browser must not be able to pick which questions it gets. */
+          sector: itemSectorFor(input.position),
           years_experience_band: input.yearsExperience,
           english_self_rating: input.englishSelf,
           city_state: input.cityState,
@@ -85,7 +90,7 @@ export async function POST(request: Request) {
       amountMinor: price.totalPaise,
       currency: 'INR',
       receipt,
-      description: `Avsar ${COHORT.name} assessment`,
+      description: `${BRAND.name} assessment`,
       customer: {
         name: input.fullName,
         email: input.email,
@@ -96,7 +101,7 @@ export async function POST(request: Request) {
       cancelUrl: `${origin}/${locale}/signup?status=cancelled`,
       metadata: {
         cohort: COHORT.id,
-        sector: input.sector,
+        position: input.position,
         tier: ACTIVE_TIER,
         receipt,
         candidate_id: candidateId ?? 'unstored',

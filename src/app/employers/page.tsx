@@ -113,7 +113,7 @@ export default async function EmployerLanding() {
             </p>
           </div>
           <Link
-            href="mailto:employers@avsar.example"
+            href="mailto:employers@smithandadams.com"
             className="t-colors shrink-0 rounded-[12px] bg-white px-5 py-3 text-[15px] font-medium text-ink no-underline hover:bg-paper"
           >
             Book a call →
@@ -124,7 +124,7 @@ export default async function EmployerLanding() {
       <footer className="bg-ink px-[clamp(20px,4cqi,56px)] py-[clamp(40px,6cqi,64px)] text-dark-muted-2">
         <Wordmark tone="dark" accent="employer" />
         <p className="mt-8 border-t border-dark-line pt-6 font-mono text-[12px] text-dark-muted">
-          © 2026 Avsar · Lisbon · New Delhi
+          © 2026 S&A Recruitment, a Smith & Adams company · Lisbon · New Delhi
         </p>
       </footer>
     </div>

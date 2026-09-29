@@ -6,6 +6,8 @@
  * payment path ever touches a float.
  */
 
+import { ASSESSMENT_FEE, PLACEMENT_FEE, RESPONSE_DAYS } from './brand';
+
 export const COHORT = {
   id: process.env.NEXT_PUBLIC_COHORT_ID ?? 'cohort-01',
   name: 'Cohort 01',
@@ -20,17 +22,37 @@ export const COHORT = {
   selectedPerCohort: 1,
 } as const;
 
-/** Early-bird and standard pricing, in paise. GST is included in the total. */
+/**
+ * Price, in paise, derived from the euro headline in `brand.ts`.
+ *
+ * One source. The fee appears on the landing page, in the hero meta, at
+ * checkout and in the FAQ, and three of those disagreeing the first time
+ * someone changes the price is how a candidate is charged more than the site
+ * quoted.
+ *
+ * GST is inside the total, not added to it. India's OIDAR regime makes a
+ * foreign supplier of a digital service liable for 18% on a sale to an Indian
+ * consumer, so the tax is the platform's to pay out of what it collects rather
+ * than a surcharge at the till.
+ */
+export const GST_RATE = 0.18;
+
+function priceFromInr(inr: number) {
+  const totalPaise = inr * 100;
+  const netPaise = Math.round(totalPaise / (1 + GST_RATE));
+  return { netPaise, gstPaise: totalPaise - netPaise, totalPaise };
+}
+
 export const PRICING = {
-  early: { netPaise: 169_400, gstPaise: 30_500, totalPaise: 199_900 },
-  standard: { netPaise: 211_800, gstPaise: 38_100, totalPaise: 249_900 },
-  gstRate: 0.18,
+  early: priceFromInr(ASSESSMENT_FEE.inr),
+  standard: priceFromInr(ASSESSMENT_FEE.inr),
+  gstRate: GST_RATE,
   currency: 'INR',
 } as const;
 
-export type PriceTier = keyof Pick<typeof PRICING, 'early' | 'standard'>;
+export type PriceTier = 'early' | 'standard';
 
-/** The tier on sale. Flip to 'standard' when early registration closes. */
+/** The tier on sale. A single price now; the tier survives for when that changes. */
 export const ACTIVE_TIER: PriceTier = 'early';
 
 export function activePrice() {
@@ -43,5 +65,13 @@ export function formatInr(paise: number): string {
   return `₹${rupees.toLocaleString('en-IN')}`;
 }
 
-/** Employer pricing placeholder from the handoff. */
-export const EMPLOYER_PRICE_EUR = 1800;
+/**
+ * Placement fee, in euros.
+ *
+ * Whether a candidate or an employer pays this is the open commercial question,
+ * and it is the one with legal consequences. See `PLACEMENT_FEE` in brand.ts.
+ */
+export const EMPLOYER_PRICE_EUR = PLACEMENT_FEE.eur;
+
+/** Working days to an answer. Re-exported so copy has one import. */
+export const ANSWER_WITHIN_DAYS = RESPONSE_DAYS;

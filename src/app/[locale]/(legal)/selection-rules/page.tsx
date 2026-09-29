@@ -32,7 +32,7 @@ export default async function SelectionRulesPage({ params }: { params: Promise<{
       <p>
         The fee does not buy a job, a visa, a placement in Portugal, or any promise of one. It does
         not place a candidate ahead of anyone else. Paying it does not create any obligation on
-        Avsar to offer work.
+        S&A Recruitment to offer work.
       </p>
 
       <h2>The Portugal placement, and the odds</h2>

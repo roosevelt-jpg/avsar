@@ -97,13 +97,13 @@ export type ReportData = {
 export function ReportDocument({ data }: { data: ReportData }) {
   return (
     <Document
-      title={`Avsar skills report - ${data.name}`}
-      author="Avsar"
+      title={`S&A Recruitment skills report - ${data.name}`}
+      author="S&A Recruitment"
       subject={`${data.cohortName} skills report`}
     >
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
-          <Text style={styles.wordmark}>avsar</Text>
+          <Text style={styles.wordmark}>S&amp;A Recruitment</Text>
           <Text style={styles.eyebrow}>{data.cohortName.toUpperCase()} · SKILLS REPORT</Text>
         </View>
 
@@ -159,7 +159,7 @@ export function ReportDocument({ data }: { data: ReportData }) {
             among several, alongside interview and document checks.
             {data.englishCertified
               ? ' The English level on this report was issued by a recognised testing provider.'
-              : ' The English level on this report was produced by Avsar and is not certified by a third party.'}
+              : ' The English level on this report was produced by S&A Recruitment and is not certified by a third party.'}
           </Text>
         </View>
 
@@ -167,7 +167,7 @@ export function ReportDocument({ data }: { data: ReportData }) {
           <Text style={styles.footerText}>
             Issued {data.generatedAt} · Reference {data.reference}
           </Text>
-          <Text style={styles.footerText}>Avsar · Lisbon · New Delhi</Text>
+          <Text style={styles.footerText}>S&A Recruitment · Smith & Adams</Text>
         </View>
       </Page>
     </Document>

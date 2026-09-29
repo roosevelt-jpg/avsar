@@ -16,15 +16,15 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
       <DraftNotice note="Placeholder details. Replace with the registered entity name, address and the real support channels." />
 
       <h2>Candidates</h2>
-      <p>WhatsApp +91 80 0000 0000 · support@avsar.example</p>
+      <p>WhatsApp +91 80 0000 0000 · candidates@smithandadams.com</p>
 
       <h2>Employers</h2>
-      <p>employers@avsar.example</p>
+      <p>employers@smithandadams.com</p>
 
       <h2>Report a fee you were asked to pay</h2>
       <p>
         No one is authorised to charge a candidate anything beyond the assessment fee paid on this
-        site. If an agent or intermediary asks for money, report it to report@avsar.example. Reports
+        site. If an agent or intermediary asks for money, report it to report@smithandadams.com. Reports
         can be anonymous.
       </p>
     </>

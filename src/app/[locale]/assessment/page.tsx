@@ -3,6 +3,7 @@ import { AssessmentRunner } from '@/components/candidate/AssessmentRunner';
 import { getDictionary, isLocale } from '@/lib/i18n';
 import { itemsForSection, toClientItem, SECTION_ORDER, type SectionId } from '@/lib/assessment/items';
 import { SECTOR_SLUGS, type SectorSlug } from '@/lib/data/sectors';
+import { itemSectorFor } from '@/lib/data/positions';
 import { getServerSupabase } from '@/lib/supabase/server';
 import { secondsUntil } from '@/lib/clock';
 import { requireCandidate } from '@/lib/auth';
