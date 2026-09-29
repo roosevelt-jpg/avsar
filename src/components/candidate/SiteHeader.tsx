@@ -2,11 +2,10 @@ import Link from 'next/link';
 import { Wordmark } from '@/components/ui/Wordmark';
 import { LocaleToggle } from './LocaleToggle';
 import { getDictionary, type Locale } from '@/lib/i18n';
-import { getSessionCandidate } from '@/lib/auth';
+import { AccountMenu } from '@/components/auth/AccountMenu';
 
 export async function SiteHeader({ locale }: { locale: Locale }) {
   const t = getDictionary(locale);
-  const candidate = await getSessionCandidate();
   return (
     <header className="flex flex-wrap items-center justify-between gap-4 border-b border-line px-[clamp(20px,4cqi,56px)] py-[18px]">
       <Wordmark href={`/${locale}`} />
@@ -26,20 +25,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
       </nav>
       <div className="flex items-center gap-2">
         <LocaleToggle locale={locale} />
-        {candidate ? (
-          <form action="/auth/signout" method="post">
-            <button
-              type="submit"
-              className="t-colors cursor-pointer border-0 bg-transparent px-2.5 py-2 text-[15px] text-ink hover:text-accent"
-            >
-              {t.auth.signOut}
-            </button>
-          </form>
-        ) : (
-          <Link href={`/${locale}/signin`} className="px-2.5 py-2 text-[15px] no-underline text-ink">
-            {t.signIn}
-          </Link>
-        )}
+        <AccountMenu locale={locale} />
       </div>
     </header>
   );

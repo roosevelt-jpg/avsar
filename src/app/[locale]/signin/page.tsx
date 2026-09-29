@@ -1,11 +1,12 @@
 import { notFound, redirect } from 'next/navigation';
 import { Wordmark } from '@/components/ui/Wordmark';
-import { SignInForm } from '@/components/candidate/SignInForm';
+import { SignInForm } from '@/components/auth/SignInForm';
 import { getDictionary, isLocale } from '@/lib/i18n';
-import { getSessionCandidate } from '@/lib/auth';
+import { getViewer, homeFor } from '@/lib/auth';
 
 export const metadata = { title: 'Sign in' };
 
+/** The single entry point, for candidates, employers and staff alike. */
 export default async function SignInPage({
   params,
   searchParams,
@@ -18,11 +19,11 @@ export default async function SignInPage({
   const { next } = await searchParams;
   const t = getDictionary(locale);
 
-  /* Only same-origin paths. An open redirect on a sign-in page is how
-     credential phishing gets a legitimate-looking link. */
-  const target = next && next.startsWith('/') && !next.startsWith('//') ? next : `/${locale}/dashboard`;
-
-  if (await getSessionCandidate()) redirect(target);
+  const viewer = await getViewer();
+  if (viewer.role !== 'anonymous') {
+    const safeNext = next && next.startsWith('/') && !next.startsWith('//') ? next : null;
+    redirect(safeNext ?? homeFor(viewer, locale));
+  }
 
   return (
     <>
@@ -30,7 +31,7 @@ export default async function SignInPage({
         <Wordmark href={`/${locale}`} />
       </header>
       <main className="px-[clamp(20px,4cqi,56px)] py-[clamp(48px,8cqi,96px)]">
-        <SignInForm locale={locale} t={t} next={target} />
+        <SignInForm locale={locale} t={t} next={next} />
       </main>
     </>
   );

@@ -4,6 +4,43 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 5 - 2026-09-29 - abilio.diz@smithandadams.com (Claude Opus 5)
+
+### Plataforma unificada
+
+Pedido do Abílio: um só sítio, um só login, encaminhamento por papel, para poder
+mostrar de ponta a ponta da landing ao dashboard. Três papéis confirmados:
+Candidato, Empregador, Admin (staff).
+
+- `/[locale]/signin` é agora a única entrada. `/admin/signin` só redirecciona,
+  para links antigos não partirem.
+- Os dois mecanismos (password e código) estão na mesma página, em vez de a
+  página pedir o email e escolher. Escolher revelaria se um endereço é de staff
+  antes de alguém provar quem é, o que faz do login um directório de quem lá
+  trabalha.
+- `/auth/route` decide o destino no servidor, a partir da sessão. O formulário
+  nunca diz para onde quer ir. Um `next` explícito só é respeitado se for
+  same-origin E o papel o permitir.
+- `getViewer()` verifica staff → empregador → candidato, do mais privilegiado
+  para o menos, para uma conta que seja as duas coisas cair sempre no mesmo
+  sítio.
+- `AccountMenu` partilhado em todos os cabeçalhos: mudar de superfície deixa de
+  parecer sair do produto.
+- `/admin` aberto a staff e a empregadores. A coluna de revisão de CV e os
+  separadores de cohorts e placements só aparecem a staff. RLS confirma: nenhuma
+  policy dá `cv_assessments` a um empregador.
+
+### Para testar o papel de empregador
+
+Não há registo de empregadores (são criados por staff). Criar o utilizador em
+Authentication → Users e depois ligar com o SQL que está na resposta do chat.
+
+### Estado
+
+- `tsc`, `eslint`, `next build` limpos
+
+---
+
 ## Bloco 4 - 2026-09-29 10:30 WEST - abilio.diz@smithandadams.com (Claude Opus 5)
 
 ### Ambiente local a funcionar

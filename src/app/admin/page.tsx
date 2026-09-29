@@ -9,7 +9,8 @@ import { parseQuery, describeQuery } from '@/lib/assessment/query-parser';
 import { SECTOR_SLUGS, sectorLabel, type SectorSlug } from '@/lib/data/sectors';
 import { DEFAULT_EMPLOYER_QUERY, initials, type Cefr } from '@/lib/data/candidates';
 import { COHORT } from '@/lib/data/cohort';
-import { requireStaff } from '@/lib/auth';
+import { requireStaffOrEmployer } from '@/lib/auth';
+import { AccountMenu } from '@/components/auth/AccountMenu';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 
 export const metadata = { title: 'Talent pool' };
@@ -25,7 +26,9 @@ export default async function AdminSearchPage({
 
   /* Without Supabase there is no auth to enforce and the page shows sample
      data, so the gate would only get in the way of reviewing the screen. */
-  if (isSupabaseConfigured()) await requireStaff('/admin');
+  const access = isSupabaseConfigured()
+    ? await requireStaffOrEmployer('/admin')
+    : { isStaff: true, label: 'Preview' };
 
   const q = query.q ?? DEFAULT_EMPLOYER_QUERY;
   const sector: SectorSlug | undefined =
@@ -52,13 +55,18 @@ export default async function AdminSearchPage({
           <Link href="/admin/shortlists" className="no-underline hover:text-employer t-colors">
             Shortlists
           </Link>
-          <Link href="/admin/cohorts" className="no-underline hover:text-employer t-colors">
-            Cohorts
-          </Link>
-          <Link href="/admin/placements" className="no-underline hover:text-employer t-colors">
-            Placements
-          </Link>
+          {access.isStaff && (
+            <>
+              <Link href="/admin/cohorts" className="no-underline hover:text-employer t-colors">
+                Cohorts
+              </Link>
+              <Link href="/admin/placements" className="no-underline hover:text-employer t-colors">
+                Placements
+              </Link>
+            </>
+          )}
         </nav>
+        <AccountMenu locale="en" tone="employer" />
       </header>
 
       <main className="px-[clamp(20px,4cqi,56px)] py-[clamp(28px,4cqi,48px)]">
@@ -122,12 +130,16 @@ export default async function AdminSearchPage({
                   <td className="px-4 py-3.5 font-mono text-[13px] text-muted">{row.yearsExperience}y</td>
                   <td className="px-4 py-3.5 text-right">
                     <span className="flex items-center justify-end gap-2">
-                      <Link
-                        href={`/admin/review/${result.sample ? 'sample' : row.id}`}
-                        className="t-colors rounded-[8px] border border-line-strong bg-surface px-3 py-1.5 text-[13px] no-underline text-ink hover:border-employer"
-                      >
-                        CV review
-                      </Link>
+                      {/* Staff only. An employer must never be handed a raw
+                          model score as if it measured the person. */}
+                      {access.isStaff && (
+                        <Link
+                          href={`/admin/review/${result.sample ? 'sample' : row.id}`}
+                          className="t-colors rounded-[8px] border border-line-strong bg-surface px-3 py-1.5 text-[13px] no-underline text-ink hover:border-employer"
+                        >
+                          CV review
+                        </Link>
+                      )}
                       <ShortlistButton candidateId={row.id} />
                     </span>
                   </td>

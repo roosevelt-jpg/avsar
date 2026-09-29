@@ -163,6 +163,12 @@ export type Dictionary = {
     errCode: string;
     errGeneric: string;
     phoneSoon: string;
+    passwordLabel: string;
+    signInWithPassword: string;
+    useCodeInstead: string;
+    usePasswordInstead: string;
+    errCredentials: string;
+    staffNote: string;
   };
 
   /* Pricing + FAQ */
@@ -363,6 +369,12 @@ const en: Dictionary = {
     errCode: 'That code is not right, or it has expired.',
     errGeneric: 'Something went wrong. Please try again.',
     phoneSoon: 'Signing in by WhatsApp or SMS is coming. For now, use the email address you registered with.',
+    passwordLabel: 'Password',
+    signInWithPassword: 'Sign in',
+    useCodeInstead: 'Email me a code instead',
+    usePasswordInstead: 'Use a password instead',
+    errCredentials: 'Those details are not right.',
+    staffNote: 'Candidates: use a code. Employers and staff: use your password.',
   },
 
   pricing: {
@@ -588,6 +600,12 @@ const hi: Dictionary = {
     errCode: 'यह कोड सही नहीं है, या इसकी अवधि समाप्त हो गई है।',
     errGeneric: 'कुछ गड़बड़ हो गई। कृपया दोबारा कोशिश करें।',
     phoneSoon: 'WhatsApp या SMS से साइन इन जल्द आ रहा है। फ़िलहाल वही ईमेल पता इस्तेमाल करें जिससे रजिस्टर किया था।',
+    passwordLabel: 'पासवर्ड',
+    signInWithPassword: 'साइन इन करें',
+    useCodeInstead: 'इसके बजाय मुझे कोड भेजें',
+    usePasswordInstead: 'इसके बजाय पासवर्ड इस्तेमाल करें',
+    errCredentials: 'ये विवरण सही नहीं हैं।',
+    staffNote: 'उम्मीदवार: कोड इस्तेमाल करें। नियोक्ता और स्टाफ़: अपना पासवर्ड इस्तेमाल करें।',
   },
 
   pricing: {

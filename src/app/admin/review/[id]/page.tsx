@@ -8,6 +8,7 @@ import { rubricFor, RUBRIC_VERSION } from '@/lib/cv/rubric';
 import { SECTOR_SLUGS, sectorLabel, type SectorSlug } from '@/lib/data/sectors';
 import { SAMPLE_ASSESSMENT } from '@/lib/cv/sample';
 import { requireStaff } from '@/lib/auth';
+import { AccountMenu } from '@/components/auth/AccountMenu';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 
 export const metadata = { title: 'CV review' };
@@ -70,9 +71,12 @@ export default async function CvReviewPage({ params }: { params: Promise<{ id: s
     <div className="avsar-root">
       <header className="flex flex-wrap items-center justify-between gap-4 border-b border-line px-[clamp(20px,4cqi,56px)] py-[18px]">
         <Wordmark href="/admin" suffix="review" accent="employer" />
-        <Link href="/admin" className="text-[15px] no-underline text-ink-2 hover:text-employer t-colors">
-          Back to search
-        </Link>
+        <span className="flex flex-wrap items-center gap-4">
+          <Link href="/admin" className="text-[15px] no-underline text-ink-2 hover:text-employer t-colors">
+            Back to search
+          </Link>
+          <AccountMenu locale="en" tone="employer" />
+        </span>
       </header>
 
       <main className="px-[clamp(20px,4cqi,56px)] py-[clamp(28px,4cqi,48px)]">

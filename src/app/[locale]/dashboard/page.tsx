@@ -3,8 +3,8 @@ import { notFound } from 'next/navigation';
 import { Mono } from '@/components/ui/Mono';
 import { Wordmark } from '@/components/ui/Wordmark';
 import { VisibilityToggle } from '@/components/candidate/VisibilityToggle';
+import { AccountMenu } from '@/components/auth/AccountMenu';
 import { fill, getDictionary, isLocale } from '@/lib/i18n';
-import { initials } from '@/lib/data/candidates';
 import { requireCandidate } from '@/lib/auth';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { getServerSupabase } from '@/lib/supabase/server';
@@ -117,22 +117,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
           <span>{d.navReport}</span>
           <span>{d.navProfile}</span>
         </nav>
-        <span className="flex items-center gap-3">
-          <form action="/auth/signout" method="post">
-            <button
-              type="submit"
-              className="t-colors cursor-pointer border-0 bg-transparent p-0 text-[14px] text-muted hover:text-ink"
-            >
-              {t.auth.signOut}
-            </button>
-          </form>
-          <span
-            aria-hidden
-            className="flex size-[34px] items-center justify-center rounded-full bg-ink font-mono text-[12px] text-paper"
-          >
-            {initials(r.name)}
-          </span>
-        </span>
+        <AccountMenu locale={locale} />
       </header>
 
       <main className="px-[clamp(20px,4cqi,56px)] py-[clamp(32px,5cqi,64px)]">

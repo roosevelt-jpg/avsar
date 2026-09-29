@@ -1,19 +1,45 @@
 # Authentication
 
-## Two audiences, two flows
+## One entry point, three audiences
 
-| | Candidate | Staff |
-|---|---|---|
-| Method | One-time code to the registered email | Email and password |
-| Sign-in | `/[locale]/signin` | `/admin/signin` |
-| Account creation | Never from sign-in (`shouldCreateUser: false`) | Supabase dashboard, by an admin |
-| Authorisation | A `candidates` row linked by `auth_user_id` | A row in `staff_users` |
-| Helper | `requireCandidate()` | `requireStaff()` |
+Everyone signs in at `/[locale]/signin`. There is no separate staff login;
+`/admin/signin` only redirects, so old bookmarks still work.
 
-Different on purpose. Staff are a small known set on their own devices, where a
-password manager beats a code round trip. Candidates are twenty thousand people
-who registered once and come back weeks later, where a password is a support
-burden and a code to the address they already gave is not.
+| | Candidate | Employer | Staff |
+|---|---|---|---|
+| Method | One-time code | Password | Password |
+| Authorisation | `candidates` row linked by `auth_user_id` | row in `employer_users` | row in `staff_users` |
+| Lands on | `/[locale]/dashboard` | `/admin` | `/admin` |
+| Helper | `requireCandidate()` | `requireStaffOrEmployer()` | `requireStaff()` |
+
+Two mechanisms, not three, and both live on the same page. Candidates registered
+once and come back weeks later, where a password is a support burden and a code
+to the address they already gave is not. Employers and staff are a small known
+set on their own devices, where a password manager beats a code round trip.
+
+**Both mechanisms are on the page at once, rather than the page asking for an
+email and then choosing.** Choosing would mean revealing whether an address
+belongs to staff before anyone has proved who they are, which turns sign-in into
+a directory of who works here.
+
+### Where you land is decided server side
+
+`/auth/route` reads the session and redirects. The form never states a
+destination, so nothing a browser sends can talk its way into a surface the
+viewer is not entitled to. An explicit `next` is honoured only when it is
+same-origin *and* the role allows it; otherwise the viewer lands at their own
+home.
+
+`getViewer()` checks staff, then employer, then candidate. Most-privileged
+first, so an account that is both in a test environment lands consistently
+rather than by whichever query happened to run first.
+
+### Employers share the talent pool, not the AI score
+
+`/admin` is open to staff and to vetted employers, but the CV review column and
+the cohort and placement tabs render only for staff. Handing an employer a raw
+model score as if it measured the person would be indefensible, and RLS backs
+this up: no policy grants an employer access to `cv_assessments`.
 
 ## Why email and not WhatsApp or SMS
 

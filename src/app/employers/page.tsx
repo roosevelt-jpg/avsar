@@ -4,6 +4,7 @@ import { Wordmark } from '@/components/ui/Wordmark';
 import { EmployerSearchBox } from '@/components/employer/EmployerSearchBox';
 import { SAMPLE_TALENT, initials } from '@/lib/data/candidates';
 import { EMPLOYER_PRICE_EUR } from '@/lib/data/cohort';
+import { AccountMenu } from '@/components/auth/AccountMenu';
 
 export const metadata = {
   title: 'Hire pre-assessed workers from India',
@@ -17,7 +18,7 @@ const STEPS = [
   ['We relocate them', 'Work visa, travel, housing and arrival support, handled by our team in Portugal.'],
 ] as const;
 
-export default function EmployerLanding() {
+export default async function EmployerLanding() {
   /* Three hospitality rows with English at B1 or better, as in the prototype. */
   const sample = SAMPLE_TALENT.filter((row) => row.sector === 'hospitality').slice(0, 3);
 
@@ -39,10 +40,8 @@ export default function EmployerLanding() {
             For candidates
           </Link>
         </nav>
-        <div className="flex items-center gap-2">
-          <Link href="/admin" className="px-2.5 py-2 text-[15px] no-underline text-ink">
-            Sign in
-          </Link>
+        <div className="flex flex-wrap items-center gap-3">
+          <AccountMenu locale="en" tone="employer" />
           <Link
             href="/employers#contact"
             className="t-colors rounded-[10px] bg-employer px-4 py-2.5 text-[14px] font-medium text-white no-underline hover:bg-employer-deep"

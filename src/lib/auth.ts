@@ -90,6 +90,89 @@ export async function getSessionStaff(): Promise<StaffUser | null> {
 
 export async function requireStaff(returnTo: string): Promise<StaffUser> {
   const staff = await getSessionStaff();
-  if (!staff) redirect(`/admin/signin?next=${encodeURIComponent(returnTo)}`);
+  if (!staff) redirect(`/en/signin?next=${encodeURIComponent(returnTo)}`);
   return staff;
+}
+
+export type EmployerUser = { userId: string; employerId: string; name: string; role: string };
+
+/** The signed-in employer contact, or null. */
+export async function getSessionEmployer(): Promise<EmployerUser | null> {
+  const supabase = await getServerSupabase();
+  if (!supabase) return null;
+
+  const { data: auth } = await supabase.auth.getUser();
+  if (!auth.user) return null;
+
+  const { data } = await supabase
+    .from('employer_users')
+    .select('employer_id, role, employers (name)')
+    .eq('auth_user_id', auth.user.id)
+    .maybeSingle();
+
+  if (!data) return null;
+
+  const employer = data.employers as { name?: string } | { name?: string }[] | null;
+  const name = Array.isArray(employer) ? (employer[0]?.name ?? '') : (employer?.name ?? '');
+
+  return {
+    userId: auth.user.id,
+    employerId: data.employer_id as string,
+    name,
+    role: data.role as string,
+  };
+}
+
+export type Viewer =
+  | { role: 'candidate'; candidate: SessionCandidate }
+  | { role: 'employer'; employer: EmployerUser }
+  | { role: 'staff'; staff: StaffUser }
+  | { role: 'anonymous' };
+
+/**
+ * Who is signed in, across all three audiences.
+ *
+ * Checked most-privileged first, so someone who is both staff and a candidate
+ * in a test environment lands consistently rather than by whichever query
+ * happened to run first.
+ */
+export async function getViewer(): Promise<Viewer> {
+  const staff = await getSessionStaff();
+  if (staff) return { role: 'staff', staff };
+
+  const employer = await getSessionEmployer();
+  if (employer) return { role: 'employer', employer };
+
+  const candidate = await getSessionCandidate();
+  if (candidate) return { role: 'candidate', candidate };
+
+  return { role: 'anonymous' };
+}
+
+/** Where a signed-in viewer belongs when no explicit destination was asked for. */
+export function homeFor(viewer: Viewer, locale: Locale): string {
+  switch (viewer.role) {
+    case 'staff':
+      return '/admin';
+    case 'employer':
+      return '/admin';
+    case 'candidate':
+      return `/${locale}/dashboard`;
+    default:
+      return `/${locale}`;
+  }
+}
+
+/**
+ * The talent pool is open to staff and to vetted employers. What they see
+ * differs: the CV assessment and its AI score are staff-only, because handing a
+ * raw model score to a client employer would be indefensible.
+ */
+export async function requireStaffOrEmployer(
+  returnTo: string,
+): Promise<{ isStaff: boolean; label: string }> {
+  const viewer = await getViewer();
+  if (viewer.role === 'staff') return { isStaff: true, label: viewer.staff.email };
+  if (viewer.role === 'employer') return { isStaff: false, label: viewer.employer.name };
+  redirect(`/en/signin?next=${encodeURIComponent(returnTo)}`);
 }
