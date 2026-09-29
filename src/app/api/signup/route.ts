@@ -107,6 +107,23 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'payment_init_failed' }, { status: 502 });
   }
 
+  /**
+   * With no payment keys configured, checkout is simulated and nothing is
+   * charged. The candidate would then sit at `pending` for ever and be bounced
+   * out of the assessment, which needs `paid`.
+   *
+   * ALLOW_SIMULATED_PAYMENTS lets a demo environment carry on. It is an
+   * explicit opt-in rather than "Stripe happens to be unconfigured", so a
+   * missing key in a real deployment can never quietly hand out free
+   * assessments. Every such candidate is traceable: their payment row carries
+   * status 'simulated'.
+   */
+  const treatAsPaid = session.simulated && process.env.ALLOW_SIMULATED_PAYMENTS === 'true';
+
+  if (supabase && candidateId && treatAsPaid) {
+    await supabase.from('candidates').update({ payment_status: 'paid' }).eq('id', candidateId);
+  }
+
   if (supabase && candidateId) {
     const { error } = await supabase.from('payments').insert({
       candidate_id: candidateId,
