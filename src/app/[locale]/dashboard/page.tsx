@@ -4,6 +4,8 @@ import { Mono } from '@/components/ui/Mono';
 import { Wordmark } from '@/components/ui/Wordmark';
 import { VisibilityToggle } from '@/components/candidate/VisibilityToggle';
 import { AccountMenu } from '@/components/auth/AccountMenu';
+import { JourneyStatus } from '@/components/candidate/JourneyStatus';
+import { getCandidateStatus, type CandidateStatus } from '@/lib/candidate/status';
 import { fill, getDictionary, isLocale } from '@/lib/i18n';
 import { requireCandidate } from '@/lib/auth';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
@@ -64,10 +66,12 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
   let r: DashboardReport = SAMPLE_REPORT;
   let visible = true;
   let reportReady = true;
+  let status: CandidateStatus | null = null;
 
   if (isSupabaseConfigured()) {
     const candidate = await requireCandidate(locale, `/${locale}/dashboard`);
     visible = candidate.visibleToEmployers;
+    status = await getCandidateStatus(candidate.id, candidate.paymentStatus);
 
     const supabase = await getServerSupabase();
     const { data: report } = (await supabase
@@ -127,7 +131,9 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
             {d.navOverview}
           </span>
           <span>{d.navReport}</span>
-          <span>{d.navProfile}</span>
+          <Link href={`/${locale}/profile`} className="no-underline text-ink-2 hover:text-accent t-colors">
+            {t.profile.navProfile}
+          </Link>
         </nav>
         <AccountMenu locale={locale} />
       </header>
@@ -178,37 +184,41 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
         )}
 
         <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-[clamp(20px,3cqi,40px)]">
-          {/* cohort timeline */}
-          <section>
-            <h2 className="m-0 mb-5 text-[21px] font-semibold">{d.cohortStatus}</h2>
-            <ol className="m-0 flex list-none flex-col p-0">
-              {d.timeline.map((label, index) => {
-                const entry = r.timeline[index];
-                const state = entry?.state ?? 'next';
-                const last = index === d.timeline.length - 1;
-                return (
-                  <li key={label} className="flex gap-3.5">
-                    <div className="flex flex-col items-center">
-                      <span
-                        aria-hidden
-                        className="mt-1.5 size-[11px] shrink-0 rounded-full border-2"
-                        style={{
-                          background: state === 'next' ? '#fff' : state === 'now' ? 'oklch(0.56 0.14 40)' : '#1b1a17',
-                          borderColor:
-                            state === 'next' ? '#d9d4c8' : state === 'now' ? 'oklch(0.56 0.14 40)' : '#1b1a17',
-                        }}
-                      />
-                      {!last && <span aria-hidden className="w-px flex-1 bg-line" />}
-                    </div>
-                    <div className={`pb-6 ${state === 'next' ? 'text-muted' : 'text-ink'}`}>
-                      <p className="m-0 text-[15px] font-medium">{label}</p>
-                      <Mono className="text-muted">{entry?.date}</Mono>
-                    </div>
-                  </li>
-                );
-              })}
-            </ol>
-          </section>
+          {status ? (
+            <JourneyStatus locale={locale} t={t} status={status} />
+          ) : (
+            <section>
+              <h2 className="m-0 mb-5 text-[21px] font-semibold">{d.cohortStatus}</h2>
+              <ol className="m-0 flex list-none flex-col p-0">
+                {d.timeline.map((label, index) => {
+                  const entry = r.timeline[index];
+                  const state = entry?.state ?? 'next';
+                  const last = index === d.timeline.length - 1;
+                  return (
+                    <li key={label} className="flex gap-3.5">
+                      <div className="flex flex-col items-center">
+                        <span
+                          aria-hidden
+                          className="mt-1.5 size-[11px] shrink-0 rounded-full border-2"
+                          style={{
+                            background:
+                              state === 'next' ? '#fff' : state === 'now' ? 'oklch(0.56 0.14 40)' : '#1b1a17',
+                            borderColor:
+                              state === 'next' ? '#d9d4c8' : state === 'now' ? 'oklch(0.56 0.14 40)' : '#1b1a17',
+                          }}
+                        />
+                        {!last && <span aria-hidden className="w-px flex-1 bg-line" />}
+                      </div>
+                      <div className={`pb-6 ${state === 'next' ? 'text-muted' : 'text-ink'}`}>
+                        <p className="m-0 text-[15px] font-medium">{label}</p>
+                        <Mono className="text-muted">{entry?.date}</Mono>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ol>
+            </section>
+          )}
 
           {/* report breakdown */}
           <section hidden={!reportReady}>

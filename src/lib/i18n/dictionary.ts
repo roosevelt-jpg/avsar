@@ -171,6 +171,77 @@ export type Dictionary = {
     staffNote: string;
   };
 
+  /* Profile */
+  profile: {
+    navProfile: string;
+    title: string;
+    lead: string;
+    cvTitle: string;
+    cvLead: string;
+    cvChoose: string;
+    cvReplace: string;
+    cvUploading: string;
+    cvDone: string;
+    cvError: string;
+    cvHint: string;
+    orManual: string;
+    aboutTitle: string;
+    headline: string;
+    headlinePlaceholder: string;
+    summary: string;
+    linkedin: string;
+    experienceTitle: string;
+    addExperience: string;
+    employer: string;
+    jobTitle: string;
+    jobLocation: string;
+    from: string;
+    to: string;
+    current: string;
+    duties: string;
+    educationTitle: string;
+    addEducation: string;
+    institution: string;
+    qualification: string;
+    field: string;
+    startYear: string;
+    endYear: string;
+    skillsTitle: string;
+    skillsHint: string;
+    languagesTitle: string;
+    language: string;
+    level: string;
+    addLanguage: string;
+    readyTitle: string;
+    availability: string;
+    availabilityOptions: readonly string[];
+    relocation: string;
+    relocationYes: string;
+    relocationNo: string;
+    remove: string;
+    save: string;
+    saving: string;
+    saved: string;
+    saveError: string;
+  };
+
+  /* Candidate journey status */
+  status: {
+    title: string;
+    registered: string;
+    profile: string;
+    assessment: string;
+    report: string;
+    selection: string;
+    done: string;
+    current: string;
+    todo: string;
+    sectionsProgress: string;
+    continueAssessment: string;
+    startAssessment: string;
+    completeProfile: string;
+  };
+
   /* Pricing + FAQ */
   pricing: {
     title: string;
@@ -369,6 +440,75 @@ const en: Dictionary = {
     errCredentials: 'Those details are not right.',
     errRateLimited: 'Too many code requests. Please wait a few minutes and try again.',
     staffNote: 'Candidates: use a code. Employers and staff: use your password.',
+  },
+
+  profile: {
+    navProfile: 'Profile',
+    title: 'Your profile',
+    lead: 'Upload your CV and we will read it for you, or fill it in yourself. Either way, this is what employers see.',
+    cvTitle: 'Your CV',
+    cvLead: 'PDF works best. We read it to fill in your experience, and a person checks it before anything is decided.',
+    cvChoose: 'Choose a file',
+    cvReplace: 'Replace CV',
+    cvUploading: 'Uploading…',
+    cvDone: 'Uploaded',
+    cvError: 'That upload did not work. Please try again.',
+    cvHint: 'PDF, up to 10 MB',
+    orManual: 'Or fill it in yourself',
+    aboutTitle: 'About you',
+    headline: 'Headline',
+    headlinePlaceholder: 'Housekeeping supervisor, 6 years',
+    summary: 'Short summary',
+    linkedin: 'LinkedIn (optional)',
+    experienceTitle: 'Work experience',
+    addExperience: 'Add a job',
+    employer: 'Employer',
+    jobTitle: 'Job title',
+    jobLocation: 'City and country',
+    from: 'From',
+    to: 'To',
+    current: 'I work here now',
+    duties: 'What you did',
+    educationTitle: 'Education and training',
+    addEducation: 'Add education',
+    institution: 'School or institute',
+    qualification: 'Qualification',
+    field: 'Subject',
+    startYear: 'Start year',
+    endYear: 'End year',
+    skillsTitle: 'Skills',
+    skillsHint: 'Separate with commas',
+    languagesTitle: 'Languages',
+    language: 'Language',
+    level: 'Level',
+    addLanguage: 'Add a language',
+    readyTitle: 'Availability',
+    availability: 'How soon could you start abroad?',
+    availabilityOptions: ['Within 1 month', '1 to 3 months', '3 to 6 months', 'More than 6 months'],
+    relocation: 'Are you ready to relocate to Portugal?',
+    relocationYes: 'Yes',
+    relocationNo: 'Not yet',
+    remove: 'Remove',
+    save: 'Save profile',
+    saving: 'Saving…',
+    saved: 'Saved',
+    saveError: 'We could not save that. Please try again.',
+  },
+
+  status: {
+    title: 'Where you are',
+    registered: 'Registered and paid',
+    profile: 'Profile and CV',
+    assessment: 'Assessment',
+    report: 'Skills report',
+    selection: 'Cohort selection',
+    done: 'Done',
+    current: 'Now',
+    todo: 'Next',
+    sectionsProgress: '{done} of {total} sections',
+    continueAssessment: 'Continue assessment',
+    startAssessment: 'Start assessment',
+    completeProfile: 'Complete your profile',
   },
 
   pricing: {
@@ -600,6 +740,75 @@ const hi: Dictionary = {
     errCredentials: 'ये विवरण सही नहीं हैं।',
     errRateLimited: 'बहुत ज़्यादा बार कोड माँगा गया। कृपया कुछ मिनट रुककर दोबारा कोशिश करें।',
     staffNote: 'उम्मीदवार: कोड इस्तेमाल करें। नियोक्ता और स्टाफ़: अपना पासवर्ड इस्तेमाल करें।',
+  },
+
+  profile: {
+    navProfile: 'प्रोफ़ाइल',
+    title: 'आपकी प्रोफ़ाइल',
+    lead: 'अपना CV अपलोड करें और हम उसे पढ़कर भर देंगे, या आप खुद भर सकते हैं। दोनों हालात में नियोक्ता यही देखते हैं।',
+    cvTitle: 'आपका CV',
+    cvLead: 'PDF सबसे अच्छा काम करता है। हम उसे पढ़कर आपका अनुभव भरते हैं, और कोई फ़ैसला होने से पहले एक व्यक्ति उसे जाँचता है।',
+    cvChoose: 'फ़ाइल चुनें',
+    cvReplace: 'CV बदलें',
+    cvUploading: 'अपलोड हो रहा है…',
+    cvDone: 'अपलोड हो गया',
+    cvError: 'अपलोड नहीं हो पाया। कृपया दोबारा कोशिश करें।',
+    cvHint: 'PDF, अधिकतम 10 MB',
+    orManual: 'या खुद भरें',
+    aboutTitle: 'आपके बारे में',
+    headline: 'शीर्षक',
+    headlinePlaceholder: 'हाउसकीपिंग सुपरवाइज़र, 6 साल',
+    summary: 'संक्षिप्त विवरण',
+    linkedin: 'LinkedIn (वैकल्पिक)',
+    experienceTitle: 'कार्य अनुभव',
+    addExperience: 'नौकरी जोड़ें',
+    employer: 'नियोक्ता',
+    jobTitle: 'पद',
+    jobLocation: 'शहर और देश',
+    from: 'से',
+    to: 'तक',
+    current: 'मैं अभी यहीं काम करता/करती हूँ',
+    duties: 'आपने क्या किया',
+    educationTitle: 'शिक्षा और प्रशिक्षण',
+    addEducation: 'शिक्षा जोड़ें',
+    institution: 'स्कूल या संस्थान',
+    qualification: 'योग्यता',
+    field: 'विषय',
+    startYear: 'शुरू का साल',
+    endYear: 'आख़िरी साल',
+    skillsTitle: 'कौशल',
+    skillsHint: 'अल्पविराम से अलग करें',
+    languagesTitle: 'भाषाएँ',
+    language: 'भाषा',
+    level: 'स्तर',
+    addLanguage: 'भाषा जोड़ें',
+    readyTitle: 'उपलब्धता',
+    availability: 'आप विदेश में कितनी जल्दी शुरू कर सकते हैं?',
+    availabilityOptions: ['1 महीने के भीतर', '1 से 3 महीने', '3 से 6 महीने', '6 महीने से ज़्यादा'],
+    relocation: 'क्या आप पुर्तगाल जाने के लिए तैयार हैं?',
+    relocationYes: 'हाँ',
+    relocationNo: 'अभी नहीं',
+    remove: 'हटाएँ',
+    save: 'प्रोफ़ाइल सहेजें',
+    saving: 'सहेजा जा रहा है…',
+    saved: 'सहेजा गया',
+    saveError: 'हम इसे सहेज नहीं सके। कृपया दोबारा कोशिश करें।',
+  },
+
+  status: {
+    title: 'आप कहाँ हैं',
+    registered: 'रजिस्टर और भुगतान हुआ',
+    profile: 'प्रोफ़ाइल और CV',
+    assessment: 'मूल्यांकन',
+    report: 'स्किल्स रिपोर्ट',
+    selection: 'कोहॉर्ट चयन',
+    done: 'पूरा',
+    current: 'अभी',
+    todo: 'आगे',
+    sectionsProgress: '{total} में से {done} खंड',
+    continueAssessment: 'मूल्यांकन जारी रखें',
+    startAssessment: 'मूल्यांकन शुरू करें',
+    completeProfile: 'अपनी प्रोफ़ाइल पूरी करें',
   },
 
   pricing: {

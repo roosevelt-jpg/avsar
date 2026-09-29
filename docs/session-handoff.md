@@ -4,6 +4,54 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 8 - 2026-09-29 - abilio.diz@smithandadams.com (Claude Opus 5)
+
+Direcção do Abílio: **transformar isto em ferramenta funcional de ponta a ponta,
+não cosmética.** Este bloco é o primeiro passo nesse sentido.
+
+### O dashboard estava a mentir
+
+A linha temporal do dashboard ("Assessment completed, 5 Out 2026") era dados de
+exemplo fixos desde o protótipo. Aparecia a toda a gente, incluindo a quem nunca
+tinha começado. O Abílio apanhou-o na base: zero tentativas, zero relatórios, e
+o ecrã a dizer que estava feito.
+
+Substituída por `src/lib/candidate/status.ts`, que deriva tudo da base de
+dados, e por `JourneyStatus`, que mostra uma acção seguinte em vez de uma lista
+de tudo o que falta.
+
+### Perfil do candidato
+
+Campos seguindo o que os ATS pedem (SmartRecruiters, Greenhouse, Workable),
+menos o que não se aplica aqui.
+
+- `/[locale]/profile`: upload de CV **ou** preenchimento manual. As duas vias
+  são de primeira classe: muitos candidatos deste corredor não têm ficheiro de
+  CV nenhum, e o formulário não é um plano B para quem falha o upload.
+- `0005_profiles.sql`: `candidate_profiles`, `candidate_experiences`,
+  `candidate_education`, mais o bucket `cvs` e as suas policies.
+- Experiência e educação em tabelas próprias e não em JSON, porque empregadores
+  vão querer filtrar por anos num sector e por qualificação, e isso é uma
+  query, não um documento.
+- O caminho no storage é construído a partir da sessão, nunca do nome do
+  ficheiro que o browser envia: o caminho É a fronteira de autorização nas
+  policies do bucket.
+- O upload **não** dispara a avaliação por AI. Ler um CV com um modelo custa
+  dinheiro por documento, e quem carrega o ficheiro errado quatro vezes não
+  deve ser quatro avaliações.
+
+### Decisões de campos
+
+Sem campo de expectativa salarial: um número exacto ancora uma negociação que o
+candidato ainda não está em posição de ter, entre duas moedas e um custo de vida
+que nunca viu. Datas com precisão de mês, não de dia.
+
+### Por correr
+
+`supabase/migrations/0005_profiles.sql`.
+
+---
+
 ## Bloco 7 - 2026-09-29 - abilio.diz@smithandadams.com (Claude Opus 5)
 
 ### Produção ligada ao Supabase
