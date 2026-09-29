@@ -28,8 +28,17 @@ export type Item = {
   passage?: string;
   prompt: string;
   options: readonly string[];
-  /** Index of the correct option. Undefined for unscored profile items. */
+  /** Index of the correct option. Undefined for items with no right answer. */
   correct?: number;
+  /**
+   * Ordinal item: the options run from least to most, and the answer scores by
+   * its position rather than against a key.
+   *
+   * "How many people did you supervise?" has no correct answer, but it is not
+   * uninformative either. Without this the whole experience section scored zero
+   * for every candidate, because no item in it has a `correct`.
+   */
+  scale?: boolean;
   /** Restricts an item to one sector. Undefined means it applies to all. */
   sector?: SectorSlug;
   /** Report axis this item feeds, matched against `dash.breakdownLabels`. */

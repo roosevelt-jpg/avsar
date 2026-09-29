@@ -16,6 +16,7 @@ export const EXPERIENCE_ITEMS: Item[] = [
     prompt: 'In your most recent job, how many people did you work with on a typical shift?',
     options: ['I worked alone', '2 to 4 people', '5 to 10 people', 'More than 10 people'],
     axis: 'Experience depth',
+    scale: true,
   },
   {
     id: 'exp-02',
@@ -24,6 +25,7 @@ export const EXPERIENCE_ITEMS: Item[] = [
     prompt: 'Have you been responsible for training or supervising other staff?',
     options: ['No', 'Informally, when asked', 'Yes, as part of my role', 'Yes, I managed a team'],
     axis: 'Experience depth',
+    scale: true,
   },
   {
     id: 'exp-03',
@@ -32,6 +34,7 @@ export const EXPERIENCE_ITEMS: Item[] = [
     prompt: 'How long did you stay in your longest job?',
     options: ['Less than 6 months', '6 months to 2 years', '2 to 5 years', 'More than 5 years'],
     axis: 'Experience depth',
+    scale: true,
   },
   {
     id: 'exp-04',
@@ -45,6 +48,7 @@ export const EXPERIENCE_ITEMS: Item[] = [
       'Both keys and money',
     ],
     axis: 'Experience depth',
+    scale: true,
   },
   {
     id: 'exp-05',
@@ -53,6 +57,7 @@ export const EXPERIENCE_ITEMS: Item[] = [
     prompt: 'Which shift patterns have you worked?',
     options: ['Days only', 'Days and evenings', 'Including nights', 'Rotating, including weekends'],
     axis: 'Experience depth',
+    scale: true,
   },
   {
     id: 'exp-06',
@@ -61,6 +66,7 @@ export const EXPERIENCE_ITEMS: Item[] = [
     prompt: 'Have you worked outside your home state or country?',
     options: ['No', 'Another state in India', 'Another country, under 1 year', 'Another country, over 1 year'],
     axis: 'Experience depth',
+    scale: true,
   },
   {
     id: 'exp-07',
@@ -69,6 +75,7 @@ export const EXPERIENCE_ITEMS: Item[] = [
     prompt: 'Could a former supervisor be contacted about your work?',
     options: ['No', 'Perhaps, I would have to ask', 'Yes, one', 'Yes, more than one'],
     axis: 'Experience depth',
+    scale: true,
   },
   {
     id: 'exp-08',
@@ -82,6 +89,7 @@ export const EXPERIENCE_ITEMS: Item[] = [
       'Full records, including contracts',
     ],
     axis: 'Documentation',
+    scale: true,
   },
 ];
 

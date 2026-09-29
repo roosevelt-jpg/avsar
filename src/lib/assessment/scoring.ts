@@ -38,14 +38,22 @@ function visibleItems(sector: SectorSlug): Item[] {
   return ITEM_BANK.filter((item) => item.sector === undefined || item.sector === sector);
 }
 
+/** An item contributes a score either against a key or by ordinal position. */
+function isScorable(item: Item): boolean {
+  return item.correct !== undefined || item.scale === true;
+}
+
 export function score(answers: AnswerMap, sector: SectorSlug): ScoreResult {
   const pool = visibleItems(sector);
   const byId = new Map<string, Item>(pool.map((item) => [item.id, item]));
 
   const sections = {} as Record<SectionId, number>;
   for (const section of SECTION_ORDER) {
-    const scorable = pool.filter((item) => item.section === section && item.correct !== undefined);
-    sections[section] = ratio(scorable, answers, byId);
+    sections[section] = ratio(
+      pool.filter((item) => item.section === section && isScorable(item)),
+      answers,
+      byId,
+    );
   }
 
   /* Only axes the candidate was actually assessed on. An axis with no scorable
@@ -53,7 +61,7 @@ export function score(answers: AnswerMap, sector: SectorSlug): ScoreResult {
   const axisLabels = [
     ...new Set(
       pool
-        .filter((item) => item.correct !== undefined)
+        .filter(isScorable)
         .map((item) => item.axis)
         .filter((axis): axis is string => Boolean(axis)),
     ),
@@ -61,7 +69,7 @@ export function score(answers: AnswerMap, sector: SectorSlug): ScoreResult {
 
   const axes = axisLabels
     .map((label) => {
-      const items = pool.filter((item) => item.axis === label && item.correct !== undefined);
+      const items = pool.filter((item) => item.axis === label && isScorable(item));
       return { label, score: ratio(items, answers, byId), count: items.length };
     })
     .filter((axis) => axis.count > 0)
@@ -75,20 +83,38 @@ export function score(answers: AnswerMap, sector: SectorSlug): ScoreResult {
 }
 
 /**
- * Share correct out of everything scorable that was offered.
+ * Mean score across the items offered, out of 100.
  *
- * An unanswered question counts as wrong, deliberately: skipping is a choice,
- * and scoring only what was attempted would reward guessing selectively.
+ * Keyed items give 100 or 0. Ordinal items give their position on the scale, so
+ * a candidate who supervised a team scores higher than one who worked alone,
+ * without either answer being wrong.
+ *
+ * An unanswered item scores zero either way, deliberately: skipping is a choice,
+ * and counting only what was attempted would reward selective guessing.
  */
 function ratio(items: readonly Item[], answers: AnswerMap, byId: Map<string, Item>): number {
   if (items.length === 0) return 0;
-  let correct = 0;
+
+  let total = 0;
   for (const item of items) {
     const given = answers[item.id];
-    const key = byId.get(item.id)?.correct;
-    if (given !== undefined && key !== undefined && given === key) correct += 1;
+    if (given === undefined) continue;
+
+    const definition = byId.get(item.id);
+    if (!definition) continue;
+
+    if (definition.correct !== undefined) {
+      if (given === definition.correct) total += 100;
+      continue;
+    }
+
+    if (definition.scale) {
+      const steps = definition.options.length - 1;
+      if (steps > 0) total += (Math.min(given, steps) / steps) * 100;
+    }
   }
-  return Math.round((correct / items.length) * 100);
+
+  return Math.round(total / items.length);
 }
 
 /**

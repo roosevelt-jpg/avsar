@@ -30,6 +30,21 @@ collapses.
 An unanswered scorable item counts as wrong. Skipping is a choice, and scoring
 only what was attempted would reward selective guessing.
 
+## Two kinds of item
+
+**Keyed.** There is a right answer. `correct` holds its index. Scores 100 or 0.
+
+**Ordinal.** `scale: true`. The options run from least to most and the answer
+scores by its position. "How many people did you supervise?" has no right
+answer, but a candidate who managed a team is not equivalent to one who worked
+alone.
+
+Every item in the experience section is ordinal. Before that existed, the whole
+section scored zero for every candidate, because no item in it had a `correct`,
+and it dragged 20% of the overall down with it.
+
+Anything else is unscored: recorded, shown to a reviewer, but not counted.
+
 ## Weights
 
 | Section | Weight |
@@ -50,6 +65,19 @@ See `docs/english-assessment.md`. The short version: the internal bank measures
 whether someone can follow written workplace English, there is no speaking
 component, and `reports.english_certified` exists so that an in-house estimate
 and a certified result are never stored or shown as the same thing.
+
+## Rescoring after a change
+
+Changing the bank, the weights or the scoring rules makes existing reports
+incomparable with new ones, and a percentile computed across a mixture of both
+means nothing.
+
+```bash
+npx tsx scripts/rescore.mts          # show what would change
+npx tsx scripts/rescore.mts --write  # apply, then re-rank every cohort touched
+```
+
+It recomputes from the answers on record, so it is safe to run repeatedly.
 
 ## Adding items
 
