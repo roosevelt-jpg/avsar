@@ -167,6 +167,7 @@ export type Dictionary = {
     useCodeInstead: string;
     usePasswordInstead: string;
     errCredentials: string;
+    errRateLimited: string;
     staffNote: string;
   };
 
@@ -366,6 +367,7 @@ const en: Dictionary = {
     useCodeInstead: 'Email me a code instead',
     usePasswordInstead: 'Use a password instead',
     errCredentials: 'Those details are not right.',
+    errRateLimited: 'Too many code requests. Please wait a few minutes and try again.',
     staffNote: 'Candidates: use a code. Employers and staff: use your password.',
   },
 
@@ -596,6 +598,7 @@ const hi: Dictionary = {
     useCodeInstead: 'इसके बजाय मुझे कोड भेजें',
     usePasswordInstead: 'इसके बजाय पासवर्ड इस्तेमाल करें',
     errCredentials: 'ये विवरण सही नहीं हैं।',
+    errRateLimited: 'बहुत ज़्यादा बार कोड माँगा गया। कृपया कुछ मिनट रुककर दोबारा कोशिश करें।',
     staffNote: 'उम्मीदवार: कोड इस्तेमाल करें। नियोक्ता और स्टाफ़: अपना पासवर्ड इस्तेमाल करें।',
   },
 

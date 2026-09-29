@@ -78,11 +78,17 @@ export function SignInForm({
        whether it belongs to a registered candidate, which needs the service
        role to answer, and the answer must not reach the browser. */
     try {
-      await fetch('/api/auth/request-code', {
+      const response = await fetch('/api/auth/request-code', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ email: email.trim(), next, locale }),
       });
+
+      if (response.status === 429) {
+        /* Say so rather than claiming a code is on its way. Otherwise they
+           wait, try again, and burn the next allowance too. */
+        return fail(a.errRateLimited);
+      }
     } catch (sendError) {
       console.error('[signin] request-code failed', sendError);
     }

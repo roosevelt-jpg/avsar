@@ -69,9 +69,20 @@ export async function POST(request: Request) {
     },
   });
 
-  /* Logged, never returned. A delivery failure and an unknown address must
-     look the same from outside. */
-  if (error) console.error('[request-code] send failed', error.message);
+  if (error) console.error('[request-code] send failed', error.status, error.message);
 
+  /**
+   * Rate limiting is surfaced; everything else is not.
+   *
+   * "Too many requests" says nothing about whether the address is registered,
+   * so withholding it buys no privacy and costs the visitor an accurate screen.
+   * Telling someone a code is on its way when none was sent is worse than
+   * useless: they wait, then try again, and burn the next allowance too.
+   */
+  if (error?.status === 429) {
+    return NextResponse.json({ sent: false, reason: 'rate_limited' }, { status: 429 });
+  }
+
+  /* Any other failure looks the same as an unknown address, deliberately. */
   return NextResponse.json({ sent: true });
 }
