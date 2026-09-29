@@ -60,6 +60,12 @@ forms. Otherwise sign-in becomes a way to test who has registered.
 **Sign-out is POST only.** A GET would let any page log the user out with an
 `<img>` tag, and link prefetchers would do it by accident.
 
+**The session refresh lives in `src/proxy.ts`.** Two things about that path are
+load-bearing: with a `src` directory, Next silently ignores this file at the
+project root rather than reporting an error, and Next 16 renamed the convention
+from `middleware` to `proxy`. Get either wrong and auth appears to work until a
+token expires.
+
 **The `next` parameter is same-origin only.** An open redirect on a sign-in page
 is how a credential-phishing link gets to look legitimate.
 
