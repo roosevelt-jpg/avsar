@@ -4,6 +4,63 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 10 - 2026-09-29 15:30 WEST - abilio.diz@smithandadams.com (Claude Opus 5)
+
+### Chave da Anthropic configurada
+
+O Abílio decidiu **não revogar** a chave que colou no chat. Está gravada no
+`.env.local` e empurrada para os três ambientes do Vercel. Fica registado que
+continua exposta no histórico da conversa: se um dia mudar de ideias, é revogar
+no console e repetir `./scripts/push-env.sh && vercel deploy --prod --yes`.
+
+Regra guardada em memória: [[feedback_secrets_via_env_file]] - dizer "não coles
+aqui" na mesma frase em que peço uma credencial, não depois.
+
+### Bug: segunda secção vazia
+
+Reportado pelo Abílio: "No items available for this section" ao passar da
+primeira para a segunda secção.
+
+Causa: as secções têm tamanhos diferentes (skills 12, experience 8). A rota não
+muda entre elas, só o parâmetro, por isso o React mantinha a mesma instância do
+componente e o índice da pergunta com ela. Índice 11 numa lista de 8.
+
+Corrigido com `key={section}` no runner, mais um clamp no índice como segunda
+defesa.
+
+### Bug maior que o anterior destapou
+
+As respostas eram gravadas a cada clique e **nunca lidas de volta**. Quem saísse
+a meio de uma secção e voltasse via tudo em branco e respondia outra vez, com o
+relógio do servidor a correr.
+
+Pior que o bug reportado porque não dava erro nenhum: parecia funcionar e
+silenciosamente fazia a pessoa trabalhar duas vezes. Era exactamente o requisito
+de resume-after-disconnect que estava escrito na documentação e nunca tinha sido
+implementado até ao fim.
+
+Agora as respostas carregam com a secção e a avaliação abre na primeira por
+responder.
+
+### Estado da infraestrutura
+
+Migrations 0001 a 0006 todas corridas. Bucket `cvs` criado e privado. Tabelas
+todas a responder. `ANTHROPIC_API_KEY` configurada local e em produção.
+
+Candidato de demonstração: `abilio+candidato@smithandadams.com`, password
+`Avsar-demo-65250012` (descartável, apagar antes de produção a sério).
+
+### Próximo passo
+
+O Abílio estava a meio do percurso de ponta a ponta quando a aplicação fechou.
+Retomar em `/en/assessment`, que agora retoma na pergunta certa.
+
+Depois do percurso completo, o que falta é a leitura de CV em `/admin/cvs` -
+primeira operação que gasta dinheiro a sério, dois passes de modelo por
+documento.
+
+---
+
 ## Bloco 9 - 2026-09-29 - abilio.diz@smithandadams.com (Claude Opus 5)
 
 Os quatro pontos cosméticos que eu próprio tinha listado, fechados.
