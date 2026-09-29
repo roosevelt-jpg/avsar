@@ -16,6 +16,8 @@ export function AssessmentRunner({
   attemptId,
   /** Seconds left, computed on the server. The client only counts down. */
   secondsRemaining,
+  /** Answers already stored for this attempt, so a resumed section is filled in. */
+  savedAnswers,
 }: {
   locale: Locale;
   t: Dictionary;
@@ -23,18 +25,26 @@ export function AssessmentRunner({
   currentSection: SectionId;
   attemptId: string | null;
   secondsRemaining: number;
+  savedAnswers: Record<string, number>;
 }) {
   const router = useRouter();
   const a = t.assess;
 
-  const [index, setIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, number>>({});
+  /* Start where they left off. Dropping someone back at question one of a
+     section they half finished is the same insult as losing their answers. */
+  const firstUnanswered = items.findIndex((candidate) => savedAnswers[candidate.id] === undefined);
+  const [index, setIndex] = useState(firstUnanswered > 0 ? firstUnanswered : 0);
+  const [answers, setAnswers] = useState<Record<string, number>>(savedAnswers);
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved'>('idle');
   const [left, setLeft] = useState(secondsRemaining);
   const [finishing, setFinishing] = useState(false);
 
-  const item = items[index];
+  /* Clamped as well as keyed. If anything ever carries an index across a
+     section again, the candidate sees the last question rather than a dead
+     end mid-assessment. */
   const total = items.length;
+  const safeIndex = Math.min(index, Math.max(0, total - 1));
+  const item = items[safeIndex];
 
   /* The authoritative deadline lives on the server. This is display only, so a
      clock change or a paused tab cannot buy extra time. */
@@ -126,9 +136,21 @@ export function AssessmentRunner({
   const sectionPosition = sectionOrder.indexOf(currentSection);
 
   if (!item) {
+    /* Should be unreachable now the runner is keyed per section. Left as a way
+       out rather than a dead end: a candidate stuck here mid-assessment with no
+       link has to guess a URL. */
     return (
       <main className="px-[clamp(20px,4cqi,56px)] py-[clamp(48px,8cqi,96px)]">
-        <p className="text-[16px] text-ink-2">No items available for this section.</p>
+        <p className="m-0 mb-5 text-[16px] text-ink-2">
+          There are no questions in this section yet.
+        </p>
+        <button
+          type="button"
+          onClick={() => router.push(`/${locale}/dashboard`)}
+          className="t-colors cursor-pointer rounded-[12px] border-0 bg-ink px-5 py-3 text-[15px] font-medium text-white hover:bg-accent"
+        >
+          Back to your dashboard
+        </button>
       </main>
     );
   }
@@ -191,15 +213,15 @@ export function AssessmentRunner({
           <div className="mx-auto max-w-[720px]">
             <div className="mb-5 flex items-center justify-between gap-4">
               <Mono className="text-muted">{item.label}</Mono>
-              <Mono className="text-muted">{fill(a.questionCounter, { n: index + 1, total })}</Mono>
+              <Mono className="text-muted">{fill(a.questionCounter, { n: safeIndex + 1, total })}</Mono>
             </div>
 
             <div className="mb-8 h-1 overflow-hidden rounded-full bg-line-soft">
               <div
                 className="h-full rounded-full bg-accent transition-[width] duration-200"
-                style={{ width: `${((index + 1) / total) * 100}%` }}
+                style={{ width: `${((safeIndex + 1) / total) * 100}%` }}
                 role="progressbar"
-                aria-valuenow={index + 1}
+                aria-valuenow={safeIndex + 1}
                 aria-valuemin={1}
                 aria-valuemax={total}
               />
@@ -241,19 +263,19 @@ export function AssessmentRunner({
             <div className="mt-8 flex items-center gap-3">
               <button
                 type="button"
-                onClick={() => setIndex(Math.max(0, index - 1))}
-                disabled={index === 0}
+                onClick={() => setIndex(Math.max(0, safeIndex - 1))}
+                disabled={safeIndex === 0}
                 className="t-colors cursor-pointer rounded-[12px] border border-line-strong bg-surface px-5 py-3 text-[15px] hover:border-ink disabled:opacity-40"
               >
                 {a.previous}
               </button>
               <button
                 type="button"
-                onClick={() => (index < total - 1 ? setIndex(index + 1) : finishSection())}
+                onClick={() => (safeIndex < total - 1 ? setIndex(safeIndex + 1) : finishSection())}
                 disabled={finishing}
                 className="t-colors cursor-pointer rounded-[12px] border-0 bg-ink px-5 py-3 text-[15px] font-medium text-white hover:bg-accent disabled:opacity-50"
               >
-                {index < total - 1 ? a.next : a.finish}
+                {safeIndex < total - 1 ? a.next : a.finish}
               </button>
               <span aria-live="polite" className="font-mono text-[12px] text-muted">
                 {saveState === 'saving' ? a.saving : saveState === 'saved' ? a.saved : ''}

@@ -40,6 +40,7 @@ export default async function AssessmentPage({
    */
   let attemptId: string | null = null;
   let secondsRemaining = SECTION_SECONDS;
+  const savedAnswers: Record<string, number> = {};
 
   if (isSupabaseConfigured()) {
     const candidate = await requireCandidate(locale, `/${locale}/assessment?section=${section}`);
@@ -84,6 +85,19 @@ export default async function AssessmentPage({
     if (attempt) {
       attemptId = attempt.id as string;
       secondsRemaining = secondsUntil(attempt.expires_at as string);
+
+      /* Answers already given in this section. Autosave is worthless if
+         returning to a half-finished section shows every question blank: the
+         candidate re-answers work they already did, against a clock that never
+         stopped. */
+      const { data: rows } = (await supabase
+        ?.from('assessment_answers')
+        .select('item_id, option_index')
+        .eq('attempt_id', attemptId)) ?? { data: null };
+
+      for (const row of rows ?? []) {
+        savedAnswers[row.item_id as string] = row.option_index as number;
+      }
     }
   }
 
@@ -92,12 +106,23 @@ export default async function AssessmentPage({
 
   return (
     <AssessmentRunner
+      /**
+       * Remount on every section.
+       *
+       * The route does not change between sections, only the search param, so
+       * React keeps the same component instance and its question index with it.
+       * Skills has 12 items and experience has 8: carrying index 11 across
+       * lands past the end of the new list and the runner renders an empty
+       * state. The key forces fresh state per section.
+       */
+      key={section}
       locale={locale}
       t={t}
       items={items}
       currentSection={section}
       attemptId={attemptId}
       secondsRemaining={secondsRemaining}
+      savedAnswers={savedAnswers}
     />
   );
 }
