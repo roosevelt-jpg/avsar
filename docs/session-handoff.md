@@ -4,6 +4,37 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 7 - 2026-09-29 - abilio.diz@smithandadams.com (Claude Opus 5)
+
+### Produção ligada ao Supabase
+
+Variáveis empurradas para o Vercel a partir do `.env.local` com
+`scripts/push-env.sh`. Sete em produção: URL, anon, service role, salt,
+PAYMENT_PROVIDER, CV_MODEL, COHORT_ID. Stripe e Anthropic ficaram de fora por
+estarem vazias localmente.
+
+**Produção e desenvolvimento partilham a mesma base de dados.** Não há projeto
+Supabase de pré-produção. Qualquer inscrição feita no site público entra na
+mesma tabela onde se testa.
+
+### ALLOW_SIMULATED_PAYMENTS
+
+Com Supabase ligado e Stripe não, o candidato ficava em `pending` para sempre e
+era expulso da avaliação, que exige `paid`. A flag deixa passar, mas é opt-in
+explícito e não consequência de faltar uma chave: assim, uma secret do Stripe
+que caia num deployment a sério nunca distribui avaliações grátis em silêncio.
+Rastreável por `payments.status = 'simulated'`.
+
+Está a `true` em produção só para a demonstração. **Tirar antes de cobrar a
+alguém a sério.**
+
+### Estado
+
+Produção: https://avsar-platform-bay.vercel.app - /en, /en/signin, /admin e
+/en/pricing todos a responder 200.
+
+---
+
 ## Bloco 6 - 2026-09-29 - abilio.diz@smithandadams.com (Claude Opus 5)
 
 ### Geração do relatório
