@@ -31,6 +31,7 @@ export function AssessmentRunner({
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved'>('idle');
   const [left, setLeft] = useState(secondsRemaining);
+  const [finishing, setFinishing] = useState(false);
 
   const item = items[index];
   const total = items.length;
@@ -84,6 +85,41 @@ export function AssessmentRunner({
     return () => window.removeEventListener('keydown', onKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item]);
+
+  /**
+   * Closes this section and moves on. The server decides what comes next and
+   * whether the report can be written, because it is the only side that knows
+   * which sections are already in.
+   */
+  async function finishSection() {
+    if (!attemptId) {
+      router.push(`/${locale}/dashboard`);
+      return;
+    }
+
+    setFinishing(true);
+    try {
+      const response = await fetch('/api/assessment/submit', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ attemptId }),
+      });
+
+      const body = (await response.json().catch(() => null)) as {
+        nextSection?: string | null;
+      } | null;
+
+      router.refresh();
+      if (body?.nextSection) {
+        router.push(`/${locale}/assessment?section=${body.nextSection}`);
+      } else {
+        router.push(`/${locale}/dashboard`);
+      }
+    } catch (error) {
+      console.error('[assessment] submit failed', error);
+      setFinishing(false);
+    }
+  }
 
   const sections = a.sections;
   const sectionOrder: SectionId[] = ['skills', 'experience', 'english', 'profile'];
@@ -213,10 +249,9 @@ export function AssessmentRunner({
               </button>
               <button
                 type="button"
-                onClick={() =>
-                  index < total - 1 ? setIndex(index + 1) : router.push(`/${locale}/dashboard`)
-                }
-                className="t-colors cursor-pointer rounded-[12px] border-0 bg-ink px-5 py-3 text-[15px] font-medium text-white hover:bg-accent"
+                onClick={() => (index < total - 1 ? setIndex(index + 1) : finishSection())}
+                disabled={finishing}
+                className="t-colors cursor-pointer rounded-[12px] border-0 bg-ink px-5 py-3 text-[15px] font-medium text-white hover:bg-accent disabled:opacity-50"
               >
                 {index < total - 1 ? a.next : a.finish}
               </button>

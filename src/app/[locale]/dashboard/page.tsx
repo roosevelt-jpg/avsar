@@ -26,7 +26,7 @@ type DashboardReport = {
   experienceScore: number;
   years: number;
   sector: string;
-  breakdown: number[];
+  breakdown: { label: string; score: number }[];
   timeline: readonly { date: string; state: 'done' | 'now' | 'next' }[];
 };
 
@@ -39,7 +39,13 @@ const SAMPLE_REPORT: DashboardReport = {
   experienceScore: 71,
   years: 6,
   sector: 'Hospitality',
-  breakdown: [86, 84, 79, 74, 66],
+  breakdown: [
+    { label: 'Guest service', score: 86 },
+    { label: 'Housekeeping standards', score: 84 },
+    { label: 'Health and safety', score: 79 },
+    { label: 'English: reading', score: 74 },
+    { label: 'English: speaking', score: 66 },
+  ],
   timeline: [
     { date: '2 Oct 2026', state: 'done' },
     { date: '5 Oct 2026', state: 'done' },
@@ -75,8 +81,14 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
       : SECTOR_SLUGS[0];
 
     if (report) {
+      /* Axes come from the item bank and differ by sector, so the labels are
+         read from the report rather than from a fixed list in the dictionary:
+         a driver has no "housekeeping standards" score. */
       const breakdown = Array.isArray(report.breakdown)
-        ? (report.breakdown as { score?: number }[]).map((entry) => entry.score ?? 0)
+        ? (report.breakdown as { label?: string; score?: number }[]).map((entry) => ({
+            label: entry.label ?? '',
+            score: entry.score ?? 0,
+          }))
         : [];
       r = {
         name: candidate.fullName,
@@ -202,20 +214,20 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
           <section hidden={!reportReady}>
             <h2 className="m-0 mb-5 text-[21px] font-semibold">{d.breakdown}</h2>
             <ul className="m-0 flex list-none flex-col gap-4 p-0">
-              {d.breakdownLabels.map((label, index) => {
-                const value = r.breakdown[index] ?? 0;
-                return (
-                  <li key={label}>
-                    <div className="mb-2 flex items-baseline justify-between gap-3">
-                      <span className="text-[15px]">{label}</span>
-                      <Mono className="text-muted">{value}</Mono>
-                    </div>
-                    <div className="h-1.5 overflow-hidden rounded-full bg-line-soft">
-                      <div className="h-full rounded-full bg-accent" style={{ width: `${value}%` }} />
-                    </div>
-                  </li>
-                );
-              })}
+              {r.breakdown.map((axis) => (
+                <li key={axis.label}>
+                  <div className="mb-2 flex items-baseline justify-between gap-3">
+                    <span className="text-[15px]">{axis.label}</span>
+                    <Mono className="text-muted">{axis.score}</Mono>
+                  </div>
+                  <div className="h-1.5 overflow-hidden rounded-full bg-line-soft">
+                    <div
+                      className="h-full rounded-full bg-accent"
+                      style={{ width: `${axis.score}%` }}
+                    />
+                  </div>
+                </li>
+              ))}
             </ul>
           </section>
         </div>

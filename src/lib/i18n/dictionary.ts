@@ -140,7 +140,6 @@ export type Dictionary = {
     expNote: string;
     cohortStatus: string;
     breakdown: string;
-    breakdownLabels: readonly string[];
     timeline: readonly string[];
     visible: string;
     visibleNote: string;
@@ -335,13 +334,6 @@ const en: Dictionary = {
     expNote: '{years} years, verified',
     cohortStatus: 'Cohort status',
     breakdown: 'Report breakdown',
-    breakdownLabels: [
-      'Guest service',
-      'Housekeeping standards',
-      'Health and safety',
-      'English: reading',
-      'English: speaking',
-    ],
     timeline: [
       'Registered and paid',
       'Assessment completed',
@@ -572,7 +564,6 @@ const hi: Dictionary = {
     expNote: '{years} साल, सत्यापित',
     cohortStatus: 'कोहॉर्ट स्थिति',
     breakdown: 'रिपोर्ट विवरण',
-    breakdownLabels: ['अतिथि सेवा', 'हाउसकीपिंग मानक', 'स्वास्थ्य और सुरक्षा', 'अंग्रेज़ी: पठन', 'अंग्रेज़ी: बोलना'],
     timeline: [
       'रजिस्टर और भुगतान हुआ',
       'मूल्यांकन पूरा हुआ',

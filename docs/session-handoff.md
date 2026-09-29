@@ -4,6 +4,44 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 6 - 2026-09-29 - abilio.diz@smithandadams.com (Claude Opus 5)
+
+### Geração do relatório
+
+Fecha o buraco em que o candidato pagava, fazia a avaliação e o dashboard lhe
+dizia para sempre que a relatório não estava pronta. Era a única parte onde o
+que a aplicação fazia e o que as páginas legais prometem não coincidiam.
+
+- Percurso pelas quatro secções: skills → experience → english → profile.
+  Sem `?section=`, a página retoma na primeira que ainda não foi submetida.
+- `POST /api/assessment/submit` fecha a secção pela RPC, e quando todas
+  estiverem dentro pontua e escreve em `reports`.
+- Pontuação no servidor com a service role. `reports` não tem policy de escrita
+  desde a 0001, por isso a base recusaria de qualquer forma - é cinto e
+  suspensórios numa coisa que decide se alguém tem emprego.
+- `0004_reports.sql`: `refresh_candidate_percentile()` para quem acaba agora, e
+  `refresh_cohort_percentiles()` para re-ordenar a cohort toda ao fecho. Ambas
+  service-role. O percentil de quem acaba cedo fica desactualizado à medida que
+  outros são pontuados; daí a segunda função.
+
+### Correcção de desenho
+
+`dash.breakdownLabels` era uma lista fixa de cinco eixos de hospitality no
+dicionário. Um motorista não tem "housekeeping standards". Os eixos passam a
+vir do banco de itens e são guardados em `reports.breakdown` como
+`[{label, score}]`; o dashboard desenha a partir daí. Chave removida do
+dicionário para ninguém lhe voltar a pegar.
+
+### Por correr
+
+`supabase/migrations/0004_reports.sql` - dado ao Abílio no chat.
+
+### Estado
+
+- `tsc`, `eslint`, `next build` limpos
+
+---
+
 ## Bloco 5 - 2026-09-29 - abilio.diz@smithandadams.com (Claude Opus 5)
 
 ### Plataforma unificada

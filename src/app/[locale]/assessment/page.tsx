@@ -1,7 +1,7 @@
 import { notFound, redirect } from 'next/navigation';
 import { AssessmentRunner } from '@/components/candidate/AssessmentRunner';
 import { getDictionary, isLocale } from '@/lib/i18n';
-import { itemsForSection, toClientItem, type SectionId } from '@/lib/assessment/items';
+import { itemsForSection, toClientItem, SECTION_ORDER, type SectionId } from '@/lib/assessment/items';
 import { SECTOR_SLUGS, type SectorSlug } from '@/lib/data/sectors';
 import { getServerSupabase } from '@/lib/supabase/server';
 import { secondsUntil } from '@/lib/clock';
@@ -25,7 +25,9 @@ export default async function AssessmentPage({
   const query = await searchParams;
   const t = getDictionary(locale);
 
-  const section: SectionId = isSection(query.section) ? query.section : 'english';
+  /* Falls back to the first section. Which one the candidate actually resumes
+     at is decided below, from what the server knows is already submitted. */
+  let section: SectionId = isSection(query.section) ? query.section : 'skills';
 
   /* The sector comes from the candidate record, not the query string: it
      decides which items they are scored on, so it is not theirs to pick here. */
@@ -53,6 +55,19 @@ export default async function AssessmentPage({
     }
 
     const supabase = await getServerSupabase();
+
+    /* No section asked for: resume at the first one that is not yet in. */
+    if (!isSection(query.section)) {
+      const { data: done } = (await supabase
+        ?.from('assessment_attempts')
+        .select('section, submitted_at')
+        .not('submitted_at', 'is', null)) ?? { data: null };
+
+      const submitted = new Set((done ?? []).map((row) => row.section as string));
+      const next = SECTION_ORDER.find((candidateSection) => !submitted.has(candidateSection));
+      if (!next) redirect(`/${locale}/dashboard`);
+      section = next;
+    }
 
     /* start_assessment_attempt is idempotent and sets expires_at itself. The
        candidate cannot choose their own deadline, which is the entire point of
