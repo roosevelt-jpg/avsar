@@ -115,7 +115,10 @@ the Dubai mobile across: a Portuguese company publishing a UAE mobile reads as
 a front, and Stripe's review looks at the site. Send a number and it is a
 one-line change.
 
-**2. The company's registered object does not mention recruitment.** The
+**2. The company's registered object does not mention recruitment.**
+Raised 30 Sep 2026 and deferred by Abílio the same day. Recorded here because
+it does not stop being true while it is parked.
+ The
 objecto covers construction, business and management consultancy, support
 services to companies, administrative services and debt collection. The
 principal CAE is 43350, building finishing. Recruitment is CAE 78100.

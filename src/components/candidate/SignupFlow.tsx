@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
 import { Mono } from '@/components/ui/Mono';
+import { ENTITY } from '@/lib/data/brand';
 import { AREAS, POSITIONS, positionsInArea, type PositionSlug } from '@/lib/data/positions';
 import { formatInr, activePrice } from '@/lib/data/cohort';
 import { fill, type Dictionary, type Locale } from '@/lib/i18n';
@@ -400,6 +401,18 @@ export function SignupFlow({
               );
             })}
           </div>
+
+          {/*
+            The registered company is not the name on the door. Someone who
+            pays S&A Recruitment and then sees an unfamiliar company debit
+            their account reports it as fraud, and a UPI dispute cannot be
+            contested: the money leaves immediately. Cheaper to say it here.
+          */}
+          <p className="m-0 text-[13px] leading-[1.55] text-muted">
+            The charge appears as{' '}
+            <span className="font-mono text-[12px] text-ink-2">{ENTITY.statementDescriptor}</span>{' '}
+            on your statement. {ENTITY.tradingAs} is a trading name of {ENTITY.legalName}.
+          </p>
 
           {/* Mandatory odds disclosure. The button stays disabled until it is checked. */}
           <label className="mt-2 flex cursor-pointer items-start gap-3 rounded-[12px] border border-line bg-surface-subtle p-4">

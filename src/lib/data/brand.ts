@@ -42,6 +42,13 @@ export const ENTITY = {
    * rupees files a dispute, and they are right to.
    */
   tradingAs: 'S&A Recruitment',
+  /**
+   * What the bank or UPI app shows. Set the same string in the Stripe
+   * dashboard: the two disagreeing is worse than either alone.
+   *
+   * Stripe allows 5 to 22 characters, latin letters, numbers and spaces.
+   */
+  statementDescriptor: 'SA RECRUITMENT',
   /** Pessoa colectiva, Conservatoria do Registo Comercial de Lisboa. */
   registrationNumber: '517818817',
   registrationLabel: 'NIPC',

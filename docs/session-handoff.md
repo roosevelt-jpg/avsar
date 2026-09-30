@@ -4,6 +4,17 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 13 - 30 Sep 2026, 19:20, abilio.diz@smithandadams.com
+
+`ENTITY.statementDescriptor = 'SA RECRUITMENT'`, e o passo de pagamento do
+signup passa a dizer como a cobranca aparece no extrato e que S&A Recruitment
+e nome comercial da Benefit Discovery, Lda. Uma disputa de UPI nao se contesta,
+por isso sai mais barato dize-lo antes. **O mesmo descritivo tem de ser posto
+no dashboard da Stripe**, senao os dois discordam.
+
+Objecto social / CAE 78100 / licenca IEFP: levantado e **adiado pelo Abilio**
+nesta data. Fica registado no `docs/stripe-onboarding.md`, nao apagado.
+
 ## Bloco 12 - 30 Sep 2026, 18:55, abilio.diz@smithandadams.com
 
 Decidida a entidade: **Benefit Discovery, Lda** (NIPC 517818817, Av. da
