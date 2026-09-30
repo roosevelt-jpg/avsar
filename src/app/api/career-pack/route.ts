@@ -110,6 +110,7 @@ export async function POST() {
     const result = await generateCareerPack({
       fullName: candidate.fullName,
       position: candidate.position ?? '',
+      locale: candidate.locale,
       profile,
       report: {
         overall: report.overall_score as number,
@@ -132,6 +133,7 @@ export async function POST() {
         improvements: result.pack.improvements,
         interview: result.pack.interview,
         improved_cv: result.pack.improvedCv,
+        translated: result.pack.translated,
         unsupported_lines: flagged,
         model: result.model,
         prompt_version: result.promptVersion,

@@ -99,6 +99,29 @@ recruitment-fee rules turn on.
 It only holds while the pack is genuinely portable and genuinely useful. If it
 ever becomes a thin wrapper around "apply with us", the argument goes with it.
 
+### CV formats
+
+Three, designed here rather than adapted from templates found online: CV designs
+are someone's copyrighted work, and claims that a given template "performs" are
+marketing rather than evidence.
+
+| Format | For |
+|---|---|
+| Standard | One column, parses cleanly anywhere. The default. |
+| Europass | The EU format, built for cross-border mobility. What a Portuguese employer and an immigration file expect from an applicant arriving from abroad. |
+| Professional | Sidebar for skills and languages. Suits IT and supervisory roles. |
+
+There is deliberately no "creative" option. These CVs go to Portuguese
+employers in hospitality, trades and services, and some end up in a visa file.
+Columns that interleave when parsed, text inside graphics and non-standard
+section headings all read worse to the recruitment software many of these
+employers run, and add nothing for the person reading it afterwards. Even the
+Professional sidebar holds lists only, so a parser reading the page in order
+still gets a sensible document.
+
+The advice is translated into the candidate's language; the CV is not. It goes
+to a Portuguese employer and stays in English.
+
 ### The rule inside the generator
 
 `coach.ts` forbids adding any experience, qualification or achievement not in

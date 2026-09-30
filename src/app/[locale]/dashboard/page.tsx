@@ -80,7 +80,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
     const admin = getAdminSupabase();
     const { data: stored } = (await admin
       ?.from('career_packs')
-      .select('strengths, improvements, interview, improved_cv')
+      .select('strengths, improvements, interview, improved_cv, translated')
       .eq('candidate_id', candidate.id)
       .maybeSingle()) ?? { data: null };
 
@@ -90,6 +90,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
         improvements: stored.improvements,
         interview: stored.interview,
         improvedCv: stored.improved_cv,
+        translated: stored.translated,
       } as Pack;
     }
 
@@ -267,7 +268,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
             thing they came back for. */}
         {status && (
           <div className="mt-12">
-            <CareerPack pack={pack} canGenerate={status.reportReady} />
+            <CareerPack pack={pack} canGenerate={status.reportReady} locale={locale} />
           </div>
         )}
 

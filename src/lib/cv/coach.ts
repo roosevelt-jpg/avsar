@@ -30,11 +30,15 @@ For improvements, give actions they can start this month, that are free or nearl
 
 For interview preparation, use their actual experience. The questions should be the ones this role is really asked, and the approach should point at something specific in their history.
 
-Write in the second person, directly to them. No preamble, no encouragement that is not earned by something in their record.`;
+Write in the second person, directly to them. No preamble, no encouragement that is not earned by something in their record.
+
+If you are asked for a translation, translate the strengths, the improvements and the interview guidance into that language, written to be read aloud naturally rather than word for word from the English. Do NOT translate the CV: it goes to a Portuguese employer and stays in English. Return null for the translation when the language asked for is English.`;
 
 export type CoachInput = {
   fullName: string;
   position: string;
+  /** Language for the advice. The CV stays in English regardless. */
+  locale: string;
   profile: RatingInput;
   report: {
     overall: number;
@@ -79,6 +83,10 @@ export async function generateCareerPack(input: CoachInput): Promise<CoachResult
               '',
               'Their profile and work history, which is the only material you may draw on:',
               JSON.stringify(input.profile, null, 2),
+              '',
+              input.locale === 'hi'
+                ? 'Also translate the strengths, improvements and interview guidance into Hindi. Leave the CV in English.'
+                : 'No translation needed; return null for the translated field.',
             ].join('\n'),
           },
         ],

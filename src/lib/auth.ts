@@ -16,6 +16,7 @@ export type SessionCandidate = {
   email: string;
   sector: string;
   position: string | null;
+  locale: string;
   yearsBand: number;
   paymentStatus: string;
   visibleToEmployers: boolean;
@@ -32,7 +33,7 @@ export async function getSessionCandidate(): Promise<SessionCandidate | null> {
   const { data } = await supabase
     .from('candidates')
     .select(
-      'id, full_name, email, sector, position, years_experience_band, payment_status, visible_to_employers',
+      'id, full_name, email, sector, position, locale, years_experience_band, payment_status, visible_to_employers',
     )
     .eq('auth_user_id', auth.user.id)
     .maybeSingle();
@@ -45,6 +46,7 @@ export async function getSessionCandidate(): Promise<SessionCandidate | null> {
     email: data.email as string,
     sector: data.sector as string,
     position: (data.position as string | null) ?? null,
+    locale: (data.locale as string | null) ?? 'en',
     yearsBand: data.years_experience_band as number,
     paymentStatus: data.payment_status as string,
     visibleToEmployers: data.visible_to_employers as boolean,

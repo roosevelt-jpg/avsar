@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Mono } from '@/components/ui/Mono';
 import type { CareerPack as Pack } from '@/lib/cv/coach-schema';
+import { CV_TEMPLATES, type CvTemplate } from '@/lib/report/CvDocument';
 
 /**
  * The career pack, shown to the candidate.
@@ -12,10 +13,19 @@ import type { CareerPack as Pack } from '@/lib/cv/coach-schema';
  * own rather than as a feature of our platform, because that is what it is:
  * useful to them with any employer, whether or not we ever place them.
  */
-export function CareerPack({ pack, canGenerate }: { pack: Pack | null; canGenerate: boolean }) {
+export function CareerPack({
+  pack,
+  canGenerate,
+  locale,
+}: {
+  pack: Pack | null;
+  canGenerate: boolean;
+  locale: string;
+}) {
   const router = useRouter();
   const [state, setState] = useState<'idle' | 'working' | 'error'>('idle');
   const [message, setMessage] = useState('');
+  const [template, setTemplate] = useState<CvTemplate>('standard');
 
   async function generate() {
     setState('working');
@@ -74,6 +84,41 @@ export function CareerPack({ pack, canGenerate }: { pack: Pack | null; canGenera
           What to lead with, and what to work on
         </h2>
       </div>
+
+      {/* The candidate's own language first when we have it: this is the part
+          they act on, and it lands better read in the language they think in. */}
+      {pack.translated && (
+        <div className="rounded-[20px] border border-accent bg-accent-tint p-[clamp(20px,2.6cqi,28px)]">
+          <Mono className="text-accent-deep">{pack.translated.language.toUpperCase()}</Mono>
+
+          <ul className="m-0 mt-4 flex list-none flex-col gap-3 p-0" lang="hi">
+            {pack.translated.strengths.map((item) => (
+              <li key={item.title}>
+                <p className="m-0 text-[16px] font-medium leading-[1.5]">{item.title}</p>
+                <p className="m-0 mt-1 text-[15px] leading-[1.7] text-ink-2">{item.why}</p>
+              </li>
+            ))}
+          </ul>
+
+          <ul className="m-0 mt-5 flex list-none flex-col gap-3 border-t border-line pt-5 p-0" lang="hi">
+            {pack.translated.improvements.map((item) => (
+              <li key={item.area}>
+                <p className="m-0 text-[15px] font-medium leading-[1.5]">{item.area}</p>
+                <p className="m-0 mt-1 text-[15px] leading-[1.7] text-ink-2">{item.action}</p>
+              </li>
+            ))}
+          </ul>
+
+          <ul className="m-0 mt-5 flex list-none flex-col gap-3 border-t border-line pt-5 p-0" lang="hi">
+            {pack.translated.questions.map((item) => (
+              <li key={item.question}>
+                <p className="m-0 text-[15px] font-medium leading-[1.5]">{item.question}</p>
+                <p className="m-0 mt-1 text-[15px] leading-[1.7] text-ink-2">{item.approach}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* --------------------------------------------------------- strengths */}
       <div className="rounded-[20px] border border-line bg-surface p-[clamp(20px,2.6cqi,28px)]">
@@ -140,20 +185,53 @@ export function CareerPack({ pack, canGenerate }: { pack: Pack | null; canGenera
 
       {/* ------------------------------------------------------ improved CV */}
       <div className="rounded-[20px] border border-ink bg-ink p-[clamp(20px,2.6cqi,28px)] text-paper">
-        <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-          <h3 className="m-0 text-[19px] font-semibold">Your rewritten CV</h3>
-          <a
-            href="/en/dashboard/cv.pdf"
-            className="t-colors rounded-[10px] bg-paper px-4 py-2.5 text-[14px] font-medium text-ink no-underline hover:bg-white"
-          >
-            Download as PDF
-          </a>
-        </div>
+        <h3 className="m-0 mb-3 text-[19px] font-semibold">Your rewritten CV</h3>
 
-        <p className="m-0 mb-5 max-w-[60ch] text-[14px] leading-[1.6] text-dark-muted-2">
+        <p className="m-0 mb-6 max-w-[60ch] text-[14px] leading-[1.6] text-dark-muted-2">
           Built only from what you told us. Nothing has been added that you cannot back up in an
           interview. Read it before you send it, and change anything that does not sound like you.
         </p>
+
+        {/* Format is the candidate's choice, but the default is the one that
+            reads cleanly everywhere. */}
+        <div role="radiogroup" aria-label="CV format" className="mb-5 flex flex-col gap-2">
+          {CV_TEMPLATES.map((option) => {
+            const active = template === option.id;
+            return (
+              <button
+                key={option.id}
+                type="button"
+                role="radio"
+                aria-checked={active}
+                onClick={() => setTemplate(option.id)}
+                className="t-colors flex cursor-pointer items-start gap-3 rounded-[12px] border p-3.5 text-left"
+                style={{
+                  borderColor: active ? '#f7f5f0' : '#3a3833',
+                  background: active ? 'rgba(247,245,240,0.08)' : 'transparent',
+                }}
+              >
+                <span
+                  aria-hidden
+                  className="mt-0.5 size-[16px] shrink-0 rounded-full"
+                  style={{ border: active ? '5px solid #f7f5f0' : '1.5px solid #6b675f' }}
+                />
+                <span>
+                  <span className="block text-[15px] font-medium text-paper">{option.name}</span>
+                  <span className="block text-[13px] leading-[1.5] text-dark-muted-2">
+                    {option.note}
+                  </span>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        <a
+          href={`/${locale}/dashboard/cv.pdf?template=${template}`}
+          className="t-colors mb-6 inline-block rounded-[12px] bg-paper px-5 py-3 text-[15px] font-medium text-ink no-underline hover:bg-white"
+        >
+          Download as PDF
+        </a>
 
         <div className="rounded-[16px] bg-paper p-[clamp(18px,2.4cqi,28px)] text-ink">
           <p className="m-0 text-[19px] font-semibold">{pack.improvedCv.headline}</p>

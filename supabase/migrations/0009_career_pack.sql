@@ -18,6 +18,11 @@ create table if not exists career_packs (
   interview    jsonb not null default '{}'::jsonb,
   improved_cv  jsonb not null default '{}'::jsonb,
 
+  -- The advice in the candidate's own language. The CV stays English because
+  -- it goes to a Portuguese employer; guidance about their own career does not,
+  -- and this is the part they act on.
+  translated   jsonb,
+
   -- Bullets whose stated source could not be found in the candidate's own
   -- material. The prompt forbids invention; this records where the check
   -- disagreed, so a person can look before the candidate takes it to an

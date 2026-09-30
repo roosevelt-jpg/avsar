@@ -67,6 +67,25 @@ export const careerPackSchema = z.object({
   }),
 
   improvedCv: improvedCvSchema,
+
+  /**
+   * The advice, in the candidate's own language.
+   *
+   * The CV stays in English because it goes to a Portuguese employer. Advice
+   * about their own career does not: someone reads guidance better in the
+   * language they think in, and this is the part they act on.
+   *
+   * Empty when the candidate's locale is already English.
+   */
+  translated: z
+    .object({
+      language: z.string().describe('Language name in English, e.g. Hindi'),
+      strengths: z.array(z.object({ title: z.string(), why: z.string() })).max(4),
+      improvements: z.array(z.object({ area: z.string(), action: z.string() })).max(5),
+      leadWith: z.array(z.string()).max(3),
+      questions: z.array(z.object({ question: z.string(), approach: z.string() })).max(5),
+    })
+    .nullable(),
 });
 
 export type CareerPack = z.infer<typeof careerPackSchema>;
