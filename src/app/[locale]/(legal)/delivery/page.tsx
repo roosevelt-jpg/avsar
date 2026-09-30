@@ -39,6 +39,10 @@ export default async function DeliveryPage({ params }: { params: Promise<{ local
           stays available to vetted employers for {DELIVERY.profileMonths} months.
         </li>
         <li>
+          <strong>Your career pack: on request, within minutes.</strong> Available once your report
+          is ready, from your dashboard, and downloadable as a PDF.
+        </li>
+        <li>
           <strong>A decision on your application: within {RESPONSE_DAYS} days</strong> of your
           application being complete, whether the answer is yes or no.
         </li>

@@ -32,8 +32,10 @@ export default async function TermsPage({ params }: { params: Promise<{ locale: 
 
       <h2>What is being sold</h2>
       <p>
-        A professional assessment of your work skills, experience and English, delivered online, and
-        a written skills report based on it. The fee is {price}, about €{ASSESSMENT_FEE.eur},
+        A professional assessment of your work skills, experience and English, delivered online, a
+        written skills report based on it, and a career pack: a rewritten CV built from your own
+        experience, interview preparation, and a development plan. All of it is yours to keep and
+        use with any employer. The fee is {price}, about €{ASSESSMENT_FEE.eur},
         charged once. Indian GST at 18% is included in that amount and is not added at checkout.
       </p>
       <p>
@@ -47,6 +49,10 @@ export default async function TermsPage({ params }: { params: Promise<{ locale: 
         <li>
           Deliver your skills report within {DELIVERY.reportWithinDays} days of you completing the
           assessment.
+        </li>
+        <li>
+          Deliver your career pack on request once your report is ready. It is built only from
+          information you have given us; nothing is added that you cannot support.
         </li>
         <li>Give you a decision on your application within {RESPONSE_DAYS} days, either way.</li>
         <li>

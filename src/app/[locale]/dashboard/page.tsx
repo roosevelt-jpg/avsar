@@ -6,6 +6,9 @@ import { VisibilityToggle } from '@/components/candidate/VisibilityToggle';
 import { AccountMenu } from '@/components/auth/AccountMenu';
 import { JourneyStatus } from '@/components/candidate/JourneyStatus';
 import { getCandidateStatus, type CandidateStatus } from '@/lib/candidate/status';
+import { CareerPack } from '@/components/candidate/CareerPack';
+import { getAdminSupabase } from '@/lib/supabase/admin';
+import type { CareerPack as Pack } from '@/lib/cv/coach-schema';
 import { fill, getDictionary, isLocale } from '@/lib/i18n';
 import { requireCandidate } from '@/lib/auth';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
@@ -67,11 +70,28 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
   let visible = true;
   let reportReady = true;
   let status: CandidateStatus | null = null;
+  let pack: Pack | null = null;
 
   if (isSupabaseConfigured()) {
     const candidate = await requireCandidate(locale, `/${locale}/dashboard`);
     visible = candidate.visibleToEmployers;
     status = await getCandidateStatus(candidate.id, candidate.paymentStatus);
+
+    const admin = getAdminSupabase();
+    const { data: stored } = (await admin
+      ?.from('career_packs')
+      .select('strengths, improvements, interview, improved_cv')
+      .eq('candidate_id', candidate.id)
+      .maybeSingle()) ?? { data: null };
+
+    if (stored) {
+      pack = {
+        strengths: stored.strengths,
+        improvements: stored.improvements,
+        interview: stored.interview,
+        improvedCv: stored.improved_cv,
+      } as Pack;
+    }
 
     const supabase = await getServerSupabase();
     const { data: report } = (await supabase
@@ -241,6 +261,15 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
             </ul>
           </section>
         </div>
+
+        {/* The part of the fee the candidate keeps, whether or not they are
+            ever placed. It sits above the visibility switch because it is the
+            thing they came back for. */}
+        {status && (
+          <div className="mt-12">
+            <CareerPack pack={pack} canGenerate={status.reportReady} />
+          </div>
+        )}
 
         <div className="mt-10">
           <VisibilityToggle label={d.visible} note={d.visibleNote} initial={visible} />

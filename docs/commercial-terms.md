@@ -82,6 +82,34 @@ measurement: this platform has placed nobody. They have to be reconciled with
 Smith & Adams' own placement records, and `basis` updated to say over what
 period and in which sectors.
 
+## What the fee buys, and why that matters
+
+The €25 buys three things, and the third is the one that carries the argument:
+
+1. The assessment.
+2. The skills report.
+3. **The career pack**: a CV rewritten from the candidate's own experience,
+   interview preparation for the role they applied to, and a development plan.
+
+The third has value with any employer, anywhere, whether or not this platform
+ever places them. That is what makes the fee a payment for a product rather than
+a payment for access to a selection process, and the distinction is the one the
+recruitment-fee rules turn on.
+
+It only holds while the pack is genuinely portable and genuinely useful. If it
+ever becomes a thin wrapper around "apply with us", the argument goes with it.
+
+### The rule inside the generator
+
+`coach.ts` forbids adding any experience, qualification or achievement not in
+the source, and every rewritten bullet carries a `basedOn` field naming the
+phrase it came from. `unsupportedBullets()` then checks that mechanically rather
+than trusting the instruction, and anything it flags is stored on the record.
+
+This is not pedantry. A CV that claims something the candidate cannot support in
+an interview costs them the job, and in a visa application it can cost them far
+more than that.
+
 ## Positions and areas
 
 The meeting gave four areas and ten positions that do not map onto them: welders
