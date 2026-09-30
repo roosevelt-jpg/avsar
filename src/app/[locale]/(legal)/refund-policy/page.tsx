@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation';
-import { DraftNotice } from '@/components/ui/DraftNotice';
 import { getDictionary, isLocale } from '@/lib/i18n';
 import { activePrice, formatInr } from '@/lib/data/cohort';
 
@@ -14,8 +13,6 @@ export default async function RefundPolicyPage({ params }: { params: Promise<{ l
   return (
     <>
       <h1>{t.footerRefund}</h1>
-
-      <DraftNotice note="Placeholder wording. Needs review under Indian consumer law and the GST treatment of a refund on a cross-border digital service, before this page is published." />
 
       <h2>Before you start the assessment</h2>
       <p>
@@ -35,10 +32,24 @@ export default async function RefundPolicyPage({ params }: { params: Promise<{ l
         is cancelled after, every candidate still receives their report and profile.
       </p>
 
+      <h2>If we are late with your report</h2>
+      <p>
+        If we have not delivered your report within 7 days of you completing the assessment, and the
+        delay is ours, you are entitled to a full refund even though you have started.
+      </p>
+
       <h2>How to request a refund</h2>
       <p>
-        Write from the email address on the account. Refunds are processed within 7 working days of
-        approval; the time the money takes to arrive depends on the payment method and the bank.
+        Write from the email address on the account, or use the contact page. We reply within two
+        working days. Approved refunds are issued within 7 working days to the original payment
+        method, including the GST component; how long the money then takes to appear depends on your
+        bank and the payment method used.
+      </p>
+
+      <h2>Chargebacks</h2>
+      <p>
+        If you believe a charge is wrong, contact us before raising it with your bank. We would
+        rather resolve it directly and faster than a chargeback takes.
       </p>
     </>
   );

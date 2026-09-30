@@ -16,6 +16,44 @@ export const BRAND = {
 } as const;
 
 /**
+ * The registered entity behind the site.
+ *
+ * A payment aggregator's merchant review looks for this: the legal name, a real
+ * postal address, a working phone and a monitored email, all reachable from the
+ * public site. RBI-regulated aggregators reject merchants who cannot show them.
+ *
+ * Fill these four fields and every policy page completes itself. While
+ * `legalName` is empty the pages say so plainly rather than printing an empty
+ * bracket, because a reviewer reading "[COMPANY NAME]" fails the application
+ * faster than one reading an honest gap.
+ */
+export const ENTITY = {
+  legalName: '',
+  registeredAddress: '',
+  /** International format, and it must be answered. */
+  phone: '',
+  supportEmail: 'candidates@smithandadams.com',
+  employerEmail: 'employers@smithandadams.com',
+  reportEmail: 'report@smithandadams.com',
+  jurisdiction: 'Dubai, United Arab Emirates',
+} as const;
+
+export function entityIsComplete(): boolean {
+  return Boolean(ENTITY.legalName && ENTITY.registeredAddress && ENTITY.phone);
+}
+
+/**
+ * When the report and the profile are delivered.
+ *
+ * A merchant review asks how a digital service reaches the buyer and in what
+ * time. Saying it plainly is also how a refund dispute is settled later.
+ */
+export const DELIVERY = {
+  reportWithinDays: 7,
+  profileMonths: 12,
+} as const;
+
+/**
  * Candidate assessment fee.
  *
  * Priced in euros and shown in rupees. The rupee figure is a display

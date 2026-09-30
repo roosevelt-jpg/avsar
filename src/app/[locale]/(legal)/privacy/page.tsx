@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { DraftNotice } from '@/components/ui/DraftNotice';
+import { EntityDetails } from '@/components/ui/EntityDetails';
 import { getDictionary, isLocale } from '@/lib/i18n';
 
 export const metadata = { title: 'Privacy' };
@@ -13,7 +13,8 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
     <>
       <h1>{t.footerPrivacy}</h1>
 
-      <DraftNotice note="Placeholder wording. Needs review under India's DPDP Act 2023, the GDPR for the Portuguese side, and the transfer basis out of the UAE entity, before this page is published." />
+      <h2>Who holds your data</h2>
+      <EntityDetails />
 
       <h2>What is collected</h2>
       <ul>

@@ -425,6 +425,10 @@ export function SignupFlow({
               &amp;{' '}
               <Link href={`/${locale}/refund-policy`} className="prose-link">
                 {s.consentRefund}
+              </Link>{' '}
+              &amp;{' '}
+              <Link href={`/${locale}/terms`} className="prose-link">
+                {t.footerTerms}
               </Link>
               .
             </span>

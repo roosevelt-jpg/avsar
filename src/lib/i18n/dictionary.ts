@@ -63,7 +63,9 @@ export type Dictionary = {
   sectors: readonly string[];
 
   /* Footer */
+  footerTerms: string;
   footerRefund: string;
+  footerDelivery: string;
   footerPrivacy: string;
   footerContact: string;
   footerLegal: string;
@@ -371,7 +373,9 @@ const en: Dictionary = {
     'QA tester',
   ],
 
-  footerRefund: 'Refund policy',
+  footerTerms: 'Terms',
+  footerRefund: 'Refunds',
+  footerDelivery: 'Service delivery',
   footerPrivacy: 'Privacy',
   footerContact: 'Contact',
   footerLegal: '© 2026 S&A Recruitment, a Smith & Adams company · Lisbon · New Delhi',
@@ -750,7 +754,9 @@ const hi: Dictionary = {
     'QA टेस्टर',
   ],
 
-  footerRefund: 'रिफ़ंड नीति',
+  footerTerms: 'नियम',
+  footerRefund: 'रिफ़ंड',
+  footerDelivery: 'सेवा वितरण',
   footerPrivacy: 'गोपनीयता',
   footerContact: 'संपर्क',
   footerLegal: '© 2026 S&A Recruitment, a Smith & Adams company · लिस्बन · नई दिल्ली',

@@ -5,9 +5,11 @@ import { getDictionary, type Locale } from '@/lib/i18n';
 export function SiteFooter({ locale }: { locale: Locale }) {
   const t = getDictionary(locale);
   const links = [
-    { href: `/${locale}/selection-rules`, label: t.selectionRules },
+    { href: `/${locale}/terms`, label: t.footerTerms },
     { href: `/${locale}/refund-policy`, label: t.footerRefund },
+    { href: `/${locale}/delivery`, label: t.footerDelivery },
     { href: `/${locale}/privacy`, label: t.footerPrivacy },
+    { href: `/${locale}/selection-rules`, label: t.selectionRules },
     { href: `/${locale}/contact`, label: t.footerContact },
   ];
 

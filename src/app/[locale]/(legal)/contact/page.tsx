@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
-import { DraftNotice } from '@/components/ui/DraftNotice';
+import { EntityDetails } from '@/components/ui/EntityDetails';
 import { getDictionary, isLocale } from '@/lib/i18n';
+import { ENTITY, RESPONSE_DAYS } from '@/lib/data/brand';
 
 export const metadata = { title: 'Contact' };
 
@@ -13,19 +14,28 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
     <>
       <h1>{t.footerContact}</h1>
 
-      <DraftNotice note="Placeholder details. Replace with the registered entity name, address and the real support channels." />
+      <h2>Registered office</h2>
+      <EntityDetails />
 
       <h2>Candidates</h2>
-      <p>WhatsApp +91 80 0000 0000 · candidates@smithandadams.com</p>
+      <p>
+        <span className="font-mono">{ENTITY.supportEmail}</span>
+        <br />
+        We answer within two working days, and give a decision on an application within{' '}
+        {RESPONSE_DAYS} days.
+      </p>
 
       <h2>Employers</h2>
-      <p>employers@smithandadams.com</p>
-
-      <h2>Report a fee you were asked to pay</h2>
       <p>
-        No one is authorised to charge a candidate anything beyond the assessment fee paid on this
-        site. If an agent or intermediary asks for money, report it to report@smithandadams.com. Reports
-        can be anonymous.
+        <span className="font-mono">{ENTITY.employerEmail}</span>
+      </p>
+
+      <h2>If anyone asks you for money</h2>
+      <p>
+        Nobody is authorised to charge a candidate anything beyond the assessment fee paid on this
+        site. Not an agent, not an intermediary, not anyone claiming to represent us. If it happens,
+        tell us at <span className="font-mono">{ENTITY.reportEmail}</span>. You can do it without
+        giving your name, and it will not affect your application.
       </p>
     </>
   );
