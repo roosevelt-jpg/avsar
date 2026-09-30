@@ -43,12 +43,32 @@ function priceFromInr(inr: number) {
   return { netPaise, gstPaise: totalPaise - netPaise, totalPaise };
 }
 
+/**
+ * The currency the candidate is actually charged in.
+ *
+ * INR is what the site quotes and what a candidate expects to see on their
+ * statement. Not every provider can present in rupees from a European account,
+ * and when it cannot, the candidate's own bank converts and adds a
+ * foreign-transaction fee on top of a price the site advertised in rupees.
+ *
+ * CHARGE_CURRENCY=EUR falls back to the euro headline rather than leaving the
+ * checkout broken. Confirm INR presentment with the provider before assuming
+ * the default works.
+ */
+export const CHARGE_CURRENCY: 'INR' | 'EUR' =
+  process.env.CHARGE_CURRENCY === 'EUR' ? 'EUR' : 'INR';
+
 export const PRICING = {
   early: priceFromInr(ASSESSMENT_FEE.inr),
   standard: priceFromInr(ASSESSMENT_FEE.inr),
   gstRate: GST_RATE,
-  currency: 'INR',
+  currency: CHARGE_CURRENCY,
 } as const;
+
+/** Minor units in the charge currency: paise for INR, cents for EUR. */
+export function chargeAmountMinor(): number {
+  return CHARGE_CURRENCY === 'EUR' ? ASSESSMENT_FEE.eur * 100 : activePrice().totalPaise;
+}
 
 export type PriceTier = 'early' | 'standard';
 

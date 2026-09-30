@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { signupSchema } from '@/lib/validation';
-import { ACTIVE_TIER, COHORT, activePrice } from '@/lib/data/cohort';
+import { ACTIVE_TIER, COHORT, activePrice, chargeAmountMinor, CHARGE_CURRENCY } from '@/lib/data/cohort';
 import { BRAND } from '@/lib/data/brand';
 import { itemSectorFor } from '@/lib/data/positions';
 import { getPaymentProvider, receiptNumber } from '@/lib/payments';
@@ -87,8 +87,8 @@ export async function POST(request: Request) {
   let session;
   try {
     session = await provider.createCheckout({
-      amountMinor: price.totalPaise,
-      currency: 'INR',
+      amountMinor: chargeAmountMinor(),
+      currency: CHARGE_CURRENCY,
       receipt,
       description: `${BRAND.name} assessment`,
       customer: {
