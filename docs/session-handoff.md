@@ -4,6 +4,30 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 12 - 30 Sep 2026, 18:55, abilio.diz@smithandadams.com
+
+Decidida a entidade: **Benefit Discovery, Lda** (NIPC 517818817, Av. da
+Liberdade 69 4.º A, Lisboa), nao a SMTADM do Dubai. Motivo no
+`docs/stripe-onboarding.md`: AE nao esta na lista de business locations do UPI.
+
+`ENTITY` em `src/lib/data/brand.ts` passou para a empresa portuguesa, com
+`tradingAs: 'S&A Recruitment'` e `registrationLabel: 'NIPC'`. O
+`EntityDetails` mostra agora a firma, o nome comercial e o NIPC.
+
+`ENTITY.phone` ficou **vazio de proposito**: nao passei o movel do Dubai para
+uma empresa portuguesa. Enquanto estiver vazio as paginas legais mostram o
+banner de falta em vez de um numero errado. Falta o Abilio dar um numero PT.
+
+Gerente unica e (desde 23.05.2024) socia unica: Teresa Claudia Viegas Gama,
+NIF 310597501. E ela que tem de fazer o onboarding da Stripe ou ser o account
+representative; a Stripe retem payouts ate o representante estar verificado.
+
+Nada de dados pessoais no repo: nem numero de CC, nem IBAN, nem codigo da
+certidao permanente.
+
+Por resolver: objecto social e CAE (43350 construcao, nao 78100 colocacao de
+pessoal) e a licenca IEFP do DL 260/2009 para agencia privada de colocacao.
+
 ## Bloco 11 - 30 Sep 2026, 18:10, abilio.diz@smithandadams.com
 
 Tres formatos de CV (Standard / Europass / Professional), rota

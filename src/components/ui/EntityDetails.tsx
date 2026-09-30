@@ -24,11 +24,15 @@ export function EntityDetails() {
     <address className="m-0 not-italic text-[15px] leading-[1.7] text-ink-2">
       <strong className="font-semibold text-ink">{ENTITY.legalName}</strong>
       <br />
+      <span className="text-muted">trading as {ENTITY.tradingAs}</span>
+      <br />
       {ENTITY.registeredAddress}
       <br />
       {ENTITY.jurisdiction}
       <br />
-      <span className="text-muted">Trade licence {ENTITY.registrationNumber}</span>
+      <span className="text-muted">
+        {ENTITY.registrationLabel} {ENTITY.registrationNumber}
+      </span>
       <br />
       <span className="font-mono text-[14px]">{ENTITY.phone}</span>
       <br />

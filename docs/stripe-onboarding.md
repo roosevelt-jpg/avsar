@@ -40,9 +40,9 @@ Fixing it means a DED licence amendment to add an activity that covers this,
 "Human Resources Consultancy" or "Portals Website Design & Management" or
 both. Days, and a few thousand dirhams. It does not fix the UPI problem.
 
-## Recommendation
+## Decision
 
-Put the Stripe account on a **Portuguese** entity.
+The Stripe account goes on the **Portuguese** entity: Benefit Discovery, Lda.
 
 Both shareholders are Portuguese nationals, which removes the usual friction
 in proving a director's identity to a European acquirer. Portugal is on the
@@ -55,67 +55,89 @@ Keep the Dubai company for what it is licensed to do.
 
 There is already a Stripe account with country PT under the name SMTADM
 (`acct_1ULJUeDdQLZiXO6m`), charges not yet enabled. That is the account to
-finish, with the business renamed to whichever Portuguese entity signs the
-candidate terms.
+finish, renamed to Benefit Discovery, Lda.
 
-If you decide on Dubai anyway, the platform does not need to change: set
-`STRIPE_METHODS=card,link` and drop the UPI copy from checkout. Say so and I
-will make that change rather than leave a UPI button that fails in India.
+`ENTITY` in `src/lib/data/brand.ts` now carries the Portuguese company, so
+every policy page, the contact page and the footer print it.
 
 ## Data for the form
-
-From the licence and the MOA, for whichever route you take.
 
 ### Company
 
 | Field | Value |
 |---|---|
-| Legal name | SMTADM REAL ESTATE L.L.C |
-| Legal type | Limited Liability Company |
-| Trade licence no. | 1174293 |
-| Commercial register no. | 1962728 |
-| DCCI no. | 456046 |
-| Issuing authority | Dubai Department of Economy and Tourism |
-| Issued / expires | 19 Apr 2023 / 18 Apr 2027 |
-| Licensed activity | Real Estate Buying & Selling Brokerage |
-| Registered address | Office 102-08, Salem Abdullah Bin Dasmal Building, Al Quoz Industrial First, Dubai |
-| Phone | +971 52 318 5409 |
-| Share capital | AED 300,000, 300 shares of AED 1,000 |
-| Incorporated | Federal Decree-Law No. 32 of 2021 |
+| Legal name | BENEFIT DISCOVERY, LDA |
+| Legal form | Sociedade por quotas |
+| NIPC | 517818817 |
+| Registered office | Avenida da Liberdade 69, 4.º A, 1250-140 Lisboa |
+| Share capital | EUR 5,000 |
+| Financial year end | 31 December |
+| Binding | One gerente acting alone |
+| Registry proof | Certidão permanente, valid to 09 Jul 2027. Give Stripe the access code if asked; it is not written down in this repo. |
 
-### Owners and directors
+### Director and owner
 
-Both hold 50%, both are Managing Directors, singly or jointly (MOA Art. 10),
-both Portuguese nationals:
+Teresa Cláudia Viegas Gama, NIF 310597501, is the sole gerente since the other
+gerente resigned on 23 May 2024, and acquired the second quota the same day.
+Treat them as holding 100% unless the accountant says otherwise.
 
-- Muhammad Adam Ismail, person no. 1286969
-- Muhammad Furkan Ismail, person no. 1286949
+That has a practical consequence: **they have to do the Stripe onboarding**, or
+at minimum be named as the account representative, sign the terms and clear
+identity verification. Stripe holds payouts until the representative and every
+owner above 25% are verified. There is no way to complete this without them.
 
-Stripe will ask each of them for a passport number, date of birth and a
-document scan. Those are on the passport pages and in MOA Article 10. Enter
-them yourself: I do not put government identifiers into forms.
+Their citizen card carries everything Stripe asks for. Enter it yourself: I do
+not put government identifiers into forms.
 
-Both are listed as beneficial owners at 50%, so neither can be left out of the
-ownership declaration. Stripe holds payouts until every listed owner has
-cleared verification, which is the single most common reason an account sits
-at "charges not enabled".
+### Payout account
 
-### Bank account (Dubai route only)
+Novobanco, EUR, in the name BENEFIT DISCOVERY. It matches the registered name
+closely enough for Stripe, which refuses payouts to an account in a different
+name. The IBAN is on the bank letter, not in this repo.
 
-SMTADM REAL ESTATE L.L.C, AED current account, IBAN on file. A UAE Stripe
-account settles in AED; the price is set in euros, so every payout carries an
-FX conversion in addition to Stripe's fee.
+### Statement descriptor
 
-On the Portuguese route the payout account must be a euro IBAN in the name of
-the Portuguese entity. Stripe will not pay out to an account in a different
-name from the registered business.
+Set it deliberately. A candidate signs up at **S&A Recruitment** and pays
+₹2,299. If their bank app then shows BENEFIT DISCOVERY, a good share of them
+will call it fraud, and a UPI dispute cannot be contested: Stripe pulls the
+money back immediately.
 
-## What is still missing either way
+So: set the Stripe "doing business as" to S&A Recruitment, set the statement
+descriptor to something like `SA RECRUITMENT`, and say on the checkout page
+what the charge will look like. Stripe will ask for evidence of the trading
+name; the site itself, under the Smith & Adams brand, is that evidence.
 
-1. The entity decision above.
-2. A payout bank account matching that entity.
-3. `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` pushed to Vercel. The live
-   key goes nowhere until the entity is settled.
-4. A live-mode check that UPI actually appears at checkout. Test mode accepts
-   `payment_method_types[0]=upi` on the PT account, but test mode is permissive
-   and is not evidence about live.
+## Two gaps that are not Stripe's
+
+**1. A Portuguese telephone number.** `ENTITY.phone` is empty, so the policy
+pages currently show the honest-gap banner instead of a number. I did not carry
+the Dubai mobile across: a Portuguese company publishing a UAE mobile reads as
+a front, and Stripe's review looks at the site. Send a number and it is a
+one-line change.
+
+**2. The company's registered object does not mention recruitment.** The
+objecto covers construction, business and management consultancy, support
+services to companies, administrative services and debt collection. The
+principal CAE is 43350, building finishing. Recruitment is CAE 78100.
+
+Stripe is unlikely to check that closely. The Portuguese state is the one that
+checks: placing candidates with employers is a *agência privada de colocação*
+under Decreto-Lei 260/2009, which requires a licence from the IEFP. Running it
+from a Portuguese company makes that directly applicable in a way the Dubai
+company did not, which is the trade-off that came with today's decision.
+
+Adding CAE 78100 and amending the objecto is an online alteration at the
+registry, a few days and a few hundred euros. The IEFP licence is the longer
+one and belongs on the critical path, not after launch.
+
+## What I need to switch payments on
+
+```
+PAYMENT_PROVIDER=stripe
+STRIPE_METHODS=card,upi
+STRIPE_SECRET_KEY=...
+STRIPE_WEBHOOK_SECRET=...
+```
+
+The keys go in `.env.local` and up through `scripts/push-env.sh`. Nothing else
+in the codebase changes.

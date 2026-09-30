@@ -18,33 +18,47 @@ export const BRAND = {
 /**
  * The registered entity behind the site.
  *
- * A payment aggregator's merchant review looks for this: the legal name, a real
+ * A payment provider's merchant review looks for this: the legal name, a real
  * postal address, a working phone and a monitored email, all reachable from the
- * public site. RBI-regulated aggregators reject merchants who cannot show them.
+ * public site.
  *
- * Fill these four fields and every policy page completes itself. While
- * `legalName` is empty the pages say so plainly rather than printing an empty
- * bracket, because a reviewer reading "[COMPANY NAME]" fails the application
- * faster than one reading an honest gap.
+ * The Portuguese company, not the Dubai one. Stripe's published list of
+ * countries an account may be registered in to accept UPI includes Portugal and
+ * excludes the United Arab Emirates, and UPI is how most of India pays for
+ * something at this price. See docs/stripe-onboarding.md.
+ *
+ * Fill these fields and every policy page completes itself. While one is
+ * missing the pages say so plainly rather than printing an empty bracket,
+ * because a reviewer reading "[COMPANY NAME]" fails the application faster than
+ * one reading an honest gap.
  */
 export const ENTITY = {
-  legalName: 'SMTADM REAL ESTATE L.L.C',
-  /** Trade licence 1174293, Dubai Department of Economy and Tourism. */
-  registrationNumber: '1174293',
+  legalName: 'Benefit Discovery, Lda',
   /**
-   * The licence carries one activity, Real Estate Buying & Selling Brokerage,
-   * which does not cover this platform. See docs/stripe-onboarding.md: the
-   * entity behind payments is still an open decision, and this constant moves
-   * with it.
+   * The name a candidate actually knows us by.
+   *
+   * It has to reach the card and UPI statement too. Someone who signed up at
+   * S&A Recruitment and then sees an unfamiliar company name debit 2,299
+   * rupees files a dispute, and they are right to.
    */
-  registeredAddress:
-    'Office 102-08, Salem Abdullah Bin Dasmal Building, Al Quoz Industrial First, Dubai',
-  /** International format, and it must be answered. */
-  phone: '+971 52 318 5409',
+  tradingAs: 'S&A Recruitment',
+  /** Pessoa colectiva, Conservatoria do Registo Comercial de Lisboa. */
+  registrationNumber: '517818817',
+  registrationLabel: 'NIPC',
+  registeredAddress: 'Avenida da Liberdade 69, 4.º A, 1250-140 Lisboa',
+  /**
+   * Must be a Portuguese number that someone answers.
+   *
+   * Deliberately left empty rather than carrying the Dubai mobile over: a
+   * Portuguese company publishing a UAE mobile on its terms page reads as a
+   * front to anyone checking, and Stripe's review does check. While this is
+   * empty the policy pages say so plainly instead of printing a wrong number.
+   */
+  phone: '',
   supportEmail: 'candidates@smithandadams.com',
   employerEmail: 'employers@smithandadams.com',
   reportEmail: 'report@smithandadams.com',
-  jurisdiction: 'Dubai, United Arab Emirates',
+  jurisdiction: 'Lisbon, Portugal',
 } as const;
 
 export function entityIsComplete(): boolean {
