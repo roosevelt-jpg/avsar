@@ -7,6 +7,7 @@ import { Mono } from '@/components/ui/Mono';
 import { AREAS, POSITIONS, positionsInArea, type PositionSlug } from '@/lib/data/positions';
 import { formatInr, activePrice } from '@/lib/data/cohort';
 import { fill, type Dictionary, type Locale } from '@/lib/i18n';
+import { loadCashfree } from '@/lib/payments/cashfree-client';
 
 type Method = 'upi' | 'card' | 'netbanking';
 
@@ -39,12 +40,18 @@ export function SignupFlow({
    * and then missing from the provider's page.
    */
   availableMethods,
+  /** Which rail is active, so the client knows how to open checkout. */
+  provider,
+  /** Sandbox or production, for the provider's browser SDK. */
+  providerMode,
 }: {
   locale: Locale;
   t: Dictionary;
   initialPosition: PositionSlug;
   confirmedReceipt?: string;
   availableMethods: readonly Method[];
+  provider: 'stripe' | 'razorpay' | 'cashfree';
+  providerMode: 'sandbox' | 'production';
 }) {
   const router = useRouter();
   const s = t.signup;
@@ -108,10 +115,23 @@ export function SignupFlow({
       const data = (await response.json()) as {
         receipt: string;
         redirectUrl: string | null;
+        clientToken: string | null;
         simulated: boolean;
       };
 
       setReceipt(data.receipt);
+
+      /* Cashfree opens its own checkout from the page instead of handing back
+         a URL, which is also what puts UPI in front of the candidate. */
+      if (provider === 'cashfree' && data.clientToken) {
+        const cashfree = await loadCashfree(providerMode);
+        const result = await cashfree.checkout({
+          paymentSessionId: data.clientToken,
+          redirectTarget: '_self',
+        });
+        if (result.error) throw new Error(result.error.message ?? 'checkout_failed');
+        return;
+      }
 
       /* Hosted Checkout: hand the browser over to the provider. The success URL
          brings it back and the server confirms the session before this component

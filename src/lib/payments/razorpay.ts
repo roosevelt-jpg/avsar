@@ -23,7 +23,7 @@ export const razorpayProvider: PaymentProvider = {
 
   async createCheckout(request: CheckoutRequest): Promise<CheckoutSession> {
     if (!this.isConfigured()) {
-      return { id: `order_sim_${Date.now().toString(36)}`, redirectUrl: null, simulated: true };
+      return { id: `order_sim_${Date.now().toString(36)}`, redirectUrl: null, clientToken: null, simulated: true };
     }
 
     const response = await fetch('https://api.razorpay.com/v1/orders', {
@@ -47,7 +47,7 @@ export const razorpayProvider: PaymentProvider = {
     const order = (await response.json()) as { id: string };
     /* Razorpay uses an in-page widget, so there is nowhere to redirect. The
        client opens Checkout with this order id. */
-    return { id: order.id, redirectUrl: null, simulated: false };
+    return { id: order.id, redirectUrl: null, clientToken: order.id, simulated: false };
   },
 
   async confirmSession(orderId: string) {
@@ -65,8 +65,10 @@ export const razorpayProvider: PaymentProvider = {
     return { paid: !!captured, paymentId: captured?.id ?? null };
   },
 
-  async handleWebhook(rawBody: string, signature: string): Promise<WebhookResult | null> {
+  async handleWebhook(rawBody: string, headers: Headers): Promise<WebhookResult | null> {
     if (!WEBHOOK_SECRET) return null;
+
+    const signature = headers.get('x-razorpay-signature') ?? '';
 
     const expected = crypto.createHmac('sha256', WEBHOOK_SECRET).update(rawBody).digest('hex');
     const a = Buffer.from(expected, 'utf8');

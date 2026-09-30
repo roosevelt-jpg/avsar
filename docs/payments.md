@@ -14,44 +14,89 @@ swapping a provider does not touch the sign-up flow.
 The platform entity is in Dubai. Stripe supports UAE-registered businesses, and
 a UAE Stripe account can charge Indian cardholders in INR. What it cannot do:
 
-| Method | Stripe (UAE account) | Domestic rail (India) |
-|---|---|---|
-| UPI | no | yes |
-| Net banking | no | yes |
-| RuPay cards | mostly no | yes |
-| Visa / Mastercard (Indian issuer) | yes, as an international transaction | yes, domestic |
-| International cards | yes | limited |
+| Method | Stripe (UAE) | Cashfree (PA-CB) | Razorpay (domestic) |
+|---|---|---|---|
+| UPI | no | **yes** | yes |
+| Net banking | no | yes | yes |
+| RuPay cards | mostly no | yes | yes |
+| Visa / Mastercard (Indian issuer) | as an international transaction | domestic | domestic |
+| Needs an Indian entity | no | **no** | yes |
 
 UPI and net banking are domestic Indian instruments. On Stripe they exist only
-for accounts registered in India.
+for accounts registered in India, and that is not a setting.
 
-This matters more than it looks. UPI is how most people in India pay for
-something that costs ₹1,999. On cards alone, and as a cross-border transaction:
+On cards alone, as a cross-border transaction: many Indian debit cards have
+international use disabled by default, Indian issuers decline cross-border at
+much higher rates than domestic, most RuPay cards do not work abroad, and the
+candidate sees a foreign-transaction fee on a purchase quoted in rupees.
 
-- Many Indian debit cards have international usage disabled by default, and the
-  cardholder has to turn it on in their banking app first.
-- Indian issuers decline cross-border card transactions at a much higher rate
-  than domestic ones.
-- The candidate may see a foreign-transaction fee and a currency mark-up on
-  their statement, on a purchase they were told cost ₹1,999.
+## What is built: Cashfree as a cross-border aggregator
 
-At the volumes this model needs, the difference between "UPI available" and
-"cards only" is the difference between a viable funnel and an expensive one.
+`PAYMENT_PROVIDER=cashfree` is the configuration that matches the company being
+in Dubai and the candidates being in India.
 
-## Options, in order of preference
+The RBI licenses **cross-border payment aggregators** (PA-CB). As of January
+2026 nineteen entities hold one; Cashfree was the first, and Razorpay, PayU,
+BillDesk, Amazon Pay, Juspay and others followed. A PA-CB may collect rupees
+from Indian consumers and settle to a foreign entity, which is exactly this
+arrangement: the candidate pays by UPI, the Dubai company receives the money.
 
-1. **Dual rail.** Stripe on the Dubai entity for employers and for any
-   non-Indian payer, plus a domestic Indian rail for candidates. The domestic
-   rail needs either an Indian entity or a provider holding an RBI PA-CB
-   (payment aggregator, cross-border) licence that can collect INR on behalf of
-   a foreign entity. Razorpay, Cashfree and PayGlocal all have relevant
-   licences; confirm the current scope with each before committing.
-2. **Stripe only.** Fastest to launch, no Indian entity. Cards only. Model the
-   conversion loss before choosing this.
-3. **Domestic rail only.** Best candidate conversion, worst fit for employer
-   invoicing in EUR.
+Cashfree was chosen because it has held the licence longest and its cross-border
+product is the most settled. Razorpay's PA-CB is a second file behind the same
+interface, not a rewrite.
 
-The code supports all three today.
+### Two things about the adapter worth knowing
+
+**Cashfree works in rupees, not paise.** Stripe and Razorpay both take the minor
+unit. Getting this wrong charges a hundred times too much or too little, so the
+conversion is explicit in `createCheckout` rather than inline.
+
+**Its webhook signs the timestamp together with the body.** The adapter also
+rejects anything more than five minutes old: a valid signature stays valid for
+ever otherwise, and a captured webhook could be replayed later.
+
+**Checkout opens in the page rather than redirecting.** Cashfree hands back a
+`payment_session_id` and its SDK opens the sheet, which is also what puts UPI in
+front of the candidate. That is why `clientToken` exists on `CheckoutSession`.
+
+## Cost, at cohort scale
+
+20,000 candidates at ₹2,299 is about ₹46M, roughly €500,000 gross.
+
+| Rail | Rate | Cost |
+|---|---|---|
+| Domestic UPI (Indian entity) | 0.4% above ₹2,000 | ≈ €2,000 |
+| Cashfree PA-CB | 2-4% cross-border | ≈ €10,000-20,000 |
+| Stripe international cards | 3-4% plus FX, high declines | worse, before counting lost conversion |
+
+**UPI stopped being free in October 2026.** NPCI introduced 0.4% MDR on P2M
+transactions above ₹2,000; below that it is still zero. The fee is ₹2,299, so it
+crosses that line by ₹299. About ₹9 per transaction. Dropping the price to stay
+under the threshold would trade €3.50 of revenue per candidate for €0.10 of fees,
+so the line is crossed deliberately.
+
+## The decision this actually turns on
+
+Choosing Cashfree over Razorpay is not really a payments decision. India's
+Emigration Act requires a **registered recruiting agent** to recruit Indian
+citizens for work abroad, with a ₹50 lakh bank guarantee, and a UAE entity
+cannot hold that registration.
+
+If an Indian entity has to exist for the licence anyway, collecting domestically
+through it costs €2,000 instead of €15,000. The question is corporate structure,
+and the rail follows from it.
+
+`PAYMENT_PROVIDER` is one word either way.
+
+## Apple Pay
+
+Launched in India on 29 September 2026, with Axis Bank credit cards only, no UPI
+and no RuPay. It is a wallet over a card, not a rail: an Indian card inside
+Apple Pay charged by a Dubai Stripe account is still a cross-border card
+transaction with the same declines and FX.
+
+It arrives free with Cashfree, which is one of the PSPs Apple launched with. No
+work, no decision. Worth revisiting if UPI support is added.
 
 ## Things that are true regardless of the rail
 

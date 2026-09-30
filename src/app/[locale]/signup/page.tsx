@@ -73,6 +73,8 @@ export default async function SignupPage({
           initialPosition={initialPosition}
           confirmedReceipt={confirmedReceipt}
           availableMethods={availablePaymentMethods()}
+          provider={getPaymentProvider().name}
+          providerMode={process.env.CASHFREE_ENV === 'production' ? 'production' : 'sandbox'}
         />
         {!confirmedReceipt && <OrderSummary t={t} />}
       </main>

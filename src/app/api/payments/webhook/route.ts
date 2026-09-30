@@ -14,10 +14,10 @@ export const runtime = 'nodejs';
 export async function POST(request: Request) {
   const provider = getPaymentProvider();
   const raw = await request.text();
-  const signature =
-    request.headers.get('stripe-signature') ?? request.headers.get('x-razorpay-signature') ?? '';
 
-  const result = await provider.handleWebhook(raw, signature);
+  /* The whole header set goes to the adapter. Each provider signs differently,
+     and the route has no business knowing how. */
+  const result = await provider.handleWebhook(raw, request.headers);
 
   /* Do not say why it was rejected. An attacker probing this learns nothing. */
   if (!result) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });

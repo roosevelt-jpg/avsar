@@ -39,7 +39,7 @@ export const stripeProvider: PaymentProvider = {
 
   async createCheckout(request: CheckoutRequest): Promise<CheckoutSession> {
     if (!this.isConfigured()) {
-      return { id: `cs_sim_${Date.now().toString(36)}`, redirectUrl: null, simulated: true };
+      return { id: `cs_sim_${Date.now().toString(36)}`, redirectUrl: null, clientToken: null, simulated: true };
     }
 
     const session = await stripe().checkout.sessions.create({
@@ -71,7 +71,7 @@ export const stripeProvider: PaymentProvider = {
       cancel_url: request.cancelUrl,
     });
 
-    return { id: session.id, redirectUrl: session.url, simulated: false };
+    return { id: session.id, redirectUrl: session.url, clientToken: null, simulated: false };
   },
 
   async confirmSession(sessionId: string) {
@@ -85,8 +85,10 @@ export const stripeProvider: PaymentProvider = {
     };
   },
 
-  async handleWebhook(rawBody: string, signature: string): Promise<WebhookResult | null> {
+  async handleWebhook(rawBody: string, headers: Headers): Promise<WebhookResult | null> {
     if (!WEBHOOK_SECRET) return null;
+
+    const signature = headers.get('stripe-signature') ?? '';
 
     let event: Stripe.Event;
     try {

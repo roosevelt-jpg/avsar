@@ -1,17 +1,21 @@
 /**
  * Payment provider abstraction.
  *
- * Two rails matter for this product and they are not interchangeable:
+ * Three adapters, for two different jobs:
  *
- *  - Stripe, on the Dubai entity, is the default. It handles cards worldwide
- *    and every employer invoice.
- *  - A domestic Indian rail (Razorpay, Cashfree, PayU) is the only way to offer
- *    UPI, which is how most candidates in India actually pay. It needs either an
- *    Indian entity or a provider holding an RBI PA-CB licence for cross-border
- *    collection on behalf of a foreign entity.
+ *  - **Stripe**, on the Dubai entity. Cards worldwide, and every employer
+ *    invoice in euros. Cannot do UPI: that is only available on Stripe accounts
+ *    registered in India, and no configuration changes it.
+ *  - **Cashfree**, as a cross-border aggregator. Holds an RBI PA-CB licence,
+ *    which lets it collect rupees from Indian consumers and settle to a foreign
+ *    entity. This is the rail that gives candidates UPI while the company stays
+ *    in Dubai.
+ *  - **Razorpay**, as a domestic Indian rail. Cheapest of the three, and needs
+ *    an Indian entity. Worth switching to if one exists anyway for the
+ *    Emigration Act recruiting-agent registration.
  *
- * Everything above this interface is rail-agnostic, so the second one can be
- * switched on later without touching the sign-up flow.
+ * Everything above this interface is rail-agnostic, so which one is active is a
+ * commercial decision rather than a rewrite.
  */
 
 export type PaymentMethodHint = 'upi' | 'card' | 'netbanking';
@@ -33,6 +37,11 @@ export type CheckoutSession = {
   id: string;
   /** Where to send the browser. Null when the provider uses an in-page widget. */
   redirectUrl: string | null;
+  /**
+   * Token the provider's browser SDK needs to open its own checkout.
+   * Null for providers that redirect instead.
+   */
+  clientToken: string | null;
   /** True when no keys are configured and nothing was really created. */
   simulated: boolean;
 };
@@ -47,11 +56,18 @@ export type WebhookResult = {
 };
 
 export interface PaymentProvider {
-  readonly name: 'stripe' | 'razorpay';
+  readonly name: 'stripe' | 'razorpay' | 'cashfree';
   isConfigured(): boolean;
   createCheckout(request: CheckoutRequest): Promise<CheckoutSession>;
   /** Confirms a session after the browser returns. Never trust the query string. */
   confirmSession(sessionId: string): Promise<{ paid: boolean; paymentId: string | null }>;
-  /** Verifies and interprets a webhook. Returns null when the signature is bad. */
-  handleWebhook(rawBody: string, signature: string): Promise<WebhookResult | null>;
+  /**
+   * Verifies and interprets a webhook. Returns null when the signature is bad.
+   *
+   * Takes the whole header set rather than one signature string: Stripe signs
+   * with one header, Cashfree signs the body concatenated with a timestamp from
+   * a second. Passing a single string would have forced the route to know each
+   * provider's scheme, which is the thing this interface exists to prevent.
+   */
+  handleWebhook(rawBody: string, headers: Headers): Promise<WebhookResult | null>;
 }

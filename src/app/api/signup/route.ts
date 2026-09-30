@@ -105,6 +105,9 @@ export async function POST(request: Request) {
         tier: ACTIVE_TIER,
         receipt,
         candidate_id: candidateId ?? 'unstored',
+        /* Cashfree takes the callback URL per order rather than from a
+           dashboard setting, so it travels with the request. */
+        webhook_url: `${origin}/api/payments/webhook`,
       },
     });
   } catch (error) {
@@ -150,6 +153,7 @@ export async function POST(request: Request) {
     receipt,
     sessionId: session.id,
     redirectUrl: session.redirectUrl,
+    clientToken: session.clientToken,
     simulated: session.simulated,
     provider: provider.name,
   });
