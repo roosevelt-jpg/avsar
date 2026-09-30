@@ -28,6 +28,8 @@ export function EntityDetails() {
       <br />
       {ENTITY.jurisdiction}
       <br />
+      <span className="text-muted">Trade licence {ENTITY.registrationNumber}</span>
+      <br />
       <span className="font-mono text-[14px]">{ENTITY.phone}</span>
       <br />
       <span className="font-mono text-[14px]">{ENTITY.supportEmail}</span>
