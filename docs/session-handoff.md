@@ -4,6 +4,32 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 11 - 30 Sep 2026, 18:10, abilio.diz@smithandadams.com
+
+Tres formatos de CV (Standard / Europass / Professional), rota
+`/[locale]/dashboard/cv.pdf?template=`, e o career pack traduzido para a
+lingua do candidato (o CV fica em ingles). Commit e deploy feitos.
+
+Documentos societarios da SMTADM lidos (licenca DED 1174293, MOA, passaportes
+dos dois socios, conta AED). Escrito `docs/stripe-onboarding.md`.
+
+Dois factos que decidem a conta Stripe:
+
+1. A lista de business locations do UPI (docs.stripe.com/payments/upi) inclui
+   PT e **nao inclui AE**. Uma conta Stripe no Dubai nao aceita UPI, netbanking
+   nem qualquer via indiana: so cartao e Link. Para cobrar EUR 25 a candidatos
+   na India isso e fatal.
+2. A licenca DED tem uma unica atividade, Real Estate Buying & Selling
+   Brokerage, que nao cobre esta plataforma.
+
+Recomendacao registada: conta na entidade portuguesa (acct_1ULJUeDdQLZiXO6m,
+country PT, charges nao ativos), nao no Dubai. Decisao ainda do Abilio.
+
+Nenhum dado de passaporte foi introduzido em formularios nem escrito no repo.
+
+Por correr: `0009_career_pack.sql` (inclui a coluna `translated`), confirmar
+`0008_it_sector.sql`.
+
 ## Bloco 11 - 2026-09-29 - abilio.diz@smithandadams.com (Claude Opus 5)
 
 Notas de reunião do Abílio implementadas.

@@ -28,10 +28,17 @@ export const BRAND = {
  * faster than one reading an honest gap.
  */
 export const ENTITY = {
-  legalName: 'SMTADM Real Estate L.L.C',
+  legalName: 'SMTADM REAL ESTATE L.L.C',
   /** Trade licence 1174293, Dubai Department of Economy and Tourism. */
   registrationNumber: '1174293',
-  registeredAddress: 'Office 102-08, Al Quoz Industrial First',
+  /**
+   * The licence carries one activity, Real Estate Buying & Selling Brokerage,
+   * which does not cover this platform. See docs/stripe-onboarding.md: the
+   * entity behind payments is still an open decision, and this constant moves
+   * with it.
+   */
+  registeredAddress:
+    'Office 102-08, Salem Abdullah Bin Dasmal Building, Al Quoz Industrial First, Dubai',
   /** International format, and it must be answered. */
   phone: '+971 52 318 5409',
   supportEmail: 'candidates@smithandadams.com',
