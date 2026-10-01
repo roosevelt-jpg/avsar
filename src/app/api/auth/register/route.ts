@@ -89,23 +89,72 @@ export async function POST(request: Request) {
   /**
    * Create the account and start the session.
    *
-   * Through the SSR client, so the cookies are set on this response. This
-   * returns a session only while "Confirm email" is off in the Supabase
-   * dashboard; with it on, Supabase withholds the session until the link is
-   * followed and this whole design silently becomes the one it replaced. See
-   * docs/auth.md.
+   * Three things can happen, and the design only works if all three end with a
+   * session on this response. Leaving any of them to the Supabase dashboard
+   * means a setting someone changes in a tab silently turns this back into the
+   * flow it replaced.
+   *
+   *  1. "Confirm email" off: `signUp` returns a session. Done.
+   *  2. "Confirm email" on: `signUp` succeeds and withholds the session, so we
+   *     sign in with the password we just set.
+   *  3. The mailer is down or rate limited: `signUp` fails outright with
+   *     "Error sending confirmation email" and no account exists at all. The
+   *     account is then created with the service role, already confirmed, and
+   *     signed in the same way.
+   *
+   * Case 3 is not hypothetical. Supabase's built-in sender does two messages an
+   * hour for the whole project, so on the first busy morning every registration
+   * would have failed on a screen that said only "something went wrong".
    */
+  let userId: string | null = null;
+
   const { data: signUp, error: signUpError } = await supabase.auth.signUp({
     email,
     password: input.password,
   });
 
-  if (signUpError || !signUp.user) {
-    console.error('[register] signUp failed', signUpError?.status, signUpError?.message);
-    if (signUpError?.status === 429) {
+  if (signUpError) {
+    /* Rate limiting here is Supabase's auth limit, not the mailer's, and it
+       does mean "come back later". */
+    if (signUpError.status === 429) {
       return NextResponse.json({ status: 'rate_limited' }, { status: 429 });
     }
+
+    console.error('[register] signUp failed', signUpError.status, signUpError.message);
+
+    const { data: created, error: createError } = await admin.auth.admin.createUser({
+      email,
+      password: input.password,
+      /* Confirmed at creation because nothing was ever sent. The address is
+         still unproved as far as this product is concerned: that is tracked by
+         `candidates.email_verified_at`, which only a followed link sets. */
+      email_confirm: true,
+    });
+
+    if (createError || !created.user) {
+      console.error('[register] admin create failed', createError?.message);
+      return NextResponse.json({ error: 'signup_failed' }, { status: 502 });
+    }
+    userId = created.user.id;
+  } else {
+    userId = signUp.user?.id ?? null;
+  }
+
+  if (!userId) {
     return NextResponse.json({ error: 'signup_failed' }, { status: 502 });
+  }
+
+  /* Whatever happened above, finish holding a session. */
+  const { data: current } = await supabase.auth.getUser();
+  if (!current.user) {
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password: input.password,
+    });
+    if (signInError) {
+      console.error('[register] post-signup sign-in failed', signInError.message);
+      return NextResponse.json({ error: 'signup_failed' }, { status: 502 });
+    }
   }
 
   /**
@@ -121,7 +170,7 @@ export async function POST(request: Request) {
     .upsert(
       {
         cohort_id: COHORT.id,
-        auth_user_id: signUp.user.id,
+        auth_user_id: userId,
         full_name: input.fullName,
         phone,
         phone_hash: phoneHash,

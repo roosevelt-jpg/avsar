@@ -4,6 +4,38 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 16 - 01 Oct 2026, 15:20, abilio.diz@smithandadams.com
+
+Rodagem do walkthrough. 13 frames capturados a 3840x2160 (viewport 1920x1080,
+dsf 2) com puppeteer-core contra o Chrome do sistema, em
+`scratchpad/shoot/frames/`. Falta so o dashboard com relatorio completo.
+
+**Dois bugs reais encontrados a filmar.**
+
+1. **Registo partido em producao.** `signUp` devolvia 500 "Error sending
+   confirmation email": o "Confirm email" continua LIGADO no Supabase e o
+   emissor interno nao consegue enviar. Qualquer candidato a inscrever-se via
+   "Something went wrong". **Corrigido**: o `/api/auth/register` passa a
+   garantir sessao nos tres cenarios (confirmacao off, confirmacao on sem
+   sessao, mailer em baixo -> `admin.createUser` + `signInWithPassword`). O
+   registo deixou de depender do sistema de email, que era a intencao do
+   desenho e so agora e verdade.
+
+2. **`/api/assessment/answer` devolve 500 a meio do assessment.**
+   `new row violates row-level security policy for table "assessment_answers"`.
+   Reproduzivel: acontece algures na seccao 1, depois de varias respostas
+   gravadas com sucesso. O botao "Finish section" fica desactivado e o
+   candidato fica preso. **POR CORRIGIR.** Suspeita: o cliente envia um
+   `attemptId` de uma tentativa ja submetida (as policies exigem
+   `submitted_at is null`), ou a contagem de itens muda entre renders
+   ("Question 1 of 12" e depois "Question 8 of 8" na mesma seccao de 20).
+
+Nota de conteudo: um "Chef" recebe perguntas de housekeeping, porque o banco e
+por sector e nao por posicao. Para a rodagem usei "Cleaner".
+
+Limpeza: as 11 linhas de teste criadas foram apagadas, com os auth users. Os 6
+candidatos reais nao foram tocados.
+
 ## Bloco 15 - 01 Oct 2026, 13:05, abilio.diz@smithandadams.com
 
 `0009` e `0010` corridos pelo Abilio.
