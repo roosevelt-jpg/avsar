@@ -64,10 +64,21 @@ export async function getSessionCandidate(): Promise<SessionCandidate | null> {
     paymentStatus: data.payment_status as string,
     visibleToEmployers: data.visible_to_employers as boolean,
     profileComplete: Boolean(data.profile_completed_at),
-    /* Either stamp counts. Ours is the one that is set in the design we
-       shipped; Supabase's only means anything if "Confirm email" is ever
-       turned back on, and then it should still count. */
-    emailConfirmed: Boolean(data.email_verified_at) || Boolean(auth.user.email_confirmed_at),
+    /**
+     * Only our own stamp counts.
+     *
+     * This used to fall back to `auth.users.email_confirmed_at`, which was
+     * wrong in exactly the configuration we ship: with Supabase's "Confirm
+     * email" off, and with accounts created by the service role, that column is
+     * set at the moment the account exists. Reading it as proof made the report
+     * gate pass for everybody, which is the same as having no gate.
+     *
+     * A row cannot say whether that column was set by a real confirmation or by
+     * auto-confirmation, so it cannot be trusted either way.
+     * `email_verified_at` is written in one place only, `/auth/callback`, and
+     * only for someone who followed a link sent to that address.
+     */
+    emailConfirmed: Boolean(data.email_verified_at),
   };
 }
 

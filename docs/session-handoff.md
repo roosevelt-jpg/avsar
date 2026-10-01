@@ -4,6 +4,21 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 21 - 01 Oct 2026, 20:10, abilio.diz@smithandadams.com
+
+**Correccao a um bug que eu proprio introduzi hoje.** O `emailConfirmed` fazia
+`email_verified_at || auth.users.email_confirmed_at`. Com o "Confirm email"
+desligado, que e a configuracao que enviamos, e com contas criadas pela service
+role, essa coluna vem preenchida a nascenca. Resultado: **a barreira do
+relatorio passava para toda a gente**, ou seja, nao existia.
+
+Agora so conta `candidates.email_verified_at`, escrito num unico sitio, o
+`/auth/callback`, para quem seguiu um link enviado para aquele endereco.
+
+Consequencia a assumir: **enquanto nao houver SMTP, ninguem verifica e ninguem
+descarrega relatorio.** E a falha correcta. O relatorio demora 7 dias de
+qualquer forma, por isso ha margem, mas o SES passa a estar no caminho critico.
+
 ## Bloco 20 - 01 Oct 2026, 19:35, abilio.diz@smithandadams.com
 
 Filme dois montado. `SA-walkthrough-EN.mp4` e `-HI.mp4`, 1920x1080, 30fps,

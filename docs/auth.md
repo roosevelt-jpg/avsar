@@ -45,9 +45,17 @@ start an assessment you have paid for is not a safety measure.
 | Authentication → **SMTP Settings** | real SMTP, not the built-in sender | The built-in sender does **2 emails per hour for the whole project** and Supabase says it is not for production. Every registration now sends one. |
 
 Confirmation being off means `auth.users.email_confirmed_at` is set at birth and
-proves nothing. `candidates.email_verified_at` is the column that means
-something: it is written in `/auth/callback` when someone follows a link that
-was sent to that address.
+proves nothing, and a row cannot say afterwards whether it was set by a real
+confirmation or by auto-confirmation. So it is not read at all.
+`candidates.email_verified_at` is the only column that counts, and it is
+written in one place, `/auth/callback`, for someone who followed a link sent to
+that address.
+
+**This means the report gate depends on mail actually being sent.** Until SMTP
+is configured nobody can verify, so nobody can download a report. That is the
+correct failure: the alternative, which shipped for a few hours, was reading
+Supabase's auto-confirmation as proof, which made the gate pass for everybody
+and amounted to having no gate at all.
 
 ## Roles
 
