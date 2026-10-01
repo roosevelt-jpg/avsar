@@ -4,6 +4,33 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 15 - 01 Oct 2026, 13:05, abilio.diz@smithandadams.com
+
+`0009` e `0010` corridos pelo Abilio.
+
+- `/api/auth/resend-verification`: reenvia o link, endereco lido da sessao e
+  nunca do pedido; 429 e mostrado em vez de mentir.
+- `VerifyEmailBanner` no dashboard, so enquanto `email_verified_at` for null.
+  E aviso, nao muro: o relatorio e que espera.
+- `src/lib/email`: interface de mailer com no-op por omissao (mesma forma que
+  os provedores de pagamento) e implementacao SES pela API assinada v4, sem SDK.
+  Por configurar: `AWS_SES_*` e `EMAIL_FROM`.
+- `/api/cron/signup-reminders` + `vercel.json` (09:00 UTC diario), guardado por
+  `CRON_SECRET`. 3 lembretes a 1, 3 e 10 dias, contados desde o ultimo contacto.
+  Contador na linha; so incrementa se o mailer aceitou.
+- `/api/unsubscribe`: GET e POST sem sessao, token HMAC do id, so escreve
+  `unsubscribed_at`. List-Unsubscribe e List-Unsubscribe-Post nos cabecalhos.
+
+**Nada apaga linhas.** De proposito: apagar e o unico passo irreversivel aqui e
+a regra de retencao devia ser decisao, nao omissao.
+
+Por configurar no Vercel: `CRON_SECRET`, `AWS_SES_REGION`,
+`AWS_SES_ACCESS_KEY_ID`, `AWS_SES_SECRET_ACCESS_KEY`, `EMAIL_FROM`.
+
+**O video de walkthrough nunca foi feito.** Formato: horizontal (decidido
+01/10). Falta decidir legendas gravadas ou faixa limpa. Os guioes escritos
+antes descrevem o fluxo antigo (codigo por email) e estao desactualizados.
+
 ## Bloco 14 - 01 Oct 2026, 11:40, abilio.diz@smithandadams.com
 
 Conta criada no passo 1 com password, sessao iniciada logo, email de

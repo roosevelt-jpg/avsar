@@ -138,6 +138,12 @@ export type Dictionary = {
   /* Dashboard */
   dash: {
     navOverview: string;
+    verifyTitle: string;
+    verifyBody: string;
+    verifyCta: string;
+    verifySent: string;
+    verifyRateLimited: string;
+    verifyFailed: string;
     navReport: string;
     navProfile: string;
     greeting: string;
@@ -465,6 +471,13 @@ const en: Dictionary = {
 
   dash: {
     navOverview: 'Overview',
+    verifyTitle: 'Confirm your email address',
+    verifyBody:
+      'Your report is sent to {email}, so we need to know it reaches you. Open the email we sent and follow the link. Everything else here works in the meantime.',
+    verifyCta: 'Send the link again',
+    verifySent: 'Sent. Check {email}, including the spam folder.',
+    verifyRateLimited: 'Too many requests. Try again in an hour.',
+    verifyFailed: 'We could not send it. Please try again shortly.',
     navReport: 'Report',
     navProfile: 'Profile',
     greeting: 'Namaste, {name}',
@@ -852,6 +865,13 @@ const hi: Dictionary = {
 
   dash: {
     navOverview: 'अवलोकन',
+    verifyTitle: 'अपना ईमेल पता सत्यापित करें',
+    verifyBody:
+      'आपकी रिपोर्ट {email} पर भेजी जाती है, इसलिए हमें यह पक्का करना है कि वह आप तक पहुँचती है। हमने जो ईमेल भेजा है उसमें दिए लिंक को खोलें। तब तक बाकी सब यहाँ काम करता रहेगा।',
+    verifyCta: 'लिंक दोबारा भेजें',
+    verifySent: 'भेज दिया गया। {email} देखें, स्पैम फ़ोल्डर भी।',
+    verifyRateLimited: 'बहुत अधिक अनुरोध। एक घंटे बाद दोबारा कोशिश करें।',
+    verifyFailed: 'हम इसे भेज नहीं सके। कृपया थोड़ी देर बाद कोशिश करें।',
     navReport: 'रिपोर्ट',
     navProfile: 'प्रोफ़ाइल',
     greeting: 'नमस्ते, {name}',

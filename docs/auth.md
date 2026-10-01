@@ -93,7 +93,37 @@ carries `reminder_count`, `last_reminder_at` and `unsubscribed_at`, and the
 `candidate_lifecycle` view labels each row `mql_registered`, `mql_profiled` or
 `sql`.
 
-Reminders are capped at three and the count lives on the row, not in a job, so a
-retried job cannot send a fourth. They are about something the person started,
-not a newsletter, but they still carry an unsubscribe, and the row is deleted
-once the reminders are spent and nothing has happened.
+`/api/cron/signup-reminders` runs daily at 09:00 UTC (`vercel.json`), guarded by
+`CRON_SECRET`: without the guard the endpoint is a button anyone can press to
+make us send mail, which is both a bill and a way to burn a sending reputation.
+
+Three reminders, at 1, 3 and 10 days. The schedule counts from the last contact
+rather than from registration, so a missed run does not fire two reminders the
+next day. The count lives on the row, so a retried or overlapping run cannot
+send a fourth, and it is only incremented when the mailer accepted the message:
+a refused send is retried next run instead of quietly using one up.
+
+They are about something the person started, not a newsletter, but they carry
+`List-Unsubscribe` and `List-Unsubscribe-Post` and a working link either way.
+`/api/unsubscribe` answers GET and POST without a session, because that is the
+point of an unsubscribe link; the token is an HMAC of the candidate id, so a
+link in an inbox cannot be edited into someone else's, and the only thing it
+can set is `unsubscribed_at`.
+
+Nothing deletes rows yet. That is deliberate: deletion is the one step here
+that cannot be undone, and the retention rule should be a decision rather than
+a default.
+
+### Sending
+
+`src/lib/email` is the same shape as the payment providers: an interface with a
+no-op default. Unconfigured, it logs what it would have sent and the cron
+reports `mailer: "noop"`, rather than failing the run or half-sending a batch.
+
+SES over the signed HTTPS API, not the SDK, because this needs one call and the
+SDK is large. Set `AWS_SES_REGION`, `AWS_SES_ACCESS_KEY_ID`,
+`AWS_SES_SECRET_ACCESS_KEY` and `EMAIL_FROM`.
+
+This is separate from the Supabase SMTP setting above. Supabase sends the auth
+mail from its own templates; this sends everything else. Both need to be
+configured, and both are unconfigured today.

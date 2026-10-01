@@ -5,6 +5,7 @@ import { Wordmark } from '@/components/ui/Wordmark';
 import { VisibilityToggle } from '@/components/candidate/VisibilityToggle';
 import { AccountMenu } from '@/components/auth/AccountMenu';
 import { JourneyStatus } from '@/components/candidate/JourneyStatus';
+import { VerifyEmailBanner } from '@/components/candidate/VerifyEmailBanner';
 import { getCandidateStatus, type CandidateStatus } from '@/lib/candidate/status';
 import { CareerPack } from '@/components/candidate/CareerPack';
 import { getAdminSupabase } from '@/lib/supabase/admin';
@@ -71,11 +72,15 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
   let reportReady = true;
   let status: CandidateStatus | null = null;
   let pack: Pack | null = null;
+  /* Shown only while the address is unproved, and it is the only thing on this
+     page that asks for anything. The report is what the proof releases. */
+  let unverifiedEmail: string | null = null;
 
   if (isSupabaseConfigured()) {
     const candidate = await requireCandidate(locale, `/${locale}/dashboard`);
     visible = candidate.visibleToEmployers;
     status = await getCandidateStatus(candidate.id, candidate.paymentStatus);
+    unverifiedEmail = candidate.emailConfirmed ? null : candidate.email;
 
     const admin = getAdminSupabase();
     const { data: stored } = (await admin
@@ -160,6 +165,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
       </header>
 
       <main className="px-[clamp(20px,4cqi,56px)] py-[clamp(32px,5cqi,64px)]">
+        {unverifiedEmail && <VerifyEmailBanner email={unverifiedEmail} t={t} />}
         <Mono className="text-muted">{fill(d.greeting, { name: r.name.split(' ')[0] ?? r.name })}</Mono>
         <div className="mt-3 mb-9 flex flex-wrap items-end justify-between gap-4">
           <h1 className="m-0 text-[clamp(28px,4cqi,48px)] font-semibold leading-[1.1] tracking-[-0.03em]">
