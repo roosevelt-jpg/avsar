@@ -1,6 +1,6 @@
 import { renderToBuffer } from '@react-pdf/renderer';
 import { ReportDocument, type ReportData } from '@/lib/report/ReportDocument';
-import { getSessionCandidate, getSessionStaff } from '@/lib/auth';
+import { canReceiveReport, getSessionCandidate, getSessionStaff } from '@/lib/auth';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { sectorLabel, SECTOR_SLUGS, type SectorSlug } from '@/lib/data/sectors';
 import { COHORT } from '@/lib/data/cohort';
@@ -15,8 +15,15 @@ export const maxDuration = 60;
  * cohort is re-ranked, and keeping a stale copy in a bucket means a candidate
  * can be holding a percentile that no longer matches the one an employer sees.
  *
- * A candidate can fetch only their own. Staff can fetch any, with `?candidate=`,
- * because reviewing a report is their job.
+ * A candidate can fetch only their own, and only once they have proved the
+ * email address. Nothing earlier in the funnel waits on that proof, because a
+ * funnel that stalls on an email arriving in the right browser loses people
+ * for reasons they cannot see. This is the point where it has to hold: the
+ * report is delivered to that address, and it names them, their score and
+ * their rank against the cohort.
+ *
+ * Staff can fetch any, with `?candidate=`, because reviewing a report is their
+ * job.
  */
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -27,6 +34,12 @@ export async function GET(request: Request) {
 
   if (!staff && !candidate) {
     return new Response('Unauthorized', { status: 401 });
+  }
+
+  if (candidate && !canReceiveReport(candidate)) {
+    /* 403 and not 404: they have a report, and telling them so is how they
+       learn to go and click the link in their email. */
+    return new Response('Email address not verified', { status: 403 });
   }
 
   const candidateId = staff ? requested : candidate?.id;

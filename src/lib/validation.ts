@@ -8,12 +8,27 @@ export const indianMobile = z
   .transform((value) => value.replace(/[\s-]/g, ''))
   .pipe(z.string().regex(/^[6-9]\d{9}$/));
 
+/**
+ * Eight characters, not Supabase's default six.
+ *
+ * This account opens a file holding a passport number, a CV and an employment
+ * history. Also turn on the leaked-password check in the Supabase dashboard
+ * (Authentication -> Policies): length alone stops nothing if the password is
+ * one of the ones already published.
+ */
+export const password = z.string().min(8).max(200);
+
 export const signupAccountSchema = z.object({
   fullName: z.string().trim().min(2).max(120),
   mobile: indianMobile,
   email: z.string().trim().email().max(200),
   hasPassport: z.boolean(),
 });
+
+/** The first step: enough to open the account, and nothing more. */
+export const registerSchema = signupAccountSchema.extend({ password });
+
+export type RegisterInput = z.infer<typeof registerSchema>;
 
 export const signupProfileSchema = z.object({
   position: z.string().min(1).max(40),

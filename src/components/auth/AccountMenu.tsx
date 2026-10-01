@@ -40,9 +40,14 @@ export async function AccountMenu({
   } else if (viewer.role === 'employer') {
     who = viewer.employer.name || 'Employer';
     links.push({ href: '/admin', label: 'Talent pool' });
-  } else {
+  } else if (viewer.role === 'candidate') {
     who = viewer.candidate.fullName.split(' ')[0] ?? '';
     links.push({ href: `/${locale}/dashboard`, label: t.dash.navOverview });
+  } else {
+    /* Signed in with no candidate row. Say so plainly and offer the one thing
+       that moves them forward, rather than printing an empty name. */
+    who = viewer.email.split('@')[0] ?? '';
+    links.push({ href: `/${locale}/signup`, label: t.dash.navOverview });
   }
 
   return (

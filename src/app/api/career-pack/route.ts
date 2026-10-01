@@ -85,7 +85,7 @@ export async function POST() {
         country: (row.location as string | null) ?? '',
         responsibilities: row.description ? [row.description as string] : [],
       })),
-      totalYearsExperience: [0, 2, 4, 6][candidate.yearsBand] ?? 0,
+      totalYearsExperience: [0, 2, 4, 6][candidate.yearsBand ?? 0] ?? 0,
       education: (education ?? []).map((row) => ({
         institution: row.institution as string,
         qualification: row.qualification as string,

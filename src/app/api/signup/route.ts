@@ -5,16 +5,20 @@ import { BRAND } from '@/lib/data/brand';
 import { itemSectorFor } from '@/lib/data/positions';
 import { getPaymentProvider, receiptNumber } from '@/lib/payments';
 import { getAdminSupabase } from '@/lib/supabase/admin';
-import { identityHash } from '@/lib/hash';
+import { getSessionCandidate } from '@/lib/auth';
 
 export const runtime = 'nodejs';
 
 /**
- * Registers a candidate and opens a checkout session.
+ * Completes the profile and opens a checkout session.
  *
- * The candidate row is written before payment with `payment_status: 'pending'`
- * so an abandoned checkout stays visible in the funnel, and so the webhook has a
- * row to attach the payment to.
+ * The candidate row and the account already exist: both are created at the
+ * first step, by /api/auth/register. This finishes the profile on that row and
+ * hands the browser to the payment provider.
+ *
+ * Which row is identified from the session, never from the request body.
+ * Before accounts existed this matched on a hash of the phone number, which
+ * meant anyone who typed someone else's number wrote over their record.
  *
  * The price is read from the server. The client never sends an amount.
  */
@@ -43,43 +47,42 @@ export async function POST(request: Request) {
   const serial = Math.floor(Math.random() * 999_999);
   const receipt = receiptNumber(1, serial);
 
-  let candidateId: string | null = null;
+  /* The session says who this is. An unauthenticated request has no row to
+     complete, so it is sent back to open an account rather than quietly
+     creating a second one. */
+  const candidate = await getSessionCandidate();
+  if (!candidate) {
+    return NextResponse.json({ error: 'not_registered' }, { status: 401 });
+  }
+
+  const candidateId: string = candidate.id;
 
   if (supabase) {
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('candidates')
-      .upsert(
-        {
-          cohort_id: COHORT.id,
-          full_name: input.fullName,
-          phone: `+91${input.mobile}`,
-          phone_hash: identityHash(input.mobile),
-          email: input.email,
-          has_passport: input.hasPassport,
-          position: input.position,
-          /* The enum the item bank is keyed on, derived rather than sent: a
-             browser must not be able to pick which questions it gets. */
-          sector: itemSectorFor(input.position),
-          years_experience_band: input.yearsExperience,
-          english_self_rating: input.englishSelf,
-          city_state: input.cityState,
-          payment_status: 'pending',
-          /* Stored, not just validated: this is the odds-disclosure consent, and
-             it is the record that matters if the fee model is ever challenged. */
-          consent_selection_odds_at: new Date().toISOString(),
-          consent_version: 'v1-2026-09',
-          locale,
-        },
-        { onConflict: 'phone_hash,cohort_id' },
-      )
-      .select('id')
-      .single();
+      .update({
+        full_name: input.fullName,
+        has_passport: input.hasPassport,
+        position: input.position,
+        /* The enum the item bank is keyed on, derived rather than sent: a
+           browser must not be able to pick which questions it gets. */
+        sector: itemSectorFor(input.position),
+        years_experience_band: input.yearsExperience,
+        english_self_rating: input.englishSelf,
+        city_state: input.cityState,
+        profile_completed_at: new Date().toISOString(),
+        /* Stored, not just validated: this is the odds-disclosure consent, and
+           it is the record that matters if the fee model is ever challenged. */
+        consent_selection_odds_at: new Date().toISOString(),
+        consent_version: 'v1-2026-09',
+        locale,
+      })
+      .eq('id', candidateId);
 
     if (error) {
-      console.error('[signup] candidate upsert failed', error);
+      console.error('[signup] profile update failed', error);
       return NextResponse.json({ error: 'storage_failed' }, { status: 500 });
     }
-    candidateId = data.id as string;
   }
 
   const origin = new URL(request.url).origin;
@@ -104,7 +107,7 @@ export async function POST(request: Request) {
         position: input.position,
         tier: ACTIVE_TIER,
         receipt,
-        candidate_id: candidateId ?? 'unstored',
+        candidate_id: candidateId,
         /* Cashfree takes the callback URL per order rather than from a
            dashboard setting, so it travels with the request. */
         webhook_url: `${origin}/api/payments/webhook`,
@@ -128,11 +131,11 @@ export async function POST(request: Request) {
    */
   const treatAsPaid = session.simulated && process.env.ALLOW_SIMULATED_PAYMENTS === 'true';
 
-  if (supabase && candidateId && treatAsPaid) {
+  if (supabase && treatAsPaid) {
     await supabase.from('candidates').update({ payment_status: 'paid' }).eq('id', candidateId);
   }
 
-  if (supabase && candidateId) {
+  if (supabase) {
     const { error } = await supabase.from('payments').insert({
       candidate_id: candidateId,
       cohort_id: COHORT.id,

@@ -112,6 +112,12 @@ export type Dictionary = {
     errMobile: string;
     errEmail: string;
     errConsent: string;
+    errPassword: string;
+    errAccountExists: string;
+    errPhoneTaken: string;
+    errGeneric: string;
+    passwordLabel: string;
+    passwordHint: string;
     payFailed: string;
   };
 
@@ -428,6 +434,14 @@ const en: Dictionary = {
     errMobile: 'Enter a 10-digit Indian mobile number starting with 6, 7, 8 or 9.',
     errEmail: 'Enter a valid email address.',
     errConsent: 'Please confirm you have read the selection rules.',
+    errPassword: 'Use at least 8 characters.',
+    /* Names the way out. "Email already in use" leaves them on a form that
+       will keep refusing them. */
+    errAccountExists: 'You already have an account with this address. Sign in instead.',
+    errPhoneTaken: 'This mobile number is already registered in this cohort.',
+    errGeneric: 'Something went wrong. Please try again.',
+    passwordLabel: 'Create a password',
+    passwordHint: 'At least 8 characters. You will use it to sign back in.',
     payFailed: 'We could not start the payment. Please try again.',
   },
 
@@ -809,6 +823,12 @@ const hi: Dictionary = {
     errMobile: '6, 7, 8 या 9 से शुरू होने वाला 10 अंकों का भारतीय मोबाइल नंबर डालें।',
     errEmail: 'मान्य ईमेल पता डालें।',
     errConsent: 'कृपया पुष्टि करें कि आपने चयन नियम पढ़ लिए हैं।',
+    errPassword: 'कम से कम 8 अक्षर इस्तेमाल करें।',
+    errAccountExists: 'इस पते से आपका खाता पहले से है। कृपया साइन इन करें।',
+    errPhoneTaken: 'यह मोबाइल नंबर इस कोहोर्ट में पहले से पंजीकृत है।',
+    errGeneric: 'कुछ गड़बड़ हो गई। कृपया दोबारा कोशिश करें।',
+    passwordLabel: 'पासवर्ड बनाएं',
+    passwordHint: 'कम से कम 8 अक्षर। दोबारा साइन इन करने के लिए इसी का उपयोग करेंगे।',
     payFailed: 'हम भुगतान शुरू नहीं कर सके। कृपया दोबारा कोशिश करें।',
   },
 

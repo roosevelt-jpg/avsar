@@ -101,7 +101,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
       .eq('candidate_id', candidate.id)
       .maybeSingle()) ?? { data: null };
 
-    const sector: SectorSlug = (SECTOR_SLUGS as readonly string[]).includes(candidate.sector)
+    const sector: SectorSlug = (SECTOR_SLUGS as readonly string[]).includes(candidate.sector ?? '')
       ? (candidate.sector as SectorSlug)
       : SECTOR_SLUGS[0];
 
@@ -122,7 +122,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
         english: report.english_cefr as string,
         skills: report.skills_score as number,
         experienceScore: report.experience_score as number,
-        years: [0, 2, 4, 6][candidate.yearsBand] ?? 0,
+        years: [0, 2, 4, 6][candidate.yearsBand ?? 0] ?? 0,
         sector: sectorLabel(sector),
         breakdown,
         timeline: SAMPLE_REPORT.timeline,

@@ -46,7 +46,7 @@ export default async function AssessmentPage({
   if (isSupabaseConfigured()) {
     const candidate = await requireCandidate(locale, `/${locale}/assessment?section=${section}`);
 
-    if ((SECTOR_SLUGS as readonly string[]).includes(candidate.sector)) {
+    if ((SECTOR_SLUGS as readonly string[]).includes(candidate.sector ?? '')) {
       sector = candidate.sector as SectorSlug;
     }
     position = candidate.position ?? undefined;

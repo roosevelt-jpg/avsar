@@ -74,7 +74,7 @@ export async function POST(request: Request) {
 
   /* Scoring is scoped to the sector. Without it a housekeeper would be marked
      against scaffolding questions they were never asked. */
-  const sector: SectorSlug = (SECTOR_SLUGS as readonly string[]).includes(candidate.sector)
+  const sector: SectorSlug = (SECTOR_SLUGS as readonly string[]).includes(candidate.sector ?? '')
     ? (candidate.sector as SectorSlug)
     : SECTOR_SLUGS[0];
 

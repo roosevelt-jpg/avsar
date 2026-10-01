@@ -14,12 +14,25 @@ export type SessionCandidate = {
   id: string;
   fullName: string;
   email: string;
-  sector: string;
+  /** Null until the profile step is done. The account exists before it. */
+  sector: string | null;
   position: string | null;
   locale: string;
-  yearsBand: number;
+  yearsBand: number | null;
   paymentStatus: string;
   visibleToEmployers: boolean;
+  /** Profile step finished. Payment is not offered before this. */
+  profileComplete: boolean;
+  /**
+   * The address has been proved.
+   *
+   * Nothing in the funnel waits for this: the account is usable from the
+   * moment it is created, because a funnel that stalls on an email arriving in
+   * the right browser is a funnel that loses people for reasons they cannot
+   * see or fix. The report is what waits, because the report is delivered to
+   * this address and sending it somewhere unproved is the actual harm.
+   */
+  emailConfirmed: boolean;
 };
 
 /** The signed-in candidate, or null. Does not redirect. */
@@ -33,7 +46,7 @@ export async function getSessionCandidate(): Promise<SessionCandidate | null> {
   const { data } = await supabase
     .from('candidates')
     .select(
-      'id, full_name, email, sector, position, locale, years_experience_band, payment_status, visible_to_employers',
+      'id, full_name, email, sector, position, locale, years_experience_band, payment_status, visible_to_employers, profile_completed_at, email_verified_at',
     )
     .eq('auth_user_id', auth.user.id)
     .maybeSingle();
@@ -44,13 +57,23 @@ export async function getSessionCandidate(): Promise<SessionCandidate | null> {
     id: data.id as string,
     fullName: data.full_name as string,
     email: data.email as string,
-    sector: data.sector as string,
+    sector: (data.sector as string | null) ?? null,
     position: (data.position as string | null) ?? null,
     locale: (data.locale as string | null) ?? 'en',
-    yearsBand: data.years_experience_band as number,
+    yearsBand: (data.years_experience_band as number | null) ?? null,
     paymentStatus: data.payment_status as string,
     visibleToEmployers: data.visible_to_employers as boolean,
+    profileComplete: Boolean(data.profile_completed_at),
+    /* Either stamp counts. Ours is the one that is set in the design we
+       shipped; Supabase's only means anything if "Confirm email" is ever
+       turned back on, and then it should still count. */
+    emailConfirmed: Boolean(data.email_verified_at) || Boolean(auth.user.email_confirmed_at),
   };
+}
+
+/** Everything the report gate needs, in one place so the two callers agree. */
+export function canReceiveReport(candidate: SessionCandidate): boolean {
+  return candidate.paymentStatus === 'paid' && candidate.emailConfirmed;
 }
 
 /** The signed-in candidate, or a redirect to sign-in carrying the return path. */
@@ -140,6 +163,21 @@ export async function getSessionEmployer(): Promise<EmployerUser | null> {
 
 export type Viewer =
   | { role: 'candidate'; candidate: SessionCandidate }
+  /**
+   * Signed in, but no candidate row.
+   *
+   * It should not happen now that registration writes the row in the same
+   * request that creates the account, but it is reachable: a deleted candidate
+   * whose auth user survived, or a staff account that has not been added to
+   * `staff_users` yet.
+   *
+   * It exists because the alternative is worse. Reporting these people as
+   * anonymous sends them to sign-in, where the page sees no viewer and shows
+   * the form, so they sign in, bounce off the same guard, and come back. That
+   * loop is the exact shape of two bugs this project has already had, and the
+   * fix both times was to give the state a name.
+   */
+  | { role: 'registered'; userId: string; email: string }
   | { role: 'employer'; employer: EmployerUser }
   | { role: 'staff'; staff: StaffUser }
   | { role: 'anonymous' };
@@ -161,13 +199,28 @@ export async function getViewer(): Promise<Viewer> {
   const candidate = await getSessionCandidate();
   if (candidate) return { role: 'candidate', candidate };
 
+  /* A session with none of the three roles attached. Named rather than folded
+     into anonymous, so the guards can send them somewhere true. */
+  const supabase = await getServerSupabase();
+  const { data } = (await supabase?.auth.getUser()) ?? { data: { user: null } };
+  if (data.user) {
+    return { role: 'registered', userId: data.user.id, email: data.user.email ?? '' };
+  }
+
   return { role: 'anonymous' };
 }
 
 /** Whether a role is allowed on a given path at all. */
 export function canReach(viewer: Viewer, path: string): boolean {
   if (path.startsWith('/admin')) return viewer.role === 'staff' || viewer.role === 'employer';
-  if (path.includes('/assessment') || path.includes('/dashboard')) return viewer.role === 'candidate';
+
+  /* The assessment is what the fee buys, so it is the one place that checks
+     payment rather than merely role. Sending an unpaid candidate there would
+     land them on a page that bounces them straight back out. */
+  if (path.includes('/assessment')) {
+    return viewer.role === 'candidate' && viewer.candidate.paymentStatus === 'paid';
+  }
+  if (path.includes('/dashboard')) return viewer.role === 'candidate';
   return true;
 }
 
@@ -185,15 +238,28 @@ export function resolveDestination(viewer: Viewer, next: string | undefined, loc
   return canReach(viewer, next) ? next : home;
 }
 
-/** Where a signed-in viewer belongs when no explicit destination was asked for. */
+/**
+ * Where a signed-in viewer belongs when no explicit destination was asked for.
+ *
+ * For a candidate this is the resume point, not a fixed page. Someone who
+ * registered and left comes back, or follows the confirmation link days later,
+ * and lands on the step they actually stopped at. Sending everyone to the
+ * dashboard would show an unpaid candidate a dashboard with nothing in it and
+ * no obvious way forward.
+ */
 export function homeFor(viewer: Viewer, locale: Locale): string {
   switch (viewer.role) {
     case 'staff':
-      return '/admin';
     case 'employer':
       return '/admin';
     case 'candidate':
+      if (!viewer.candidate.profileComplete) return `/${locale}/signup?resume=profile`;
+      if (viewer.candidate.paymentStatus !== 'paid') return `/${locale}/signup?resume=payment`;
       return `/${locale}/dashboard`;
+    case 'registered':
+      /* Signed in with nothing attached. The application is the only thing
+         they can usefully do, and it will find their account. */
+      return `/${locale}/signup`;
     default:
       return `/${locale}`;
   }

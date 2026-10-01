@@ -4,6 +4,35 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 14 - 01 Oct 2026, 11:40, abilio.diz@smithandadams.com
+
+Conta criada no passo 1 com password, sessao iniciada logo, email de
+verificacao a ir atras sem nada ficar a espera dele. Decisao do Abilio.
+
+- `0010_account_first.sql` (**por correr**): colunas de perfil passam a aceitar
+  null; constraint `candidates_paid_profile_complete` garante que quem pagou
+  tem perfil completo; `email_verified_at` proprio nosso; `profile_completed_at`;
+  `reminder_count` / `last_reminder_at` / `unsubscribed_at`; vista
+  `candidate_lifecycle` com mql_registered / mql_profiled / sql.
+- `/api/auth/register`: responde as duas perguntas que o browser nao pode
+  responder (email ja tem conta, telemovel ja e de outro) e so depois faz
+  signUp. O upsert por phone_hash deixou de poder sobrescrever a linha de quem
+  ja pagou.
+- `/api/signup` deixou de criar linha: completa o perfil na linha da sessao.
+- `auth.ts`: papel novo `registered` (sessao sem candidato) para fechar o loop
+  de redirecionamento; `homeFor` retoma no passo onde pararam; `canReach` do
+  assessment passa a exigir pagamento; `canReceiveReport`.
+- `/auth/callback?verify=1` carimba `email_verified_at`.
+- `report.pdf` devolve 403 sem email verificado.
+- Password minima 8, campo no passo 1, `autoComplete="new-password"`.
+
+**Depende de definicoes no dashboard Supabase** (ver docs/auth.md): Confirm
+email **OFF**, Redirect URLs, leaked-password check, e SMTP real (SES). Sem o
+SMTP real sao 2 emails/hora no projecto inteiro.
+
+Por fazer: ecra de "confirma o teu email" com reenvio, aviso no dashboard
+quando falta verificar, e o cron dos lembretes (3 no maximo, com unsubscribe).
+
 ## Bloco 13 - 30 Sep 2026, 19:20, abilio.diz@smithandadams.com
 
 `ENTITY.statementDescriptor = 'SA RECRUITMENT'`, e o passo de pagamento do

@@ -27,7 +27,9 @@ const METHOD_SUBS = [
 
 const METHOD_LABELS_EN = ['UPI', 'Debit or credit card', 'Net banking'] as const;
 
-type Errors = Partial<Record<'fullName' | 'mobile' | 'email' | 'cityState' | 'consent' | 'form', string>>;
+type Errors = Partial<
+  Record<'fullName' | 'mobile' | 'email' | 'password' | 'cityState' | 'consent' | 'form', string>
+>;
 
 export function SignupFlow({
   locale,
@@ -66,7 +68,11 @@ export function SignupFlow({
   const [fullName, setFullName] = useState('');
   const [mobile, setMobile] = useState('');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [hasPassport, setHasPassport] = useState<boolean | null>(null);
+  /* Set once the account exists, so Continue cannot open a second one if the
+     candidate steps back to the first screen and forward again. */
+  const [registered, setRegistered] = useState(false);
 
   const [position, setPosition] = useState<PositionSlug>(initialPosition);
   const [years, setYears] = useState(0);
@@ -84,12 +90,13 @@ export function SignupFlow({
       if (fullName.trim().length < 2) next.fullName = s.errRequired;
       if (!/^[6-9]\d{9}$/.test(mobile.replace(/[\s-]/g, ''))) next.mobile = s.errMobile;
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.trim())) next.email = s.errEmail;
+      if (password.length < 8) next.password = s.errPassword;
     }
     if (step === 1 && cityState.trim().length < 2) next.cityState = s.errRequired;
     if (step === 2 && !consent) next.consent = s.errConsent;
     setErrors(next);
     return Object.keys(next).length === 0;
-  }, [step, fullName, mobile, email, cityState, consent, s]);
+  }, [step, fullName, mobile, email, password, cityState, consent, s]);
 
   async function submitPayment() {
     setBusy(true);
@@ -157,8 +164,71 @@ export function SignupFlow({
     }
   }
 
+  /**
+   * Opens the account, and starts the session, at the first step.
+   *
+   * Everything after this runs signed in, so an abandoned application can be
+   * resumed instead of restarted, and so nothing waits for an email to arrive.
+   * The address is proved later; see /api/auth/register.
+   */
+  async function register() {
+    setBusy(true);
+    setErrors({});
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', 'x-avsar-locale': locale },
+        body: JSON.stringify({
+          fullName: fullName.trim(),
+          mobile: mobile.replace(/[\s-]/g, ''),
+          email: email.trim(),
+          password,
+          hasPassport: hasPassport ?? false,
+        }),
+      });
+
+      const data = (await response.json().catch(() => null)) as { status?: string } | null;
+
+      /* Supabase will not tell the browser that an address is taken, so the
+         server answers instead. Without this the candidate would be shown
+         "check your email" for an account they already have. */
+      if (data?.status === 'account_exists') {
+        setBusy(false);
+        setErrors({ email: s.errAccountExists });
+        return;
+      }
+
+      if (data?.status === 'phone_taken') {
+        setBusy(false);
+        setErrors({ mobile: s.errPhoneTaken });
+        return;
+      }
+
+      if (!response.ok || data?.status !== 'created') {
+        setBusy(false);
+        setErrors({ email: s.errGeneric });
+        return;
+      }
+
+      setRegistered(true);
+      setBusy(false);
+      setStep(1);
+      /* The layout reads the session server side, so the header and the
+         account menu are stale until this runs. */
+      router.refresh();
+    } catch (error) {
+      console.error('[signup] register failed', error);
+      setBusy(false);
+      setErrors({ email: s.errGeneric });
+    }
+  }
+
   function next() {
     if (!validateStep()) return;
+    if (step === 0 && !registered) {
+      void register();
+      return;
+    }
     if (step === 2) {
       void submitPayment();
       return;
@@ -257,6 +327,18 @@ export function SignupFlow({
               inputMode="email"
               autoComplete="email"
               className={inputClass(!!errors.email)}
+            />
+          </Field>
+
+          <Field label={s.passwordLabel} hint={s.passwordHint} error={errors.password}>
+            <input
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              type="password"
+              /* Tells a password manager to offer to save it. Without it many
+                 of them stay silent on a field they read as a login. */
+              autoComplete="new-password"
+              className={inputClass(!!errors.password)}
             />
           </Field>
 

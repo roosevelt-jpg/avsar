@@ -1,194 +1,99 @@
-# Authentication
+# Accounts and sessions
 
-## One entry point, three audiences
+## The shape
 
-Everyone signs in at `/[locale]/signin`. There is no separate staff login;
-`/admin/signin` only redirects, so old bookmarks still work.
+The account is created at the **first step of the application**, with a
+password, and the session starts there. Profile and payment happen signed in.
 
-| | Candidate | Employer | Staff |
-|---|---|---|---|
-| Method | One-time code | Password | Password |
-| Authorisation | `candidates` row linked by `auth_user_id` | row in `employer_users` | row in `staff_users` |
-| Lands on | `/[locale]/dashboard` | `/admin` | `/admin` |
-| Helper | `requireCandidate()` | `requireStaffOrEmployer()` | `requireStaff()` |
-
-Two mechanisms, not three, and both live on the same page. Candidates registered
-once and come back weeks later, where a password is a support burden and a code
-to the address they already gave is not. Employers and staff are a small known
-set on their own devices, where a password manager beats a code round trip.
-
-**Both mechanisms are on the page at once, rather than the page asking for an
-email and then choosing.** Choosing would mean revealing whether an address
-belongs to staff before anyone has proved who they are, which turns sign-in into
-a directory of who works here.
-
-### Guards send signed-in people home, never back to sign-in
-
-A guard that bounces an authenticated viewer to sign-in creates a loop: the
-sign-in page sees a session and sends them straight back. `requireCandidate`,
-`requireStaff` and `requireStaffOrEmployer` therefore check whether *anyone* is
-signed in before redirecting, and send a viewer of the wrong role to their own
-home instead. `canReach()` holds the single definition of which role may open
-which path, and both the sign-in page and `/auth/route` consult it.
-
-### Where you land is decided server side
-
-`/auth/route` reads the session and redirects. The form never states a
-destination, so nothing a browser sends can talk its way into a surface the
-viewer is not entitled to. An explicit `next` is honoured only when it is
-same-origin *and* the role allows it; otherwise the viewer lands at their own
-home.
-
-`getViewer()` checks staff, then employer, then candidate. Most-privileged
-first, so an account that is both in a test environment lands consistently
-rather than by whichever query happened to run first.
-
-### Employers share the talent pool, not the AI score
-
-`/admin` is open to staff and to vetted employers, but the CV review column and
-the cohort and placement tabs render only for staff. Handing an employer a raw
-model score as if it measured the person would be indefensible, and RLS backs
-this up: no policy grants an employer access to `cv_assessments`.
-
-## Why email and not WhatsApp or SMS
-
-The right channel for this audience is WhatsApp or SMS on the mobile number they
-registered, because it is the number they actually check and verifying it is
-useful in itself. It is not built yet because sending SMS to Indian numbers needs
-DLT registration with TRAI and a contracted provider, and neither exists.
-
-What changes when the provider is in place:
-
-1. Configure the SMS provider in Supabase → Authentication → Providers → Phone.
-2. In `SignInForm.tsx`, swap `signInWithOtp({ email })` for
-   `signInWithOtp({ phone })` and `verifyOtp({ type: 'email' })` for
-   `type: 'sms'`. The rest of the component does not change.
-3. Replace the email trigger in `0003_auth.sql` with one matching on `phone`.
-   `candidates.phone` is already stored as `+91…`, which is the format Supabase
-   expects.
-
-Email stays as the fallback either way: some candidates change number between
-registering and being selected, and an account that can only be reached on a
-dead SIM is an account nobody can recover.
-
-## How a candidate gets linked to their account
-
-The candidate row is created at sign-up, before any auth account exists, because
-payment comes first. When they later ask for a code, the trigger
-`link_candidate_to_auth_user` on `auth.users` attaches the new user id to the
-candidate row with the matching email, case-insensitively.
-
-Matching on email is sound here specifically because the one-time code proves
-they control that address. It would not be sound as a general identity claim.
-
-A candidate who signs in with a different address than they registered with gets
-no link and lands with no candidate record. That is correct behaviour, not a bug.
-
-## Things that are deliberate
-
-**The code is requested server side, through `/api/auth/request-code`.** It has
-to be: whether an address may receive a code depends on whether it belongs to a
-registered candidate, that needs the service role to answer, and the answer must
-not reach the browser.
-
-One `signInWithOtp` call covers all three cases, with `shouldCreateUser` set
-from whether a candidate row exists:
-
-| Case | `shouldCreateUser` | Result |
-|---|---|---|
-| Registered candidate, no account yet | `true` | Account created, code sent |
-| Existing account (staff wanting a code) | `false` | Code sent |
-| Neither | `false` | No user, nothing created, nothing sent |
-
-An earlier version had the browser call Supabase directly with
-`shouldCreateUser: false` always. That looked like a sensible protection and was
-a lockout: a candidate registers and pays *before* any auth account exists, so
-Supabase found no user, sent nothing, and reported nothing. Every legitimate
-candidate was shut out, silently.
-
-**Sign-in never says whether an address exists.** Same message either way, on both
-forms. Otherwise sign-in becomes a way to test who has registered.
-
-**Sign-out is POST only.** A GET would let any page log the user out with an
-`<img>` tag, and link prefetchers would do it by accident.
-
-**The session refresh lives in `src/proxy.ts`.** Two things about that path are
-load-bearing: with a `src` directory, Next silently ignores this file at the
-project root rather than reporting an error, and Next 16 renamed the convention
-from `middleware` to `proxy`. Get either wrong and auth appears to work until a
-token expires.
-
-**The `next` parameter is same-origin only.** An open redirect on a sign-in page
-is how a credential-phishing link gets to look legitimate.
-
-**Staff are a table, not a flag.** A role in user metadata is editable by the user
-it belongs to, and these are the people who decide whether a candidate advances.
-
-**The assessment deadline is set by the database.** `start_assessment_attempt()`
-is `security definer` and reads the duration from a constant, so the candidate
-never supplies their own `expires_at`. The previous `attempts_self_all` policy
-allowed exactly that; `0003` removed it.
-
-## Setting up a staff account
-
-Create the user in Supabase → Authentication → Users → Add user, then:
-
-```sql
-insert into staff_users (auth_user_id, email, role)
-select id, email from auth.users where email = 'you@example.com'
-on conflict (auth_user_id) do update set role = 'admin';
+```
+step 1  name, mobile, email, password   -> POST /api/auth/register
+                                           auth user + candidate row + session
+                                           verification email sent, nothing waits for it
+step 2  position, experience, city      -> held in the browser
+step 3  payment                         -> POST /api/signup
+                                           completes the profile on the session's row,
+                                           opens checkout
+        assessment                      -> requires payment_status = 'paid'
+        report                          -> requires paid AND email_verified_at
 ```
 
-Having an account is not enough. Without this row, `/admin` and the CV review
-redirect to sign-in, which is the intended behaviour: staff access is granted
-explicitly, never as a side effect of having signed up.
+## Why the email is not in the way
+
+Blocking the funnel on a confirmation email was considered and rejected.
+
+On Android a link opened from Gmail loads in Gmail's own in-app browser. The
+session cookie is set there. The candidate then opens the site in Chrome and is
+signed out, with nothing on screen explaining why. That failure is common, it is
+invisible to us, and it is unrecoverable with magic links alone.
+
+A password makes it recoverable from any browser, which is the real argument for
+having one. And if the password works everywhere, there is no reason to make
+anyone wait for the email before they can continue.
+
+So the address is proved later, and the **report** is what waits for it. The
+report is delivered to that address and carries the candidate's name, score and
+rank. Sending it somewhere nobody proved is the actual harm; being unable to
+start an assessment you have paid for is not a safety measure.
 
 ## Supabase dashboard settings this depends on
 
-Three things live in the dashboard, not in this repository, and the flow is
-broken without them.
+| Setting | Value | Why |
+|---|---|---|
+| Authentication → Sign In / Providers → **Confirm email** | **OFF** | With it on, `signUp` returns no session, the candidate is stranded at step 1, and this design silently becomes the one it replaced. |
+| Authentication → URL Configuration → **Redirect URLs** | the deployed origin + `/auth/callback` | Otherwise Supabase drops every emailed link on the Site URL instead. |
+| Authentication → **Password requirements** | 8 characters, leaked-password check on | The schema enforces 8 as well. The leaked-password check only exists in the dashboard. |
+| Authentication → **SMTP Settings** | real SMTP, not the built-in sender | The built-in sender does **2 emails per hour for the whole project** and Supabase says it is not for production. Every registration now sends one. |
 
-**Authentication → URL Configuration**
-- Site URL: the production origin.
-- Redirect URLs: add `<origin>/auth/callback` for every origin in use,
-  including `http://localhost:3000/auth/callback`. If the callback is not
-  listed, Supabase silently falls back to the Site URL and the visitor lands on
-  the home page instead of where they were going.
+Confirmation being off means `auth.users.email_confirmed_at` is set at birth and
+proves nothing. `candidates.email_verified_at` is the column that means
+something: it is written in `/auth/callback` when someone follows a link that
+was sent to that address.
 
-**Authentication → Emails → templates**
+## Roles
 
-A brand-new user created through OTP receives the *Confirm signup* template, not
-*Magic Link*. Both default to a link only. For the six-digit code to arrive, the
-template body has to include `{{ .Token }}`:
+`getViewer()` resolves one of five, most privileged first.
 
-```html
-<p>Your Avsar sign-in code is <strong>{{ .Token }}</strong>. It expires in 10 minutes.</p>
-<p>Or <a href="{{ .ConfirmationURL }}">open this link</a> instead.</p>
-```
+| Role | Is |
+|---|---|
+| `staff` | a row in `staff_users` |
+| `employer` | a row in `employer_users` |
+| `candidate` | a row in `candidates` |
+| `registered` | a session with none of the above |
+| `anonymous` | no session |
 
-Both work: the code and the link are the same grant delivered two ways, and both
-end at `/auth/callback`, which routes by role.
+`registered` exists because the alternative caused two production bugs. Reporting
+a signed-in user as anonymous sends them to sign-in; sign-in sees no viewer and
+shows the form; they sign in, hit the same guard, and come back. Every state a
+session can be in needs a name and a destination, or it becomes a loop.
 
-## Email delivery
+`homeFor` sends a candidate to where they actually stopped: profile, payment or
+dashboard. Someone who follows the verification link four days later lands on
+the step they left, not on a dashboard with nothing in it.
 
-Supabase's built-in email is for development only. It is rate limited to a
-handful of messages an hour and is not a deliverability path for a product that
-will send twenty thousand codes.
+## The two questions the browser is not allowed to answer
 
-Configure custom SMTP before any real cohort: Authentication → Emails → SMTP
-Settings. AWS SES is already in use elsewhere in this account and is the obvious
-choice. That needs a verified sending domain, so it is blocked on Avsar having a
-domain at all.
+Both need the service role, and both strand a candidate silently if guessed.
 
-Deliverability to Indian consumer inboxes is its own problem, not a side effect
-of picking a provider: SPF, DKIM and DMARC all have to line up, and a brand new
-sending domain has no reputation. Budget for a warm-up rather than sending the
-first cohort's codes on day one.
+**Does this address already have an account?** Supabase will not say: `signUp`
+on an existing address returns an obfuscated user and no error, so the endpoint
+cannot be used to enumerate accounts. On our own signup form that protection is
+a trap, so `/api/auth/register` answers it and the form sends them to sign in.
+The same shape of silence locked four paying candidates out of this platform
+once already.
 
-## Not built yet
+**Is this phone number someone else's?** Candidates are unique on
+`(phone_hash, cohort_id)`, and registration used to upsert on that key. A second
+person entering the same number overwrote the first person's row, email
+included. If the first had paid, they lost it. Registration now refuses.
 
-- Account recovery for a candidate who has lost access to their email.
-- Rate limiting on code requests beyond what Supabase applies by default.
-- Employer sign-in. `employer_users` and its policies exist from `0001`, but
-  there is no form; employers currently reach the talent pool through staff.
-- Session revocation when a candidate withdraws consent.
+## Abandoned registrations
+
+An account opened at step 1 and left is a lead, not litter. `candidates`
+carries `reminder_count`, `last_reminder_at` and `unsubscribed_at`, and the
+`candidate_lifecycle` view labels each row `mql_registered`, `mql_profiled` or
+`sql`.
+
+Reminders are capped at three and the count lives on the row, not in a job, so a
+retried job cannot send a fourth. They are about something the person started,
+not a newsletter, but they still carry an unsubscribe, and the row is deleted
+once the reminders are spent and nothing has happened.
