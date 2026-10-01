@@ -15,6 +15,7 @@ import { requireCandidate } from '@/lib/auth';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { getServerSupabase } from '@/lib/supabase/server';
 import { sectorLabel, SECTOR_SLUGS, type SectorSlug } from '@/lib/data/sectors';
+import { englishBand, skillBand } from '@/lib/report/bands';
 
 export const metadata = { title: 'Your report' };
 
@@ -143,8 +144,14 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
 
   const stats = [
     { label: d.overall, value: String(r.overall), suffix: '/100', note: fill(d.overallNote, { percentile: r.percentile }), dark: true },
-    { label: d.englishLabel, value: r.english, note: d.englishNote, dark: false },
-    { label: fill(d.skillsLabel, { sector: r.sector }), value: String(r.skills), note: d.skillsNote, dark: false },
+    /* The word under the number comes from the number. See lib/report/bands. */
+    { label: d.englishLabel, value: r.english, note: englishBand(r.english, t), dark: false },
+    {
+      label: fill(d.skillsLabel, { sector: r.sector }),
+      value: String(r.skills),
+      note: skillBand(r.skills, t),
+      dark: false,
+    },
     { label: d.expLabel, value: String(r.experienceScore), note: fill(d.expNote, { years: r.years }), dark: false },
   ];
 

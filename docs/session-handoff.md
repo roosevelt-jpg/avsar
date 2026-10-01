@@ -4,6 +4,40 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 19 - 01 Oct 2026, 18:40, abilio.diz@smithandadams.com
+
+**Bug real de perda de respostas, corrigido.** O `AssessmentRunner` guardava com
+um unico `saveTimer` partilhado por todas as perguntas e um `fetch` sem esperar
+resposta:
+
+- Responder a duas perguntas dentro de 250ms fazia `clearTimeout` ao timer da
+  primeira, e a resposta da primeira **nunca era enviada**.
+- Clicar "Finish section" dentro dos 250ms submetia a tentativa antes do save
+  sair; o servidor recusava, correctamente, e a ultima resposta da seccao
+  perdia-se.
+- `fetch` so rejeita em erro de rede, por isso 409 e 500 passavam pelo ramo de
+  sucesso e o ecra dizia "Saved" na mesma.
+
+Agora: mapa de pendentes por item (nada e cancelado por uma resposta posterior),
+`flush()` esperado antes de submeter, estado `error` quando o servidor recusa,
+e o pendente fica para nova tentativa.
+
+**Rotulos falsos no relatorio, corrigidos.** `englishNote` e `skillsNote` eram
+strings fixas: **todos** os relatorios diziam "Independent user" e "Strong",
+independentemente da pontuacao. Quem tirasse 0 era descrito como "Strong", e A1
+era descrito como "independent user", que A1 por definicao nao e. Agora derivam
+do numero (`src/lib/report/bands.ts`), em EN e HI. O PDF nao tinha este
+problema.
+
+`expNote` dizia "{years} years, verified" sobre anos **auto-declarados** no
+registo. Passou a "as stated".
+
+O stall da rodagem era outra vez o meu script: na ultima pergunta de um
+sub-bloco o botao ja e "Finish section", e clicar nele inicia submit mais
+navegacao; voltar a sondar 140ms depois encontrava o botao desactivado e a
+pergunta antiga, o que nao e um stall. Corrigido no script. Assessment completo
+corre ate ao fim, sem 409.
+
 ## Bloco 18 - 01 Oct 2026, 17:30, abilio.diz@smithandadams.com
 
 **Mudanca de modelo comercial, decidida pelo Abilio:** os EUR 1.000 passam a

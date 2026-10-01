@@ -35,7 +35,7 @@ export function AssessmentRunner({
   const firstUnanswered = items.findIndex((candidate) => savedAnswers[candidate.id] === undefined);
   const [index, setIndex] = useState(firstUnanswered > 0 ? firstUnanswered : 0);
   const [answers, setAnswers] = useState<Record<string, number>>(savedAnswers);
-  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [left, setLeft] = useState(secondsRemaining);
   const [finishing, setFinishing] = useState(false);
 
@@ -54,24 +54,76 @@ export function AssessmentRunner({
     return () => window.clearInterval(timer);
   }, [left]);
 
+  /**
+   * Answers waiting to be written, keyed by item.
+   *
+   * It used to be one debounce timer and a fire-and-forget fetch, which lost
+   * answers two different ways. Answering a second question inside the window
+   * cleared the first question's timer, so the first answer was never sent at
+   * all. And clicking "Finish section" inside the window submitted the attempt
+   * before the save left, after which the server correctly refused to write
+   * into a closed attempt, so the last answer of a section went missing.
+   *
+   * Both were invisible: `fetch` only rejects on a network error, so a 409 or a
+   * 500 still ran the success branch and the screen said "saved".
+   *
+   * A map survives both. Nothing is dropped because a later answer arrived, and
+   * anything the server refused stays pending to be tried again.
+   */
+  const pending = useRef<Map<string, number>>(new Map());
   const saveTimer = useRef<number | null>(null);
+  const inFlight = useRef<Promise<void> | null>(null);
+
+  const flush = useCallback(async (): Promise<void> => {
+    if (saveTimer.current) {
+      window.clearTimeout(saveTimer.current);
+      saveTimer.current = null;
+    }
+    /* One flush at a time, so two of them cannot send the same answer twice. */
+    if (inFlight.current) await inFlight.current;
+    if (!attemptId || pending.current.size === 0) return;
+
+    const batch = [...pending.current.entries()];
+    const run = (async () => {
+      let failed = false;
+      for (const [itemId, optionIndex] of batch) {
+        try {
+          const response = await fetch('/api/assessment/answer', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ attemptId, itemId, optionIndex }),
+          });
+          if (response.ok) {
+            /* Only drop it once the server has it. */
+            if (pending.current.get(itemId) === optionIndex) pending.current.delete(itemId);
+          } else {
+            failed = true;
+            console.error('[assessment] answer refused', response.status, itemId);
+          }
+        } catch (error) {
+          failed = true;
+          console.error('[assessment] answer failed', error);
+        }
+      }
+      setSaveState(failed ? 'error' : 'saved');
+    })();
+
+    inFlight.current = run;
+    await run;
+    inFlight.current = null;
+  }, [attemptId]);
 
   const persist = useCallback(
     (itemId: string, optionIndex: number) => {
       if (!attemptId) return;
+      pending.current.set(itemId, optionIndex);
       setSaveState('saving');
       if (saveTimer.current) window.clearTimeout(saveTimer.current);
-      saveTimer.current = window.setTimeout(() => {
-        void fetch('/api/assessment/answer', {
-          method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ attemptId, itemId, optionIndex }),
-        })
-          .then(() => setSaveState('saved'))
-          .catch(() => setSaveState('idle'));
-      }, 250);
+      /* The debounce now only delays the batch. It can no longer cancel an
+         answer, because the answer is in the map either way. */
+      saveTimer.current = window.setTimeout(() => void flush(), 250);
     },
-    [attemptId],
+    [attemptId, flush],
   );
 
   function pick(optionIndex: number) {
@@ -109,6 +161,10 @@ export function AssessmentRunner({
 
     setFinishing(true);
     try {
+      /* Write everything outstanding before closing the attempt. Submitting
+         first is what used to lose the last answer of every section. */
+      await flush();
+
       const response = await fetch('/api/assessment/submit', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
@@ -278,7 +334,13 @@ export function AssessmentRunner({
                 {safeIndex < total - 1 ? a.next : a.finish}
               </button>
               <span aria-live="polite" className="font-mono text-[12px] text-muted">
-                {saveState === 'saving' ? a.saving : saveState === 'saved' ? a.saved : ''}
+                {saveState === 'saving'
+                  ? a.saving
+                  : saveState === 'saved'
+                    ? a.saved
+                    : saveState === 'error'
+                      ? a.saveError
+                      : ''}
               </span>
             </div>
 

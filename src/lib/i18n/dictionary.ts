@@ -135,6 +135,7 @@ export type Dictionary = {
     autosave: string;
     saving: string;
     saved: string;
+    saveError: string;
   };
 
   /* Dashboard */
@@ -156,9 +157,14 @@ export type Dictionary = {
     overall: string;
     overallNote: string;
     englishLabel: string;
-    englishNote: string;
+    englishBasic: string;
+    englishIndependent: string;
+    englishProficient: string;
+    bandDeveloping: string;
+    bandFair: string;
+    bandStrong: string;
+    bandExcellent: string;
     skillsLabel: string;
-    skillsNote: string;
     expLabel: string;
     expNote: string;
     cohortStatus: string;
@@ -472,6 +478,7 @@ const en: Dictionary = {
     autosave: 'Your answers save automatically. If your connection drops, you can continue from this question.',
     saving: 'Saving…',
     saved: 'Saved',
+    saveError: 'Not saved. Retrying…',
   },
 
   dash: {
@@ -494,11 +501,16 @@ const en: Dictionary = {
     overall: 'Overall score',
     overallNote: 'Top {percentile}% of Cohort 01',
     englishLabel: 'English (CEFR)',
-    englishNote: 'Independent user',
+    englishBasic: 'Basic user',
+    englishIndependent: 'Independent user',
+    englishProficient: 'Proficient user',
+    bandDeveloping: 'Developing',
+    bandFair: 'Fair',
+    bandStrong: 'Strong',
+    bandExcellent: 'Excellent',
     skillsLabel: '{sector} skills',
-    skillsNote: 'Strong',
     expLabel: 'Experience',
-    expNote: '{years} years, verified',
+    expNote: '{years} years, as stated',
     cohortStatus: 'Cohort status',
     breakdown: 'Report breakdown',
     timeline: [
@@ -869,6 +881,7 @@ const hi: Dictionary = {
     autosave: 'आपके उत्तर स्वतः सहेजे जाते हैं। कनेक्शन टूटने पर आप इसी प्रश्न से जारी रख सकते हैं।',
     saving: 'सहेजा जा रहा है…',
     saved: 'सहेजा गया',
+    saveError: 'सहेजा नहीं गया। दोबारा कोशिश कर रहे हैं…',
   },
 
   dash: {
@@ -891,11 +904,16 @@ const hi: Dictionary = {
     overall: 'कुल स्कोर',
     overallNote: 'कोहॉर्ट 01 के शीर्ष {percentile}%',
     englishLabel: 'अंग्रेज़ी (CEFR)',
-    englishNote: 'स्वतंत्र प्रयोगकर्ता',
+    englishBasic: 'बुनियादी स्तर',
+    englishIndependent: 'स्वतंत्र प्रयोगकर्ता',
+    englishProficient: 'प्रवीण प्रयोगकर्ता',
+    bandDeveloping: 'विकासशील',
+    bandFair: 'ठीक-ठाक',
+    bandStrong: 'मज़बूत',
+    bandExcellent: 'उत्कृष्ट',
     skillsLabel: '{sector} कौशल',
-    skillsNote: 'मज़बूत',
     expLabel: 'अनुभव',
-    expNote: '{years} साल, सत्यापित',
+    expNote: '{years} साल, आपके अनुसार',
     cohortStatus: 'कोहॉर्ट स्थिति',
     breakdown: 'रिपोर्ट विवरण',
     timeline: [
