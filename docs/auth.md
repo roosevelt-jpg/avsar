@@ -143,13 +143,19 @@ mail from its own templates; this sends everything else.
 
 ### The sender address
 
-`onboarding@resend.dev` is Resend's sandbox sender and delivers only to the
-account owner. Anything sent to a candidate is refused. The domain has to be
-verified in Resend and the sender set to an address on it.
+Mail goes out from `mail.smithandadams.com`, which is verified in Resend. Being
+a subdomain, it leaves the root `v=spf1` record alone, and that record already
+carries SES for another product. A domain may hold any number of DKIM selectors
+but only one SPF record, which is the one thing here that breaks somebody else's
+mail if it is edited carelessly.
 
-Verifying the root `smithandadams.com` in Resend adds records under
-`send.smithandadams.com` and `resend._domainkey.smithandadams.com` and leaves
-the root SPF alone, which matters because that record already carries SES for
-another product. A domain may hold any number of DKIM selectors but only one
-`v=spf1` record, and that is the one thing here that breaks other people's mail
-if it is edited carelessly.
+`onboarding@resend.dev` is Resend's sandbox sender and delivers only to the
+account owner, so anything addressed to a candidate is refused. It must not be
+left in the Supabase SMTP form.
+
+The sending subdomain has no mailbox behind it, so every message this code
+sends carries a `Reply-To` of `ENTITY.supportEmail`. Someone answering a
+reminder about their own application is doing the right thing and their reply
+has to reach a person. Supabase's SMTP form has no Reply-To field, so the auth
+templates should name that address in the body instead, and the auth sender
+should be a `no-reply@` address so nobody expects otherwise.

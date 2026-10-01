@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import { ENTITY } from '@/lib/data/brand';
 
 /**
  * Outbound email that is not authentication.
@@ -20,6 +21,16 @@ export type Message = {
   /** Appears as List-Unsubscribe, so a mail client can offer it directly. */
   unsubscribeUrl?: string;
 };
+
+/**
+ * Where a reply goes.
+ *
+ * Mail is sent from the verified sending subdomain, which has no mailbox
+ * behind it. Someone who answers a reminder about their own application is
+ * doing the right thing, and the answer must not disappear into a subdomain
+ * nobody reads, so every message is addressed back to the monitored inbox.
+ */
+const REPLY_TO = ENTITY.supportEmail;
 
 export type Mailer = {
   name: string;
@@ -46,6 +57,7 @@ function resendMailer(apiKey: string, from: string): Mailer {
         body: JSON.stringify({
           from,
           to: [message.to],
+          reply_to: REPLY_TO,
           subject: message.subject,
           text: message.text,
           ...(message.unsubscribeUrl
@@ -96,6 +108,7 @@ function sesMailer(region: string, accessKey: string, secretKey: string, from: s
       const body = JSON.stringify({
         FromEmailAddress: from,
         Destination: { ToAddresses: [message.to] },
+        ReplyToAddresses: [REPLY_TO],
         Content: {
           Simple: {
             Subject: { Data: message.subject, Charset: 'UTF-8' },
