@@ -4,6 +4,33 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 22 - 01 Oct 2026, 21:15, abilio.diz@smithandadams.com
+
+**Career pack exercitado a serio pela primeira vez**, EN e HI, com perfil
+completo gravado pelo `PUT /api/profile` do proprio site (RLS exercitada, nao
+contornada).
+
+**Bug encontrado a primeira chamada:** o modelo devolveu 5 strengths, o schema
+limitava a 4, o `messages.parse()` rebentou e **51 segundos de geracao paga
+foram deitados fora** com um 500 para o candidato. Os limites passaram a ser
+tolerancias: o schema admite alguns a mais, o prompt diz os numeros, e
+`trimPack()` corta ao tamanho das paginas.
+
+Medidas (em docs/ai-rating.md): EN 855 in / 3.086 out / 45s. Com hindi 874 in /
+6.179 out / 84s. A traducao praticamente duplica output e tempo.
+
+Qualidade: `unsupported_lines` vazio nas duas corridas. Todos os bullets
+apontam para uma frase que existe mesmo no perfil. O conselho e concreto
+(palavras portuguesas do dia-a-dia, vocabulario de seguranca quimica em ingles,
+numeros reais para citar na entrevista). O CV fica em ingles, como devia.
+
+Tambem exercitado: `PUT /api/profile` com experiencias e educacao.
+
+Por estrear ainda: upload e leitura de CV, lado do empregador/staff, webhook
+de pagamentos.
+
+Limpeza: contas de demonstracao apagadas, `.env.development.local` removido.
+
 ## Bloco 21 - 01 Oct 2026, 20:10, abilio.diz@smithandadams.com
 
 **Correccao a um bug que eu proprio introduzi hoje.** O `emailConfirmed` fazia

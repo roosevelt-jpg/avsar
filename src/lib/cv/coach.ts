@@ -1,6 +1,6 @@
 import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod';
 import { anthropic, CV_MODEL, PROMPT_VERSION, isAiConfigured } from './client';
-import { careerPackSchema, type CareerPack } from './coach-schema';
+import { careerPackSchema, trimPack, type CareerPack } from './coach-schema';
 import type { RatingInput } from './redact';
 import { positionLabel } from '@/lib/data/positions';
 
@@ -84,6 +84,8 @@ export async function generateCareerPack(input: CoachInput): Promise<CoachResult
               'Their profile and work history, which is the only material you may draw on:',
               JSON.stringify(input.profile, null, 2),
               '',
+              'How many of each: 3 or 4 strengths, 3 to 5 improvements, 3 to 5 interview questions, 3 to lead with, 3 to prepare for, 3 to ask them.',
+              '',
               input.locale === 'hi'
                 ? 'Also translate the strengths, improvements and interview guidance into Hindi. Leave the CV in English.'
                 : 'No translation needed; return null for the translated field.',
@@ -100,7 +102,9 @@ export async function generateCareerPack(input: CoachInput): Promise<CoachResult
   }
 
   return {
-    pack: response.parsed_output,
+    /* Cut to the lengths the pages are built for. The schema allows a little
+       more so that one item over does not throw away the whole generation. */
+    pack: trimPack(response.parsed_output),
     usage: {
       inputTokens: response.usage.input_tokens,
       outputTokens: response.usage.output_tokens,

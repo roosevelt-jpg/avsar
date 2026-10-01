@@ -130,3 +130,34 @@ make with data rather than one baked into the code.
   happens and a human decides. That wording needs legal review alongside the rest.
 - **Retention.** How long an assessment and its extracted profile are kept, and
   what happens to them when a candidate withdraws consent.
+
+
+## Career pack, measured
+
+First real runs, 1 October 2026, on a demo candidate with two roles and a
+completed assessment.
+
+| | Input tokens | Output tokens | Wall clock |
+|---|---|---|---|
+| English only | 855 | 3,086 | 45s |
+| With Hindi translation | 874 | 6,179 | 84s |
+
+The translation roughly doubles output tokens and wall clock, because the
+strengths, improvements and interview guidance are produced twice. Worth
+knowing before a cohort: this is a per-candidate cost and it is the largest
+variable one in the product.
+
+`unsupported_lines` came back empty on both runs. Every bullet's `basedOn`
+pointed at a phrase that was actually in the candidate's profile, which is what
+the rule in the prompt exists to produce.
+
+### The cap that threw away a generation
+
+The first real call failed after 51 seconds. The model returned five strengths;
+the schema capped the array at four; `messages.parse()` threw, and the whole
+generation, already paid for, was discarded with a 500.
+
+The caps are now tolerances rather than targets. The schema allows a couple
+more than the pages use, the prompt states the number wanted, and `trimPack`
+cuts the result to length. A model returning one item too many is not a reason
+to charge a candidate for nothing.
