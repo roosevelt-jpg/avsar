@@ -37,6 +37,42 @@ export async function POST(request: Request) {
   );
 
   if (error) {
+    /**
+     * A refusal here is not a server fault, and answering it with a bare 500
+     * leaves a candidate clicking a dead button mid-assessment with their
+     * answers apparently saving. RLS gives one message for several different
+     * situations, so work out which one it is and say so.
+     */
+    if (error.code === '42501') {
+      const { data: auth } = await supabase.auth.getUser();
+      if (!auth.user) {
+        return NextResponse.json({ error: 'session_expired' }, { status: 401 });
+      }
+
+      const { data: attempt } = await supabase
+        .from('assessment_attempts')
+        .select('id, submitted_at, expires_at')
+        .eq('id', attemptId)
+        .maybeSingle();
+
+      if (!attempt) {
+        /* Not theirs, or gone. The page holds a stale id and needs reloading. */
+        console.error('[answer] attempt not visible to session', attemptId);
+        return NextResponse.json({ error: 'attempt_unknown' }, { status: 409 });
+      }
+      if (attempt.submitted_at) {
+        console.error('[answer] attempt already submitted', attemptId, attempt.submitted_at);
+        return NextResponse.json({ error: 'attempt_submitted' }, { status: 409 });
+      }
+      if (new Date(attempt.expires_at as string) <= new Date()) {
+        console.error('[answer] attempt expired', attemptId, attempt.expires_at);
+        return NextResponse.json({ error: 'attempt_expired' }, { status: 409 });
+      }
+
+      console.error('[answer] refused with attempt open', attemptId, error.message);
+      return NextResponse.json({ error: 'refused' }, { status: 409 });
+    }
+
     console.error('[answer] upsert failed', error);
     return NextResponse.json({ error: 'storage_failed' }, { status: 500 });
   }

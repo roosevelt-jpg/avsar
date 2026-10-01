@@ -53,15 +53,8 @@ export const ENTITY = {
   registrationNumber: '517818817',
   registrationLabel: 'NIPC',
   registeredAddress: 'Avenida da Liberdade 69, 4.º A, 1250-140 Lisboa',
-  /**
-   * Must be a Portuguese number that someone answers.
-   *
-   * Deliberately left empty rather than carrying the Dubai mobile over: a
-   * Portuguese company publishing a UAE mobile on its terms page reads as a
-   * front to anyone checking, and Stripe's review does check. While this is
-   * empty the policy pages say so plainly instead of printing a wrong number.
-   */
-  phone: '',
+  /** International format, and it must be answered. */
+  phone: '+351 938 227 348',
   supportEmail: 'candidates@smithandadams.com',
   employerEmail: 'employers@smithandadams.com',
   reportEmail: 'report@smithandadams.com',

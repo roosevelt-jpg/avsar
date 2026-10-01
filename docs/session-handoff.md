@@ -4,6 +4,38 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 17 - 01 Oct 2026, 16:40, abilio.diz@smithandadams.com
+
+**Correccao ao Bloco 16.** O suposto bug do `/api/assessment/answer` **nao era
+um bug do produto**. Era o meu script de rodagem: a regex que avancava de
+pergunta era `^(next|submit|finish|continue)` e apanhava **"Finish section"**,
+submetendo a seccao a meio. Depois disso o servidor recusava, correctamente,
+escrever respostas numa tentativa ja submetida. A proteccao estava a funcionar.
+Confirmado em log: `[answer] attempt already submitted`.
+
+Tambem nao e bug o "Question 1 of 12" seguido de "Question 8 of 8": sao
+sub-blocos diferentes dentro da mesma seccao de 20 (ROOM CHECK, CHEMICALS,
+SHARPS).
+
+Fica um defeito menor, esse real, e corrigido: a rota devolvia **500** a uma
+recusa legitima. Um candidato que lhe batesse via um botao morto sem
+explicacao. Agora distingue `session_expired` (401), `attempt_unknown`,
+`attempt_submitted` e `attempt_expired` (409).
+
+**Anomalia por fechar:** com o script ja a nao clicar em Finish, a ultima
+pergunta de um sub-bloco ainda apanhou um 409 e o "Finish section" ficou
+desactivado, com a pagina presa. Pode ser auto-submit ao Next da ultima
+pergunta mais uma corrida com o POST seguinte. **Nao confirmei que um humano
+consiga chegar a esse estado.** E o proximo trabalho a serio.
+
+`ENTITY.phone = '+351 938 227 348'` (dado pelo Abilio). As paginas legais
+deixam de mostrar o aviso de falta.
+
+Decisoes do Abilio: retencao fica como esta, nada apaga linhas. Supabase ja
+configurado por ele. Stripe fica do lado dele.
+
+Limpeza: contas de teste apagadas, 6 candidatos reais intactos.
+
 ## Bloco 16 - 01 Oct 2026, 15:20, abilio.diz@smithandadams.com
 
 Rodagem do walkthrough. 13 frames capturados a 3840x2160 (viewport 1920x1080,
