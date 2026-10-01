@@ -495,7 +495,7 @@ export function SignupFlow({
           {PLACEMENT_FEE.visibleToCandidates && (
             <p className="m-0 rounded-[12px] border border-accent bg-accent-tint px-4 py-3.5 text-[14px] leading-[1.6] text-ink">
               {fill(t.placementFee, {
-                eur: String(PLACEMENT_FEE.eur),
+                eur: PLACEMENT_FEE.eur.toLocaleString('en-GB'),
                 inr: formatInr(price.totalPaise),
               })}
             </p>

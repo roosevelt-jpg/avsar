@@ -425,7 +425,7 @@ const en: Dictionary = {
     englishOptions: ['Basic', 'Conversational', 'Fluent'],
     cityState: 'City and state',
     consent:
-      'I understand the fee pays for my assessment, skills report and talent-pool profile. Selection for the Portugal placement is limited to about 1 candidate per cohort and is not guaranteed. I have read the',
+      'I understand the fee pays for my assessment, skills report and talent-pool profile, whatever the outcome. Selection for a Portugal placement is not guaranteed. If I am placed, a placement fee of €1,000 is payable after my job is confirmed and my contract is signed. I have read the',
     consentRules: 'selection rules',
     consentRefund: 'refund policy',
     back: 'Back',
@@ -830,7 +830,7 @@ const hi: Dictionary = {
     englishOptions: ['बुनियादी', 'बातचीत योग्य', 'प्रवाही'],
     cityState: 'शहर और राज्य',
     consent:
-      'मैं समझता/समझती हूँ कि यह शुल्क मेरे मूल्यांकन, स्किल्स रिपोर्ट और टैलेंट पूल प्रोफ़ाइल के लिए है। पुर्तगाल प्लेसमेंट के लिए चयन हर कोहॉर्ट में लगभग 1 उम्मीदवार तक सीमित है और इसकी गारंटी नहीं है। मैंने',
+      'मैं समझता/समझती हूँ कि यह शुल्क मेरे मूल्यांकन, स्किल्स रिपोर्ट और टैलेंट पूल प्रोफ़ाइल के लिए है, परिणाम चाहे जो भी हो। पुर्तगाल प्लेसमेंट के लिए चयन की गारंटी नहीं है। यदि मुझे नौकरी मिलती है, तो नौकरी पक्की होने और अनुबंध पर हस्ताक्षर के बाद €1,000 की प्लेसमेंट फ़ीस देय होगी। मैंने',
     consentRules: 'चयन नियम',
     consentRefund: 'रिफ़ंड नीति',
     back: 'पीछे',

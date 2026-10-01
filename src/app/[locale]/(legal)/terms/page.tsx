@@ -72,7 +72,7 @@ export default async function TermsPage({ params }: { params: Promise<{ locale: 
       <p>
         {PLACEMENT_FEE.payer === 'employer'
           ? `The assessment fee is the only amount ${BRAND.name} charges a candidate. Our placement fee is paid by the employer. Nobody is authorised to ask you for money for a job, a visa, or to move your application forward, and any such request should be reported to us.`
-          : `There are two amounts, and only the first is payable now. The assessment fee buys the assessment, the report and the career pack, and is payable whatever the outcome. The placement fee of €${PLACEMENT_FEE.eur} is payable only if you are placed, and only after your employment contract is signed: never in advance, never as a condition of being considered, and never as a condition of an interview. Outside these two amounts nobody is authorised to ask you for money for a job, a visa, or to move your application forward, and any such request should be reported to us.`}
+          : `There are two amounts, and only the first is payable now. The assessment fee buys the assessment, the report and the career pack, and is payable whatever the outcome. The placement fee of €${PLACEMENT_FEE.eur.toLocaleString('en-GB')} is payable only if you are placed, and only after your employment contract is signed: never in advance, never as a condition of being considered, and never as a condition of an interview. Outside these two amounts nobody is authorised to ask you for money for a job, a visa, or to move your application forward, and any such request should be reported to us.`}
       </p>
 
       <h2>Cancellation and refunds</h2>

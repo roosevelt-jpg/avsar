@@ -120,7 +120,7 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
         {PLACEMENT_FEE.visibleToCandidates && (
           <p className="mt-5 mb-0 max-w-[62ch] rounded-[16px] border border-accent bg-accent-tint px-5 py-4 text-[15px] leading-[1.6] text-ink">
             {fill(t.placementFee, {
-              eur: String(PLACEMENT_FEE.eur),
+              eur: PLACEMENT_FEE.eur.toLocaleString('en-GB'),
               inr: formatInr(activePrice().totalPaise),
             })}
           </p>

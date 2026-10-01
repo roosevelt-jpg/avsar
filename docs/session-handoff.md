@@ -4,6 +4,28 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 20 - 01 Oct 2026, 19:35, abilio.diz@smithandadams.com
+
+Filme dois montado. `SA-walkthrough-EN.mp4` e `-HI.mp4`, 1920x1080, 30fps,
+58s, legendas queimadas, cursor desenhado. Fonte em
+`scratchpad/shoot/`: `shoot.mjs` (captura), `film.html` (timeline seekable),
+`render.mjs` (frames), ffmpeg para encode. Mesmo corte, duas queimas.
+
+O relatorio do dashboard foi escrito na conta de demonstracao (74/B2/78/66,
+percentil 19) porque o script responde ao calhar e dava 19/100. Ecra real,
+dados com forma real, conta de demonstracao.
+
+Tres correccoes encontradas a montar:
+- `€1000` -> `€1,000` na divulgacao (homepage, checkout, termos).
+- A frase de consentimento ainda dizia **"limited to about 1 candidate per
+  cohort"**, o enquadramento antigo do 1-em-20.000, que contradiz o funil
+  publicado e os 32%. Reescrita em EN e HI, e passa a incluir os EUR 1.000 e a
+  condicao. E o texto que o candidato aceita: era o pior sitio para estar
+  desactualizado.
+- Enquadramento do dashboard nas capturas.
+
+Limpeza: contas de demonstracao apagadas, `.env.development.local` removido.
+
 ## Bloco 19 - 01 Oct 2026, 18:40, abilio.diz@smithandadams.com
 
 **Bug real de perda de respostas, corrigido.** O `AssessmentRunner` guardava com
