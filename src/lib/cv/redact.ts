@@ -74,6 +74,47 @@ export function toRatingInput(extraction: Extraction): RatingInput {
   };
 }
 
+/**
+ * Removes protected values that the model quoted back inside free text.
+ *
+ * `extractionNotes` is prose, so an allowlist of field names does not control
+ * what is in it. The first real CV put through this pipeline proved the point:
+ * the document volunteered a father's name and a home address, the model
+ * correctly decided neither belonged in any evaluation, and wrote a note saying
+ * so, naming both. The note then carried them straight past the redaction
+ * boundary and into storage, where the design assumes they are not.
+ *
+ * The rating pass never saw them, because `extractionNotes` is not in
+ * `RatingInput`. But they were persisted, read by staff and kept for as long as
+ * the assessment, which is a plain data-minimisation failure.
+ *
+ * The values to remove are known: the extraction captures them in
+ * `protectedAttributes`. So this does not depend on the model complying with an
+ * instruction, which is the only kind of control worth having here.
+ */
+export function scrubNotes(extraction: Extraction): string[] {
+  const { otherPersonalDetails, ...named } = extraction.protectedAttributes;
+  const secrets = [...Object.values(named), ...otherPersonalDetails]
+    .filter((value): value is string => typeof value === 'string')
+    .map((value) => value.trim())
+    /* Two characters or fewer match half the alphabet; "Hindu" is worth
+       removing, "F" for gender is not, and would mangle every note. */
+    .filter((value) => value.length >= 3)
+    .sort((a, b) => b.length - a.length);
+
+  return extraction.extractionNotes.map((note) => {
+    let out = note;
+    for (const secret of secrets) {
+      out = out.replaceAll(new RegExp(escapeRegExp(secret), 'gi'), '[removed]');
+    }
+    return out;
+  });
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 /** Bands the candidate picks at sign-up, in years. */
 const SELF_REPORTED_BANDS: readonly [number, number][] = [
   [0, 1],

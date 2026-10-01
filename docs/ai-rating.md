@@ -161,3 +161,36 @@ The caps are now tolerances rather than targets. The schema allows a couple
 more than the pages use, the prompt states the number wanted, and `trimPack`
 cuts the result to length. A model returning one item too many is not a reason
 to charge a candidate for nothing.
+
+
+## What the first real CV found
+
+Two things, on the first document ever put through this pipeline.
+
+**`/api/cv/assess` had no authorisation at all.** It runs on the service role,
+so it reads any candidate's document out of the bucket regardless of RLS, and
+each call is two model passes and a real bill. Anyone holding a document id
+could turn it on. It now requires a signed-in staff member or a worker carrying
+`CRON_SECRET`, which is what the only caller, the staff CV screen, already was.
+
+**Protected data reached storage through free text.** The CV volunteered a
+father's name and a home address. The schema had nowhere to put either, so the
+model did the sensible thing and wrote a note saying the document contained
+them and that they should be excluded from evaluation, naming both. The note
+then carried them past the redaction boundary into `cv_assessments.profile`,
+where staff read it and where the design assumes no such data exists.
+
+The rating pass never saw them: `extractionNotes` is not in `RatingInput`, and
+the allowlist held. But they were persisted, which is a data-minimisation
+failure on its own.
+
+An allowlist of field names cannot control what is inside a free-text field, so
+the fix is in two parts. `protectedAttributes` gained `otherPersonalDetails`,
+so everything a document volunteers has somewhere to land and is therefore
+known; and `scrubNotes` removes every captured value from the notes before they
+are stored, by string match, so it does not depend on the model complying with
+an instruction. The prompt asks for the category and never the value, which
+helps, but the scrub is what guarantees it.
+
+Measured on the same document: extraction plus rating is 3,225 input and 3,851
+output tokens, about two minutes.

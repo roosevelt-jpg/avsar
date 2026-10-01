@@ -66,6 +66,7 @@ export async function POST() {
       protectedAttributes: {
         fullName: '', email: '', phone: '', dateOfBirth: '', statedAge: '',
         statedGender: '', maritalStatus: '', religionOrCaste: '', nationality: '', hasPhoto: false,
+        otherPersonalDetails: [],
       },
     } as Extraction);
   } else {

@@ -4,6 +4,40 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 23 - 01 Oct 2026, 22:40, abilio.diz@smithandadams.com
+
+Pipeline de CV exercitado com um PDF real (CV indiano de housekeeping,
+construido de proposito com detalhes pessoais: data de nascimento, sexo, estado
+civil, religiao, nome do pai, morada). Extraccao correcta contra o conteudo
+conhecido: dois cargos, datas, responsabilidades, competencias, formacao,
+linguas. Score 77, requires_review true, 2 discrepancias (nome e email, que sao
+do teste).
+
+**Dois problemas reais encontrados.**
+
+1. **`/api/cv/assess` nao tinha autorizacao nenhuma** e corre na service role.
+   Qualquer pessoa com um documentId disparava duas passagens de modelo e lia um
+   CV do bucket ignorando RLS. Agora exige staff com sessao ou
+   `Authorization: Bearer $CRON_SECRET`. Confirmado: 401 sem credencial, 200 com
+   o secret. A unica pagina que o chama ja era `requireStaff`, nao parte nada.
+
+2. **Dados protegidos chegavam ao armazenamento por texto livre.** O CV trazia
+   nome do pai e morada; o schema nao tinha onde os por; o modelo escreveu uma
+   nota a dizer que existiam e que deviam ser excluidos, **nomeando-os**; a nota
+   atravessou a fronteira de redaccao e ficou em `cv_assessments.profile`.
+   O rating **nunca os viu** (`extractionNotes` nao esta em `RatingInput`, a
+   allowlist aguentou), mas ficaram persistidos e visiveis ao staff.
+   Correccao em duas partes: `otherPersonalDetails` nos `protectedAttributes`,
+   para tudo ter onde aterrar e ser conhecido; e `scrubNotes()`, que remove por
+   string todos os valores capturados antes de gravar, sem depender de o modelo
+   obedecer. Reconfirmado numa segunda corrida: perfil guardado limpo.
+
+`/api/talent/search` tambem nao tem guarda de rota, mas usa o cliente com RLS e
+a vista `talent_pool` e `security_invoker`, por isso um anonimo nao ve nada. Fica
+anotado como defesa em profundidade, nao como buraco.
+
+Custo medido: extraccao + rating 3.225 in / 3.851 out, ~2 minutos.
+
 ## Bloco 22 - 01 Oct 2026, 21:15, abilio.diz@smithandadams.com
 
 **Career pack exercitado a serio pela primeira vez**, EN e HI, com perfil

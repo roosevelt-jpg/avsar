@@ -19,7 +19,9 @@ Rules:
 - Compute totalYearsExperience from the role dates, excluding overlapping periods. If dates are too incomplete, return 0 and say so in extractionNotes.
 - Fill protectedAttributes with anything the document volunteers about name, contact, age, date of birth, gender, marital status, religion, caste, nationality or a photograph. These are collected so that a later step can exclude them. Return an empty string for anything absent. Never guess any of them, and in particular never infer gender, religion or caste from a name.
 - Employment gaps: only periods of three months or more between roles.
-- If a section is unreadable, say which in extractionNotes and set documentQuality accordingly rather than guessing at the content.`;
+- If a section is unreadable, say which in extractionNotes and set documentQuality accordingly rather than guessing at the content.
+- Put every personal detail the document volunteers into protectedAttributes, using otherPersonalDetails for anything without its own field: a father's or husband's name, a home address, a caste, a height, a photograph.
+- Never write the value of a personal detail into extractionNotes. Name the category if it matters ("the document volunteers a home address"), never the value. extractionNotes travels further than protectedAttributes does.`;
 
 export type ExtractionResult = {
   extraction: Extraction;

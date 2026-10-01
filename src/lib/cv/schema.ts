@@ -49,6 +49,22 @@ export const protectedAttributesSchema = z.object({
   religionOrCaste: z.string().describe('Only if the document volunteers it'),
   nationality: z.string(),
   hasPhoto: z.boolean(),
+  /**
+   * Everything else personal the document volunteers.
+   *
+   * Indian CVs routinely add a father's or husband's name, a home address, a
+   * caste, a height, a photograph. There is no field for most of it and there
+   * should not be, but it has to land somewhere: the first real CV through this
+   * pipeline carried a father's name and a home address, and because the schema
+   * had nowhere to put them the model mentioned them in its free-text notes
+   * instead, which carried them past the redaction boundary.
+   *
+   * Captured here so they can be removed deterministically rather than by
+   * hoping the model keeps quiet. Each entry is the value exactly as written.
+   */
+  otherPersonalDetails: z
+    .array(z.string())
+    .describe('Any other personal detail the document volunteers, value as written'),
 });
 
 export const extractionSchema = z.object({

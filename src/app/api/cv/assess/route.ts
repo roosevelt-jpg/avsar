@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { assessCv, needsReview } from '@/lib/cv/pipeline';
+import { scrubNotes } from '@/lib/cv/redact';
 import { isAiConfigured } from '@/lib/cv/client';
 import { getAdminSupabase } from '@/lib/supabase/admin';
+import { getSessionStaff } from '@/lib/auth';
 import { SECTOR_SLUGS } from '@/lib/data/sectors';
 
 export const runtime = 'nodejs';
@@ -17,8 +19,21 @@ const schema = z.object({ documentId: z.string().uuid() });
  * Staff-triggered, or called by a worker draining `cv_documents` where
  * `state = 'uploaded'`. For a whole cohort use the batch path in
  * `src/lib/cv/batch.ts` instead: same output, half the cost.
+ *
+ * Both callers have to prove who they are. This route runs on the service role,
+ * so it reads any candidate's document out of the bucket regardless of RLS, and
+ * each call is two model passes over a document and a real bill. Left open it
+ * is a tap anyone can turn on, needing only a document id: not quite guessable,
+ * but an id is not an authorisation, and ids leak through logs and screens.
  */
 export async function POST(request: Request) {
+  /* A signed-in staff member, or a worker carrying the shared secret. */
+  const secret = process.env.CRON_SECRET;
+  const isWorker = Boolean(secret) && request.headers.get('authorization') === `Bearer ${secret}`;
+  if (!isWorker && !(await getSessionStaff())) {
+    return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+  }
+
   const parsed = schema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: 'invalid_payload' }, { status: 400 });
 
@@ -71,7 +86,11 @@ export async function POST(request: Request) {
       },
     });
 
-    const { protectedAttributes, ...profile } = assessment.extraction;
+    /* Protected attributes are dropped, and the free-text notes are scrubbed
+       of anything the model quoted out of them. See scrubNotes. */
+    const { protectedAttributes, ...rest } = assessment.extraction;
+    const profile = { ...rest, extractionNotes: scrubNotes(assessment.extraction) };
+    void protectedAttributes;
 
     const { data: row, error: insertError } = await supabase
       .from('cv_assessments')
