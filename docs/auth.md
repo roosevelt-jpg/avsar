@@ -128,10 +128,28 @@ a default.
 no-op default. Unconfigured, it logs what it would have sent and the cron
 reports `mailer: "noop"`, rather than failing the run or half-sending a batch.
 
-SES over the signed HTTPS API, not the SDK, because this needs one call and the
-SDK is large. Set `AWS_SES_REGION`, `AWS_SES_ACCESS_KEY_ID`,
-`AWS_SES_SECRET_ACCESS_KEY` and `EMAIL_FROM`.
+Two providers, picked by whichever is configured. Resend first:
+`RESEND_API_KEY` and `EMAIL_FROM`. Otherwise SES over the signed HTTPS API, not
+the SDK, because this needs one call and the SDK is large:
+`AWS_SES_REGION`, `AWS_SES_ACCESS_KEY_ID`, `AWS_SES_SECRET_ACCESS_KEY` and
+`EMAIL_FROM`.
+
+Resend is preferred because the same key is also the SMTP password Supabase
+uses for the auth mail, so there is one credential to rotate rather than two
+systems drifting apart.
 
 This is separate from the Supabase SMTP setting above. Supabase sends the auth
-mail from its own templates; this sends everything else. Both need to be
-configured, and both are unconfigured today.
+mail from its own templates; this sends everything else.
+
+### The sender address
+
+`onboarding@resend.dev` is Resend's sandbox sender and delivers only to the
+account owner. Anything sent to a candidate is refused. The domain has to be
+verified in Resend and the sender set to an address on it.
+
+Verifying the root `smithandadams.com` in Resend adds records under
+`send.smithandadams.com` and `resend._domainkey.smithandadams.com` and leaves
+the root SPF alone, which matters because that record already carries SES for
+another product. A domain may hold any number of DKIM selectors but only one
+`v=spf1` record, and that is the one thing here that breaks other people's mail
+if it is edited carelessly.

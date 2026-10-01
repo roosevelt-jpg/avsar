@@ -26,6 +26,51 @@ export type Mailer = {
   send(message: Message): Promise<{ sent: boolean }>;
 };
 
+/**
+ * Resend, over its HTTP API.
+ *
+ * One key, which doubles as the SMTP password Supabase uses for the auth mail,
+ * so there is a single credential to rotate rather than two systems drifting
+ * apart.
+ */
+function resendMailer(apiKey: string, from: string): Mailer {
+  return {
+    name: 'resend',
+    async send(message) {
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${apiKey}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          from,
+          to: [message.to],
+          subject: message.subject,
+          text: message.text,
+          ...(message.unsubscribeUrl
+            ? {
+                headers: {
+                  'List-Unsubscribe': `<${message.unsubscribeUrl}>`,
+                  'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+                },
+              }
+            : {}),
+        }),
+      });
+
+      if (!response.ok) {
+        /* The body carries the reason, and the reasons are specific: an
+           unverified domain, a sandbox sender, a rate limit. Logging the status
+           alone would turn all of them into the same mystery. */
+        console.error('[email] resend rejected', response.status, await response.text());
+        return { sent: false };
+      }
+      return { sent: true };
+    },
+  };
+}
+
 /** Logs and discards. What an unconfigured environment gets. */
 const noopMailer: Mailer = {
   name: 'noop',
@@ -122,11 +167,17 @@ function sesMailer(region: string, accessKey: string, secretKey: string, from: s
 }
 
 export function getMailer(): Mailer {
+  const from = process.env.EMAIL_FROM;
+
+  /* Resend first, because it is what the Supabase auth mail goes through, and
+     having both sides of the product send from one provider is worth more than
+     a fractionally cheaper second one. */
+  const resendKey = process.env.RESEND_API_KEY;
+  if (resendKey && from) return resendMailer(resendKey, from);
+
   const region = process.env.AWS_SES_REGION;
   const accessKey = process.env.AWS_SES_ACCESS_KEY_ID;
   const secretKey = process.env.AWS_SES_SECRET_ACCESS_KEY;
-  const from = process.env.EMAIL_FROM;
-
   if (region && accessKey && secretKey && from) {
     return sesMailer(region, accessKey, secretKey, from);
   }
