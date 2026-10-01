@@ -113,3 +113,46 @@ evidence:
 - Report PDF generation.
 - Proctoring.
 - The mobility case file UI. The tables exist; there are no screens.
+
+
+## Staff and employer screens
+
+| Path | Who | What |
+|---|---|---|
+| `/admin` | staff, employer | Talent pool search |
+| `/admin/shortlists` | staff, employer | Who an employer has kept. Staff see every employer's |
+| `/admin/placements` | staff, employer | Case files. Staff can move the state |
+| `/admin/cvs` | staff | CV queue, and where an assessment is started |
+| `/admin/review/[id]` | staff | The assessment, the evidence, and the decision |
+| `/admin/employers` | staff | Employers, their contacts, and adding both |
+| `/admin/cohorts` | staff | The funnel, counted |
+
+The navigation lives in `AdminShell` rather than on the search page, because it
+used to link to three sections that had never been built: a recruiter clicking
+Shortlists got a 404. One definition means a link and the page behind it arrive
+together.
+
+### Employers could not sign in at all
+
+`employers` had a row and `employer_users` had none, and nothing in the product
+could create that link: no screen, no invite, no route. The whole employer side
+was unreachable. `/admin/employers` creates the company and its first login in
+one request, and the list shows a contact count so an employer with nobody who
+can sign in reads as the broken state it is.
+
+The contact is created with no password and sent a recovery link, so no
+password is ever chosen on someone's behalf. When the mailer is down the route
+says so (`invited: false`) and the screen repeats it, rather than reporting
+success for an email nobody sent.
+
+### Placements
+
+`src/lib/data/placements.ts` holds the state machine. Every move writes a row to
+`placement_transitions` with the staff member who made it, and the transition is
+written before the state: a failure then leaves a history one entry ahead of the
+state, which is recoverable, rather than a state with no explanation, which is
+not.
+
+The control is a plain select and it goes backwards as well as forwards. An
+offer is withdrawn and a visa is refused; a board that only moves one way
+teaches people to record the wrong thing.

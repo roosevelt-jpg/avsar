@@ -7,6 +7,7 @@
  */
 
 import { ASSESSMENT_FEE, PLACEMENT_FEE, RESPONSE_DAYS } from './brand';
+import { getAdminSupabase } from '@/lib/supabase/admin';
 
 export const COHORT = {
   id: process.env.NEXT_PUBLIC_COHORT_ID ?? 'cohort-01',
@@ -15,12 +16,36 @@ export const COHORT = {
   closesAt: '2026-11-30',
   reviewUntil: '2026-12-15',
   announceAt: '2027-01-15',
-  /** Placeholder count shown in the admin header. */
-  assessedCount: 20418,
-  /** Disclosed selection odds. Shown on the landing page, checkout and FAQ. */
-  cohortSize: 20000,
-  selectedPerCohort: 1,
 } as const;
+
+/**
+ * How many candidates have actually been assessed in this cohort.
+ *
+ * This used to be a constant, 20,418, with a comment calling it a placeholder.
+ * It rendered on the staff search header as a plain figure next to the real
+ * match count, which is how a placeholder becomes a number somebody repeats to
+ * an employer. It is counted now.
+ *
+ * `cohortSize: 20000` and `selectedPerCohort: 1` lived here too, left over from
+ * the one-in-twenty-thousand framing the meeting replaced with the published
+ * funnel. Nothing read them any more, and the stale consent sentence they had
+ * produced has already been rewritten, so they are gone rather than waiting to
+ * be picked up by something new.
+ */
+export async function assessedCount(): Promise<number> {
+  const supabase = getAdminSupabase();
+  if (!supabase) return 0;
+
+  const { count, error } = await supabase
+    .from('reports')
+    .select('candidate_id', { count: 'exact', head: true });
+
+  if (error) {
+    console.error('[cohort] assessed count failed', error.message);
+    return 0;
+  }
+  return count ?? 0;
+}
 
 /**
  * Price, in paise, derived from the euro headline in `brand.ts`.

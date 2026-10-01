@@ -4,6 +4,43 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 24 - 01 Oct 2026, 23:50, abilio.diz@smithandadams.com
+
+Pedido: plataforma funcional a 100% excepto pagamentos (que o Abilio trata).
+
+**Lado do staff exercitado de ponta a ponta** com conta temporaria: login,
+pesquisa, fila de CVs, ecra de review, e **decisao gravada** (200 em
+`/api/cv/decision`). O ecra de review diz que o score e sugestao e nao decisao,
+e que o candidato tem direito ao raciocinio.
+
+**Tres paginas do nav nao existiam** (`/admin/shortlists`, `/admin/cohorts`,
+`/admin/placements`): davam 404. Construidas. Mais `/admin/employers`, que nao
+estava sequer no nav.
+
+**O lado do empregador era inalcancavel.** `employers` tinha uma linha,
+`employer_users` tinha zero, e nada no produto conseguia criar a ligacao.
+Agora `/admin/employers` cria empresa e primeiro login no mesmo pedido, e a
+lista mostra "none, cannot sign in" quando falta contacto. O contacto e criado
+sem password e recebe link de recuperacao.
+
+Nav extraido para `AdminShell`: era inline na pagina de pesquisa e ligava a
+paginas que nunca existiram.
+
+`COHORT.assessedCount: 20418` era um numero inventado que aparecia no cabecalho
+do staff ao lado da contagem real. Passou a `assessedCount()`, contado da base.
+`cohortSize`/`selectedPerCohort` (restos do 1-em-20.000) apagados: nada os lia.
+
+Confirmado a correr: as 6 paginas devolvem 200; criar empregador devolve 200
+com `invited:false` e `"Error sending recovery email"`, que e o comportamento
+honesto desenhado para quando o SMTP esta em baixo.
+
+Limpeza: todos os registos de teste apagados. Ficam 6 candidatos reais, 1
+employer (Hotel Demo Lisboa, do Abilio), 1 staff.
+
+**Unica dependencia dura que resta, alem dos pagamentos: SMTP.** Sem ele nao ha
+verificacao de email (logo nao ha download de relatorio) nem convite a
+empregador.
+
 ## Bloco 23 - 01 Oct 2026, 22:40, abilio.diz@smithandadams.com
 
 Pipeline de CV exercitado com um PDF real (CV indiano de housekeeping,

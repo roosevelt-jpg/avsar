@@ -1,16 +1,15 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { Mono } from '@/components/ui/Mono';
-import { Wordmark } from '@/components/ui/Wordmark';
+import { AdminShell } from '@/components/employer/AdminShell';
 import { SearchControls } from '@/components/employer/SearchControls';
 import { ShortlistButton } from '@/components/employer/ShortlistButton';
 import { searchTalent } from '@/lib/talent-search';
 import { parseQuery, describeQuery } from '@/lib/assessment/query-parser';
 import { SECTOR_SLUGS, sectorLabel, type SectorSlug } from '@/lib/data/sectors';
 import { DEFAULT_EMPLOYER_QUERY, initials, type Cefr } from '@/lib/data/candidates';
-import { COHORT } from '@/lib/data/cohort';
+import { COHORT, assessedCount } from '@/lib/data/cohort';
 import { requireStaffOrEmployer } from '@/lib/auth';
-import { AccountMenu } from '@/components/auth/AccountMenu';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 
 export const metadata = { title: 'Talent pool' };
@@ -40,39 +39,15 @@ export default async function AdminSearchPage({
     : 'B1';
   const page = Math.max(1, Number(query.page ?? 1) || 1);
 
-  const result = await searchTalent({ query: q, sector, minEnglish, page, pageSize: PAGE_SIZE });
+  const [result, assessed] = await Promise.all([
+    searchTalent({ query: q, sector, minEnglish, page, pageSize: PAGE_SIZE }),
+    assessedCount(),
+  ]);
   const understood = describeQuery(parseQuery(q), sectorLabel);
   const pages = Math.max(1, Math.ceil(result.total / PAGE_SIZE));
 
   return (
-    <div className="avsar-root">
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-line px-[clamp(20px,4cqi,56px)] py-[18px]">
-        <Wordmark href="/employers" suffix="talent pool" accent="employer" />
-        <nav className="flex flex-wrap gap-[clamp(12px,2.4cqi,28px)] text-[15px] text-ink-2">
-          <span aria-current="page" className="font-medium text-ink">
-            Search
-          </span>
-          <Link href="/admin/shortlists" className="no-underline hover:text-employer t-colors">
-            Shortlists
-          </Link>
-          {access.isStaff && (
-            <>
-              <Link href="/admin/cvs" className="no-underline hover:text-employer t-colors">
-                CV queue
-              </Link>
-              <Link href="/admin/cohorts" className="no-underline hover:text-employer t-colors">
-                Cohorts
-              </Link>
-              <Link href="/admin/placements" className="no-underline hover:text-employer t-colors">
-                Placements
-              </Link>
-            </>
-          )}
-        </nav>
-        <AccountMenu locale="en" tone="employer" />
-      </header>
-
-      <main className="px-[clamp(20px,4cqi,56px)] py-[clamp(28px,4cqi,48px)]">
+    <AdminShell current="/admin" isStaff={access.isStaff}>
         <Suspense fallback={<div className="h-[140px]" />}>
           <SearchControls query={q} sector={sector} minEnglish={minEnglish} />
         </Suspense>
@@ -86,7 +61,7 @@ export default async function AdminSearchPage({
 
         <div className="mt-6 mb-3 flex flex-wrap items-baseline justify-between gap-3">
           <Mono className="text-muted">
-            {result.total} matches · {COHORT.name} · {COHORT.assessedCount.toLocaleString('en-GB')} assessed
+            {result.total} matches · {COHORT.name} · {assessed.toLocaleString('en-GB')} assessed
           </Mono>
           <Mono className="text-muted">Sorted by overall score</Mono>
         </div>
@@ -172,8 +147,7 @@ export default async function AdminSearchPage({
             )}
           </nav>
         )}
-      </main>
-    </div>
+    </AdminShell>
   );
 }
 
