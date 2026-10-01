@@ -4,6 +4,28 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 18 - 01 Oct 2026, 17:30, abilio.diz@smithandadams.com
+
+**Mudanca de modelo comercial, decidida pelo Abilio:** os EUR 1.000 passam a
+ser pagos pelo **candidato**, so depois de emprego confirmado e contrato
+assinado. `PLACEMENT_FEE.payer = 'candidate'`.
+
+Objeccoes ditas antes da decisao e registadas em docs/commercial-terms.md, nao
+apagadas: Emigration Act indiana (tecto de ~20.000 rupias; isto sao ~92.000) e
+DL 260/2009 (proibe cobrar colocacao ao candidato).
+
+Consequencias no produto, todas derivadas da constante:
+- `CANDIDATE_PAYS_NO_PLACEMENT_FEE` passou a false, por isso a caixa "you never
+  pay us for the job itself" desapareceu sozinha da homepage.
+- `visibleToCandidates` passou a true: valor e condicao na homepage, nos termos
+  e **acima da checkbox de consentimento no checkout**, antes de se cobrarem os
+  25 EUR. A checkbox e o registo de que foi mostrado.
+- Termos: acrescentado que nunca e adiantado, nunca condicao para ser
+  considerado, nunca condicao para entrevista.
+- `placementFee` / `placementFeeShort` em EN e HI.
+
+Guioes dos videos por reescrever com os quatro pontos novos.
+
 ## Bloco 17 - 01 Oct 2026, 16:40, abilio.diz@smithandadams.com
 
 **Correccao ao Bloco 16.** O suposto bug do `/api/assessment/answer` **nao era

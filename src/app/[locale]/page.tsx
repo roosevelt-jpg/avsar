@@ -16,6 +16,7 @@ import {
   applicantHireRate,
   ASSESSMENT_FEE,
   CANDIDATE_PAYS_NO_PLACEMENT_FEE,
+  PLACEMENT_FEE,
 } from '@/lib/data/brand';
 
 export default async function CandidateLanding({ params }: { params: Promise<{ locale: string }> }) {
@@ -106,11 +107,22 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
           {formatInr(activePrice().totalPaise)} · about €{ASSESSMENT_FEE.eur} · includes GST
         </p>
 
-        {/* Derived, never written into copy: the claim is only true while the
-            employer is the payer, and it must never outlive that setting. */}
+        {/* Both are derived, never written into copy, so neither claim can
+            outlive the setting that makes it true. The placement fee is shown
+            to candidates precisely because they are the ones who pay it: the
+            worst version of this is the one nobody mentions until the end. */}
         {CANDIDATE_PAYS_NO_PLACEMENT_FEE && (
           <p className="mt-5 mb-0 max-w-[62ch] rounded-[16px] border border-accent bg-accent-tint px-5 py-4 text-[15px] leading-[1.6] text-ink">
             {t.noPlacementFee}
+          </p>
+        )}
+
+        {PLACEMENT_FEE.visibleToCandidates && (
+          <p className="mt-5 mb-0 max-w-[62ch] rounded-[16px] border border-accent bg-accent-tint px-5 py-4 text-[15px] leading-[1.6] text-ink">
+            {fill(t.placementFee, {
+              eur: String(PLACEMENT_FEE.eur),
+              inr: formatInr(activePrice().totalPaise),
+            })}
           </p>
         )}
       </section>

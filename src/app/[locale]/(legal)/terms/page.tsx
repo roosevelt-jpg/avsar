@@ -68,11 +68,11 @@ export default async function TermsPage({ params }: { params: Promise<{ locale: 
         <li>Use one account. Duplicate applications are removed without refund.</li>
       </ul>
 
-      <h2>Fees you will never pay us</h2>
+      <h2>{PLACEMENT_FEE.payer === 'employer' ? 'Fees you will never pay us' : 'Fees'}</h2>
       <p>
         {PLACEMENT_FEE.payer === 'employer'
           ? `The assessment fee is the only amount ${BRAND.name} charges a candidate. Our placement fee is paid by the employer. Nobody is authorised to ask you for money for a job, a visa, or to move your application forward, and any such request should be reported to us.`
-          : 'Placement fees payable by a candidate are set out in the selection rules.'}
+          : `There are two amounts, and only the first is payable now. The assessment fee buys the assessment, the report and the career pack, and is payable whatever the outcome. The placement fee of €${PLACEMENT_FEE.eur} is payable only if you are placed, and only after your employment contract is signed: never in advance, never as a condition of being considered, and never as a condition of an interview. Outside these two amounts nobody is authorised to ask you for money for a job, a visa, or to move your application forward, and any such request should be reported to us.`}
       </p>
 
       <h2>Cancellation and refunds</h2>

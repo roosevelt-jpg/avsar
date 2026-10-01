@@ -99,6 +99,25 @@ recruitment-fee rules turn on.
 It only holds while the pack is genuinely portable and genuinely useful. If it
 ever becomes a thin wrapper around "apply with us", the argument goes with it.
 
+### The placement fee
+
+€1,000, **paid by the candidate**, and only once the job is confirmed and the
+contract signed. Changed from employer-paid on 1 October 2026.
+
+The objections were stated before the change and are recorded here rather than
+removed. India's Emigration Act caps what a recruiting agent may charge an
+emigrant at ₹20,000 or 45 days' wages; €1,000 is around ₹92,000. Portugal's
+Decreto-Lei 260/2009 prohibits charging a candidate for placement. Both were
+raised and the model was set this way deliberately.
+
+What the product does in consequence is make it impossible to discover late.
+`PLACEMENT_FEE.payer` drives `visibleToCandidates`, which puts the amount and
+the condition on the landing page, in the terms, and above the consent box at
+checkout, before the assessment fee is taken. The claim that used to sit on the
+landing page, "you never pay us for the job itself", is derived from the same
+constant and disappeared with it, so it cannot outlive the setting that made it
+true.
+
 ### CV formats
 
 Three, designed here rather than adapted from templates found online: CV designs

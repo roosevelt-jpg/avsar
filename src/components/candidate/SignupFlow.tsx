@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
 import { Mono } from '@/components/ui/Mono';
-import { ENTITY } from '@/lib/data/brand';
+import { ENTITY, PLACEMENT_FEE } from '@/lib/data/brand';
 import { AREAS, POSITIONS, positionsInArea, type PositionSlug } from '@/lib/data/positions';
 import { formatInr, activePrice } from '@/lib/data/cohort';
 import { fill, type Dictionary, type Locale } from '@/lib/i18n';
@@ -483,6 +483,23 @@ export function SignupFlow({
               );
             })}
           </div>
+
+          {/*
+            The placement fee, before the assessment fee is taken rather than
+            after it. They are two different amounts with two different
+            conditions, and a candidate who learns about the second one later
+            has been treated badly whatever the paperwork says. It sits above
+            the consent box deliberately: the box is the record that it was
+            shown.
+          */}
+          {PLACEMENT_FEE.visibleToCandidates && (
+            <p className="m-0 rounded-[12px] border border-accent bg-accent-tint px-4 py-3.5 text-[14px] leading-[1.6] text-ink">
+              {fill(t.placementFee, {
+                eur: String(PLACEMENT_FEE.eur),
+                inr: formatInr(price.totalPaise),
+              })}
+            </p>
+          )}
 
           {/*
             The registered company is not the name on the door. Someone who

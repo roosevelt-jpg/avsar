@@ -117,31 +117,27 @@ export const RESPONSE_DAYS = 15;
  */
 export const PLACEMENT_FEE = {
   eur: 1000,
-  payer: 'employer' as 'candidate' | 'employer',
+  payer: 'candidate' as 'candidate' | 'employer',
   /**
-   * Published to employers, never to candidates.
+   * Charged only once a job is confirmed, never up front.
    *
-   * With the employer paying, every objection above disappears: the fee is in
-   * the normal range for a fully relocated hire in these sectors, it is paid by
-   * someone who can pay it without borrowing, and none of the prohibitions
-   * apply. Same money, different payer.
+   * This is a placement fee paid by the worker, and it is the term with the
+   * most consequence attached, so it is written down rather than left to copy.
+   * India's Emigration Act caps what a recruiting agent may charge an emigrant
+   * at 20,000 rupees or 45 days' wages; this is around 92,000 rupees.
+   * Portugal's Decreto-Lei 260/2009 prohibits charging a candidate for
+   * placement. Both were raised and the model was set this way deliberately.
    *
-   * Setting `payer` back to 'candidate' re-opens all of it. Read
-   * docs/commercial-terms.md before doing that.
+   * What the product owes the candidate in return is that nobody discovers it
+   * late. Because `payer` is 'candidate', `visibleToCandidates` is true, which
+   * puts the amount and the condition on the landing page, in the terms, and
+   * in front of them at checkout before the assessment fee is taken.
    */
   get visibleToCandidates(): boolean {
     return this.payer === 'candidate';
   },
 } as const;
 
-/**
- * "You never pay us for the job itself."
- *
- * True only while the employer pays, so it is derived rather than written into
- * copy. In a market where most candidates have been charged by an agent at some
- * point, this is the strongest claim the product has, and it must never appear
- * on a page while the opposite is configured.
- */
 export const CANDIDATE_PAYS_NO_PLACEMENT_FEE = PLACEMENT_FEE.payer === 'employer';
 
 /**
