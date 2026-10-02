@@ -4,6 +4,31 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 26 - 02 Oct 2026, 11:10, abilio.diz@smithandadams.com
+
+**Imagens: via gratuita esgotada, 4 de 12 conseguidas.**
+
+Fontes tentadas, por ordem: Wikimedia Commons CC0/PD (devolve sobretudo
+arquivo e objectos sobre fundo branco: para "canalizador" da chaves inglesas,
+para "construcao" da um quadro do Munch); Commons restrita a fotos do Unsplash
+doadas como CC0 (muito melhor, mas cobertura rala); Openverse (funciona sem
+chave e tem contagens altas, mas quase tudo falha o tamanho minimo ou o fetch
+directo).
+
+Verificadas a olho e **boas**, em `scratchpad/img/cand/`:
+`chef-2`, `constr-2`, `fb-1`, `weld-3`, mais `lisbon-1` (electrico de Lisboa).
+
+**Sem nada utilizavel**: property management, cleaner, driver, logistics,
+electrician, plumber, data analyst, QA tester, e alojamento.
+
+Nao foi colocada nenhuma no repo: uma grelha de 12 com 4 fotos e 8 riscas fica
+pior do que 12 riscas. Decisao pendente do Abilio: chave da Pexels ou Unsplash
+(gratuita, imediata) e eu fecho as 12 numa passagem.
+
+Ressalva a dizer uma vez: a licenca cobre a fotografia, nao a pessoa
+fotografada. Foto de pessoa identificavel num anuncio de recrutamento sugere
+associacao ao servico, e nem Unsplash nem CC0 dao direitos de imagem.
+
 ## Bloco 25 - 02 Oct 2026, 10:20, abilio.diz@smithandadams.com
 
 **Email ligado.** Resend, nao SES. Escrito adaptador Resend em
