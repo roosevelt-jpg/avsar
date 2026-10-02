@@ -4,6 +4,40 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 25 - 02 Oct 2026, 10:20, abilio.diz@smithandadams.com
+
+**Email ligado.** Resend, nao SES. Escrito adaptador Resend em
+`src/lib/email/index.ts` (tenta Resend primeiro, SES fica como alternativa).
+Todas as mensagens levam `Reply-To: ENTITY.supportEmail`, porque
+`mail.smithandadams.com` e so de envio e nao tem caixa.
+
+No Vercel (producao, preview, development): `RESEND_API_KEY`, `EMAIL_FROM` =
+no-reply@mail.smithandadams.com, `CRON_SECRET` (48 chars, gerado localmente).
+O `scripts/push-env.sh` ja conhece estas e as do SES.
+
+Verificado contra producao, sem enviar nada:
+- `api.resend.com/domains` -> `mail.smithandadams.com | verified | eu-west-1`
+- `/api/cron/signup-reminders` sem segredo -> 401; com segredo -> 200 e
+  **`{"mailer":"resend"}`**, ou seja a producao apanhou as variaveis e o mailer
+  esta vivo e nao em noop.
+- `/api/cv/assess` sem autenticacao -> 401.
+
+Supabase SMTP configurado pelo Abilio (remetente, nome, rate limits).
+
+A key do Resend foi colada no chat. Abilio decidiu **nao rodar**. Fica
+registado.
+
+**Falta so o teste que precisa de caixa de correio**: inscricao com um email
+real, confirmar que o link chega e que ao clicar o aviso do dashboard
+desaparece e o relatorio fica descarregavel.
+
+Em aberto, por ordem: pagamentos (Abilio), imagens dos placeholders (comecado,
+fonte = Wikimedia Commons com licenca verificavel por ficheiro), item de
+speaking do assessment e um placeholder sem captura de audio apesar de a seccao
+anunciar "Reading, grammar, speaking", `SELECTION_FUNNEL.basis` por reconciliar
+com registos reais, revisao legal da pagina de selection-rules, Deployment
+Protection, e a questao CAE/IEFP adiada pelo Abilio.
+
 ## Bloco 24 - 01 Oct 2026, 23:50, abilio.diz@smithandadams.com
 
 Pedido: plataforma funcional a 100% excepto pagamentos (que o Abilio trata).
