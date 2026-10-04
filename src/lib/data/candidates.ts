@@ -16,6 +16,8 @@ export type TalentRow = {
   english: Cefr;
   score: number;
   yearsExperience: number;
+  /** Whether a voice introduction exists. The clip itself is fetched separately. */
+  hasVoiceIntro?: boolean;
 };
 
 /** Initials for the avatar chip: "Priya Sharma" -> "PS". */

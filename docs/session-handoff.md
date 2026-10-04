@@ -4,6 +4,35 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 27 - 04 Oct 2026, 12:40, abilio.diz@smithandadams.com
+
+**Voice intro implementado.** Gravacao de 45s no perfil, ao lado do CV,
+**nao pontuada** e rotulada como nao pontuada. Decisao: nao construir prova de
+oralidade avaliada automaticamente.
+
+Razoes, registadas em `docs/assessment.md` e no cabecalho da migracao: avaliar
+uma transcricao mede o que a parte escrita ja mede; avaliar o audio custa por
+candidato e continua a nao ser certificavel (`english_certified` e coluna
+gerada, `english_source <> 'internal'`); e o reconhecimento de fala tem taxas de
+erro mais altas para ingles com sotaque indiano, o que num sistema de
+recrutamento penalizaria exactamente quem o produto serve.
+
+- `0011_voice_intro.sql` (**por correr**): tabela `candidate_voice_intros`,
+  bucket `voice-intros` com o caminho como fronteira de autorizacao (mesma regra
+  dos CVs), RLS para proprio/staff/employer, e `has_voice_intro` na vista
+  `talent_pool`. O toggle de visibilidade tambem silencia a gravacao.
+- `POST/DELETE /api/profile/voice` e `GET /api/profile/voice/[candidateId]`.
+  A linha e lida com o cliente da sessao (RLS decide), o ficheiro com service
+  role porque o bucket e privado e um signed URL sobreviveria a sessao.
+- `VoiceIntro.tsx`: nada sobe ate ao Save, para uma gravacao falhada nao custar
+  dados nem vergonha. Android webm/opus, iOS mp4. Corte automatico aos 45s.
+- `VoicePlayer.tsx` na coluna VOICE da pool: o `<audio>` so e criado ao clicar,
+  para 25 resultados nao abrirem 25 ligacoes.
+- A seccao de ingles deixou de anunciar "speaking". Passou a "Reading and
+  grammar", EN e HI.
+
+Por testar com microfone real (nao da para automatizar headless).
+
 ## Bloco 26 - 02 Oct 2026, 11:10, abilio.diz@smithandadams.com
 
 **Imagens: via gratuita esgotada, 4 de 12 conseguidas.**

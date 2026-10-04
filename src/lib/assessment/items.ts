@@ -10,7 +10,9 @@
  *  - The English score should come from a recognised provider (Duolingo English
  *    Test, EnglishScore, Versant) rather than from these items, so the CEFR
  *    level on the report is defensible to an employer.
- *  - The speaking item is a placeholder: it needs audio capture and upload.
+ *  - There is no speaking item, and the section no longer claims one. Spoken
+ *    English is captured on the profile as an unscored recording that employers
+ *    listen to themselves; see 0011_voice_intro.sql for why it is not marked.
  */
 
 import type { SectorSlug } from '@/lib/data/sectors';

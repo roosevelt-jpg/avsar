@@ -4,6 +4,7 @@ import { Mono } from '@/components/ui/Mono';
 import { AdminShell } from '@/components/employer/AdminShell';
 import { SearchControls } from '@/components/employer/SearchControls';
 import { ShortlistButton } from '@/components/employer/ShortlistButton';
+import { VoicePlayer } from '@/components/employer/VoicePlayer';
 import { searchTalent } from '@/lib/talent-search';
 import { parseQuery, describeQuery } from '@/lib/assessment/query-parser';
 import { SECTOR_SLUGS, sectorLabel, type SectorSlug } from '@/lib/data/sectors';
@@ -76,7 +77,7 @@ export default async function AdminSearchPage({
           <table className="w-full min-w-[680px] border-collapse text-left">
             <thead>
               <tr className="border-b border-line">
-                {['CANDIDATE', 'SECTOR', 'ENGLISH', 'SCORE', 'EXP', ''].map((header) => (
+                {['CANDIDATE', 'SECTOR', 'ENGLISH', 'SCORE', 'EXP', 'VOICE', ''].map((header) => (
                   <th key={header} scope="col" className="px-4 py-3 font-mono text-[11px] font-medium text-muted">
                     {header}
                   </th>
@@ -106,6 +107,16 @@ export default async function AdminSearchPage({
                     {row.score}
                   </td>
                   <td className="px-4 py-3.5 font-mono text-[13px] text-muted">{row.yearsExperience}y</td>
+                  {/* Hearing someone speak for thirty seconds tells a hiring
+                      manager more than the English column does, and lets them
+                      judge it themselves rather than take our letter for it. */}
+                  <td className="px-4 py-3.5">
+                    {row.hasVoiceIntro ? (
+                      <VoicePlayer candidateId={row.id} name={row.name} />
+                    ) : (
+                      <span className="font-mono text-[12px] text-muted">&mdash;</span>
+                    )}
+                  </td>
                   <td className="px-4 py-3.5 text-right">
                     <span className="flex items-center justify-end gap-2">
                       {/* Staff only. An employer must never be handed a raw
@@ -125,7 +136,7 @@ export default async function AdminSearchPage({
               ))}
               {result.rows.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-10 text-center text-[15px] text-muted">
+                  <td colSpan={7} className="px-4 py-10 text-center text-[15px] text-muted">
                     No candidates match these filters.
                   </td>
                 </tr>

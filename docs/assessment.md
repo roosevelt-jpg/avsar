@@ -87,3 +87,30 @@ rather than test them, like which licence categories they hold.
 
 `axis` is what appears on the report breakdown. Keep the set small: five or six
 axes a person can act on beats twenty they cannot.
+
+
+## Spoken English
+
+There isn't any, in the assessment. The English section is reading and grammar,
+and the description says so.
+
+A spoken item was considered and rejected. Grading a transcript measures
+vocabulary and grammar, which the written items already measure, and misses
+pronunciation, fluency and hesitation, which is the whole of what a speaking
+test is for. Grading the audio directly means a model that hears it, a cost per
+candidate on top of the career pack, and a number that `reports.english_certified`
+would still refuse to call a certificate, because that column is generated as
+`english_source <> 'internal'` and always has been.
+
+The decisive objection is bias. Speech recognition has documented higher error
+rates for Indian-accented English. An automated speaking score feeding a
+recruitment decision would mark down exactly the people this product exists to
+serve, which is the Annex III case and also simply the wrong thing to build.
+
+So there is a **voice introduction** instead: forty-five seconds, on the
+profile, next to the CV, not scored and labelled as not scored. Employers listen
+and judge by their own criteria. A hotel manager hearing someone speak learns
+more in half a minute than a letter grade conveys.
+
+A real CEFR level, when one is needed, comes from Duolingo or EnglishScore.
+`english_source` has anticipated that from the start.

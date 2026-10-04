@@ -139,6 +139,23 @@ export type Dictionary = {
   };
 
   /* Dashboard */
+  voice: {
+    eyebrow: string;
+    title: string;
+    lead: string;
+    notMarked: string;
+    prompt: string;
+    record: string;
+    asking: string;
+    stop: string;
+    save: string;
+    again: string;
+    saving: string;
+    saved: string;
+    remove: string;
+    denied: string;
+    failed: string;
+  };
   dash: {
     navOverview: string;
     verifyTitle: string;
@@ -468,7 +485,7 @@ const en: Dictionary = {
     sections: [
       ['Skills', '20 questions'],
       ['Experience', '8 questions'],
-      ['English', 'Reading, grammar, speaking'],
+      ['English', 'Reading and grammar'],
       ['Profile', '5 questions'],
     ],
     questionCounter: 'Question {n} of {total}',
@@ -481,6 +498,23 @@ const en: Dictionary = {
     saveError: 'Not saved. Retrying…',
   },
 
+  voice: {
+    eyebrow: 'OPTIONAL',
+    title: 'Record a short introduction',
+    lead: 'Forty-five seconds of you speaking, attached to your profile. Employers listen to it alongside your report and your CV.',
+    notMarked: 'This is not marked and it does not change your score. It is here because a minute of hearing someone speak tells an employer more than any grade, and because they should judge your English themselves rather than take our word for it.',
+    prompt: 'Say your name, the work you have done, and why you want to work in Portugal. Speak as you normally would. Nobody is listening for a perfect accent.',
+    record: 'Start recording',
+    asking: 'Waiting for permission to use your microphone…',
+    stop: 'Stop',
+    save: 'Save this one',
+    again: 'Record again',
+    saving: 'Saving…',
+    saved: 'Saved, {seconds} seconds. Employers can hear this.',
+    remove: 'Delete it',
+    denied: 'We could not use your microphone. Check that your browser is allowed to use it, then try again. The rest of your profile works without this.',
+    failed: 'That did not record. If you are on a very old browser, try a different one.',
+  },
   dash: {
     navOverview: 'Overview',
     verifyTitle: 'Confirm your email address',
@@ -871,7 +905,7 @@ const hi: Dictionary = {
     sections: [
       ['कौशल', '20 प्रश्न'],
       ['अनुभव', '8 प्रश्न'],
-      ['अंग्रेज़ी', 'पठन, व्याकरण, बोलना'],
+      ['अंग्रेज़ी', 'पठन और व्याकरण'],
       ['प्रोफ़ाइल', '5 प्रश्न'],
     ],
     questionCounter: 'प्रश्न {n} / {total}',
@@ -884,6 +918,23 @@ const hi: Dictionary = {
     saveError: 'सहेजा नहीं गया। दोबारा कोशिश कर रहे हैं…',
   },
 
+  voice: {
+    eyebrow: 'वैकल्पिक',
+    title: 'एक छोटा परिचय रिकॉर्ड करें',
+    lead: 'आपकी आवाज़ में पैंतालीस सेकंड, आपकी प्रोफ़ाइल के साथ। नियोक्ता इसे आपकी रिपोर्ट और सीवी के साथ सुनते हैं।',
+    notMarked: 'इसका मूल्यांकन नहीं होता और इससे आपका स्कोर नहीं बदलता। यह इसलिए है क्योंकि किसी को बोलते सुनना किसी भी ग्रेड से ज़्यादा बताता है, और क्योंकि आपकी अंग्रेज़ी का फ़ैसला नियोक्ता ख़ुद करें, हमारे कहने पर नहीं।',
+    prompt: 'अपना नाम बताएं, आपने कौन-सा काम किया है, और आप पुर्तगाल में क्यों काम करना चाहते हैं। जैसे आप सामान्य रूप से बोलते हैं वैसे ही बोलें। किसी को सही उच्चारण नहीं चाहिए।',
+    record: 'रिकॉर्डिंग शुरू करें',
+    asking: 'माइक्रोफ़ोन की अनुमति का इंतज़ार…',
+    stop: 'रोकें',
+    save: 'इसे सहेजें',
+    again: 'दोबारा रिकॉर्ड करें',
+    saving: 'सहेजा जा रहा है…',
+    saved: 'सहेज लिया, {seconds} सेकंड। नियोक्ता इसे सुन सकते हैं।',
+    remove: 'हटा दें',
+    denied: 'हम आपका माइक्रोफ़ोन इस्तेमाल नहीं कर सके। देखें कि ब्राउज़र को अनुमति है या नहीं, फिर दोबारा कोशिश करें। बाकी प्रोफ़ाइल इसके बिना भी काम करती है।',
+    failed: 'रिकॉर्ड नहीं हो सका। अगर ब्राउज़र बहुत पुराना है तो दूसरा आज़माएं।',
+  },
   dash: {
     navOverview: 'अवलोकन',
     verifyTitle: 'अपना ईमेल पता सत्यापित करें',

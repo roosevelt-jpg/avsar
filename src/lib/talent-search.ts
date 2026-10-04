@@ -60,7 +60,7 @@ export async function searchTalent(filters: SearchFilters): Promise<SearchResult
 
   let request = supabase
     .from('talent_pool')
-    .select('id, full_name, city_state, sector, english_cefr, overall_score, years_experience', {
+    .select('id, full_name, city_state, sector, english_cefr, overall_score, years_experience, has_voice_intro', {
       count: 'exact',
     })
     .eq('visible_to_employers', true)
@@ -86,6 +86,7 @@ export async function searchTalent(filters: SearchFilters): Promise<SearchResult
     english: row.english_cefr as Cefr,
     score: row.overall_score as number,
     yearsExperience: row.years_experience as number,
+    hasVoiceIntro: Boolean(row.has_voice_intro),
   }));
 
   return { rows, total: count ?? rows.length, page: filters.page, pageSize: filters.pageSize, sample: false };

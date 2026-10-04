@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { Wordmark } from '@/components/ui/Wordmark';
 import { AccountMenu } from '@/components/auth/AccountMenu';
 import { CvUpload } from '@/components/candidate/CvUpload';
+import { VoiceIntro } from '@/components/candidate/VoiceIntro';
 import { ProfileForm } from '@/components/candidate/ProfileForm';
 import { getDictionary, isLocale } from '@/lib/i18n';
 import { requireCandidate } from '@/lib/auth';
@@ -47,7 +48,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
   const supabase = await getServerSupabase();
   const status = await getCandidateStatus(candidate.id, candidate.paymentStatus);
 
-  const [profileRow, experienceRows, educationRows] = await Promise.all([
+  const [profileRow, experienceRows, educationRows, voiceRow] = await Promise.all([
     supabase?.from('candidate_profiles').select('*').eq('candidate_id', candidate.id).maybeSingle(),
     supabase
       ?.from('candidate_experiences')
@@ -59,6 +60,11 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
       .select('*')
       .eq('candidate_id', candidate.id)
       .order('sort_order'),
+    supabase
+      ?.from('candidate_voice_intros')
+      .select('duration_seconds')
+      .eq('candidate_id', candidate.id)
+      .maybeSingle(),
   ]);
 
   const stored = profileRow?.data;
@@ -106,6 +112,16 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
 
         <div className="mb-5">
           <CvUpload t={t} alreadyUploaded={status.cvUploaded} />
+        </div>
+
+        {/* Next to the CV, because it is the same kind of thing: something the
+            candidate gives an employer, not something we mark. */}
+        <div className="mb-5">
+          <VoiceIntro
+            t={t}
+            candidateId={candidate.id}
+            existingSeconds={(voiceRow?.data?.duration_seconds as number | null) ?? null}
+          />
         </div>
 
         <p className="mb-5 text-[14px] font-medium text-muted">{t.profile.orManual}</p>
