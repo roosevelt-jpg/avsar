@@ -80,6 +80,32 @@ misrepresented too.
 | Customer service email | `candidates@smithandadams.com` |
 | Customer service phone | the Portuguese number in `ENTITY.phone` |
 
+## The company, for the KYC forms
+
+| Field | Value |
+|---|---|
+| Legal name | SMTADM REAL ESTATE L.L.C |
+| Legal form | Limited Liability Company |
+| Trade licence | 1174293, Dubai Department of Economy and Tourism, to 18 Apr 2027 |
+| Commercial register | 1962728 |
+| Chamber membership | 456046, Dubai Chamber of Commerce |
+| UAE Tax Registration Number | 104201008000001 |
+| Registered office | Office 102-08, Salem Abdullah Bin Dasmal Building, Al Quoz Industrial First, Dubai |
+| Share capital | AED 300,000 |
+| Financial year | 1 January to 31 December |
+| Binding | Either Managing Director, singly or jointly (MOA Art. 10) |
+| Settlement account | Mashreq, AED, in the company name |
+
+Muhammad Adam Ismail and Muhammad Furkan Ismail hold 50% each, both Portuguese
+nationals, both Managing Directors able to act alone. Both belong in the
+beneficial-owner declaration: an aggregator holds settlement until every owner
+above 25% has cleared verification, which is the commonest reason an account
+sits unactivated.
+
+The passport numbers in the 2023 MOA are superseded; both were renewed in 2026.
+A resolution citing an old number against a passport copy showing the new one is
+a cross-check failure.
+
 ## Links a reviewer will open
 
 Give these rather than waiting to be asked. A reviewer who has to hunt for a
@@ -93,16 +119,14 @@ refund policy assumes there is not one.
 - Privacy: `/en/privacy`
 - Contact: `/en/contact`
 
-## The mismatch to resolve before applying
+## Two mismatches a reviewer will find
 
-Neither registered entity's licensed activity covers recruitment.
-
-SMTADM Real Estate L.L.C is licensed for Real Estate Buying & Selling
-Brokerage. Benefit Discovery, Lda has an objecto covering construction,
-business consultancy and support services to companies, with CAE 43350,
-building finishing.
-
-A reviewer comparing this description with the trade licence or the certidão
-will see it. It is the same mismatch that stopped the Cashfree application.
-Deciding it is not a drafting problem and nothing written here fixes it: see
+**The licensed activity does not cover recruitment.** The trade licence carries
+one activity, Real Estate Buying & Selling Brokerage. This is the same mismatch
+that stopped the Cashfree application, and nothing written here fixes it. See
 docs/commercial-terms.md.
+
+**Three addresses across three documents.** The trade licence says Al Quoz
+Industrial First; the Corporate Tax certificate and the bank statement both say
+Hor Al Anz, Deira. Cross-checking addresses is routine, and three versions
+invite a question. Decide which is current and reconcile the others.

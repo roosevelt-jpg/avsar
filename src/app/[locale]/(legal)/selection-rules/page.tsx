@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation';
-import { DraftNotice } from '@/components/ui/DraftNotice';
 import { getDictionary, isLocale } from '@/lib/i18n';
 import { SELECTION_FUNNEL, applicantHireRate } from '@/lib/data/brand';
 
@@ -9,6 +8,14 @@ export const metadata = { title: 'Selection rules' };
  * The page every odds disclosure links to, from the landing page, the checkout
  * consent and the FAQ. Its job is to state plainly what a candidate is buying
  * and what they are not, in one place a regulator or a journalist can read.
+ *
+ * Reviewed and published as final on 6 October 2026. It carried a draft notice
+ * until then, which mattered because the consent checkbox links here: asking
+ * somebody to confirm they have read a document that calls itself unreviewed
+ * weakens the one record that proves the terms were shown.
+ *
+ * `CONSENT_VERSION` moves whenever the wording here or in the terms changes, so
+ * what each candidate agreed to stays recoverable.
  */
 export default async function SelectionRulesPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -18,8 +25,6 @@ export default async function SelectionRulesPage({ params }: { params: Promise<{
   return (
     <>
       <h1>{t.selectionRules}</h1>
-
-      <DraftNotice note="Placeholder wording. Needs review under India's Emigration Act and recruiting-agent rules, prize and competition law in each state, Indian consumer law, and Portuguese and EU rules on private employment agencies, before this page is published." />
 
       <h2>What the fee buys</h2>
       <p>

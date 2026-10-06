@@ -22,10 +22,11 @@ export const BRAND = {
  * postal address, a working phone and a monitored email, all reachable from the
  * public site.
  *
- * The Portuguese company, not the Dubai one. Stripe's published list of
- * countries an account may be registered in to accept UPI includes Portugal and
- * excludes the United Arab Emirates, and UPI is how most of India pays for
- * something at this price. See docs/stripe-onboarding.md.
+ * The Dubai company. The Stripe route needed a Portuguese one, because Stripe
+ * will not do UPI from an account registered in the UAE; EximPe removes that
+ * constraint entirely, since its RBI PA-CB import authorisation collects rupees
+ * by UPI and settles abroad whatever the merchant's country. The entity went
+ * back to the one that holds the bank account and the trade licence.
  *
  * Fill these fields and every policy page completes itself. While one is
  * missing the pages say so plainly rather than printing an empty bracket,
@@ -33,7 +34,7 @@ export const BRAND = {
  * one reading an honest gap.
  */
 export const ENTITY = {
-  legalName: 'Benefit Discovery, Lda',
+  legalName: 'SMTADM REAL ESTATE L.L.C',
   /**
    * The name a candidate actually knows us by.
    *
@@ -43,22 +44,37 @@ export const ENTITY = {
    */
   tradingAs: 'S&A Recruitment',
   /**
-   * What the bank or UPI app shows. Set the same string in the Stripe
+   * What the bank or UPI app shows. Set the same string in the provider's
    * dashboard: the two disagreeing is worse than either alone.
-   *
-   * Stripe allows 5 to 22 characters, latin letters, numbers and spaces.
    */
   statementDescriptor: 'SA RECRUITMENT',
-  /** Pessoa colectiva, Conservatoria do Registo Comercial de Lisboa. */
-  registrationNumber: '517818817',
-  registrationLabel: 'NIPC',
-  registeredAddress: 'Avenida da Liberdade 69, 4.º A, 1250-140 Lisboa',
-  /** International format, and it must be answered. */
+  /** Dubai Department of Economy and Tourism. */
+  registrationNumber: '1174293',
+  registrationLabel: 'Trade licence',
+  /**
+   * The address on the trade licence, because that is the document a reviewer
+   * holds this against.
+   *
+   * It is not the only one on file: the Corporate Tax certificate and the bank
+   * statement both say Hor Al Anz, Deira. Three addresses across three
+   * documents is a routine cross-check failure, and the licence is the one to
+   * correct or to reconcile the others against.
+   */
+  registeredAddress:
+    'Office 102-08, Salem Abdullah Bin Dasmal Building, Al Quoz Industrial First, Dubai',
+  /**
+   * The Portuguese line, deliberately, on a company registered in Dubai.
+   *
+   * It is the number a candidate rings, and it is answered in Lisbon by the
+   * people who place them in Portugal. A support line in the country of the
+   * job is the useful one; the registered address above says where the company
+   * is, and the two are different facts.
+   */
   phone: '+351 938 227 348',
   supportEmail: 'candidates@smithandadams.com',
   employerEmail: 'employers@smithandadams.com',
   reportEmail: 'report@smithandadams.com',
-  jurisdiction: 'Lisbon, Portugal',
+  jurisdiction: 'Dubai, United Arab Emirates',
 } as const;
 
 export function entityIsComplete(): boolean {
@@ -94,6 +110,19 @@ export const ASSESSMENT_FEE = {
     return Math.round((this.eur * this.inrPerEur) / 100) * 100 - 1;
   },
 } as const;
+
+/**
+ * Which wording a candidate agreed to.
+ *
+ * Stored on the row at checkout, so the terms that applied to somebody can be
+ * recovered years later rather than inferred from a deploy date. It moves when
+ * the terms, the refund policy or the selection rules change in substance.
+ *
+ *  - `v1-2026-09`  first cohort wording; selection rules were still a draft
+ *  - `v2-2026-10`  selection rules reviewed and published; placement fee moved
+ *                  to the candidate and disclosed before checkout
+ */
+export const CONSENT_VERSION = 'v2-2026-10';
 
 /** Working days from a completed application to an answer. */
 export const RESPONSE_DAYS = 15;

@@ -4,6 +4,39 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 29 - 06 Oct 2026, 13:20, abilio.diz@smithandadams.com
+
+**Entidade legal de volta a SMTADM REAL ESTATE L.L.C**, por decisao do Abilio.
+O EximPe retira a razao que tinha levado a entidade portuguesa: a autorizacao
+PA-CB de importacao cobra em UPI e liquida para fora seja qual for o pais do
+merchant, por isso a limitacao do Stripe (sem UPI a partir dos Emirados) deixou
+de decidir.
+
+`ENTITY`: licenca 1174293, morada da licenca (Al Quoz), jurisdicao Dubai,
+`registrationLabel: 'Trade licence'`. O telefone **fica portugues** de proposito:
+e o numero que o candidato liga e e atendido em Lisboa por quem o coloca em
+Portugal. A morada registada diz onde a empresa esta; sao factos diferentes.
+
+Registado no comentario da constante: **tres moradas em tres documentos**
+(licenca = Al Quoz; certificado fiscal e extracto bancario = Hor Al Anz, Deira).
+Por reconciliar.
+
+**Selection rules publicadas como versao final.** O `DraftNotice` saiu, e nao
+resta nenhum no produto. Importava porque e a pagina ligada da checkbox de
+consentimento: pedir a alguem que confirme ter lido um documento que se
+declarava por rever enfraquecia o unico registo que prova que as condicoes
+foram mostradas.
+
+**`CONSENT_VERSION`** passou a constante em `brand.ts`, `v2-2026-10`, com o
+historico das versoes no comentario. Estava escrita a mao no `/api/signup`. Os
+candidatos existentes ficam com `v1-2026-09`, que e o correcto: foi o que
+aceitaram.
+
+`docs/merchant-description.md` actualizado para a SMTADM, com tabela de dados
+societarios para os formularios de KYC. `docs/stripe-onboarding.md` marcado como
+superseded, mas guardado: o facto das business locations do UPI continua a ser
+o que toda a gente volta a derivar.
+
 ## Bloco 28 - 06 Oct 2026, 12:30, abilio.diz@smithandadams.com
 
 **EximPe implementado** como quarto adaptador, a partir da documentacao v3

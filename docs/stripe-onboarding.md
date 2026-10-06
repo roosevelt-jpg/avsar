@@ -1,3 +1,13 @@
+> **Superseded, 6 October 2026.** Candidates are collected through EximPe, on
+> the Dubai entity. An RBI PA-CB *import* authorisation takes rupees by UPI and
+> settles abroad whatever the merchant's country, so the constraint this whole
+> note was written around, that Stripe will not do UPI from a UAE-registered
+> account, stopped deciding anything.
+>
+> Kept because the reasoning still holds for Stripe itself, which remains the
+> rail for employer invoices in euros, and because the UPI business-locations
+> fact below is the one people re-derive.
+
 # Stripe onboarding: which entity, and what to type
 
 Written 30 September 2026, from the Dubai trade licence, the MOA and the

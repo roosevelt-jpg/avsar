@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { signupSchema } from '@/lib/validation';
 import { ACTIVE_TIER, COHORT, activePrice, chargeAmountMinor, CHARGE_CURRENCY } from '@/lib/data/cohort';
-import { BRAND } from '@/lib/data/brand';
+import { BRAND, CONSENT_VERSION } from '@/lib/data/brand';
 import { itemSectorFor } from '@/lib/data/positions';
 import { getPaymentProvider, receiptNumber } from '@/lib/payments';
 import { getAdminSupabase } from '@/lib/supabase/admin';
@@ -74,7 +74,7 @@ export async function POST(request: Request) {
         /* Stored, not just validated: this is the odds-disclosure consent, and
            it is the record that matters if the fee model is ever challenged. */
         consent_selection_odds_at: new Date().toISOString(),
-        consent_version: 'v1-2026-09',
+        consent_version: CONSENT_VERSION,
         locale,
       })
       .eq('id', candidateId);
