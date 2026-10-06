@@ -4,6 +4,34 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 28 - 06 Oct 2026, 12:30, abilio.diz@smithandadams.com
+
+**EximPe implementado** como quarto adaptador, a partir da documentacao v3
+deles (lida, nao inventada). `PAYMENT_PROVIDER=eximpe` activa-o.
+
+- `src/lib/payments/eximpe.ts`: create order, status, webhook com V2 (timestamp
+  assinado, janela de 5 min) e V1 como alternativa. Assina com a *encryption
+  key*, nao com o secret da API.
+- `src/lib/payments/eximpe-client.ts`: SDK fixado na 1.4.0 **com o hash SRI**,
+  para um CDN comprometido nao poder servir outro script a uma pagina que esta
+  prestes a cobrar.
+- Quatro armadilhas da API deles tratadas e documentadas em `docs/payments.md`:
+  montantes em rupias e nao paise; `reference_id` recusa underscores;
+  `X-API-Version` obrigatorio com 401 que mente a dizer que sao as credenciais;
+  `type_of_goods: service` para nao exigir codigo HS.
+- `providerMode()` passou a ler `EXIMPE_ENV` ou `CASHFREE_ENV` conforme o
+  provedor activo, em vez de uma unica variavel que poria um deles no host
+  errado.
+
+**Logo da Smith & Adams no rodape.** Versao branca gerada a partir do
+`site-smith/logo.png` (preto sobre transparente), recortada a margem e exportada
+a 320 e 640 para `public/`. Renderiza a 160 de largura, ligada a
+smithandadams.com.
+
+Por configurar quando a conta for aprovada: as quatro chaves EXIMPE_*, o
+`PAYMENT_PROVIDER=eximpe`, o URL do webhook no dashboard deles, e o whitelist
+dos IPs.
+
 ## Bloco 27 - 04 Oct 2026, 12:40, abilio.diz@smithandadams.com
 
 **Voice intro implementado.** Gravacao de 45s no perfil, ao lado do CV,

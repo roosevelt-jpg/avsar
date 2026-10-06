@@ -9,6 +9,7 @@ import { AREAS, POSITIONS, positionsInArea, type PositionSlug } from '@/lib/data
 import { formatInr, activePrice } from '@/lib/data/cohort';
 import { fill, type Dictionary, type Locale } from '@/lib/i18n';
 import { loadCashfree } from '@/lib/payments/cashfree-client';
+import { loadEximpe } from '@/lib/payments/eximpe-client';
 
 type Method = 'upi' | 'card' | 'netbanking';
 
@@ -53,7 +54,7 @@ export function SignupFlow({
   initialPosition: PositionSlug;
   confirmedReceipt?: string;
   availableMethods: readonly Method[];
-  provider: 'stripe' | 'razorpay' | 'cashfree';
+  provider: 'stripe' | 'razorpay' | 'cashfree' | 'eximpe';
   providerMode: 'sandbox' | 'production';
 }) {
   const router = useRouter();
@@ -128,6 +129,15 @@ export function SignupFlow({
       };
 
       setReceipt(data.receipt);
+
+      /* EximPe hands back a session rather than a URL: their SDK opens the
+         payment page, which is where UPI lives. The session lasts fifteen
+         minutes, so this runs immediately rather than being stored. */
+      if (provider === 'eximpe' && data.clientToken) {
+        const eximpe = await loadEximpe(providerMode);
+        await eximpe.checkout({ sessionId: data.clientToken, redirectTarget: '_self' });
+        return;
+      }
 
       /* Cashfree opens its own checkout from the page instead of handing back
          a URL, which is also what puts UPI in front of the candidate. */

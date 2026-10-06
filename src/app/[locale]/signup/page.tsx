@@ -10,6 +10,21 @@ import { getAdminSupabase } from '@/lib/supabase/admin';
 
 export const metadata = { title: 'Register for Cohort 01' };
 
+/**
+ * Sandbox or production, for whichever provider's browser SDK is loaded.
+ *
+ * Read per provider rather than from one shared variable: they are different
+ * accounts with different environments, and a single flag would silently put
+ * one of them on the wrong host.
+ */
+function providerMode(): 'sandbox' | 'production' {
+  const provider = getPaymentProvider().name;
+  if (provider === 'eximpe') {
+    return process.env.EXIMPE_ENV === 'production' ? 'production' : 'sandbox';
+  }
+  return process.env.CASHFREE_ENV === 'production' ? 'production' : 'sandbox';
+}
+
 export default async function SignupPage({
   params,
   searchParams,
@@ -74,7 +89,7 @@ export default async function SignupPage({
           confirmedReceipt={confirmedReceipt}
           availableMethods={availablePaymentMethods()}
           provider={getPaymentProvider().name}
-          providerMode={process.env.CASHFREE_ENV === 'production' ? 'production' : 'sandbox'}
+          providerMode={providerMode()}
         />
         {!confirmedReceipt && <OrderSummary t={t} />}
       </main>

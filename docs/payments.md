@@ -142,3 +142,70 @@ A Dubai entity alone is not sufficient to run the whole model:
   defend.
 
 Get all three reviewed together. They interact.
+
+
+## EximPe
+
+The rail candidates pay on. Built from their v3 documentation, October 2026.
+
+It holds a final RBI **PA-CB authorisation for imports**, and that word is the
+whole point. An Indian candidate paying a foreign company is an *import* from
+India's side, so an export-only aggregator cannot do it however good its
+licence looks. Import authorisation is what lets rupees be collected by UPI and
+settled abroad with no Indian entity, which is why the entity question stopped
+blocking the fee.
+
+| | |
+|---|---|
+| Sandbox | `https://api-pacb-uat.eximpe.com`, dashboard `merchant-uat.eximpe.com` |
+| Production | `https://api-pacb.eximpe.com`, dashboard `merchant.eximpe.com` |
+| Create order | `POST /pg/orders/` |
+| Order status | `GET /pg/orders/{order_id}/status/` |
+| Browser SDK | `cdn.eximpe.com/sdk/eximpe-sdk-1.4.0.min.js`, pinned with its SRI hash |
+
+Keys: `EXIMPE_CLIENT_ID`, `EXIMPE_CLIENT_SECRET`, `EXIMPE_ENCRYPTION_KEY`,
+`EXIMPE_ENV`. `EXIMPE_MERCHANT_ID` is for PSPs collecting for sub-merchants and
+stays empty for us. Sandbox and production keys are not interchangeable and
+neither are the hosts: going live means changing both.
+
+### Four things their API does that are easy to get wrong
+
+**Amounts are in rupees, not paise.** Everything in this codebase holds money in
+minor units so nothing in the payment path touches a float. `toRupees` does the
+conversion once, in the adapter.
+
+**`reference_id` rejects underscores.** Letters, numbers and hyphens, up to 50.
+Our receipts are already `AV-01-048213`, but `toReference` sanitises anyway
+rather than trusting a format to stay that way.
+
+**`X-API-Version` is mandatory**, and omitting it fails with a 401 whose message
+talks about credentials. That sends you hunting through your keys instead of
+your headers, so the header is pinned to `3.0.0` in one place.
+
+**`type_of_goods` must be `service`.** `physical_goods` demands an eight-digit
+HS code, and an assessment does not have one.
+
+### Webhooks
+
+Two signature headers arrive on every delivery, and `handleWebhook` prefers V2:
+
+- `X-Webhook-Signature-V2`: `t=<unix>,v2=<hex>` over `"<t>." + raw body`
+- `X-Webhook-Signature`: hex over the raw body alone
+
+V2 signs a timestamp with the body, so a delivery captured off the wire cannot
+be replayed an hour later; anything outside a five-minute window is refused. V1
+is accepted as a fallback because EximPe still sends both, but it proves
+authenticity without proving freshness.
+
+The signing key is the **encryption key**, not the API secret. Without it the
+webhook is refused outright rather than processed unverified.
+
+### Still to do when the account is approved
+
+1. Keys into `.env.local` and up through `scripts/push-env.sh`.
+2. `PAYMENT_PROVIDER=eximpe`.
+3. Register the webhook URL in Developer settings: `/api/payments/webhook`.
+4. Whitelist their IP ranges, listed on the same page.
+5. Drive a sandbox payment end to end and confirm the webhook marks the
+   candidate `paid`. The session is valid for fifteen minutes, so a slow manual
+   test will expire rather than fail interestingly.

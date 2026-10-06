@@ -1,5 +1,7 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { Wordmark } from '@/components/ui/Wordmark';
+import { BRAND } from '@/lib/data/brand';
 import { getDictionary, type Locale } from '@/lib/i18n';
 
 export function SiteFooter({ locale }: { locale: Locale }) {
@@ -29,9 +31,31 @@ export function SiteFooter({ locale }: { locale: Locale }) {
           ))}
         </nav>
       </div>
-      <p className="mt-8 border-t border-dark-line pt-6 font-mono text-[12px] text-dark-muted">
-        {t.footerLegal}
-      </p>
+      {/*
+        The parent mark. A candidate in India is being asked to send money to a
+        company they have never heard of, and the one thing that makes that
+        reasonable is that it belongs to a business with a name and an address.
+        Hiding the parent would be the strange choice.
+
+        Served at 320 wide and rendered at 160, so it stays sharp on a phone.
+      */}
+      <div className="mt-8 flex flex-wrap items-center justify-between gap-5 border-t border-dark-line pt-6">
+        <a
+          href="https://www.smithandadams.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="t-colors opacity-70 hover:opacity-100"
+        >
+          <Image
+            src="/smith-adams-group-light-320.png"
+            alt={`${BRAND.parent} Group`}
+            width={320}
+            height={68}
+            className="h-auto w-[160px]"
+          />
+        </a>
+        <p className="m-0 font-mono text-[12px] text-dark-muted">{t.footerLegal}</p>
+      </div>
     </footer>
   );
 }

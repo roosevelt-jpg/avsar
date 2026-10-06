@@ -1,17 +1,21 @@
 import { stripeProvider } from './stripe';
 import { razorpayProvider } from './razorpay';
 import { cashfreeProvider } from './cashfree';
+import { eximpeProvider } from './eximpe';
 import type { PaymentMethodHint, PaymentProvider } from './types';
 
 /**
  * Which rail collects from candidates.
  *
- * `cashfree` is the one to use while the company is in Dubai and candidates are
- * in India: it is the only configuration here that offers UPI without an Indian
- * entity. `stripe` is the fallback and handles employer invoices regardless.
+ * `eximpe` is the live one: an RBI PA-CB import authorisation is what lets it
+ * take rupees by UPI from candidates in India and settle them to the company
+ * abroad, without an Indian entity. `stripe` remains the fallback and handles
+ * employer invoices in euros regardless of which rail collects the fee.
  */
 export function getPaymentProvider(): PaymentProvider {
   switch (process.env.PAYMENT_PROVIDER) {
+    case 'eximpe':
+      return eximpeProvider;
     case 'cashfree':
       return cashfreeProvider;
     case 'razorpay':
@@ -45,8 +49,9 @@ export type {
  *     -d "line_items[0][quantity]=1" \
  *     -d "line_items[0][price_data][currency]=inr" ...
  *
- * Cashfree and Razorpay reach the Indian domestic rails by construction, the
- * first from outside India and the second from inside it.
+ * EximPe and Cashfree reach the Indian domestic rails from outside India, on a
+ * PA-CB authorisation; Razorpay reaches them from inside it. All three offer
+ * UPI by construction, so there is nothing to configure.
  */
 export function availablePaymentMethods(): PaymentMethodHint[] {
   if (getPaymentProvider().name !== 'stripe') return ['upi', 'card', 'netbanking'];
