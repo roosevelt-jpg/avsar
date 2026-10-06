@@ -45,6 +45,9 @@ export type Dictionary = {
   howTitle: string;
   placeTitle: string;
   sectorsTitle: string;
+  positionLooksFor: string;
+  positionApply: string;
+  positionClose: string;
   placeEyebrow: string;
   placeFine: string;
   selectionRules: string;
@@ -366,6 +369,9 @@ const en: Dictionary = {
   howTitle: 'How it works',
   placeTitle: 'What a selected candidate receives',
   sectorsTitle: 'Positions we are hiring for',
+  positionLooksFor: 'WHAT EMPLOYERS LOOK FOR',
+  positionApply: 'Apply for this role',
+  positionClose: 'Close',
   placeEyebrow: 'FOR THE SELECTED CANDIDATE',
   placeFine: 'Selection is not guaranteed. You receive an answer within {days} days of completing your application.',
   selectionRules: 'Selection rules',
@@ -797,6 +803,9 @@ const hi: Dictionary = {
   howTitle: 'यह कैसे काम करता है',
   placeTitle: 'चुने गए उम्मीदवार को क्या मिलता है',
   sectorsTitle: 'जिन पदों के लिए हम भर्ती कर रहे हैं',
+  positionLooksFor: 'नियोक्ता क्या देखते हैं',
+  positionApply: 'इस पद के लिए आवेदन करें',
+  positionClose: 'बंद करें',
   placeEyebrow: 'चुने गए उम्मीदवार के लिए',
   placeFine: 'चयन की गारंटी नहीं है। आवेदन पूरा करने के {days} दिनों के भीतर आपको उत्तर मिलता है।',
   selectionRules: 'चयन नियम',

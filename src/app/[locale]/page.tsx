@@ -2,12 +2,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Mono } from '@/components/ui/Mono';
-import { POSITION_LQIP, positionImage } from '@/lib/data/position-images';
+import { PositionGrid } from '@/components/candidate/PositionGrid';
+import { positionCopy } from '@/lib/data/position-copy';
 import { SiteHeader } from '@/components/candidate/SiteHeader';
 import { SiteFooter } from '@/components/candidate/SiteFooter';
 import { PositionSelector } from '@/components/candidate/PositionSelector';
 import { fill, getDictionary, isLocale } from '@/lib/i18n';
-import { POSITIONS } from '@/lib/data/positions';
 import { activePrice, formatInr } from '@/lib/data/cohort';
 import {
   BRAND,
@@ -282,24 +282,7 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
         <h2 className="m-0 mb-8 max-w-[24ch] text-[clamp(28px,4cqi,48px)] font-semibold leading-[1.1] tracking-[-0.03em]">
           {t.sectorsTitle}
         </h2>
-        <ul className="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-3 p-0">
-          {POSITIONS.map((position, index) => (
-            <li key={position.slug}>
-              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[16px]">
-                <Image
-                  src={positionImage(position.slug, 840)}
-                  alt={position.label}
-                  fill
-                  sizes="(max-width: 700px) 50vw, 240px"
-                  placeholder="blur"
-                  blurDataURL={POSITION_LQIP[position.slug]}
-                  className="object-cover"
-                />
-              </div>
-              <p className="mt-2.5 mb-0 text-[16px] font-medium">{t.sectors[index] ?? position.label}</p>
-            </li>
-          ))}
-        </ul>
+        <PositionGrid locale={locale} t={t} copy={positionCopy(locale)} />
       </section>
 
       {/* --------------------------------------------------------------- CTA band */}
