@@ -114,3 +114,36 @@ more in half a minute than a letter grade conveys.
 
 A real CEFR level, when one is needed, comes from Duolingo or EnglishScore.
 `english_source` has anticipated that from the start.
+
+
+## How long it takes
+
+Counted, not estimated. The item bank serves this many questions per sector:
+
+| Sector | Questions |
+|---|---|
+| Hospitality | 35 |
+| IT | 39 |
+| Cleaning, construction, drivers, maintenance, property management | 31 |
+
+Four sections, 31 to 39 multiple-choice questions, plus a forty-five second
+voice introduction on the profile. At thirty to forty seconds a question
+including the reading, that is **twenty to thirty minutes**, and that is what
+the copy now says.
+
+The ninety minutes in `assessment_minutes()` is **per section** and is a ceiling
+for somebody who loses their connection or is interrupted, not a duration. The
+copy claimed sixty to ninety minutes for a long time, which was roughly three
+times the truth.
+
+It mattered more after the fee moved to the end. Somebody who pays up front and
+then finds the exam short shrugs; somebody who finishes in eighteen minutes and
+is immediately asked for 2,299 rupees is in a worse frame of mind than one who
+has just sat a ninety-minute paper. Overstating the length was buying goodwill
+the product had not earned and would have spent at exactly the wrong moment.
+
+### If the length should go up
+
+The bank holds 68 skills items in total but only 8 reach most sectors, because
+the rest are hospitality-specific or IT-specific. Serving more to each sector is
+a matter of writing items for those sectors rather than of changing any code.

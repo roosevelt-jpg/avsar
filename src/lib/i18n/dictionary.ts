@@ -360,7 +360,7 @@ const en: Dictionary = {
   askWork: 'What position are you applying for?',
   cta: 'Start your application',
   fine: 'You pay the assessment fee once, after you have seen what the assessment involves. Selection is not guaranteed, and we tell you either way within {days} days.',
-  heroMeta: '{inr} · 60–90 min · online',
+  heroMeta: '{inr} · 20–30 min · online',
 
   includesTitle: 'What your fee includes',
   howTitle: 'How it works',
@@ -389,7 +389,7 @@ const en: Dictionary = {
   ctaTitle: 'Applications are open.',
 
   includes: [
-    ['Professional assessment', 'Online assessment of 60–90 minutes covering your skills, work experience and English.'],
+    ['Professional assessment', 'Twenty to thirty minutes online: your trade skills, your work experience, your English, and a short spoken introduction employers listen to.'],
     ['Skills report', 'A scored breakdown of your strengths and gaps. It is yours to keep and share.'],
     ['An answer, either way', 'We tell you within {days} days whether you are moving forward. You are not left waiting.'],
   ],
@@ -574,7 +574,7 @@ const en: Dictionary = {
     steps: [
       ['Register', 'Create your account with your name, mobile and email. It takes two minutes.'],
       ['Upload your CV and documents', 'A CV and a photo are all we need to start. Adding your passport and supporting documents lets us tell you sooner whether your file is ready for a visa.'],
-      ['Take the first assessment', 'An online assessment of your skills, work experience and English. Sixty to ninety minutes, from your phone or a computer, whenever suits you.'],
+      ['Take the assessment', 'Your trade skills, your work experience and your English, plus a forty-five second recording of you speaking. Twenty to thirty minutes, from your phone, whenever suits you. It costs nothing to sit.'],
       ['Pay the assessment fee', 'Pay once, after you have seen what the assessment involves.'],
       ['Assessment call', 'If you are shortlisted, one of our recruiters calls you. This is a real conversation about the work, not a formality.'],
       ['Confirmation letter', 'If you are selected, you receive a confirmation letter to sign, and we begin the visa process with you.'],
@@ -791,7 +791,7 @@ const hi: Dictionary = {
   askWork: 'आप किस पद के लिए आवेदन कर रहे हैं?',
   cta: 'अपना आवेदन शुरू करें',
   fine: 'मूल्यांकन शुल्क एक बार देना होता है, और वह भी मूल्यांकन देखने के बाद। चयन की गारंटी नहीं है, और {days} दिनों के भीतर हम आपको दोनों हालात में बताते हैं।',
-  heroMeta: '{inr} · 60–90 मिनट · ऑनलाइन',
+  heroMeta: '{inr} · 20–30 मिनट · ऑनलाइन',
 
   includesTitle: 'आपकी फ़ीस में क्या शामिल है',
   howTitle: 'यह कैसे काम करता है',
@@ -820,7 +820,7 @@ const hi: Dictionary = {
   ctaTitle: 'आवेदन खुले हैं।',
 
   includes: [
-    ['पेशेवर मूल्यांकन', '60–90 मिनट का ऑनलाइन मूल्यांकन, जिसमें आपके कौशल, कार्य अनुभव और अंग्रेज़ी की जाँच होती है।'],
+    ['पेशेवर मूल्यांकन', 'बीस से तीस मिनट ऑनलाइन: आपका कौशल, कार्य अनुभव, अंग्रेज़ी, और एक छोटा बोला हुआ परिचय जिसे नियोक्ता सुनते हैं।'],
     ['स्किल्स रिपोर्ट', 'आपकी ताक़त और कमियों का अंकों सहित विवरण। यह आपकी है, आप इसे रख और साझा कर सकते हैं।'],
     ['उत्तर, दोनों हालात में', '{days} दिनों के भीतर हम बताते हैं कि आप आगे बढ़ रहे हैं या नहीं। आपको इंतज़ार में नहीं छोड़ा जाता।'],
   ],
@@ -1003,7 +1003,7 @@ const hi: Dictionary = {
     steps: [
       ['रजिस्टर करें', 'अपने नाम, मोबाइल और ईमेल से खाता बनाएँ। दो मिनट लगते हैं।'],
       ['CV और दस्तावेज़ अपलोड करें', 'शुरू करने के लिए एक CV और एक फ़ोटो काफ़ी है। पासपोर्ट और अन्य दस्तावेज़ जोड़ने से हम जल्दी बता पाते हैं कि आपकी फ़ाइल वीज़ा के लिए तैयार है या नहीं।'],
-      ['पहला मूल्यांकन दें', 'आपके कौशल, अनुभव और अंग्रेज़ी का ऑनलाइन मूल्यांकन। 60 से 90 मिनट, फ़ोन या कंप्यूटर से, आपकी सुविधा के समय।'],
+      ['मूल्यांकन दें', 'आपका कौशल, कार्य अनुभव और अंग्रेज़ी, साथ में पैंतालीस सेकंड की आपकी बोली हुई रिकॉर्डिंग। बीस से तीस मिनट, फ़ोन से, आपकी सुविधा के समय। इसे देने का कोई शुल्क नहीं।'],
       ['मूल्यांकन शुल्क भरें', 'एक बार भुगतान, और वह भी मूल्यांकन देखने के बाद।'],
       ['मूल्यांकन कॉल', 'शॉर्टलिस्ट होने पर हमारा रिक्रूटर आपको कॉल करता है। यह औपचारिकता नहीं, काम के बारे में असली बातचीत है।'],
       ['पुष्टि पत्र', 'चुने जाने पर आपको हस्ताक्षर के लिए पुष्टि पत्र मिलता है, और हम आपके साथ वीज़ा प्रक्रिया शुरू करते हैं।'],
