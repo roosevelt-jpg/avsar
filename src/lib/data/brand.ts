@@ -22,13 +22,13 @@ export const BRAND = {
   /**
    * The slogan.
    *
-   * Intended as precision: talent channelled exactly where it is needed. Worth
-   * knowing that an English reader will hear "on the spot" as *immediately* or
-   * *under pressure*; the idiom for the intended meaning is "spot on", with the
-   * words the other way round. Set here anyway, as a brand decision, and in one
-   * place so it is one edit if that changes.
+   * Precision: talent channelled exactly where it is needed. It was briefly
+   * "on the spot", which an English reader hears as *immediately* or *under
+   * pressure*; "spot on" is the idiom that carries the intended meaning.
+   *
+   * No full stop. A slogan under a logo is a name, not a sentence.
    */
-  slogan: 'Connecting Talent on the spot',
+  slogan: 'Connecting Talent, Spot On',
   locations: 'Lisbon · New Delhi',
 } as const;
 
