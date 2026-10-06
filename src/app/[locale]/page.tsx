@@ -4,7 +4,6 @@ import { notFound } from 'next/navigation';
 import { Mono } from '@/components/ui/Mono';
 import { PhoneWalkthrough } from '@/components/candidate/PhoneWalkthrough';
 import { Reveal } from '@/components/motion/Reveal';
-import { RouteLine } from '@/components/motion/RouteLine';
 import { PositionGrid } from '@/components/candidate/PositionGrid';
 import { positionCopy } from '@/lib/data/position-copy';
 import { SiteHeader } from '@/components/candidate/SiteHeader';
@@ -75,7 +74,7 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
         picture rather than a hole while the file arrives over Indian mobile
         data.
       */}
-      <div className="px-[clamp(20px,4cqi,56px)]">
+      <div className="px-[clamp(20px,4cqi,56px)] pb-[clamp(40px,6cqi,80px)]">
         <div className="relative h-[clamp(220px,38cqi,460px)] w-full overflow-hidden rounded-[24px]">
           <Image
             src="/lisbon-kitchen-2400.jpg"
@@ -92,25 +91,29 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
 
       {/* ------------------------------------------------------- the six steps */}
       <section id="how" className="bg-ink px-[clamp(20px,4cqi,56px)] py-[clamp(56px,8cqi,104px)] text-paper">
-        <RouteLine tone="dark" className="mb-[clamp(28px,5cqi,56px)]" />
+        {/* One measure for the whole section. The heading used to start at the
+            page gutter while the walkthrough was centred under it, so the block
+            had two different left edges. */}
+        <div className="mx-auto max-w-[880px]">
+          <Reveal>
+            <h2 className="m-0 max-w-[20ch] text-[clamp(28px,4cqi,48px)] font-semibold leading-[1.1] tracking-[-0.03em]">
+              {t.process.title}
+            </h2>
+          </Reveal>
+          <Reveal delay={80}>
+            <p className="mt-3 mb-[clamp(40px,6cqi,72px)] max-w-[52ch] text-[17px] leading-[1.55] text-dark-muted-2">
+              {t.process.lead}
+            </p>
+          </Reveal>
 
-        <Reveal>
-          <h2 className="m-0 max-w-[20ch] text-[clamp(28px,4cqi,48px)] font-semibold leading-[1.1] tracking-[-0.03em]">
-            {t.process.title}
-          </h2>
-        </Reveal>
-        <Reveal delay={80}>
-          <p className="mt-3 mb-10 max-w-[56ch] text-[17px] leading-[1.55] text-dark-muted-2">
-            {t.process.lead}
-          </p>
-        </Reveal>
+          <PhoneWalkthrough t={t} />
 
-        <PhoneWalkthrough t={t} />
-
-
-        <p className="mt-10 mb-0 max-w-[60ch] border-t border-dark-line pt-6 text-[16px] leading-[1.6] text-paper">
-          {fill(t.process.responseNote, money)}
-        </p>
+          <div className="mt-[clamp(40px,6cqi,64px)] border-t border-dark-line pt-6">
+            <p className="m-0 max-w-[60ch] text-[16px] leading-[1.6] text-paper">
+              {fill(t.process.responseNote, money)}
+            </p>
+          </div>
+        </div>
       </section>
 
       {/* ------------------------------------------------- what the fee includes */}

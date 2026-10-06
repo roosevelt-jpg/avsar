@@ -12,28 +12,35 @@ import { useEffect, useRef, useState } from 'react';
  * Somebody who has asked their system for less motion is treated as having
  * seen everything from the start, so the content is simply there.
  */
-/** Nothing to animate for: no observer, or the reader asked for less motion. */
-function motionIsUnwanted(): boolean {
-  return (
-    typeof window === 'undefined' ||
-    typeof IntersectionObserver === 'undefined' ||
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  );
-}
-
 export function useInView<T extends HTMLElement>(margin = '0px 0px -12% 0px') {
   const ref = useRef<T>(null);
   /*
-    Read once, at the first render, rather than set from inside the effect.
-    Setting it in the effect would schedule a second render for every element
-    on the page on the same tick, which is the cascade the compiler warns about
-    and which, on a page with twenty of these, is measurable.
+    Always false at the first render, on the server and on the client alike.
+
+    It used to start from a `window`/`matchMedia` read, which is one answer on
+    the server and another in the browser, so every one of these hydrated with
+    a different className and style than the HTML it was hydrating. React
+    reported the mismatch and kept the server's attributes, which is how whole
+    sections ended up pinned at their pre-animation values.
+
+    Reduced motion is not decided here at all any more. The hidden state is
+    written entirely with `motion-safe:` variants, so a reader who asked their
+    system for less motion never has it applied and sees the page complete;
+    the observer below then runs harmlessly.
   */
-  const [seen, setSeen] = useState(() => motionIsUnwanted());
+  const [seen, setSeen] = useState(false);
 
   useEffect(() => {
     const node = ref.current;
-    if (!node || motionIsUnwanted()) return;
+    if (!node) return;
+
+    /* No observer: show everything on the next frame rather than never. The
+       frame keeps this out of the effect body, where a synchronous setState
+       would cascade a render through every element on the page. */
+    if (typeof IntersectionObserver === 'undefined') {
+      const frame = requestAnimationFrame(() => setSeen(true));
+      return () => cancelAnimationFrame(frame);
+    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {

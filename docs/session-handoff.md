@@ -4,6 +4,64 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 33 - 06 Oct 2026, 16:40, abilio.diz@smithandadams.com
+
+**O "How it works" refeito, e o bug que o estava a partir.**
+
+### O bug (era isto que fazia a seccao parecer estragada)
+
+`useInView` arrancava com `useState(() => motionIsUnwanted())`. No servidor nao
+ha `window`, por isso dava `true` (visivel); no browser dava `false` (escondido).
+Hidratacao com className e style diferentes do HTML servido: React reportava o
+mismatch e **mantinha os atributos do servidor**, por isso blocos inteiros
+ficavam presos no estado pre-animacao. Era o "1 Issue" vermelho no overlay.
+
+Agora `useState(false)` nos dois lados. O reduced-motion ja estava resolvido so
+em CSS (`motion-safe:`), por isso nao precisa de ser decidido em JS. Fallback
+sem `IntersectionObserver` passou a ser um `requestAnimationFrame` (um
+`setState` sincrono no corpo do efeito e erro de lint do React Compiler).
+
+Rede de seguranca: `<noscript><style>[data-reveal]{opacity:1}</style></noscript>`
+no layout, para quem tem JS desligado nao receber a pagina em branco.
+
+`RouteLine.tsx` apagado - o arco gigante ja tinha saido da pagina e ninguem mais
+o usava.
+
+### Composicao
+
+- Uma unica medida para a seccao toda: `mx-auto max-w-[880px]` a envolver
+  titulo, lead, walkthrough e nota. Antes o titulo comecava na goteira da pagina
+  e o walkthrough estava centrado por baixo: duas margens esquerdas diferentes.
+- Passos deixaram de ser `text-right`/`flex-row-reverse`. A calha pontilhada
+  passou para o lado de dentro, entre o telemovel e o texto, por isso a rota do
+  simbolo liga mesmo as duas colunas em vez de correr na borda da pagina. Texto
+  alinhado a esquerda: paragrafo com margem direita irregular era metade do
+  problema de leitura.
+- Painel por tras do passo aberto (`bg-white/[0.045]` + hairline). Da estrutura a
+  coluna sem virar cartao.
+- Wash terracota por tras do telemovel, senao assenta no fundo em vez de estar a
+  frente dele.
+- Contador `01 / 06` por baixo do aparelho: os ecras mudam sozinhos e sem
+  contagem parecia aleatorio.
+- A calha vive agora numa coluna `stretch` com o padding no texto ao lado, por
+  isso a linha encontra a do passo seguinte exactamente. Com o padding no botao
+  partia-se em cada passo.
+- `items-center` em vez de `items-start` + sticky: a lista e mais curta que o
+  telemovel, o sticky nao fazia nada.
+
+### Outro
+
+- Foto de Lisboa ganhou `pb-[clamp(40px,6cqi,80px)]`. Estava colada a banda
+  escura do "How it works".
+
+### Verificado
+
+`tsc`, `eslint --max-warnings=0`, `next build` limpos. Browser a 1100px e a
+390px: sem overflow horizontal, telemovel e passos alinhados na mesma medida,
+painel do passo activo com folga das margens no telemovel.
+
+---
+
 ## Bloco 32 - 06 Oct 2026, 18:10, abilio.diz@smithandadams.com
 
 **Movimento e interactividade na landing**, tudo derivado do simbolo.

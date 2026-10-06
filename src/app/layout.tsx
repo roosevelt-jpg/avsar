@@ -85,6 +85,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body
         className={`${sans.variable} ${devanagari.variable} ${mono.variable} ${bSerif.variable} ${bSans.variable} ${bDevanagari.variable}`}
       >
+        {/* The scroll reveals start hidden and are uncovered by an observer,
+            so without scripting they would never arrive. Crawlers run the
+            script; a reader with it switched off should still get the page. */}
+        <noscript>
+          <style>{'[data-reveal]{opacity:1!important;transform:none!important}'}</style>
+        </noscript>
         {children}
       </body>
     </html>

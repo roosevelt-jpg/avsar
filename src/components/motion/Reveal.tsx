@@ -27,6 +27,7 @@ export function Reveal({
   return (
     <Tag
       ref={ref as React.Ref<never>}
+      data-reveal
       className={`motion-safe:transition-[opacity,transform] motion-safe:duration-[420ms] motion-safe:ease-out ${
         seen ? 'opacity-100 translate-y-0' : 'motion-safe:opacity-0 motion-safe:translate-y-2'
       } ${className}`}
