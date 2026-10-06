@@ -3,7 +3,8 @@ import { notFound } from 'next/navigation';
 import { Wordmark } from '@/components/ui/Wordmark';
 import { SignupFlow } from '@/components/candidate/SignupFlow';
 import { OrderSummary } from '@/components/candidate/OrderSummary';
-import { getDictionary, isLocale } from '@/lib/i18n';
+import { ENTITY } from '@/lib/data/brand';
+import { fill, getDictionary, isLocale } from '@/lib/i18n';
 import { POSITIONS, positionBySlug, type PositionSlug } from '@/lib/data/positions';
 
 export const metadata = { title: 'Register for Cohort 01' };
@@ -31,7 +32,7 @@ export default async function SignupPage({
         <Wordmark href={`/${locale}`} />
         <p className="m-0 text-[14px] text-muted">
           <Link href={`/${locale}/contact`} className="prose-link">
-            {t.signup.help}
+            {fill(t.signup.help, { phone: ENTITY.phone })}
           </Link>
         </p>
       </header>

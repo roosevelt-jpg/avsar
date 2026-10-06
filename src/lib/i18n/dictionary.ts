@@ -430,7 +430,7 @@ const en: Dictionary = {
   footerLegal: '© 2026 S&A Recruitment, a Smith & Adams company · Lisbon · New Delhi',
 
   signup: {
-    help: 'Need help? WhatsApp +91 80 0000 0000',
+    help: 'Need help? Call or message {phone}',
     stepAccount: 'Account',
     stepProfile: 'Profile',
     stepPayment: 'Payment',
@@ -460,7 +460,7 @@ const en: Dictionary = {
     pay: 'Pay ₹1,999',
     successTitle: "You're registered for Cohort 01",
     successBody:
-      'Payment received. Receipt {receipt} was sent to your email and WhatsApp. You can start the assessment now or come back within 14 days.',
+      'Payment received. Receipt {receipt} was sent to your email. Your report and career pack are ready to download.',
     successCta: 'Start assessment',
     summaryTitle: 'ORDER SUMMARY',
     summaryItem: 'Cohort 01 assessment',
@@ -861,7 +861,7 @@ const hi: Dictionary = {
   footerLegal: '© 2026 S&A Recruitment, a Smith & Adams company · लिस्बन · नई दिल्ली',
 
   signup: {
-    help: 'मदद चाहिए? WhatsApp +91 80 0000 0000',
+    help: 'मदद चाहिए? {phone} पर कॉल या मैसेज करें',
     stepAccount: 'खाता',
     stepProfile: 'प्रोफ़ाइल',
     stepPayment: 'भुगतान',
@@ -891,7 +891,7 @@ const hi: Dictionary = {
     pay: '₹1,999 का भुगतान करें',
     successTitle: 'आप कोहॉर्ट 01 के लिए रजिस्टर हो गए हैं',
     successBody:
-      'भुगतान मिल गया। रसीद {receipt} आपके ईमेल और WhatsApp पर भेज दी गई है। आप अभी मूल्यांकन शुरू कर सकते हैं या 14 दिनों के भीतर वापस आ सकते हैं।',
+      'भुगतान मिल गया। रसीद {receipt} आपके ईमेल पर भेज दी गई है। आपकी रिपोर्ट और करियर पैक डाउनलोड के लिए तैयार हैं।',
     successCta: 'मूल्यांकन शुरू करें',
     summaryTitle: 'ऑर्डर सारांश',
     summaryItem: 'कोहॉर्ट 01 मूल्यांकन',
