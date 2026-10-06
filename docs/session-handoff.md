@@ -4,6 +4,48 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 36 - 06 Oct 2026, 17:35, abilio.diz@smithandadams.com
+
+**Email de verificacao com marca.**
+
+- `lib/email/template.ts`: a casca em que qualquer mensagem transaccional entra.
+  Tabelas, estilos todos inline, nada que dependa de uma stylesheet sobreviver
+  ao Gmail. Banda ink no topo com a marca, corpo em branco, botao terracota
+  (tabela com bgcolor, senao colapsa no Outlook), link em texto por baixo,
+  rodape com entidade legal e email de suporte.
+- `Message` ganhou `html?`. Resend e SES passam-no; o `text` continua sempre
+  presente e nao e um stub - e o que um cliente so-texto, um leitor de ecra em
+  modo plano e os filtros de spam leem de facto.
+- `public/brand/email-mark.png`: a marca desenhada com Pillow (circulo cheio,
+  arco pontilhado amostrado por comprimento de arco, anel aberto), 3x com
+  supersample 12x, sobre fundo ink. Nao ha rasterizador de SVG nesta maquina.
+
+Duas restricoes de proposito:
+
+- **Sem web font.** Os clientes ou retiram o link ou ignoram a face, e uma
+  mensagem que cai para fallback de forma desigual fica pior do que uma que
+  nunca tentou. A tipografia do site nao viaja; a cor e o espacamento sim.
+- **Uma imagem so, e a mensagem le-se toda sem ela.** Imagens vem bloqueadas
+  por omissao em muitas caixas, por isso o nome e texto vivo ao lado da marca e
+  nao parte do desenho.
+
+Copy EN e HI com preheader, heading, paragrafos, label do botao, nota de
+fallback e fecho.
+
+### Verificado
+
+Registo real -> Resend `delivered` -> HTML puxado de volta da API da Resend e
+visto a 820px e a 390px: sem scroll horizontal, imagem carrega, botao e rodape
+corretos. Conta de teste apagada.
+
+### Por fazer
+
+O email de lembrete (`cron/signup-reminders`) ainda vai em texto. A casca ja
+aceita `unsubscribeUrl` ao nivel do mailer, falta so passar o corpo pelo
+`renderEmail`.
+
+---
+
 ## Bloco 35 - 06 Oct 2026, 17:20, abilio.diz@smithandadams.com
 
 **O email de confirmacao nunca saiu. Diagnostico e correccao.**

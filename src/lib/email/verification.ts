@@ -1,6 +1,7 @@
 import { getMailer } from '@/lib/email';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { BRAND } from '@/lib/data/brand';
+import { renderEmail } from '@/lib/email/template';
 
 /**
  * The "confirm your address" email, sent by us rather than by Supabase.
@@ -20,38 +21,46 @@ import { BRAND } from '@/lib/data/brand';
  * toggle that somebody can change in another tab.
  */
 
-type Copy = { subject: string; body: (link: string, name: string) => string };
+type Copy = {
+  subject: string;
+  preheader: string;
+  heading: string;
+  paragraphs: (name: string) => string[];
+  actionLabel: string;
+  fallbackNote: string;
+  closing: string[];
+};
 
 const COPY = {
   en: {
     subject: 'Confirm your email address',
-    body: (link, name) =>
-      `Hi ${name},
-
-Please confirm this is your address. We need it to send you your assessment report, and your application cannot be completed without it.
-
-${link}
-
-The link works once. If it has expired, you can ask for a new one from your dashboard.
-
-If you did not start an application with ${BRAND.name}, you can ignore this message.
-
-${BRAND.name}`,
+    preheader: 'One click, and your application carries on where you left it.',
+    heading: 'Confirm your email address',
+    paragraphs: (name: string) => [
+      `Hi ${name},`,
+      'Please confirm this is your address. Your assessment report is sent here, and your application cannot be completed without it.',
+    ],
+    actionLabel: 'Confirm my email address',
+    fallbackNote: 'If the button does not work, copy this link into your browser:',
+    closing: [
+      'The link works once. If it has expired, you can ask for a new one from your dashboard.',
+      `If you did not start an application with ${BRAND.name}, you can ignore this message.`,
+    ],
   },
   hi: {
     subject: 'अपना ईमेल पता सत्यापित करें',
-    body: (link, name) =>
-      `नमस्ते ${name},
-
-कृपया पुष्टि करें कि यह आपका ईमेल पता है। आपकी मूल्यांकन रिपोर्ट इसी पते पर भेजी जाएगी, और इसके बिना आपका आवेदन पूरा नहीं हो सकता।
-
-${link}
-
-यह लिंक एक बार काम करता है। समय समाप्त हो जाने पर आप अपने डैशबोर्ड से नया लिंक मँगा सकते हैं।
-
-अगर आपने ${BRAND.name} पर कोई आवेदन शुरू नहीं किया है, तो इस संदेश को अनदेखा करें।
-
-${BRAND.name}`,
+    preheader: 'एक क्लिक, और आपका आवेदन वहीं से आगे बढ़ेगा।',
+    heading: 'अपना ईमेल पता सत्यापित करें',
+    paragraphs: (name: string) => [
+      `नमस्ते ${name},`,
+      'कृपया पुष्टि करें कि यह आपका ईमेल पता है। आपकी मूल्यांकन रिपोर्ट इसी पते पर भेजी जाएगी, और इसके बिना आपका आवेदन पूरा नहीं हो सकता।',
+    ],
+    actionLabel: 'मेरा ईमेल पता सत्यापित करें',
+    fallbackNote: 'अगर बटन काम न करे, तो यह लिंक अपने ब्राउज़र में खोलें:',
+    closing: [
+      'यह लिंक एक बार काम करता है। समय समाप्त हो जाने पर आप अपने डैशबोर्ड से नया लिंक मँगा सकते हैं।',
+      `अगर आपने ${BRAND.name} पर कोई आवेदन शुरू नहीं किया है, तो इस संदेश को अनदेखा करें।`,
+    ],
   },
 } satisfies Record<string, Copy>;
 
@@ -110,10 +119,23 @@ export async function sendVerificationLink({
   const link = callback.toString();
 
   const copy = locale === 'hi' ? COPY.hi : COPY.en;
+  const paragraphs = copy.paragraphs(name);
+
   const { sent } = await mailer.send({
     to: email,
     subject: copy.subject,
-    text: copy.body(link, name),
+    /* The plain part is not a stub. It is what a text-only client, a screen
+       reader set to plain, and every spam filter actually read. */
+    text: [...paragraphs, '', link, '', ...copy.closing, '', BRAND.name].join('\n'),
+    html: renderEmail({
+      preheader: copy.preheader,
+      heading: copy.heading,
+      paragraphs,
+      action: { label: copy.actionLabel, url: link },
+      fallbackNote: copy.fallbackNote,
+      closing: copy.closing,
+      origin,
+    }),
   });
 
   return sent ? { sent: true } : { sent: false, reason: 'send_failed' };

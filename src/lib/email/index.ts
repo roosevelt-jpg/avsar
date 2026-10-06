@@ -17,7 +17,10 @@ import { ENTITY } from '@/lib/data/brand';
 export type Message = {
   to: string;
   subject: string;
+  /** Always present. The branded version is an addition, never a replacement:
+      a client that refuses HTML still gets a message that reads. */
   text: string;
+  html?: string;
   /** Appears as List-Unsubscribe, so a mail client can offer it directly. */
   unsubscribeUrl?: string;
 };
@@ -60,6 +63,7 @@ function resendMailer(apiKey: string, from: string): Mailer {
           reply_to: REPLY_TO,
           subject: message.subject,
           text: message.text,
+          ...(message.html ? { html: message.html } : {}),
           ...(message.unsubscribeUrl
             ? {
                 headers: {
@@ -112,7 +116,10 @@ function sesMailer(region: string, accessKey: string, secretKey: string, from: s
         Content: {
           Simple: {
             Subject: { Data: message.subject, Charset: 'UTF-8' },
-            Body: { Text: { Data: message.text, Charset: 'UTF-8' } },
+            Body: {
+              Text: { Data: message.text, Charset: 'UTF-8' },
+              ...(message.html ? { Html: { Data: message.html, Charset: 'UTF-8' } } : {}),
+            },
           },
         },
         ...(message.unsubscribeUrl
