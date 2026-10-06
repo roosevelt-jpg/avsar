@@ -55,6 +55,9 @@ export function SiteFooter({ locale }: { locale: Locale }) {
             className="h-auto w-[160px]"
           />
         </a>
+        <p className="m-0 font-mono text-[12px] tracking-[0.04em] text-dark-muted">
+          {BRAND.slogan}
+        </p>
         <p className="m-0 font-mono text-[12px] text-dark-muted">{t.footerLegal}</p>
       </div>
     </footer>

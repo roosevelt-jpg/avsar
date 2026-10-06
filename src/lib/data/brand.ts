@@ -11,7 +11,24 @@ export const BRAND = {
   name: 'S&A Recruitment',
   shortName: 'S&A',
   parent: 'Smith & Adams',
+  /**
+   * What the company is, and whose it is. Not the slogan.
+   *
+   * This line exists to establish that a candidate in India is dealing with a
+   * business that has a parent, a name and an address. It does a different job
+   * from the slogan and the two are not interchangeable.
+   */
   tagline: 'A recruitment agency under the Smith & Adams brand',
+  /**
+   * The slogan.
+   *
+   * Intended as precision: talent channelled exactly where it is needed. Worth
+   * knowing that an English reader will hear "on the spot" as *immediately* or
+   * *under pressure*; the idiom for the intended meaning is "spot on", with the
+   * words the other way round. Set here anyway, as a brand decision, and in one
+   * place so it is one edit if that changes.
+   */
+  slogan: 'Connecting Talent on the spot',
   locations: 'Lisbon · New Delhi',
 } as const;
 
