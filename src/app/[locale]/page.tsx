@@ -5,6 +5,7 @@ import { Mono } from '@/components/ui/Mono';
 import { PhoneWalkthrough } from '@/components/candidate/PhoneWalkthrough';
 import { Reveal } from '@/components/motion/Reveal';
 import { PositionGrid } from '@/components/candidate/PositionGrid';
+import { IntroVideo } from '@/components/candidate/IntroVideo';
 import { positionCopy } from '@/lib/data/position-copy';
 import { SiteHeader } from '@/components/candidate/SiteHeader';
 import { SiteFooter } from '@/components/candidate/SiteFooter';
@@ -55,6 +56,8 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
         </h1>
 
         <p className="m-0 max-w-[62ch] text-[clamp(16px,1.8cqi,19px)] leading-[1.55] text-ink-2">{t.heroSub}</p>
+
+        <IntroVideo t={t} />
 
         <PositionSelector locale={locale} t={t} />
 

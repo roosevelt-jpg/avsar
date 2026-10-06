@@ -4,6 +4,40 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 34 - 06 Oct 2026, 16:55, abilio.diz@smithandadams.com
+
+**Filme institucional no hero**, entre o `heroSub` e o `PositionSelector`.
+
+Fonte: `WhatsApp Video 2026-10-06 at 16.39.33.mp4`, 1920x1080, 53s, **101 MB**
+a 15 Mbps. Transcodificado com ffmpeg para 1280x720 h264 CRF 23 preset slow,
+`+faststart`, AAC 96k: **5,2 MB**. Poster do frame 1,6s (cartao de abertura
+India - telemovel - Portugal, que por acaso e o motivo do simbolo) a 1600px,
+31 KB.
+
+- `public/video/intro.mp4`, `public/video/intro-poster.jpg`
+- `components/candidate/IntroVideo.tsx`: poster + botao, o `<video>` so entra
+  no DOM ao clique. Um `<video>` no markup comeca a buscar antes de alguem
+  dizer que quer ver, e o publico desta pagina esta em dados moveis na India:
+  o que carrega com a pagina sao 31 KB.
+- Nunca toca sozinho - e uma pessoa a falar. O clique e o gesto que autoriza o
+  browser a tocar com som.
+- Botao de play em papel e nao em terracota: o filme abre sobre uma ilustracao
+  terracota e o botao com a cor da marca lia-se como parte do desenho.
+- `videoLabel` e `videoPlay` no dicionario, EN e HI.
+
+### Em falta
+
+Legendas. Nao ha `.vtt` e nao se inventa transcricao: fica como lacuna de
+acessibilidade e tambem comercial, porque muita gente ve sem som. Assim que
+houver transcricao, `<track kind="captions">` no `<video>`.
+
+### Verificado
+
+`tsc`, `eslint --max-warnings=0`, `next build` limpos. No browser: clique toca
+(currentTime a andar, 1280x720, 53,44s), sem overflow horizontal.
+
+---
+
 ## Bloco 33 - 06 Oct 2026, 16:40, abilio.diz@smithandadams.com
 
 **O "How it works" refeito, e o bug que o estava a partir.**

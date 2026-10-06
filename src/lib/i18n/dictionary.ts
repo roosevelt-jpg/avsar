@@ -35,6 +35,9 @@ export type Dictionary = {
   eyebrow: string;
   heroTitle: string;
   heroSub: string;
+  /** Under the hero film. Says what it is and how long it takes. */
+  videoLabel: string;
+  videoPlay: string;
   askWork: string;
   cta: string;
   fine: string;
@@ -359,6 +362,8 @@ const en: Dictionary = {
   heroTitle: 'Work in Portugal. We handle everything after you are selected.',
   heroSub:
     'A professional assessment of your skills, experience and English. Selected candidates receive a contract with a Portuguese employer, accommodation, meals and legal support through the whole visa process.',
+  videoLabel: 'Watch how it works · 53 seconds',
+  videoPlay: 'Play the film',
   askWork: 'What position are you applying for?',
   cta: 'Start your application',
   fine: 'You pay the assessment fee once, after you have seen what the assessment involves. Selection is not guaranteed, and we tell you either way within {days} days.',
@@ -792,6 +797,8 @@ const hi: Dictionary = {
   heroTitle: 'पुर्तगाल में काम करें। चुने जाने के बाद सब कुछ हम संभालते हैं।',
   heroSub:
     'आपके कौशल, अनुभव और अंग्रेज़ी का पेशेवर मूल्यांकन। चुने गए उम्मीदवारों को पुर्तगाली नियोक्ता के साथ अनुबंध, आवास, भोजन और पूरी वीज़ा प्रक्रिया में क़ानूनी सहायता मिलती है।',
+  videoLabel: 'देखिए यह कैसे काम करता है · 53 सेकंड',
+  videoPlay: 'वीडियो चलाएँ',
   askWork: 'आप किस पद के लिए आवेदन कर रहे हैं?',
   cta: 'अपना आवेदन शुरू करें',
   fine: 'मूल्यांकन शुल्क एक बार देना होता है, और वह भी मूल्यांकन देखने के बाद। चयन की गारंटी नहीं है, और {days} दिनों के भीतर हम आपको दोनों हालात में बताते हैं।',
