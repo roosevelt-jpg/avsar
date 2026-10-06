@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Wordmark } from '@/components/ui/Wordmark';
 import { BRAND } from '@/lib/data/brand';
 import { getDictionary, type Locale } from '@/lib/i18n';
 
@@ -17,8 +16,10 @@ export function SiteFooter({ locale }: { locale: Locale }) {
 
   return (
     <footer className="bg-ink px-[clamp(20px,4cqi,56px)] py-[clamp(40px,6cqi,64px)] text-dark-muted-2">
+      {/* One mark in the footer, and it is the parent's. The recruitment
+          wordmark is already in the header of every page; repeating it here
+          competed with the thing that actually lends credibility. */}
       <div className="flex flex-wrap items-center justify-between gap-6">
-        <Wordmark tone="dark" />
         <nav className="flex flex-wrap gap-x-6 gap-y-2 text-[14px]">
           {links.map((link) => (
             <Link

@@ -14,16 +14,26 @@ export default async function RefundPolicyPage({ params }: { params: Promise<{ l
     <>
       <h1>{t.footerRefund}</h1>
 
-      <h2>Before you start the assessment</h2>
+      <h2>When you pay</h2>
       <p>
-        Cancel at any point before starting the assessment and the full {formatInr(price.totalPaise)}
-        {' '}is refunded, including the GST component, to the original payment method.
+        After the assessment, not before. You register, fill in your profile and
+        sit the assessment at no cost. The fee is payable when you want the
+        skills report, the career pack and the place in the talent pool.
       </p>
 
-      <h2>After you start the assessment</h2>
+      <h2>After you pay</h2>
       <p>
-        Once the assessment is started the fee is not refundable, because the assessment and the
-        report are the service being delivered.
+        The report, the rewritten CV and the interview preparation are available
+        to download the moment the payment clears, so the service is delivered
+        immediately and in full. For that reason the fee is not refundable once
+        you have downloaded any of them.
+      </p>
+
+      <h2>If you have paid and not downloaded anything</h2>
+      <p>
+        Write to us within 14 days and the full {formatInr(price.totalPaise)},
+        including the GST component, is refunded to the original payment method.
+        Nothing has been delivered, so there is nothing to argue about.
       </p>
 
       <h2>If we cancel a cohort</h2>

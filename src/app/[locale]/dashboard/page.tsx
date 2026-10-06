@@ -6,6 +6,9 @@ import { VisibilityToggle } from '@/components/candidate/VisibilityToggle';
 import { AccountMenu } from '@/components/auth/AccountMenu';
 import { JourneyStatus } from '@/components/candidate/JourneyStatus';
 import { VerifyEmailBanner } from '@/components/candidate/VerifyEmailBanner';
+import { UnlockReport } from '@/components/candidate/UnlockReport';
+import { availablePaymentMethods, getPaymentProvider } from '@/lib/payments';
+import { activePrice, formatInr } from '@/lib/data/cohort';
 import { getCandidateStatus, type CandidateStatus } from '@/lib/candidate/status';
 import { CareerPack } from '@/components/candidate/CareerPack';
 import { getAdminSupabase } from '@/lib/supabase/admin';
@@ -173,6 +176,27 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
 
       <main className="px-[clamp(20px,4cqi,56px)] py-[clamp(32px,5cqi,64px)]">
         {unverifiedEmail && <VerifyEmailBanner email={unverifiedEmail} t={t} />}
+
+        {/* The assessment is done and the fee is outstanding. This is the only
+            place the fee is asked for, and it sits above the report so the
+            score they already have is visible while they decide. */}
+        {status?.awaitingPayment && (
+          <UnlockReport
+            t={t}
+            price={formatInr(activePrice().totalPaise)}
+            methods={availablePaymentMethods()}
+            provider={getPaymentProvider().name}
+            providerMode={
+              getPaymentProvider().name === 'eximpe'
+                ? process.env.EXIMPE_ENV === 'production'
+                  ? 'production'
+                  : 'sandbox'
+                : process.env.CASHFREE_ENV === 'production'
+                  ? 'production'
+                  : 'sandbox'
+            }
+          />
+        )}
         <Mono className="text-muted">{fill(d.greeting, { name: r.name.split(' ')[0] ?? r.name })}</Mono>
         <div className="mt-3 mb-9 flex flex-wrap items-end justify-between gap-4">
           <h1 className="m-0 text-[clamp(28px,4cqi,48px)] font-semibold leading-[1.1] tracking-[-0.03em]">

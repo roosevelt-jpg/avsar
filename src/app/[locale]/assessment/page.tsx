@@ -51,10 +51,11 @@ export default async function AssessmentPage({
     }
     position = candidate.position ?? undefined;
 
-    /* Paying is what buys the assessment, so an unpaid candidate goes back to
-       checkout rather than being handed a set of questions. */
-    if (candidate.paymentStatus !== 'paid') {
-      redirect(`/${locale}/signup?sector=${sector}`);
+    /* No payment check. The assessment is free to sit; the fee unlocks the
+       report, the career pack and the CV when it is done. The profile is the
+       only thing needed first, because the questions are chosen from it. */
+    if (!candidate.profileComplete) {
+      redirect(`/${locale}/signup?resume=profile`);
     }
 
     const supabase = await getServerSupabase();

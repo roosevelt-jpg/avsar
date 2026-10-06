@@ -8,25 +8,6 @@ import { ENTITY, PLACEMENT_FEE } from '@/lib/data/brand';
 import { AREAS, POSITIONS, positionsInArea, type PositionSlug } from '@/lib/data/positions';
 import { formatInr, activePrice } from '@/lib/data/cohort';
 import { fill, type Dictionary, type Locale } from '@/lib/i18n';
-import { loadCashfree } from '@/lib/payments/cashfree-client';
-import { loadEximpe } from '@/lib/payments/eximpe-client';
-
-type Method = 'upi' | 'card' | 'netbanking';
-
-const METHODS: readonly { id: Method; subKey: 0 | 1 | 2 }[] = [
-  { id: 'upi', subKey: 0 },
-  { id: 'card', subKey: 1 },
-  { id: 'netbanking', subKey: 2 },
-];
-
-/** Payment-method copy that stays in English: these are brand names. */
-const METHOD_SUBS = [
-  'Google Pay, PhonePe, Paytm, BHIM',
-  'Visa, Mastercard, RuPay',
-  'All major Indian banks',
-] as const;
-
-const METHOD_LABELS_EN = ['UPI', 'Debit or credit card', 'Net banking'] as const;
 
 type Errors = Partial<
   Record<'fullName' | 'mobile' | 'email' | 'password' | 'cityState' | 'consent' | 'form', string>
@@ -38,24 +19,11 @@ export function SignupFlow({
   initialPosition,
   /** Set when the browser has come back from Checkout with a confirmed payment. */
   confirmedReceipt,
-  /**
-   * Methods the active rail can actually charge. On Stripe outside India this is
-   * cards only, so UPI and net banking are shown disabled rather than promised
-   * and then missing from the provider's page.
-   */
-  availableMethods,
-  /** Which rail is active, so the client knows how to open checkout. */
-  provider,
-  /** Sandbox or production, for the provider's browser SDK. */
-  providerMode,
 }: {
   locale: Locale;
   t: Dictionary;
   initialPosition: PositionSlug;
   confirmedReceipt?: string;
-  availableMethods: readonly Method[];
-  provider: 'stripe' | 'razorpay' | 'cashfree' | 'eximpe';
-  providerMode: 'sandbox' | 'production';
 }) {
   const router = useRouter();
   const s = t.signup;
@@ -64,7 +32,7 @@ export function SignupFlow({
   const [step, setStep] = useState(confirmedReceipt ? 3 : 0);
   const [errors, setErrors] = useState<Errors>({});
   const [busy, setBusy] = useState(false);
-  const [receipt, setReceipt] = useState(confirmedReceipt ?? '');
+  const [receipt] = useState(confirmedReceipt ?? '');
 
   const [fullName, setFullName] = useState('');
   const [mobile, setMobile] = useState('');
@@ -80,10 +48,9 @@ export function SignupFlow({
   const [englishSelf, setEnglishSelf] = useState(0);
   const [cityState, setCityState] = useState('');
 
-  const [method, setMethod] = useState<Method>(availableMethods[0] ?? 'card');
   const [consent, setConsent] = useState(false);
 
-  const titles = useMemo(() => [s.title0, s.title1, s.title2], [s.title0, s.title1, s.title2]);
+  const titles = useMemo(() => [s.title0, s.title1], [s.title0, s.title1]);
 
   const validateStep = useCallback((): boolean => {
     const next: Errors = {};
@@ -94,12 +61,19 @@ export function SignupFlow({
       if (password.length < 8) next.password = s.errPassword;
     }
     if (step === 1 && cityState.trim().length < 2) next.cityState = s.errRequired;
-    if (step === 2 && !consent) next.consent = s.errConsent;
+    if (step === 1 && !consent) next.consent = s.errConsent;
     setErrors(next);
     return Object.keys(next).length === 0;
   }, [step, fullName, mobile, email, password, cityState, consent, s]);
 
-  async function submitPayment() {
+  /**
+   * Saves the profile and sends them into the assessment.
+   *
+   * Nothing is charged here any more. The fee is collected afterwards, from the
+   * dashboard, once there is a report to unlock; this step ends with the one
+   * thing the candidate came to do.
+   */
+  async function submitProfile() {
     setBusy(true);
     setErrors({});
     try {
@@ -115,58 +89,14 @@ export function SignupFlow({
           yearsExperience: years,
           englishSelf,
           cityState: cityState.trim(),
-          method,
           consent: true,
         }),
       });
 
       if (!response.ok) throw new Error(`signup ${response.status}`);
-      const data = (await response.json()) as {
-        receipt: string;
-        redirectUrl: string | null;
-        clientToken: string | null;
-        simulated: boolean;
-      };
 
-      setReceipt(data.receipt);
-
-      /* EximPe hands back a session rather than a URL: their SDK opens the
-         payment page, which is where UPI lives. The session lasts fifteen
-         minutes, so this runs immediately rather than being stored. */
-      if (provider === 'eximpe' && data.clientToken) {
-        const eximpe = await loadEximpe(providerMode);
-        await eximpe.checkout({ sessionId: data.clientToken, redirectTarget: '_self' });
-        return;
-      }
-
-      /* Cashfree opens its own checkout from the page instead of handing back
-         a URL, which is also what puts UPI in front of the candidate. */
-      if (provider === 'cashfree' && data.clientToken) {
-        const cashfree = await loadCashfree(providerMode);
-        const result = await cashfree.checkout({
-          paymentSessionId: data.clientToken,
-          redirectTarget: '_self',
-        });
-        if (result.error) throw new Error(result.error.message ?? 'checkout_failed');
-        return;
-      }
-
-      /* Hosted Checkout: hand the browser over to the provider. The success URL
-         brings it back and the server confirms the session before this component
-         is rendered again. */
-      if (data.redirectUrl) {
-        window.location.assign(data.redirectUrl);
-        return;
-      }
-
-      /* No keys in this environment. Nothing was charged; show the success
-         screen so the flow stays reviewable. */
-      if (data.simulated) {
-        setStep(3);
-        return;
-      }
-
-      throw new Error('no_redirect_url');
+      router.refresh();
+      router.push(`/${locale}/assessment`);
     } catch (error) {
       console.error(error);
       setErrors({ form: s.payFailed });
@@ -239,8 +169,8 @@ export function SignupFlow({
       void register();
       return;
     }
-    if (step === 2) {
-      void submitPayment();
+    if (step === 1) {
+      void submitProfile();
       return;
     }
     setStep(step + 1);
@@ -283,8 +213,8 @@ export function SignupFlow({
   return (
     <div className="max-w-[620px] flex-1">
       {/* stepper */}
-      <ol className="m-0 mb-9 grid list-none grid-cols-3 gap-3 p-0">
-        {[s.stepAccount, s.stepProfile, s.stepPayment].map((label, index) => (
+      <ol className="m-0 mb-9 grid list-none grid-cols-2 gap-3 p-0">
+        {[s.stepAccount, s.stepProfile].map((label, index) => (
           <li key={label}>
             <div
               className={`h-1 rounded-full ${index <= step ? 'bg-ink' : 'bg-line'}`}
@@ -454,46 +384,16 @@ export function SignupFlow({
               className={inputClass(!!errors.cityState)}
             />
           </Field>
-        </div>
-      )}
 
-      {/* ------------------------------------------------------- step 3 payment */}
-      {step === 2 && (
-        <div className="flex flex-col gap-4">
-          <div role="radiogroup" aria-label={s.title2} className="flex flex-col gap-2.5">
-            {METHODS.map(({ id, subKey }) => {
-              const active = method === id;
-              const available = availableMethods.includes(id);
-              return (
-                <button
-                  key={id}
-                  type="button"
-                  role="radio"
-                  aria-checked={active}
-                  aria-disabled={!available}
-                  disabled={!available}
-                  onClick={() => setMethod(id)}
-                  className={`t-colors flex items-center gap-3.5 rounded-[12px] bg-surface p-4 text-left ${
-                    available ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'
-                  }`}
-                  style={{ border: active ? '2px solid #1b1a17' : '1px solid #d9d4c8' }}
-                >
-                  <span
-                    aria-hidden
-                    className="size-[18px] shrink-0 rounded-full"
-                    style={{ border: active ? '6px solid #1b1a17' : '1.5px solid #b8b2a5' }}
-                  />
-                  <span>
-                    <span className="block text-[15px] font-medium">{METHOD_LABELS_EN[subKey]}</span>
-                    <span className="block text-[13px] text-muted">
-                      {available ? METHOD_SUBS[subKey] : 'Not available yet'}
-                    </span>
-                  </span>
-                </button>
-              );
-            })}
-          </div>
+          {/*
+            The disclosure, at the end of signup rather than at a checkout.
 
+            The fee moved to the end of the flow, so a checkout no longer
+            stands between a candidate and ninety minutes of answering. Left
+            where it was, the odds and the placement fee would reach someone
+            only after the work was done, which is the wrong order in which
+            to learn what you are in for.
+          */}
           {/*
             The placement fee, before the assessment fee is taken rather than
             after it. They are two different amounts with two different
@@ -573,11 +473,11 @@ export function SignupFlow({
         <button
           type="button"
           onClick={next}
-          disabled={busy || (step === 2 && !consent)}
+          disabled={busy || (step === 1 && !consent)}
           className="t-colors cursor-pointer rounded-[12px] border-0 bg-ink px-5 py-3 text-[15px] font-medium text-white hover:bg-accent disabled:cursor-not-allowed"
-          style={{ opacity: step === 2 && !consent ? 0.35 : 1 }}
+          style={{ opacity: step === 1 && !consent ? 0.35 : 1 }}
         >
-          {step === 2 ? `${s.pay.replace('₹1,999', formatInr(price.totalPaise))}` : s.continue}
+          {step === 1 ? s.startAssessment : s.continue}
         </button>
       </div>
     </div>

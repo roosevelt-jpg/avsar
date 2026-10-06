@@ -75,11 +75,19 @@ export default async function TermsPage({ params }: { params: Promise<{ locale: 
           : `There are two amounts, and only the first is payable now. The assessment fee buys the assessment, the report and the career pack, and is payable whatever the outcome. The placement fee of €${PLACEMENT_FEE.eur.toLocaleString('en-GB')} is payable only if you are placed, and only after your employment contract is signed: never in advance, never as a condition of being considered, and never as a condition of an interview. Outside these two amounts nobody is authorised to ask you for money for a job, a visa, or to move your application forward, and any such request should be reported to us.`}
       </p>
 
+      <h2>When the fee is due</h2>
+      <p>
+        After the assessment, not before. Registering, completing your profile and sitting the
+        assessment cost nothing. The fee is payable when you want the skills report, the career
+        pack and your place in the talent pool, and nothing is charged until you ask for them.
+      </p>
+
       <h2>Cancellation and refunds</h2>
       <p>
         Set out in full in the refund policy, which forms part of these terms. In short: a full
-        refund before you start the assessment, and none after, because at that point the service
-        is being delivered.
+        refund within 14 days if you have paid and downloaded nothing, and none after you have
+        downloaded the report, the CV or the interview preparation, because at that point the
+        service has been delivered in full.
       </p>
 
       <h2>Selection</h2>

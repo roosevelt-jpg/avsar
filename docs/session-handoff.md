@@ -4,6 +4,37 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 30 - 06 Oct 2026, 14:50, abilio.diz@smithandadams.com
+
+**A taxa passou para depois do assessment.** Decisao do Abilio. Registar, perfil
+e assessment sao gratuitos; a taxa desbloqueia relatorio, career pack, CV e o
+lugar na talent pool.
+
+- `0012_pay_after_assessment.sql` (**por correr**): o
+  `start_assessment_attempt()` deixa de exigir `payment_status = 'paid'`. Exige
+  candidato, por isso o assessment nao fica aberto a internet.
+- `canReach`: assessment e dashboard passam a ser a mesma verificacao.
+  `hasPaid()` novo, e e a barreira do `cv.pdf` (402), do `/api/career-pack`
+  (402, verificado antes de gastar modelo) e do `report.pdf` (ja la estava).
+- `/api/payments/checkout` novo, so para a taxa. Recusa com 409 se o assessment
+  nao estiver completo: sem isso dava para cobrar por um relatorio que nunca vai
+  existir, que e a unica falha deste fluxo que tira dinheiro e nao da nada.
+- `/api/signup` deixou de criar checkout; so grava perfil.
+- `UnlockReport` no dashboard, acima do relatorio, so quando
+  `status.awaitingPayment`.
+- SignupFlow passou a dois passos e termina no assessment. **O consentimento
+  subiu** para o fim da inscricao: a divulgacao tem de acontecer antes de
+  alguem gastar noventa minutos, nao num checkout que agora vem depois.
+- Politica de reembolsos reescrita (contradizia-se), termos actualizados,
+  `CONSENT_VERSION` = `v3-2026-10`.
+
+**Foto real no lugar do placeholder do heroi**: `Hygge_V2_Web-63`, cozinha em
+Lisboa, dada pelo Abilio. Nenhuma cara visivel, o que resolve os direitos de
+imagem. Recortada para banda, 1400/2400 q80 4:2:0, com LQIP inline.
+
+**Rodape**: ficou so o logo do Smith & Adams Group; o wordmark da S&A
+Recruitment saiu, por pedido do Abilio.
+
 ## Bloco 29 - 06 Oct 2026, 13:20, abilio.diz@smithandadams.com
 
 **Entidade legal de volta a SMTADM REAL ESTATE L.L.C**, por decisao do Abilio.

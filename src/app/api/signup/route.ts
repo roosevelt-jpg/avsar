@@ -1,26 +1,28 @@
 import { NextResponse } from 'next/server';
 import { signupSchema } from '@/lib/validation';
-import { ACTIVE_TIER, COHORT, activePrice, chargeAmountMinor, CHARGE_CURRENCY } from '@/lib/data/cohort';
-import { BRAND, CONSENT_VERSION } from '@/lib/data/brand';
+import { CONSENT_VERSION } from '@/lib/data/brand';
 import { itemSectorFor } from '@/lib/data/positions';
-import { getPaymentProvider, receiptNumber } from '@/lib/payments';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { getSessionCandidate } from '@/lib/auth';
 
 export const runtime = 'nodejs';
 
 /**
- * Completes the profile and opens a checkout session.
+ * Completes the profile. Nothing is charged here.
  *
- * The candidate row and the account already exist: both are created at the
- * first step, by /api/auth/register. This finishes the profile on that row and
- * hands the browser to the payment provider.
+ * The account and the candidate row already exist, created at the first step by
+ * /api/auth/register. This finishes the profile and lets the candidate through
+ * to the assessment, which is free to sit. The fee is collected afterwards, by
+ * /api/payments/checkout, and is what unlocks the report.
  *
- * Which row is identified from the session, never from the request body.
- * Before accounts existed this matched on a hash of the phone number, which
- * meant anyone who typed someone else's number wrote over their record.
+ * Which row is identified from the session, never from the request body. Before
+ * accounts existed this matched on a hash of the phone number, which meant
+ * anyone who typed someone else's number wrote over their record.
  *
- * The price is read from the server. The client never sends an amount.
+ * The consent stored here is the record that the odds and the placement fee
+ * were shown. It is taken at this step on purpose: the disclosure has to happen
+ * before somebody spends ninety minutes on an assessment, not at a checkout
+ * that now comes after it.
  */
 export async function POST(request: Request) {
   let payload: unknown;
@@ -39,13 +41,8 @@ export async function POST(request: Request) {
   }
 
   const input = parsed.data;
-  const price = activePrice();
   const supabase = getAdminSupabase();
-  const provider = getPaymentProvider();
   const locale = request.headers.get('x-avsar-locale') ?? 'en';
-
-  const serial = Math.floor(Math.random() * 999_999);
-  const receipt = receiptNumber(1, serial);
 
   /* The session says who this is. An unauthenticated request has no row to
      complete, so it is sent back to open an account rather than quietly
@@ -85,79 +82,5 @@ export async function POST(request: Request) {
     }
   }
 
-  const origin = new URL(request.url).origin;
-
-  let session;
-  try {
-    session = await provider.createCheckout({
-      amountMinor: chargeAmountMinor(),
-      currency: CHARGE_CURRENCY,
-      receipt,
-      description: `${BRAND.name} assessment`,
-      customer: {
-        name: input.fullName,
-        email: input.email,
-        phone: `+91${input.mobile}`,
-      },
-      methodHint: input.method,
-      successUrl: `${origin}/${locale}/signup?status=success&receipt=${receipt}&session_id={CHECKOUT_SESSION_ID}`,
-      cancelUrl: `${origin}/${locale}/signup?status=cancelled`,
-      metadata: {
-        cohort: COHORT.id,
-        position: input.position,
-        tier: ACTIVE_TIER,
-        receipt,
-        candidate_id: candidateId,
-        /* Cashfree takes the callback URL per order rather than from a
-           dashboard setting, so it travels with the request. */
-        webhook_url: `${origin}/api/payments/webhook`,
-      },
-    });
-  } catch (error) {
-    console.error('[signup] checkout creation failed', error);
-    return NextResponse.json({ error: 'payment_init_failed' }, { status: 502 });
-  }
-
-  /**
-   * With no payment keys configured, checkout is simulated and nothing is
-   * charged. The candidate would then sit at `pending` for ever and be bounced
-   * out of the assessment, which needs `paid`.
-   *
-   * ALLOW_SIMULATED_PAYMENTS lets a demo environment carry on. It is an
-   * explicit opt-in rather than "Stripe happens to be unconfigured", so a
-   * missing key in a real deployment can never quietly hand out free
-   * assessments. Every such candidate is traceable: their payment row carries
-   * status 'simulated'.
-   */
-  const treatAsPaid = session.simulated && process.env.ALLOW_SIMULATED_PAYMENTS === 'true';
-
-  if (supabase && treatAsPaid) {
-    await supabase.from('candidates').update({ payment_status: 'paid' }).eq('id', candidateId);
-  }
-
-  if (supabase) {
-    const { error } = await supabase.from('payments').insert({
-      candidate_id: candidateId,
-      cohort_id: COHORT.id,
-      provider: provider.name,
-      provider_order_id: session.id,
-      amount_paise: price.totalPaise,
-      net_paise: price.netPaise,
-      gst_paise: price.gstPaise,
-      method_hint: input.method,
-      status: session.simulated ? 'simulated' : 'created',
-      receipt_no: receipt,
-    });
-    if (error) console.error('[signup] payment insert failed', error);
-  }
-
-  return NextResponse.json({
-    candidateId,
-    receipt,
-    sessionId: session.id,
-    redirectUrl: session.redirectUrl,
-    clientToken: session.clientToken,
-    simulated: session.simulated,
-    provider: provider.name,
-  });
+  return NextResponse.json({ profileComplete: true });
 }

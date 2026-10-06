@@ -78,6 +78,8 @@ export type Dictionary = {
     stepAccount: string;
     stepProfile: string;
     stepPayment: string;
+    /** The button that ends signup, now that the next thing is the assessment. */
+    startAssessment: string;
     title0: string;
     title1: string;
     title2: string;
@@ -302,8 +304,15 @@ export type Dictionary = {
     registered: string;
     profile: string;
     assessment: string;
+    payment: string;
     report: string;
     selection: string;
+    /* The dashboard panel shown once the assessment is done and the fee is due. */
+    unlockEyebrow: string;
+    unlockTitle: string;
+    unlockBody: string;
+    unlockCta: string;
+    unlockFine: string;
     done: string;
     current: string;
     todo: string;
@@ -425,6 +434,7 @@ const en: Dictionary = {
     stepAccount: 'Account',
     stepProfile: 'Profile',
     stepPayment: 'Payment',
+    startAssessment: 'Start the assessment',
     title0: 'Create your account',
     title1: 'Your work profile',
     title2: 'Pay the assessment fee',
@@ -442,7 +452,7 @@ const en: Dictionary = {
     englishOptions: ['Basic', 'Conversational', 'Fluent'],
     cityState: 'City and state',
     consent:
-      'I understand the fee pays for my assessment, skills report and talent-pool profile, whatever the outcome. Selection for a Portugal placement is not guaranteed. If I am placed, a placement fee of €1,000 is payable after my job is confirmed and my contract is signed. I have read the',
+      'I understand the assessment is free to sit, and that the fee is payable afterwards if I want my skills report, my rewritten CV and my place in the talent pool. Selection for a Portugal placement is not guaranteed. If I am placed, a placement fee of €1,000 is payable after my job is confirmed and my contract is signed. I have read the',
     consentRules: 'selection rules',
     consentRefund: 'refund policy',
     back: 'Back',
@@ -679,11 +689,19 @@ const en: Dictionary = {
 
   status: {
     title: 'Where you are',
-    registered: 'Registered and paid',
+    registered: 'Registered',
     profile: 'Profile and CV',
     assessment: 'Assessment',
+    payment: 'Assessment fee',
     report: 'Skills report',
     selection: 'Cohort selection',
+    unlockEyebrow: 'YOUR ASSESSMENT IS COMPLETE',
+    unlockTitle: 'Unlock your report and career pack',
+    unlockBody:
+      'Your answers are scored and your report is written. Pay the {price} assessment fee to download your skills report, your rewritten CV in three formats and your interview preparation, and to appear in the talent pool employers search for 12 months.',
+    unlockCta: 'Pay {price} and unlock',
+    unlockFine:
+      'Your score is shown above whether you pay or not. The fee is for the documents you take away and the place in the talent pool.',
     done: 'Done',
     current: 'Now',
     todo: 'Next',
@@ -847,6 +865,7 @@ const hi: Dictionary = {
     stepAccount: 'खाता',
     stepProfile: 'प्रोफ़ाइल',
     stepPayment: 'भुगतान',
+    startAssessment: 'आकलन शुरू करें',
     title0: 'अपना खाता बनाएँ',
     title1: 'आपका कार्य प्रोफ़ाइल',
     title2: 'मूल्यांकन शुल्क का भुगतान करें',
@@ -864,7 +883,7 @@ const hi: Dictionary = {
     englishOptions: ['बुनियादी', 'बातचीत योग्य', 'प्रवाही'],
     cityState: 'शहर और राज्य',
     consent:
-      'मैं समझता/समझती हूँ कि यह शुल्क मेरे मूल्यांकन, स्किल्स रिपोर्ट और टैलेंट पूल प्रोफ़ाइल के लिए है, परिणाम चाहे जो भी हो। पुर्तगाल प्लेसमेंट के लिए चयन की गारंटी नहीं है। यदि मुझे नौकरी मिलती है, तो नौकरी पक्की होने और अनुबंध पर हस्ताक्षर के बाद €1,000 की प्लेसमेंट फ़ीस देय होगी। मैंने',
+      'मैं समझता/समझती हूँ कि आकलन देना मुफ़्त है, और शुल्क उसके बाद देना होता है यदि मुझे अपनी स्किल्स रिपोर्ट, नया सीवी और टैलेंट पूल में जगह चाहिए। पुर्तगाल प्लेसमेंट के लिए चयन की गारंटी नहीं है। यदि मुझे नौकरी मिलती है, तो नौकरी पक्की होने और अनुबंध पर हस्ताक्षर के बाद €1,000 की प्लेसमेंट फ़ीस देय होगी। मैंने',
     consentRules: 'चयन नियम',
     consentRefund: 'रिफ़ंड नीति',
     back: 'पीछे',
@@ -1099,7 +1118,15 @@ const hi: Dictionary = {
 
   status: {
     title: 'आप कहाँ हैं',
-    registered: 'रजिस्टर और भुगतान हुआ',
+    registered: 'पंजीकृत',
+    payment: 'आकलन शुल्क',
+    unlockEyebrow: 'आपका आकलन पूरा हुआ',
+    unlockTitle: 'अपनी रिपोर्ट और करियर पैक अनलॉक करें',
+    unlockBody:
+      'आपके उत्तर अंकित हो चुके हैं और आपकी रिपोर्ट तैयार है। {price} का आकलन शुल्क देकर अपनी स्किल्स रिपोर्ट, तीन फ़ॉर्मैट में नया लिखा हुआ सीवी और इंटरव्यू की तैयारी डाउनलोड करें, और 12 महीने तक उस टैलेंट पूल में दिखें जिसमें नियोक्ता खोजते हैं।',
+    unlockCta: '{price} दें और अनलॉक करें',
+    unlockFine:
+      'आपका स्कोर ऊपर दिखता है, चाहे आप भुगतान करें या नहीं। शुल्क उन दस्तावेज़ों के लिए है जो आप अपने साथ ले जाते हैं, और टैलेंट पूल में जगह के लिए।',
     profile: 'प्रोफ़ाइल और CV',
     assessment: 'मूल्यांकन',
     report: 'स्किल्स रिपोर्ट',

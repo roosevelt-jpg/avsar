@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Mono } from '@/components/ui/Mono';
@@ -58,11 +59,32 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
         <p className="m-0 max-w-[70ch] text-[13px] leading-[1.55] text-muted">{fill(t.fine, money)}</p>
       </section>
 
+      {/*
+        A real kitchen in Lisbon, in a business the group runs.
+
+        Chosen over stock for two reasons. It is the work this page is actually
+        about, rather than a photograph of somebody else's. And neither face is
+        visible, which matters: a licence covers a photograph, not the person in
+        it, and putting an identifiable face on a recruitment advert implies
+        they are connected to the service.
+
+        `blurDataURL` is a twenty-pixel version inlined, so the band holds the
+        picture rather than a hole while the file arrives over Indian mobile
+        data.
+      */}
       <div className="px-[clamp(20px,4cqi,56px)]">
-        <Placeholder
-          label="photo · candidate at work in Lisbon"
-          className="h-[clamp(220px,38cqi,460px)] w-full"
-        />
+        <div className="relative h-[clamp(220px,38cqi,460px)] w-full overflow-hidden rounded-[24px]">
+          <Image
+            src="/lisbon-kitchen-2400.jpg"
+            alt="Two kitchen staff preparing food behind the counter of a café in Lisbon"
+            fill
+            sizes="(max-width: 900px) 100vw, 1400px"
+            placeholder="blur"
+            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAMABQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwCvFcyXiTIrhFB4ZW+Zu5xTF1pxKyyAkou0AH7pHesbz5IYg6OQWYqfyq5Y2yXeoHzS3zAMcetQ0i7m1/aN84DIsJUjIJbH9aKzZrWNpSrgvs+VS3YdhRSuh2Z//9k="
+            className="object-cover"
+            priority
+          />
+        </div>
       </div>
 
       {/* ------------------------------------------------------- the six steps */}

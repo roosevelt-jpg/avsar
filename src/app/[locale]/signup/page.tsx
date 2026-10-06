@@ -5,25 +5,8 @@ import { SignupFlow } from '@/components/candidate/SignupFlow';
 import { OrderSummary } from '@/components/candidate/OrderSummary';
 import { getDictionary, isLocale } from '@/lib/i18n';
 import { POSITIONS, positionBySlug, type PositionSlug } from '@/lib/data/positions';
-import { availablePaymentMethods, getPaymentProvider } from '@/lib/payments';
-import { getAdminSupabase } from '@/lib/supabase/admin';
 
 export const metadata = { title: 'Register for Cohort 01' };
-
-/**
- * Sandbox or production, for whichever provider's browser SDK is loaded.
- *
- * Read per provider rather than from one shared variable: they are different
- * accounts with different environments, and a single flag would silently put
- * one of them on the wrong host.
- */
-function providerMode(): 'sandbox' | 'production' {
-  const provider = getPaymentProvider().name;
-  if (provider === 'eximpe') {
-    return process.env.EXIMPE_ENV === 'production' ? 'production' : 'sandbox';
-  }
-  return process.env.CASHFREE_ENV === 'production' ? 'production' : 'sandbox';
-}
 
 export default async function SignupPage({
   params,
@@ -42,34 +25,6 @@ export default async function SignupPage({
     ? (query.position as PositionSlug)
     : POSITIONS[0].slug;
 
-  /**
-   * The success screen is only shown after the session is confirmed with the
-   * provider. `?status=success` on its own proves nothing: anyone can type it.
-   */
-  let confirmedReceipt: string | undefined;
-  if (query.status === 'success' && query.session_id) {
-    const provider = getPaymentProvider();
-    try {
-      const { paid, paymentId } = await provider.confirmSession(query.session_id);
-      if (paid) {
-        confirmedReceipt = query.receipt;
-
-        /* Mark it paid here too. The webhook is the source of truth, but it can
-           arrive after the candidate is already looking at this page. */
-        const supabase = getAdminSupabase();
-        if (supabase) {
-          await supabase
-            .from('payments')
-            .update({ status: 'paid', provider_payment_id: paymentId, paid_at: new Date().toISOString() })
-            .eq('provider_order_id', query.session_id)
-            .neq('status', 'paid');
-        }
-      }
-    } catch (error) {
-      console.error('[signup] session confirmation failed', error);
-    }
-  }
-
   return (
     <>
       <header className="flex flex-wrap items-center justify-between gap-4 border-b border-line px-[clamp(20px,4cqi,56px)] py-[18px]">
@@ -86,12 +41,8 @@ export default async function SignupPage({
           locale={locale}
           t={t}
           initialPosition={initialPosition}
-          confirmedReceipt={confirmedReceipt}
-          availableMethods={availablePaymentMethods()}
-          provider={getPaymentProvider().name}
-          providerMode={providerMode()}
         />
-        {!confirmedReceipt && <OrderSummary t={t} />}
+        <OrderSummary t={t} />
       </main>
     </>
   );

@@ -82,9 +82,26 @@ export async function getSessionCandidate(): Promise<SessionCandidate | null> {
   };
 }
 
-/** Everything the report gate needs, in one place so the two callers agree. */
+/**
+ * Whether the fee has been paid.
+ *
+ * The one gate behind everything the assessment produces: the report, the
+ * career pack and the CV. Sitting the assessment is free and seeing the score
+ * on screen is free; taking the documents away is what is bought.
+ */
+export function hasPaid(candidate: SessionCandidate): boolean {
+  return candidate.paymentStatus === 'paid';
+}
+
+/**
+ * Everything the report download needs, in one place so the callers agree.
+ *
+ * Two conditions, for two different reasons. Paid, because the report is the
+ * thing the fee buys. Email proved, because the report is delivered to that
+ * address and carries their name, score and rank.
+ */
 export function canReceiveReport(candidate: SessionCandidate): boolean {
-  return candidate.paymentStatus === 'paid' && candidate.emailConfirmed;
+  return hasPaid(candidate) && candidate.emailConfirmed;
 }
 
 /** The signed-in candidate, or a redirect to sign-in carrying the return path. */
@@ -225,13 +242,12 @@ export async function getViewer(): Promise<Viewer> {
 export function canReach(viewer: Viewer, path: string): boolean {
   if (path.startsWith('/admin')) return viewer.role === 'staff' || viewer.role === 'employer';
 
-  /* The assessment is what the fee buys, so it is the one place that checks
-     payment rather than merely role. Sending an unpaid candidate there would
-     land them on a page that bounces them straight back out. */
-  if (path.includes('/assessment')) {
-    return viewer.role === 'candidate' && viewer.candidate.paymentStatus === 'paid';
+  /* The assessment is free to sit; the fee unlocks what it produces. So these
+     are the same check now, and the gate lives on the report, the career pack
+     and the CV instead. */
+  if (path.includes('/assessment') || path.includes('/dashboard')) {
+    return viewer.role === 'candidate';
   }
-  if (path.includes('/dashboard')) return viewer.role === 'candidate';
   return true;
 }
 
@@ -264,8 +280,10 @@ export function homeFor(viewer: Viewer, locale: Locale): string {
     case 'employer':
       return '/admin';
     case 'candidate':
+      /* Profile, then assessment, then pay. The dashboard is where an unpaid
+         candidate who has finished is sent, because that is where the fee is
+         asked for and where the locked report sits. */
       if (!viewer.candidate.profileComplete) return `/${locale}/signup?resume=profile`;
-      if (viewer.candidate.paymentStatus !== 'paid') return `/${locale}/signup?resume=payment`;
       return `/${locale}/dashboard`;
     case 'registered':
       /* Signed in with nothing attached. The application is the only thing

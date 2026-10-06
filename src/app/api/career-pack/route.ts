@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getSessionCandidate } from '@/lib/auth';
+import { getSessionCandidate, hasPaid } from '@/lib/auth';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { isAiConfigured } from '@/lib/cv/client';
 import { generateCareerPack, unsupportedBullets } from '@/lib/cv/coach';
@@ -23,6 +23,12 @@ const MAX_GENERATIONS = 3;
 export async function POST() {
   const candidate = await getSessionCandidate();
   if (!candidate) return NextResponse.json({ error: 'unauthenticated' }, { status: 401 });
+
+  /* Checked before anything else that costs money. Generating a pack is a model
+     pass over the whole profile, and it is one of the things the fee buys. */
+  if (!hasPaid(candidate)) {
+    return NextResponse.json({ error: 'payment_required' }, { status: 402 });
+  }
 
   if (!isAiConfigured()) return NextResponse.json({ error: 'ai_unconfigured' }, { status: 503 });
 

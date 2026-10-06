@@ -121,8 +121,10 @@ export const ASSESSMENT_FEE = {
  *  - `v1-2026-09`  first cohort wording; selection rules were still a draft
  *  - `v2-2026-10`  selection rules reviewed and published; placement fee moved
  *                  to the candidate and disclosed before checkout
+ *  - `v3-2026-10`  the fee moved to after the assessment, so sitting it is free
+ *                  and the disclosure moved to the end of signup
  */
-export const CONSENT_VERSION = 'v2-2026-10';
+export const CONSENT_VERSION = 'v3-2026-10';
 
 /** Working days from a completed application to an answer. */
 export const RESPONSE_DAYS = 15;

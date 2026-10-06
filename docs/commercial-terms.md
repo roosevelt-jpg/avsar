@@ -166,3 +166,47 @@ navigation.
 IT has its own bank. A data analyst and a QA tester share the sector and not the
 job, so items inside it are scoped with `positions` rather than by adding an
 enum value per role. Both get four shared IT items and six of their own.
+
+
+## When the fee is collected
+
+After the assessment, from 6 October 2026. It used to be before.
+
+A candidate registers, completes their profile and sits the assessment for
+nothing. The fee buys the skills report, the career pack and twelve months in
+the talent pool, and it is asked for on the dashboard once there is a report to
+unlock. Their score is on the screen above that panel whether they pay or not:
+what is behind the wall is the documents they take away and the place employers
+search, and the copy says so rather than implying the score itself is withheld.
+
+Two things had to move with it.
+
+**The disclosure went the other way.** The odds and the EUR 1,000 were shown at
+checkout, which used to be before the assessment and is now after it. Left
+there, a candidate would have learned the terms only after ninety minutes of
+answering. They are now shown at the end of signup, above the consent box, and
+the consent is still what records that they were shown.
+
+**The refund policy was rewritten.** "Full refund before you start the
+assessment, none after" described a world where payment came first, and became
+self-contradictory the moment it did not. It now says: the fee is payable after
+the assessment, nothing is refundable once the report, the CV or the interview
+preparation has been downloaded, and a full refund within fourteen days if the
+fee was paid and nothing downloaded.
+
+`CONSENT_VERSION` moved to `v3-2026-10`, so which wording a candidate agreed to
+stays recoverable.
+
+### What this trades away
+
+Said once, because it was raised before the decision and the decision stands.
+
+A fee charged at the end filters nobody: the assessment is served, scored and
+stored for everyone who arrives, and the cost of doing that is paid before any
+of them decide. And a candidate who has answered for ninety minutes and then
+meets a wall between themselves and their own result will experience that
+differently from one who paid at the door.
+
+Both are mitigated rather than solved. The disclosure moved early so nobody is
+surprised, and the score is shown free so the wall stands in front of the
+documents rather than in front of the result.

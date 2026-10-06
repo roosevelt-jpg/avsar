@@ -40,10 +40,16 @@ export const signupProfileSchema = z.object({
 export const paymentMethodSchema = z.enum(['upi', 'card', 'netbanking']);
 
 export const signupSchema = signupAccountSchema.merge(signupProfileSchema).extend({
-  method: paymentMethodSchema,
   /**
-   * Mandatory. The disclosure about the ~1-in-20,000 odds is the whole reason
-   * this field exists, so it is stored with the record, not just checked.
+   * Mandatory, and stored rather than merely checked.
+   *
+   * It is the record that the selection odds and the placement fee were shown.
+   * It is taken at the end of signup, before the assessment: the fee moved to
+   * the end of the flow, and a disclosure that only appears at checkout would
+   * now reach somebody after they had already spent ninety minutes answering.
+   *
+   * No payment method here any more. That is asked for at checkout, which is
+   * its own step and its own route.
    */
   consent: z.literal(true),
 });

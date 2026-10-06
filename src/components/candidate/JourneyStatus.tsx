@@ -25,14 +25,20 @@ export function JourneyStatus({
     registered: s.registered,
     profile: s.profile,
     assessment: s.assessment,
+    payment: s.payment,
     report: s.report,
     selection: s.selection,
   };
 
-  /* The one thing to do next, rather than a list of everything outstanding. */
-  const action = !status.paid
-    ? null
-    : !status.profileComplete && !status.cvUploaded
+  /*
+    The one thing to do next, rather than a list of everything outstanding.
+    Paying no longer gates the first two steps, so the chain starts at the
+    profile for everybody. When the fee is what is outstanding this stays null:
+    the unlock panel below the timeline makes that ask, and two calls to action
+    for the same thing is one too many.
+  */
+  const action =
+    !status.profileComplete && !status.cvUploaded
       ? { href: `/${locale}/profile`, label: s.completeProfile }
       : !status.assessmentComplete
         ? {

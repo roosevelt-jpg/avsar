@@ -7,6 +7,11 @@ import { getAdminSupabase } from '@/lib/supabase/admin';
  * The dashboard used to show a fixed timeline from the prototype: "Assessment
  * completed, 5 Oct 2026", to everyone, always, including people who had not
  * started. This replaces it with the truth.
+ *
+ * The order changed when the fee moved to the end: register, profile,
+ * assessment, pay, report. Paying is now a step a candidate reaches rather than
+ * one they start from, so it has a place in this list instead of being the
+ * precondition for the first two.
  */
 
 export type StepState = 'done' | 'current' | 'todo';
@@ -20,6 +25,8 @@ export type CandidateStatus = {
   nextSection: SectionId | null;
   assessmentComplete: boolean;
   reportReady: boolean;
+  /** Finished the assessment and has not paid: the one state the fee is asked in. */
+  awaitingPayment: boolean;
   steps: { key: string; state: StepState }[];
 };
 
@@ -55,19 +62,21 @@ export async function getCandidateStatus(
   const nextSection = SECTION_ORDER.find((section) => !sectionsDone.includes(section)) ?? null;
   const assessmentComplete = nextSection === null;
 
+  const profileDone = profileComplete || cvUploaded;
+
   /* One ordered list, so the dashboard renders state rather than deciding it. */
   const steps: { key: string; state: StepState }[] = [
-    { key: 'registered', state: paid ? 'done' : 'current' },
-    { key: 'profile', state: profileComplete || cvUploaded ? 'done' : paid ? 'current' : 'todo' },
+    { key: 'registered', state: 'done' },
+    { key: 'profile', state: profileDone ? 'done' : 'current' },
     {
       key: 'assessment',
-      state: assessmentComplete
-        ? 'done'
-        : sectionsDone.length > 0 || (paid && (profileComplete || cvUploaded))
-          ? 'current'
-          : 'todo',
+      state: assessmentComplete ? 'done' : profileDone ? 'current' : 'todo',
     },
-    { key: 'report', state: reportReady ? 'done' : assessmentComplete ? 'current' : 'todo' },
+    {
+      key: 'payment',
+      state: paid ? 'done' : assessmentComplete ? 'current' : 'todo',
+    },
+    { key: 'report', state: paid && reportReady ? 'done' : paid ? 'current' : 'todo' },
     { key: 'selection', state: 'todo' },
   ];
 
@@ -80,6 +89,7 @@ export async function getCandidateStatus(
     nextSection,
     assessmentComplete,
     reportReady,
+    awaitingPayment: assessmentComplete && !paid,
     steps,
   };
 }
