@@ -104,7 +104,6 @@ export type Dictionary = {
     consentRefund: string;
     back: string;
     continue: string;
-    pay: string;
     successTitle: string;
     successBody: string;
     successCta: string;
@@ -400,10 +399,10 @@ const en: Dictionary = {
     ['An answer, either way', 'We tell you within {days} days whether you are moving forward. You are not left waiting.'],
   ],
   steps: [
-    ['Register and pay', 'Create your account and pay the ₹1,999 assessment fee by UPI or card.'],
-    ['Take the assessment', 'Complete it online from your phone or computer, at a time that suits you.'],
-    ['Get your report', 'Your skills report and profile are ready within 7 days.'],
-    ['Selection', 'The top candidate in each cohort is offered a full placement in Portugal.'],
+    ['Register', 'Create your account with your name, mobile and email. It takes two minutes.'],
+    ['Take the assessment', 'Twenty to thirty minutes online, from your phone. It costs nothing to sit.'],
+    ['Pay and unlock', 'Pay the assessment fee if you want your report, your rewritten CV and your place in the talent pool.'],
+    ['Selection', 'Shortlisted candidates are interviewed and presented to employers. Selection is not guaranteed.'],
   ],
   place: [
     '{years}-year employment contract with a Portuguese employer',
@@ -463,7 +462,6 @@ const en: Dictionary = {
     consentRefund: 'refund policy',
     back: 'Back',
     continue: 'Continue',
-    pay: 'Pay ₹1,999',
     successTitle: "You're registered for Cohort 01",
     successBody:
       'Payment received. Receipt {receipt} was sent to your email. Your report and career pack are ready to download.',
@@ -834,7 +832,7 @@ const hi: Dictionary = {
     ['उत्तर, दोनों हालात में', '{days} दिनों के भीतर हम बताते हैं कि आप आगे बढ़ रहे हैं या नहीं। आपको इंतज़ार में नहीं छोड़ा जाता।'],
   ],
   steps: [
-    ['रजिस्टर करें और भुगतान करें', 'अपना खाता बनाएँ और UPI या कार्ड से ₹1,999 मूल्यांकन शुल्क चुकाएँ।'],
+    ['रजिस्टर करें', 'अपने नाम, मोबाइल और ईमेल से खाता बनाएँ। दो मिनट लगते हैं।'],
     ['मूल्यांकन दें', 'इसे अपने फ़ोन या कंप्यूटर से, अपनी सुविधा के समय ऑनलाइन पूरा करें।'],
     ['अपनी रिपोर्ट पाएँ', 'आपकी स्किल्स रिपोर्ट और प्रोफ़ाइल 7 दिनों के भीतर तैयार हो जाती है।'],
     ['चयन', 'हर कोहॉर्ट के सर्वश्रेष्ठ उम्मीदवार को पुर्तगाल में पूरा प्लेसमेंट दिया जाता है।'],
@@ -897,7 +895,6 @@ const hi: Dictionary = {
     consentRefund: 'रिफ़ंड नीति',
     back: 'पीछे',
     continue: 'आगे बढ़ें',
-    pay: '₹1,999 का भुगतान करें',
     successTitle: 'आप कोहॉर्ट 01 के लिए रजिस्टर हो गए हैं',
     successBody:
       'भुगतान मिल गया। रसीद {receipt} आपके ईमेल पर भेज दी गई है। आपकी रिपोर्ट और करियर पैक डाउनलोड के लिए तैयार हैं।',

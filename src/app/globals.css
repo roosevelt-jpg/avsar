@@ -30,6 +30,9 @@
   --color-accent-deep: oklch(0.46 0.14 40);
   --color-accent-tint: oklch(0.94 0.03 40);
   --color-employer: oklch(0.56 0.14 250);
+  /* The terracotta, lifted so it does not go muddy on the ink background. It
+     is the same colour the logo uses on dark. */
+  --color-accent-on-dark: oklch(0.62 0.14 40);
   --color-employer-deep: oklch(0.46 0.14 250);
   --color-success: oklch(0.62 0.14 150);
 

@@ -4,6 +4,34 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 32 - 06 Oct 2026, 18:10, abilio.diz@smithandadams.com
+
+**Movimento e interactividade na landing**, tudo derivado do simbolo.
+
+- `components/motion/`: `useInView` (observer, le o
+  `prefers-reduced-motion` no primeiro render e nao num efeito, senao agenda um
+  segundo render por elemento na mesma tick), `Reveal` (8px e 420ms, discreto),
+  e `RouteLine`, que e a rota pontilhada do logo desenhada a largura da seccao
+  com dashoffset, ponto terracota de um lado e anel do outro.
+- **`PhoneWalkthrough`** no "How it works": telemovel a esquerda (sticky no
+  desktop), seis passos alinhados a direita, cada um com o ecra real que produz.
+  Auto-avanca de 5,2s **e para assim que o leitor escolhe um passo**. As imagens
+  sao capturas reais em 390x844 dsf3, exportadas a 780 de largura.
+- **`PositionGrid`**: cada posicao ganhou resumo de uma linha no mosaico e um
+  `<dialog>` nativo com descricao e "o que os empregadores procuram". Copy em
+  `lib/data/position-copy.ts`, EN e HI, escrita a partir das operacoes reais do
+  grupo (300+ apartamentos geridos, cafes, obra de renovacao).
+
+**Copy morta com preco errado removida.** O `/b` tinha passos do fluxo antigo
+com ₹1,999, e o `signup.pay` era o botao de checkout que ja nao existe. O preco
+real vem de `activePrice()` ha muito; isto eram strings orfas.
+
+Capturas em `scratchpad/shoot/mobile.mjs`. Quando o fluxo mudar, os ecras ficam
+desactualizados, o que e a falha certa: um mockup que nao pode ficar
+desactualizado e um mockup que nunca foi verdade.
+
+Limpeza: contas de demonstracao apagadas, `.env.development.local` removido.
+
 ## Bloco 31 - 06 Oct 2026, 16:15, abilio.diz@smithandadams.com
 
 **Branding novo adoptado**, de `brand_handoff_sa_recruitment`.
