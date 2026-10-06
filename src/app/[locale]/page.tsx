@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Mono } from '@/components/ui/Mono';
-import { Placeholder } from '@/components/ui/Placeholder';
+import { POSITION_LQIP, positionImage } from '@/lib/data/position-images';
 import { SiteHeader } from '@/components/candidate/SiteHeader';
 import { SiteFooter } from '@/components/candidate/SiteFooter';
 import { PositionSelector } from '@/components/candidate/PositionSelector';
@@ -285,11 +285,17 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
         <ul className="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-3 p-0">
           {POSITIONS.map((position, index) => (
             <li key={position.slug}>
-              <Placeholder
-                label={`photo · ${position.label}`}
-                className="aspect-[4/3] w-full"
-                radius="rounded-[16px]"
-              />
+              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[16px]">
+                <Image
+                  src={positionImage(position.slug, 840)}
+                  alt={position.label}
+                  fill
+                  sizes="(max-width: 700px) 50vw, 240px"
+                  placeholder="blur"
+                  blurDataURL={POSITION_LQIP[position.slug]}
+                  className="object-cover"
+                />
+              </div>
               <p className="mt-2.5 mb-0 text-[16px] font-medium">{t.sectors[index] ?? position.label}</p>
             </li>
           ))}
