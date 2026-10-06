@@ -47,12 +47,15 @@ export type EmailLayout = {
   fallbackNote?: string;
   /** Quiet lines above the legal footer. */
   closing?: string[];
+  /** In the footer, where a reader looking for the way out looks for it. */
+  unsubscribe?: { label: string; url: string };
   /** Absolute, because an email has no origin of its own. */
   origin: string;
 };
 
 export function renderEmail(layout: EmailLayout): string {
-  const { preheader, heading, paragraphs, action, fallbackNote, closing, origin } = layout;
+  const { preheader, heading, paragraphs, action, fallbackNote, closing, unsubscribe, origin } =
+    layout;
 
   const body = paragraphs
     .map(
@@ -121,7 +124,11 @@ ${body}${button}${fallback}${tail}
 <tr><td style="padding-top:20px;font-size:12px;line-height:1.6;color:${MUTED};">
 <strong style="color:${INK};font-weight:600;">${escape(BRAND.name)}</strong> &middot; ${escape(BRAND.slogan)}<br>
 ${escape(ENTITY.legalName)}, ${escape(ENTITY.jurisdiction)}<br>
-<a href="mailto:${escape(ENTITY.supportEmail)}" style="color:${MUTED};">${escape(ENTITY.supportEmail)}</a>
+<a href="mailto:${escape(ENTITY.supportEmail)}" style="color:${MUTED};">${escape(ENTITY.supportEmail)}</a>${
+    unsubscribe
+      ? `<br><br><a href="${escape(unsubscribe.url)}" style="color:${MUTED};">${escape(unsubscribe.label)}</a>`
+      : ''
+  }
 </td></tr></table>
 </td></tr>
 

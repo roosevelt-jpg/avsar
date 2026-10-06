@@ -64,6 +64,48 @@ const COPY = {
   },
 } satisfies Record<string, Copy>;
 
+/** Subject, plain part and branded part, built once and used by both callers. */
+function compose({
+  name,
+  locale,
+  link,
+  origin,
+}: {
+  name: string;
+  locale: string;
+  link: string;
+  origin: string;
+}) {
+  const copy = locale === 'hi' ? COPY.hi : COPY.en;
+  const paragraphs = copy.paragraphs(name);
+
+  return {
+    subject: copy.subject,
+    /* The plain part is not a stub. It is what a text-only client, a screen
+       reader set to plain, and every spam filter actually read. */
+    text: [...paragraphs, '', link, '', ...copy.closing, '', BRAND.name].join('\n'),
+    html: renderEmail({
+      preheader: copy.preheader,
+      heading: copy.heading,
+      paragraphs,
+      action: { label: copy.actionLabel, url: link },
+      fallbackNote: copy.fallbackNote,
+      closing: copy.closing,
+      origin,
+    }),
+  };
+}
+
+/** The same message, for the development preview. Sends nothing. */
+export function verificationPreview(input: {
+  name: string;
+  locale: string;
+  link: string;
+  origin: string;
+}): string {
+  return compose(input).html;
+}
+
 export type VerificationResult =
   | { sent: true }
   | { sent: false; reason: 'no_admin' | 'no_mailer' | 'link_failed' | 'send_failed' };
@@ -118,25 +160,8 @@ export async function sendVerificationLink({
   callback.searchParams.set('locale', locale);
   const link = callback.toString();
 
-  const copy = locale === 'hi' ? COPY.hi : COPY.en;
-  const paragraphs = copy.paragraphs(name);
-
-  const { sent } = await mailer.send({
-    to: email,
-    subject: copy.subject,
-    /* The plain part is not a stub. It is what a text-only client, a screen
-       reader set to plain, and every spam filter actually read. */
-    text: [...paragraphs, '', link, '', ...copy.closing, '', BRAND.name].join('\n'),
-    html: renderEmail({
-      preheader: copy.preheader,
-      heading: copy.heading,
-      paragraphs,
-      action: { label: copy.actionLabel, url: link },
-      fallbackNote: copy.fallbackNote,
-      closing: copy.closing,
-      origin,
-    }),
-  });
+  const { subject, text, html } = compose({ name, locale, link, origin });
+  const { sent } = await mailer.send({ to: email, subject, text, html });
 
   return sent ? { sent: true } : { sent: false, reason: 'send_failed' };
 }

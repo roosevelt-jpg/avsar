@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { getMailer, unsubscribeToken } from '@/lib/email';
-import { BRAND, ENTITY, ASSESSMENT_FEE } from '@/lib/data/brand';
-import { formatInr } from '@/lib/data/cohort';
+import { renderReminder } from '@/lib/email/reminder';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -37,34 +36,6 @@ type Row = {
 
 function daysSince(iso: string): number {
   return (Date.now() - new Date(iso).getTime()) / 86_400_000;
-}
-
-function body(row: Row, origin: string, unsubscribe: string): { subject: string; text: string } {
-  const half = Boolean(row.profile_completed_at);
-  const firstName = row.full_name.split(' ')[0] ?? '';
-  const price = formatInr(ASSESSMENT_FEE.inr * 100);
-
-  const subject = half
-    ? `${firstName}, one step left on your ${BRAND.name} application`
-    : `${firstName}, your ${BRAND.name} application is waiting`;
-
-  const text = [
-    `Hello ${firstName},`,
-    '',
-    half
-      ? `You filled in your profile but have not completed the ${price} assessment fee yet. Your answers are saved: picking up where you left off takes a minute.`
-      : `You opened an account with ${BRAND.name} and did not finish your application. Nothing is lost: sign in and carry on from where you stopped.`,
-    '',
-    `${origin}/${row.locale}/signup`,
-    '',
-    `If you have changed your mind, that is fine and you will not hear from us again:`,
-    unsubscribe,
-    '',
-    `${ENTITY.tradingAs}, a trading name of ${ENTITY.legalName}`,
-    ENTITY.registeredAddress,
-  ].join('\n');
-
-  return { subject, text };
 }
 
 async function run(request: Request) {
@@ -114,9 +85,15 @@ async function run(request: Request) {
     }
 
     const unsubscribe = `${origin}/api/unsubscribe?c=${row.id}&t=${unsubscribeToken(row.id)}`;
-    const { subject, text } = body(row, origin, unsubscribe);
+    const { subject, text, html } = renderReminder(row, origin, unsubscribe);
 
-    const result = await mailer.send({ to: row.email, subject, text, unsubscribeUrl: unsubscribe });
+    const result = await mailer.send({
+      to: row.email,
+      subject,
+      text,
+      html,
+      unsubscribeUrl: unsubscribe,
+    });
 
     /* Only a send that was accepted is counted. A refused one is retried next
        run rather than quietly using up one of the three. */

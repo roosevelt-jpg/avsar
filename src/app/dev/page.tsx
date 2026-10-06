@@ -56,6 +56,17 @@ const GROUPS: { title: string; note: string; rows: [string, string, string][] }[
       ['/en/contact', 'Contact', 'includes the off-platform fee report channel'],
     ],
   },
+  {
+    title: 'Transactional email',
+    note: 'Rendered, not sent. Nothing here writes a row or touches a real address.',
+    rows: [
+      ['/dev/email?template=verification', 'Confirm your address', 'sent at registration and on resend'],
+      ['/dev/email?template=verification&locale=hi', 'Confirm your address, Hindi', ''],
+      ['/dev/email?template=reminder&stage=profile', 'Reminder 1, profile unfinished', 'the account was opened and abandoned'],
+      ['/dev/email?template=reminder&stage=assessment', 'Reminder 2, assessment not taken', 'profile done, nothing owed yet'],
+      ['/dev/email?template=reminder&stage=assessment&locale=hi', 'Reminder, Hindi', ''],
+    ],
+  },
 ];
 
 export default function DevIndex() {

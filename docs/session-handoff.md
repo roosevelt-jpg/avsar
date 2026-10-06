@@ -4,6 +4,53 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 37 - 06 Oct 2026, 17:50, abilio.diz@smithandadams.com
+
+**Lembretes com marca, em dois idiomas, e uma pre-visualizacao que nao envia.**
+
+### Copy do lembrete estava errada desde que o pagamento mudou
+
+O ramo "half" dizia *"you filled in your profile but have not completed the
+₹2.299 assessment fee yet"*. Isso era verdade quando se pagava a meio do funil.
+Desde que a taxa passou para o fim, quem tem perfil feito nao deve dinheiro
+nenhum: falta-lhe **o assessment**. O email estava a pedir pagamento a quem nao
+tinha nada a pagar, e a mandar para `/signup` em vez de `/assessment`.
+
+Reescrito como `Stage = 'profile' | 'assessment'`:
+
+- `profile`: abriu conta e parou -> "Your application is waiting" -> `/signup`
+- `assessment`: perfil feito -> "One step left", 20 a 30 minutos, **"you pay
+  nothing until you have completed it"** -> `/assessment`
+
+### Mais
+
+- Lembretes passam pelo `renderEmail`. `EmailLayout` ganhou `unsubscribe`, que
+  sai no rodape, que e onde quem procura a saida a procura.
+- **Lembretes passaram a ter hindi.** Iam sempre em ingles, mesmo com
+  `row.locale = 'hi'`: a locale so era usada no URL. Agora a copy toda e EN/HI.
+- Copy e composicao movidas para `lib/email/reminder.ts` (`renderReminder`),
+  porque um ficheiro de route no Next so pode exportar handlers. A route do cron
+  so orquestra.
+- `lib/email/verification.ts` ganhou um `compose()` interno e um
+  `verificationPreview()`.
+
+### `/dev/email`, so em desenvolvimento
+
+`?template=verification|reminder&locale=en|hi&stage=profile|assessment`. Faz
+404 em producao, como o indice de ecras ao lado. Ver um email deixou de exigir
+registar uma conta descartavel, esperar pelo provider e ler o HTML de volta na
+API da Resend - o que e lento, deixa linhas para apagar, e nao e coisa que se
+faca contra uma lista de candidatos reais so para ver um lembrete. Listado no
+`/dev`.
+
+### Verificado
+
+`tsc`, `eslint --max-warnings=0`, `next build` limpos. As quatro variantes dao
+200; lidas as de EN e HI no browser, cabecalho, botao, rodape e unsubscribe
+corretos. Nenhum email enviado, nenhuma linha escrita.
+
+---
+
 ## Bloco 36 - 06 Oct 2026, 17:35, abilio.diz@smithandadams.com
 
 **Email de verificacao com marca.**
