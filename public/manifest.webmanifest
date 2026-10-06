@@ -1,0 +1,13 @@
+{
+  "name": "S&A Recruitment",
+  "short_name": "S&A",
+  "description": "Skills assessment for people in India seeking work in Portugal.",
+  "start_url": "/en",
+  "display": "standalone",
+  "background_color": "#F7F5F0",
+  "theme_color": "#1B1A17",
+  "icons": [
+    { "src": "/brand/app-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/brand/app-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

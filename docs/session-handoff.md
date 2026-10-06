@@ -4,6 +4,38 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 31 - 06 Oct 2026, 16:15, abilio.diz@smithandadams.com
+
+**Branding novo adoptado**, de `brand_handoff_sa_recruitment`.
+
+- `Wordmark.tsx` reescrito: simbolo novo (ponto terracota = India, anel ink =
+  Europa, rota pontilhada entre os dois) mais "S&A" a bold e "Recruitment" em
+  peso menor. **A API ficou igual** (href, suffix, tone, accent), por isso os 11
+  sitios que o usam nao mudaram: ja diziam fundo escuro e lado empregador, que
+  sao exactamente os dois eixos que o simbolo novo precisa.
+- SVGs em `public/brand/`, com o bloco C2PA removido: eram 8KB de base64 por
+  ficheiro em assets servidos a cada pagina. Os originais na pasta de handoff
+  mantem o deles.
+- `app-icon-180/192/512.png` rasterizados do SVG. Favicon, apple-touch e
+  `manifest.webmanifest` ligados no `layout.tsx`.
+- Prefixo dos recibos `AV-` -> `SA-`. Os recibos ja emitidos **ficam** com o
+  antigo: um recibo e o registo do que foi enviado a alguem.
+
+Ja estava certo e nao precisou de nada: Schibsted Grotesk com 500 e 700 carrega
+pelo `next/font`, titulo e copy ja eram S&A, paleta ja era a do brief.
+
+**Dois pontos do brief nao seguidos, de proposito:**
+
+1. O brief pede rodape `© 2026 S&A Recruitment · Lisbon · New Delhi`. Mantive
+   `a Smith & Adams company`, porque o Abilio pediu depois disso que o rodape
+   reforcasse a associacao a marca-mae. O brief e anterior a essa decisao.
+2. `IDENTITY_HASH_SALT` continua `avsar-dev-salt` e o cookie continua
+   `avsar_locale`. O salt **nao pode** mudar: rodar orfana todos os hashes de
+   deteccao de duplicados. O cookie podia, mas renomea-lo so apaga a preferencia
+   de lingua de quem ja a tinha.
+
+Dominio `sa-recruitment.com` do brief: nao mexi, como o proprio brief pede.
+
 ## Bloco 30 - 06 Oct 2026, 14:50, abilio.diz@smithandadams.com
 
 **A taxa passou para depois do assessment.** Decisao do Abilio. Registar, perfil

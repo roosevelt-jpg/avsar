@@ -67,7 +67,13 @@ export function availablePaymentMethods(): PaymentMethodHint[] {
   return configured.length > 0 ? configured : ['card'];
 }
 
-/** Receipt numbers follow the prototype's format: AV-01-048213. */
+/**
+ * Receipt numbers: SA-01-048213.
+ *
+ * The prefix was AV-, from the name the platform had before it was S&A
+ * Recruitment. Receipts already issued keep theirs, because a receipt is a
+ * record of what was sent to somebody rather than a field to rewrite.
+ */
 export function receiptNumber(cohortSequence: number, serial: number): string {
-  return `AV-${String(cohortSequence).padStart(2, '0')}-${String(serial).padStart(6, '0')}`;
+  return `SA-${String(cohortSequence).padStart(2, '0')}-${String(serial).padStart(6, '0')}`;
 }

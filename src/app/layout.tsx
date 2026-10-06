@@ -64,6 +64,13 @@ export const metadata: Metadata = {
   description:
     'A recruitment agency under the Smith & Adams brand, hiring in India for jobs in Portugal. Assessment, contract, accommodation, meals and legal support through the whole visa process.',
   metadataBase: new URL('https://avsar-platform-bay.vercel.app'),
+  icons: {
+    /* The favicon is a simplified mark with no dotted route, because the route
+       turns to mud at 16px. The full mark is used everywhere it has room. */
+    icon: [{ url: '/brand/favicon.svg', type: 'image/svg+xml' }],
+    apple: [{ url: '/brand/app-icon-180.png', sizes: '180x180' }],
+  },
+  manifest: '/manifest.webmanifest',
 };
 
 export const viewport: Viewport = {
