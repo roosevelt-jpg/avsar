@@ -4,6 +4,72 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 35 - 06 Oct 2026, 17:20, abilio.diz@smithandadams.com
+
+**O email de confirmacao nunca saiu. Diagnostico e correccao.**
+
+### Causa
+
+`/auth/v1/settings` do projecto diz `mailer_autoconfirm = true`, ou seja
+"Confirm email" esta **desligado** no dashboard. Com isso o `signUp` nao envia
+nada: confirma o utilizador no instante da criacao. Confere com a auth.users -
+a conta de teste de hoje tem `confirmation_sent_at = null` e
+`email_confirmed_at` igual ao `created_at`.
+
+O botao de reenvio chamava `signInWithOtp`, que entrega o envio ao mailer do
+Supabase. Em 100 registos do log da Resend, a recuar ate 30 Set, **nao ha um
+unico email de auth**. Ou seja o SMTP custom do Supabase nao esta a apontar
+para a Resend, e o que estava a ser usado era o sender interno: 2 mensagens por
+hora para o projecto inteiro e entrega so a membros da equipa Supabase. Por
+isso um candidato no Gmail nao recebia nada e nao havia bounce nenhum para ver.
+
+A Resend em si estava boa: dominio `mail.smithandadams.com` verificado,
+`sending: enabled`, e os emails de leads entregam.
+
+### Correccao
+
+`lib/email/verification.ts` novo. Cunha o token com a service role
+(`admin.auth.admin.generateLink`, que **nao envia**) e manda a mensagem pelo
+mailer que ja existe, o mesmo da Resend. Fica um provider, um log, e sem
+dependencia de um toggle que alguem muda noutro separador. `mailer_autoconfirm`
+pode ficar ligado - alias convem, porque e o que da sessao imediata no signUp.
+
+Usado em `/api/auth/register` e `/api/auth/resend-verification`, os dois sitios
+que usavam `signInWithOtp`.
+
+**O link vai no nosso dominio, nao no `action_link` da Supabase.** O
+`action_link` aponta para o dominio do projecto e o redirect dele traz a sessao
+no *fragmento* da URL, que uma route de servidor nao consegue ler: o callback
+nao encontrava code nenhum, tratava a visita como anonima e mandava assinar,
+sem provar nada. Entao o `/auth/callback` passou a aceitar `token_hash` e a
+resolve-lo com `verifyOtp`. Bonus: o candidato ve o dominio onde se registou e
+nao um subdominio de projecto, o que e a diferenca entre um link nosso e um
+link que parece phishing.
+
+Copy EN e HI dentro do modulo de email e nao no dicionario, para nao ir para o
+cliente.
+
+### Verificado ponta a ponta (dev server contra a Supabase de producao)
+
+1. Registo -> `verificationSent: true`
+2. Resend: assunto "Confirm your email address", `last_event: delivered`
+3. Link seguido -> 307 para `/en/signup?resume=profile`, cookie de sessao posto
+4. `candidates.email_verified_at` carimbado
+
+Contas de teste (`abilio.diz+verify...`, `abilio.diz+link...`) apagadas depois,
+linhas de candidates e auth users.
+
+### A tratar
+
+**Click tracking da Resend esta ligado** em `mail.smithandadams.com`. Reescreve
+os links, e um token de uso unico morre se um scanner de email o pre-carregar.
+Baixo risco no Gmail, real em caixas corporativas. O certo e um subdominio
+separado para transaccional (ex. `auth.smithandadams.com`) com tracking
+desligado; desligar no dominio actual tira as metricas das campanhas de leads.
+Decisao do Abilio.
+
+---
+
 ## Bloco 34 - 06 Oct 2026, 16:55, abilio.diz@smithandadams.com
 
 **Filme institucional no hero**, entre o `heroSub` e o `PositionSelector`.

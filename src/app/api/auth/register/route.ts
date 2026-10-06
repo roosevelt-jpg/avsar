@@ -4,6 +4,7 @@ import { COHORT } from '@/lib/data/cohort';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { getServerSupabase } from '@/lib/supabase/server';
 import { identityHash } from '@/lib/hash';
+import { sendVerificationLink } from '@/lib/email/verification';
 
 export const runtime = 'nodejs';
 
@@ -198,21 +199,23 @@ export async function POST(request: Request) {
    * and swallowed. The candidate is already signed in and should carry on to
    * the profile; the address can be proved later, and will be asked for again
    * before the report is released.
+   *
+   * Sent by us, over Resend. It used to be `signInWithOtp`, which hands the
+   * sending to Supabase's own mailer, and that silently delivered nothing.
    */
-  const origin = new URL(request.url).origin;
-  const callback = new URL('/auth/callback', origin);
-  callback.searchParams.set('verify', '1');
-  callback.searchParams.set('locale', locale);
-
-  const { error: linkError } = await supabase.auth.signInWithOtp({
+  const verification = await sendVerificationLink({
     email,
-    options: { shouldCreateUser: false, emailRedirectTo: callback.toString() },
+    name: input.fullName,
+    locale,
+    origin: new URL(request.url).origin,
   });
-  if (linkError) console.error('[register] verification email failed', linkError.message);
+  if (!verification.sent) {
+    console.error('[register] verification email failed', verification.reason);
+  }
 
   return NextResponse.json({
     status: 'created',
     candidateId: candidate.id,
-    verificationSent: !linkError,
+    verificationSent: verification.sent,
   });
 }

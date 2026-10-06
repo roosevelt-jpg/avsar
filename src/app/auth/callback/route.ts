@@ -13,12 +13,16 @@ export const runtime = 'nodejs';
  * the visitor on the Site URL configured in the Supabase dashboard, which has
  * nothing to do with where they were going.
  *
- * `exchangeCodeForSession` is required because `@supabase/ssr` uses PKCE: the
- * link carries a code, not a session, and the exchange is what sets the cookies.
+ * Two shapes arrive here. A sign-in code goes through `exchangeCodeForSession`,
+ * because `@supabase/ssr` uses PKCE and the exchange is what sets the cookies.
+ * The verification link carries a `token_hash` instead: it is minted with the
+ * service role and sent by us, so there is no PKCE verifier in the browser to
+ * exchange against, and `verifyOtp` is what turns the hash into a session.
  */
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const code = url.searchParams.get('code');
+  const tokenHash = url.searchParams.get('token_hash');
   const next = url.searchParams.get('next') ?? undefined;
   /* Set by the link sent at registration. Following it is the proof. */
   const verifying = url.searchParams.get('verify') === '1';
@@ -32,6 +36,12 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (error) {
       console.error('[auth/callback] exchange failed', error.message);
+      return NextResponse.redirect(`${url.origin}/${locale}/signin?error=link_expired`);
+    }
+  } else if (tokenHash) {
+    const { error } = await supabase.auth.verifyOtp({ type: 'magiclink', token_hash: tokenHash });
+    if (error) {
+      console.error('[auth/callback] verifyOtp failed', error.message);
       return NextResponse.redirect(`${url.origin}/${locale}/signin?error=link_expired`);
     }
   }
