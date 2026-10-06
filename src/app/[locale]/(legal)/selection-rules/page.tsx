@@ -80,14 +80,6 @@ export default async function SelectionRulesPage({ params }: { params: Promise<{
         interview independently of the cohort placement. A candidate can hide their profile at any
         time from their dashboard.
       </p>
-
-      <h2>Registration and licensing</h2>
-      <p>
-        Registration details for India and Portugal will be listed here. Recruitment for overseas
-        employment from India requires a registered recruiting agent; the platform entity, the
-        registration number and the partner arrangements will be named on this page before the first
-        cohort opens.
-      </p>
     </>
   );
 }
