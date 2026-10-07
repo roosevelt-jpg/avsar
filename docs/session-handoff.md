@@ -4,6 +4,63 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 38 - 07 Oct 2026, 08:50, abilio.diz@smithandadams.com
+
+**O site esta publicado em https://recruitment.smithandadams.com**
+
+### Dominio
+
+Adicionado ao projecto pelo endpoint `POST /v10/projects/{id}/domains`. O
+`vercel domains add` do CLI devolve 403 `domain_not_owned`, porque
+`smithandadams.com` vive noutra conta Vercel (a do site-smith); o endpoint ao
+nivel do projecto aceita e devolve o desafio de verificacao.
+
+DNS na GoDaddy (ns67/ns68.domaincontrol.com), postos pelo Abilio:
+
+- TXT `_vercel.smithandadams.com` = `vc-domain-verify=recruitment.smithandadams.com,7c161edbfeaa289b5f38`
+- CNAME `recruitment` -> `068c414715856280.vercel-dns-017.com`
+
+Verificado, certificado emitido. `/` faz 307 para `/en`, `/en` da 200.
+Redirect URLs do Supabase actualizados pelo Abilio.
+
+### Alinhado com o dominio
+
+- `metadataBase` dizia `avsar-platform-bay.vercel.app`. Era contra esse valor
+  que resolvia cada canonical e cada cartao Open Graph.
+- `alternates: { canonical: './' }`, resolvido por rota, senao todas as paginas
+  diziam ser a home.
+- `app/robots.ts`: **bloqueia tudo**. Abrir e `ALLOW_INDEXING=true` na Vercel,
+  sem redeploy. Razao unica que resta: quem chegar de uma pesquisa acaba o
+  assessment e bate num checkout que nao consegue cobrar ate a EximPe aprovar.
+- `app/sitemap.ts`: landing, pricing e as seis legais, EN e HI. Nada que seja um
+  passo de um percurso em vez de um destino, e nada do `/b`.
+
+### Legais aprovadas
+
+O Abilio confirmou. O `DraftNotice` ja nao era usado por pagina nenhuma desde
+que as selection rules foram publicadas como finais a 6 Out - componente morto,
+apagado. A nota do indice `/dev` ainda dizia "all marked DRAFT, all need
+review"; corrigida.
+
+### Cartao de partilha
+
+`public/brand/og.png`, 1200x630, desenhado com Pillow a partir da geometria do
+proprio simbolo (mesma bezier, mesmos circulos) sobre ink, com headline,
+slogan e dominio. Estatico e nao gerado por pedido: um cartao para o site todo
+e nada que corra mal no momento em que alguem decide se abre o link. Este link
+viaja por WhatsApp mais do que por qualquer outra coisa.
+
+Confirmado em producao: `og:url` por rota, `og:image` absoluto, PNG a dar 200.
+
+### Por fazer
+
+- `og:locale` por idioma. Ha um cartao so, em ingles.
+- Nenhuma pagina legal mostra data de entrada em vigor ao leitor. O
+  `CONSENT_VERSION` guarda o que cada candidato aceitou, mas quem le a pagina
+  nao ve de quando e. Em termos aprovados, convem.
+
+---
+
 ## Bloco 37 - 06 Oct 2026, 17:50, abilio.diz@smithandadams.com
 
 **Lembretes com marca, em dois idiomas, e uma pre-visualizacao que nao envia.**
