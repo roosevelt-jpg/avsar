@@ -44,23 +44,55 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
     <>
       <SiteHeader locale={locale} />
 
-      {/* ---------------------------------------------------------------- hero */}
-      <section className="flex flex-col items-center gap-6 px-[clamp(20px,4cqi,56px)] pt-[clamp(48px,9cqi,120px)] pb-[clamp(40px,6cqi,80px)] text-center">
-        <p className="m-0 inline-flex items-center gap-2 rounded-full border border-line-strong bg-surface px-[14px] py-1.5 font-mono text-[12px] text-ink-2">
+      {/*
+        The hero reads across rather than down.
+
+        It used to be one centred column: badge, headline, paragraph, film,
+        selector. Centred text that long is hard to read, and the film sat below
+        the fold on a laptop, which is the one thing on the page that explains
+        the product in under a minute. The claim and the film now sit side by
+        side, so both are visible at once, and the jobs follow immediately.
+      */}
+      <section className="px-[clamp(20px,4cqi,56px)] pt-[clamp(32px,6cqi,72px)] pb-[clamp(32px,5cqi,64px)]">
+        <p className="m-0 mb-[clamp(24px,4cqi,44px)] inline-flex items-center gap-2 rounded-full border border-line-strong bg-surface px-[14px] py-1.5 font-mono text-[12px] text-ink-2">
           <span aria-hidden className="size-[7px] rounded-full bg-success" />
           {t.eyebrow}
         </p>
 
-        <h1 className="m-0 max-w-[16ch] text-balance text-[clamp(38px,6.6cqi,80px)] font-semibold leading-[1.02] tracking-[-0.035em]">
-          {t.heroTitle}
-        </h1>
+        <div className="grid items-center gap-[clamp(28px,5cqi,64px)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
+          <div>
+            <h1 className="m-0 max-w-[20ch] text-balance text-[clamp(32px,4.4cqi,54px)] font-semibold leading-[1.06] tracking-[-0.035em]">
+              {t.heroTitle}
+            </h1>
 
-        <p className="m-0 max-w-[62ch] text-[clamp(16px,1.8cqi,19px)] leading-[1.55] text-ink-2">{t.heroSub}</p>
+            <p className="mt-5 mb-0 max-w-[52ch] text-[clamp(16px,1.6cqi,18px)] leading-[1.6] text-ink-2">
+              {t.heroSub}
+            </p>
+          </div>
 
-        <IntroVideo t={t} />
+          {/*
+            Second in the markup, so a phone gets the claim before the film.
 
+            Directly a grid child rather than wrapped. A wrapper with
+            `justify-self-end` shrinks to fit its contents, which left the
+            figure's `w-full` resolving against nothing and the film rendering
+            at about a third of its column.
+          */}
+          <IntroVideo t={t} />
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------------ positions */}
+      <section id="sectors" className="px-[clamp(20px,4cqi,56px)] pb-[clamp(48px,7cqi,88px)]">
+        <h2 className="m-0 mb-8 max-w-[24ch] text-[clamp(28px,4cqi,48px)] font-semibold leading-[1.1] tracking-[-0.03em]">
+          {t.sectorsTitle}
+        </h2>
+        <PositionGrid locale={locale} t={t} copy={positionCopy(locale)} />
+      </section>
+
+      {/* ------------------------------------------------------------- apply */}
+      <section className="flex flex-col items-center gap-6 px-[clamp(20px,4cqi,56px)] pb-[clamp(40px,6cqi,80px)] text-center">
         <PositionSelector locale={locale} t={t} />
-
         <p className="m-0 max-w-[70ch] text-[13px] leading-[1.55] text-muted">{fill(t.fine, money)}</p>
       </section>
 
@@ -283,14 +315,6 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
         <p className="mt-7 mb-0 max-w-[68ch] text-[14px] leading-[1.6] text-muted">
           {t.documents.optionalNote}
         </p>
-      </section>
-
-      {/* ------------------------------------------------------------ positions */}
-      <section id="sectors" className="px-[clamp(20px,4cqi,56px)] py-[clamp(56px,8cqi,104px)]">
-        <h2 className="m-0 mb-8 max-w-[24ch] text-[clamp(28px,4cqi,48px)] font-semibold leading-[1.1] tracking-[-0.03em]">
-          {t.sectorsTitle}
-        </h2>
-        <PositionGrid locale={locale} t={t} copy={positionCopy(locale)} />
       </section>
 
       {/* --------------------------------------------------------------- CTA band */}
