@@ -7,7 +7,7 @@
  * shipping something approximate would make the legal pages untrue.
  */
 
-import { score, cefrFromScore, type AnswerMap } from './scoring';
+import { score, cefrFromScore, type AnswerMap, type Weights } from './scoring';
 import { CEFR, type Cefr } from '@/lib/data/candidates';
 import type { SectorSlug } from '@/lib/data/sectors';
 
@@ -29,8 +29,9 @@ export function buildReport(
   answers: AnswerMap,
   sector: SectorSlug,
   position?: string,
+  weights?: Weights,
 ): ReportRow {
-  const result = score(answers, sector, position);
+  const result = score(answers, sector, position, weights);
   const cefr = cefrFromScore(result.sections.english ?? 0);
 
   return {

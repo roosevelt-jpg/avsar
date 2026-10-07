@@ -26,8 +26,41 @@ tests predict job performance at .40 and work samples at .33, with structured
 interviews highest at .42. The structured interview in this product is the
 assessment call, not this test.
 
-It is **not** a calibrated instrument, and nothing in the product should imply
-otherwise.
+## Calibration
+
+Every item used to count the same, which is wrong in a way that matters: a
+question almost everyone answers correctly separates nobody, and a question the
+strongest candidates get wrong is either miskeyed or measuring something other
+than the trade.
+
+`/api/assessment/calibrate` walks every submitted attempt and writes two
+standard statistics per item to `item_stats`:
+
+- **p-value**, the proportion answering correctly.
+- **discrimination**, the point-biserial correlation between getting the item
+  right and scoring well on *the rest of the section*. Against the rest and not
+  the total, because an item correlated with a total that includes itself is
+  correlated with itself, which inflates every figure and the weakest items most.
+
+Above about 0.2 is a working item. **Negative means the stronger candidates are
+getting it wrong**, which in practice almost always means the key is wrong, and
+that is a scoring error affecting everyone who has sat it. `/admin/items` lists
+those first, with the reason, because nothing else surfaces it.
+
+The scorer weights by discrimination once an item has `MIN_RESPONSES` answers,
+clamped to [0.25, 1.25] so calibration adjusts the balance without any one item
+dominating or vanishing. Below the floor every item weighs 1, which is what the
+test did before. A miskeyed item is floored rather than dropped: dropping it
+silently would hide the problem instead of surfacing it.
+
+The thresholds live in `calibration.ts`, not in the database, so changing how a
+score is computed is a code review rather than an UPDATE somebody runs.
+
+## Still not a calibrated instrument
+
+The machinery is in place; the data is not. Until real cohorts have sat these
+items, every weight is 1 and a score remains a rough ordering rather than a
+measurement. Nothing in the product should imply otherwise.
 
 What is missing before a score can carry weight:
 
@@ -44,6 +77,8 @@ What is missing before a score can carry weight:
   what a separate English section is for. Translating the skills items is the
   single largest validity improvement still available.
 - **Proctoring.** The test is unsupervised. Someone can sit it for someone else.
+  Option order is now shuffled per attempt, which stops an answer key travelling
+  as "it is always B", but it does nothing about impersonation.
 
 ## Scoring is scoped to the sector
 

@@ -4,6 +4,68 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 41 - 07 Oct 2026, 10:30, abilio.diz@smithandadams.com
+
+**Assessment "exímio e pro": bug crítico, hindi, baralhar opções, calibração.**
+
+### Primeiro, o bug que eu tinha introduzido no Bloco 40
+
+Escopei o banco por vaga mas **nao escopei a pontuacao**. Um item com
+`positions` falha o teste `positions === undefined || positions.includes(pos)`
+sempre que nao se passa posicao, por isso **todos os itens especificos da vaga
+saiam do pool e nunca eram corrigidos**.
+
+Medido, nao suposto: um chef que errou os 12 itens de chef **tirava 100** em
+competencias, porque so contavam os 4 itens partilhados com o empregado de mesa,
+e o relatorio mostrava 3 eixos em vez de 6. As perguntas eram feitas e deitadas
+fora. Corrigido: a posicao vai da linha do candidato ate ao `score()`.
+
+### Hindi (decisao do Abilio)
+
+Os **138** itens nao-ingleses tem agora lado hindi: competencias, experiencia e
+perfil. A seccao de ingles fica deliberadamente por traduzir - e a unica onde a
+lingua e o construto.
+
+`bank/hi.ts`, indexado por id e nao inline: um falante de hindi revê tudo de uma
+sentada, e os itens ingleses continuam a ser a fonte de verdade. **As opcoes
+mantem a ordem inglesa**, porque `correct` indexa um unico array e serve as duas
+linguas; uma traducao com numero de opcoes diferente e descartada com erro em
+vez de servida. IT mantem os termos tecnicos em ingles (pull request, LEFT JOIN,
+regression testing), que e o registo real.
+
+### Baralhar opcoes
+
+Ordem fixa e como um teste nao supervisionado vaza: a resposta viaja como "e
+sempre a B". A permutacao deriva de (tentativa, item), nao e guardada, sobrevive
+a reload e resume, e e recalculada onde for preciso ler a resposta. O browser
+responde na ordem que viu; a rota recalcula e guarda a numeracao do banco, para
+que um mapeamento vindo do cliente nao possa reescrever o que a pessoa escolheu.
+**Itens ordinais nunca sao baralhados** - a posicao e o significado.
+
+### Calibracao
+
+`0013_item_calibration.sql` **POR CORRER**. Tabela `item_stats`, leitura staff,
+escrita so service role.
+
+- `lib/assessment/calibration.ts`: p-value e discriminacao (ponto-bisserial
+  contra o **resto** da seccao, nao contra o total - correlacionar com um total
+  que inclui o proprio item infla tudo, e infla mais os piores itens)
+- `/api/assessment/calibrate`: staff ou `CRON_SECRET`, so tentativas submetidas
+- `score()` aceita pesos opcionais; abaixo de 30 respostas tudo pesa 1
+- Pesos limitados a [0.25, 1.25]; item com discriminacao negativa e **limitado,
+  nao removido** - remover esconderia uma chave errada
+- `/admin/items`: tabela completa, e no topo os itens a rever com a razao
+
+Simulacao de 120 candidatos: item com chave invertida deu -0.87 e foi sinalizado
+como "answer key is probably wrong"; item que 97,5% acertam deu discriminacao
+0.02 e foi sinalizado; itens normais entre 0.43 e 0.76.
+
+### Migracoes por correr
+
+**0012** (pagar depois do assessment) e **0013** (calibracao).
+
+---
+
 ## Bloco 40 - 07 Oct 2026, 09:40, abilio.diz@smithandadams.com
 
 **Perguntas por vaga e nao por sector.** O Abilio fez o assessment de chef e as

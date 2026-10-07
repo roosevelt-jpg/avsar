@@ -7,7 +7,11 @@
  */
 
 import { ITEM_BANK, SECTION_ORDER, type Item, type SectionId } from './items';
+import { weightFor, type ItemStat } from './calibration';
 import type { SectorSlug } from '@/lib/data/sectors';
+
+/** Item statistics by id. Absent means every item counts the same. */
+export type Weights = Map<string, ItemStat>;
 
 export type AnswerMap = Record<string, number>;
 
@@ -55,7 +59,20 @@ function isScorable(item: Item): boolean {
   return item.correct !== undefined || item.scale === true;
 }
 
-export function score(answers: AnswerMap, sector: SectorSlug, position?: string): ScoreResult {
+export function score(
+  answers: AnswerMap,
+  sector: SectorSlug,
+  position?: string,
+  /**
+   * Calibration, when there is any.
+   *
+   * Optional and inert by default, so the scorer stays a pure function of the
+   * answers and the bank and can be reasoned about without a database. Until
+   * an item clears the response floor it weighs exactly 1, which is what the
+   * whole test did before.
+   */
+  weights?: Weights,
+): ScoreResult {
   const pool = visibleItems(sector, position);
   const byId = new Map<string, Item>(pool.map((item) => [item.id, item]));
 
@@ -65,6 +82,7 @@ export function score(answers: AnswerMap, sector: SectorSlug, position?: string)
       pool.filter((item) => item.section === section && isScorable(item)),
       answers,
       byId,
+      weights,
     );
   }
 
@@ -82,7 +100,7 @@ export function score(answers: AnswerMap, sector: SectorSlug, position?: string)
   const axes = axisLabels
     .map((label) => {
       const items = pool.filter((item) => item.axis === label && isScorable(item));
-      return { label, score: ratio(items, answers, byId), count: items.length };
+      return { label, score: ratio(items, answers, byId, weights), count: items.length };
     })
     .filter((axis) => axis.count > 0)
     .map(({ label, score: value }) => ({ label, score: value }));
@@ -104,29 +122,42 @@ export function score(answers: AnswerMap, sector: SectorSlug, position?: string)
  * An unanswered item scores zero either way, deliberately: skipping is a choice,
  * and counting only what was attempted would reward selective guessing.
  */
-function ratio(items: readonly Item[], answers: AnswerMap, byId: Map<string, Item>): number {
+function ratio(
+  items: readonly Item[],
+  answers: AnswerMap,
+  byId: Map<string, Item>,
+  weights?: Weights,
+): number {
   if (items.length === 0) return 0;
 
-  let total = 0;
-  for (const item of items) {
-    const given = answers[item.id];
-    if (given === undefined) continue;
+  let earned = 0;
+  /* The weights are summed rather than counted, so an item that counts for
+     less also asks for less. Dividing weighted marks by a plain item count
+     would push every score down as soon as calibration arrived. */
+  let available = 0;
 
+  for (const item of items) {
     const definition = byId.get(item.id);
     if (!definition) continue;
 
+    const weight = weightFor(weights?.get(item.id));
+    available += weight;
+
+    const given = answers[item.id];
+    if (given === undefined) continue;
+
     if (definition.correct !== undefined) {
-      if (given === definition.correct) total += 100;
+      if (given === definition.correct) earned += 100 * weight;
       continue;
     }
 
     if (definition.scale) {
       const steps = definition.options.length - 1;
-      if (steps > 0) total += (Math.min(given, steps) / steps) * 100;
+      if (steps > 0) earned += (Math.min(given, steps) / steps) * 100 * weight;
     }
   }
 
-  return Math.round(total / items.length);
+  return available === 0 ? 0 : Math.round(earned / available);
 }
 
 /**

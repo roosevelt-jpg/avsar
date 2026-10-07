@@ -5,7 +5,7 @@ import { getAdminSupabase } from '@/lib/supabase/admin';
 import { getSessionCandidate } from '@/lib/auth';
 import { SECTION_ORDER } from '@/lib/assessment/items';
 import { buildReport } from '@/lib/assessment/report';
-import type { AnswerMap } from '@/lib/assessment/scoring';
+import type { AnswerMap, Weights } from '@/lib/assessment/scoring';
 import { SECTOR_SLUGS, type SectorSlug } from '@/lib/data/sectors';
 
 export const runtime = 'nodejs';
@@ -80,7 +80,34 @@ export async function POST(request: Request) {
     ? (candidate.sector as SectorSlug)
     : SECTOR_SLUGS[0];
 
-  const report = buildReport(answers, sector, candidate.position ?? undefined);
+  /**
+   * Calibration, if there is any yet.
+   *
+   * Read here and handed to the scorer rather than looked up inside it, so the
+   * scorer stays a pure function of the answers and the bank. A failure is
+   * swallowed: every item then weighs 1, which is what the test did before
+   * calibration existed, and that is a far better outcome than refusing to
+   * write a report somebody has paid for.
+   */
+  const weights: Weights = new Map();
+  const { data: stats, error: statsError } = await admin
+    .from('item_stats')
+    .select('item_id, n_responses, p_value, discrimination');
+
+  if (statsError) {
+    console.error('[submit] item stats unavailable, scoring unweighted', statsError.message);
+  }
+
+  for (const row of stats ?? []) {
+    weights.set(row.item_id as string, {
+      itemId: row.item_id as string,
+      n: Number(row.n_responses ?? 0),
+      pValue: Number(row.p_value ?? 0),
+      discrimination: Number(row.discrimination ?? 0),
+    });
+  }
+
+  const report = buildReport(answers, sector, candidate.position ?? undefined, weights);
 
   const { error: reportError } = await admin
     .from('reports')
