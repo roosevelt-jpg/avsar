@@ -74,6 +74,36 @@ export const metadata: Metadata = {
     apple: [{ url: '/brand/app-icon-180.png', sizes: '180x180' }],
   },
   manifest: '/manifest.webmanifest',
+
+  /* Resolved against `metadataBase`, so every route gets its own canonical
+     rather than all of them claiming to be the home page. */
+  alternates: { canonical: './' },
+
+  /**
+   * The card a shared link shows.
+   *
+   * This link travels by WhatsApp more than by anything else, to candidates
+   * and to the people reviewing the business, and a link with no card reads as
+   * broken or as something somebody pasted by accident. The image is a static
+   * PNG rather than generated per request: one card for the whole site, and no
+   * render to go wrong at the moment somebody is deciding whether to open it.
+   */
+  openGraph: {
+    type: 'website',
+    siteName: 'S&A Recruitment',
+    title: 'Work in Portugal. We handle everything after you are selected.',
+    description:
+      'A professional assessment of your skills, experience and English. Selected candidates receive a contract with a Portuguese employer, accommodation, meals and legal support through the whole visa process.',
+    url: './',
+    images: [{ url: '/brand/og.png', width: 1200, height: 630, alt: 'S&A Recruitment' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Work in Portugal. We handle everything after you are selected.',
+    description:
+      'A professional assessment of your skills, experience and English, and a contract, accommodation, meals and legal support for candidates who are selected.',
+    images: ['/brand/og.png'],
+  },
 };
 
 export const viewport: Viewport = {
