@@ -217,12 +217,6 @@ export const CLEANING_ITEMS: Item[] = [
 
 export const DRIVER_ITEMS: Item[] = [
   {
-    id: 'driv-01', section: 'skills', sector: 'drivers', axis: 'Licence and record',
-    label: 'SKILLS · LICENCE',
-    prompt: 'Which licence categories do you hold?',
-    options: ['Two-wheeler only', 'Light motor vehicle (car)', 'Light and transport vehicle', 'Heavy vehicle'],
-  },
-  {
     id: 'driv-02', section: 'skills', sector: 'drivers', axis: 'Health and safety',
     label: 'SKILLS · SAFETY',
     prompt: 'A warning light comes on mid-journey with passengers aboard. What do you do?',
@@ -237,7 +231,7 @@ export const DRIVER_ITEMS: Item[] = [
     correct: 2,
   },
   {
-    id: 'driv-04', section: 'skills', sector: 'drivers', axis: 'Route and conditions',
+    id: 'driv-04', section: 'skills', sector: 'drivers', positions: ['driver'], axis: 'Route and conditions',
     label: 'SKILLS · CONDITIONS',
     prompt: 'Which of these have you driven in regularly?',
     options: ['City traffic only', 'City and highway', 'Including night driving', 'Including long distance with overnight stops'],
@@ -257,14 +251,7 @@ export const DRIVER_ITEMS: Item[] = [
     correct: 1,
   },
   {
-    id: 'driv-07', section: 'skills', sector: 'drivers', axis: 'Route and conditions',
-    label: 'SKILLS · NAVIGATION',
-    prompt: 'Your navigation device sends you down a road with a height restriction your vehicle cannot pass. What do you do?',
-    options: ['Try it slowly', 'Find another route yourself', 'Reverse down the road', 'Follow the device, it is usually right'],
-    correct: 1,
-  },
-  {
-    id: 'driv-08', section: 'skills', sector: 'drivers', axis: 'Guest service',
+    id: 'driv-08', section: 'skills', sector: 'drivers', positions: ['driver'], axis: 'Guest service',
     label: 'SKILLS · PASSENGERS',
     prompt: 'A passenger asks you to exceed the speed limit because they are late. What do you say?',
     options: ['Agree, they are the customer', 'Explain you cannot, and offer the fastest legal route', 'Speed up a little only', 'Say nothing and drive faster'],
@@ -280,20 +267,6 @@ export const MAINTENANCE_ITEMS: Item[] = [
     options: ['Electrical', 'Plumbing', 'HVAC or refrigeration', 'General repairs and carpentry'],
   },
   {
-    id: 'main-02', section: 'skills', sector: 'maintenance', axis: 'Safety certification',
-    label: 'SKILLS · ISOLATION',
-    prompt: 'Before working on an electrical circuit you must:',
-    options: ['Turn off the switch on the device', 'Isolate at the board, lock off, and test that it is dead', 'Wear gloves', 'Work quickly'],
-    correct: 1,
-  },
-  {
-    id: 'main-03', section: 'skills', sector: 'maintenance', axis: 'Trade depth',
-    label: 'SKILLS · PLUMBING',
-    prompt: 'A tap drips steadily from the spout. The most likely cause is:',
-    options: ['Low water pressure', 'A worn washer or cartridge', 'A blocked drain', 'A loose tap handle'],
-    correct: 1,
-  },
-  {
     id: 'main-04', section: 'skills', sector: 'maintenance', axis: 'Health and safety',
     label: 'SKILLS · HEIGHT',
     prompt: 'You need to reach a ceiling fitting at 3 metres. What is correct?',
@@ -306,12 +279,6 @@ export const MAINTENANCE_ITEMS: Item[] = [
     prompt: 'An air conditioning unit runs but does not cool. What do you check first?',
     options: ['Replace the whole unit', 'Filters and airflow, then refrigerant pressure', 'The remote control battery', 'The building fuse box'],
     correct: 1,
-  },
-  {
-    id: 'main-06', section: 'skills', sector: 'maintenance', axis: 'Safety certification',
-    label: 'SKILLS · CERTIFICATION',
-    prompt: 'Do you hold a formal trade certificate or apprenticeship?',
-    options: ['No formal training', 'On-the-job training only', 'Trade certificate', 'Completed apprenticeship'],
   },
   {
     id: 'main-07', section: 'skills', sector: 'maintenance', axis: 'Health and safety',
@@ -331,37 +298,10 @@ export const MAINTENANCE_ITEMS: Item[] = [
 
 export const CONSTRUCTION_ITEMS: Item[] = [
   {
-    id: 'cons-01', section: 'skills', sector: 'construction', axis: 'Trade depth',
-    label: 'SKILLS · TRADE',
-    prompt: 'Which is closest to your main trade?',
-    options: ['Masonry or blockwork', 'Carpentry or formwork', 'Steel fixing', 'Finishing: plaster, tiling, painting'],
-  },
-  {
     id: 'cons-02', section: 'skills', sector: 'construction', axis: 'Site safety',
     label: 'SKILLS · PPE',
     prompt: 'Which equipment is required on almost every European site?',
     options: ['Hard hat only', 'Hard hat, safety boots and high-visibility clothing', 'Gloves only', 'Whatever the worker prefers'],
-    correct: 1,
-  },
-  {
-    id: 'cons-03', section: 'skills', sector: 'construction', axis: 'Site safety',
-    label: 'SKILLS · SCAFFOLD',
-    prompt: 'You notice a missing guard rail on a scaffold you are about to use. What do you do?',
-    options: ['Use it carefully', 'Do not use it and report it', 'Fix it yourself without training', 'Use it only for light work'],
-    correct: 1,
-  },
-  {
-    id: 'cons-04', section: 'skills', sector: 'construction', axis: 'Trade depth',
-    label: 'SKILLS · MATERIALS',
-    prompt: 'Concrete that is mixed too wet will typically:',
-    options: ['Set faster', 'Be weaker when cured', 'Be stronger', 'Change colour only'],
-    correct: 1,
-  },
-  {
-    id: 'cons-05', section: 'skills', sector: 'construction', axis: 'Trade depth',
-    label: 'SKILLS · MEASUREMENT',
-    prompt: 'A drawing is marked 1:50. A wall measuring 6 cm on the drawing is how long in reality?',
-    options: ['50 cm', '3 metres', '6 metres', '30 metres'],
     correct: 1,
   },
   {
@@ -376,12 +316,5 @@ export const CONSTRUCTION_ITEMS: Item[] = [
     label: 'SKILLS · INDUCTION',
     prompt: 'Have you completed a formal site safety induction or card scheme?',
     options: ['No', 'Site induction only', 'A recognised safety card', 'Card plus supervisor training'],
-  },
-  {
-    id: 'cons-08', section: 'skills', sector: 'construction', axis: 'Trade depth',
-    label: 'SKILLS · QUALITY',
-    prompt: 'You realise work you completed yesterday is out of level. What do you do?',
-    options: ['Leave it, the finish will hide it', 'Tell the supervisor and correct it', 'Correct it quietly without telling anyone', 'Blame the materials'],
-    correct: 1,
   },
 ];

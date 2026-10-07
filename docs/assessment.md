@@ -5,9 +5,29 @@
 Four sections: sector skills, work experience, English, and a profile section
 that is recorded but not scored.
 
-The bank holds 75 items across six sectors. That is enough to order candidates
-roughly and to give a report that says something. It is **not** a calibrated
-instrument, and nothing in the product should imply otherwise.
+The bank is scoped to the **position**, not only to the sector. That matters
+because the sector buckets put unrelated jobs together: chef and food and
+beverage service both sat in "hospitality", electrician and plumber both in
+"maintenance", welder and construction worker both in "construction", driver
+and logistics both in "drivers". Eight of the twelve positions shared a bank
+with a different job, and hospitality was the worst of them: its twelve items
+were hotel housekeeping, so a candidate applying to cook was asked the order to
+service an occupied guest room.
+
+Each position now draws its own set through the `positions` field on an item,
+plus whatever its sector genuinely shares. Every position sees between eight
+and sixteen items across three to eight report axes.
+
+Most items are job knowledge rather than work samples or personality. That is
+deliberate and it is what an unsupervised online test can do: on the revised
+meta-analytic estimates in Sackett, Zhang, Berry and Lievens (2022), which
+corrected a long-standing overcorrection for range restriction, job-knowledge
+tests predict job performance at .40 and work samples at .33, with structured
+interviews highest at .42. The structured interview in this product is the
+assessment call, not this test.
+
+It is **not** a calibrated instrument, and nothing in the product should imply
+otherwise.
 
 What is missing before a score can carry weight:
 
@@ -15,16 +35,21 @@ What is missing before a score can carry weight:
   real responses. Until then, every item counts the same, which is wrong: a
   question nearly everyone gets right carries no information.
 - **Review by people who do the work.** The items are split into one file per
-  sector precisely so a hospitality supervisor can read the hospitality file and
-  say whether the questions are fair. Nobody can usefully review one list of a
-  hundred.
+  trade precisely so a head chef can read the kitchen set and say whether the
+  questions are fair. Nobody can usefully review one list of a hundred. None of
+  these sets has had that review yet.
+- **One language.** Every item is written in English, including the trade
+  questions. A skilled cook with weak English scores badly on the skills section
+  for a reason that has nothing to do with cooking, which is the opposite of
+  what a separate English section is for. Translating the skills items is the
+  single largest validity improvement still available.
 - **Proctoring.** The test is unsupervised. Someone can sit it for someone else.
 
 ## Scoring is scoped to the sector
 
 `score(answers, sector)` only considers items the candidate could have been
-shown. This matters now the bank spans six trades: without it, a housekeeper is
-marked against scaffolding questions they were never asked and every score
+shown. This matters now the bank spans twelve positions: without it, a cleaner
+is marked against scaffolding questions they were never asked and every score
 collapses.
 
 An unanswered scorable item counts as wrong. Skipping is a choice, and scoring

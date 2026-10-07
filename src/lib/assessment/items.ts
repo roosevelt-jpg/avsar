@@ -59,6 +59,13 @@ import { EXPERIENCE_ITEMS, ENGLISH_ITEMS, PROFILE_ITEMS } from './bank/shared';
 import { IT_ITEMS } from './bank/it';
 import { CHEF_ITEMS, FB_SERVICE_ITEMS } from './bank/food-beverage';
 import {
+  ELECTRICIAN_ITEMS,
+  PLUMBER_ITEMS,
+  WELDER_ITEMS,
+  CONSTRUCTION_WORKER_ITEMS,
+} from './bank/trades';
+import { DRIVER_ROLE_ITEMS, LOGISTICS_ITEMS } from './bank/logistics';
+import {
   HOSPITALITY_ITEMS,
   PROPERTY_ITEMS,
   CLEANING_ITEMS,
@@ -78,6 +85,12 @@ export const ITEM_BANK: readonly Item[] = [
   ...HOSPITALITY_ITEMS,
   ...CHEF_ITEMS,
   ...FB_SERVICE_ITEMS,
+  ...ELECTRICIAN_ITEMS,
+  ...PLUMBER_ITEMS,
+  ...WELDER_ITEMS,
+  ...CONSTRUCTION_WORKER_ITEMS,
+  ...DRIVER_ROLE_ITEMS,
+  ...LOGISTICS_ITEMS,
   ...PROPERTY_ITEMS,
   ...CLEANING_ITEMS,
   ...DRIVER_ITEMS,

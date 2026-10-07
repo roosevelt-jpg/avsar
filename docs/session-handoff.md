@@ -4,6 +4,64 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 40 - 07 Oct 2026, 09:40, abilio.diz@smithandadams.com
+
+**Perguntas por vaga e nao por sector.** O Abilio fez o assessment de chef e as
+perguntas eram genericas. Eram pior do que genericas: eram de limpeza de
+quartos de hotel.
+
+### O que estava mal
+
+Os `itemSector` juntavam trabalhos diferentes. Oito das doze vagas partilhavam
+banco com outra profissao:
+
+- chef + fb-service -> `hospitality`
+- electrician + plumber -> `maintenance`
+- welder + construction-worker -> `construction`
+- driver + logistics -> `drivers`
+
+E o banco de hospitality nao tinha sequer conteudo de restauracao: dos 12 itens,
+8 eram governanta de hotel (ordem de arrumar um quarto ocupado, lencol manchado,
+o que verificar da porta ao sair). Nao ha posicao de governanta em hospitality -
+o `cleaner` esta em `cleaning`. O conteudo estava simplesmente no sitio errado.
+
+### O que se fez
+
+O modelo de item ja tinha o campo `positions`; so o IT o usava. Agora:
+
+- `bank/food-beverage.ts`: CHEF (12) e FB_SERVICE (10)
+- `bank/trades.ts`: ELECTRICIAN, PLUMBER, WELDER, CONSTRUCTION_WORKER (8 cada)
+- `bank/logistics.ts`: DRIVER (7) e LOGISTICS (8)
+- Os 6 itens de governanta foram para o banco de `cleaning`; 2 sairam (um
+  duplicava um item de cleaning, o outro era telefone de recepcao)
+- 10 itens de sector removidos por serem duplicados mais fracos dos novos
+
+Cobertura: todas as 12 vagas com 8 a 16 itens e 3 a 8 eixos de relatorio.
+
+### Porque e sobretudo conhecimento tecnico
+
+Sackett, Zhang, Berry & Lievens (2022) corrigiu uma sobrecorreccao antiga de
+restricao de amplitude nas meta-analises de selecao. Nas estimativas revistas,
+testes de conhecimento tecnico preveem desempenho a .40 e work samples a .33; so
+a entrevista estruturada fica acima, a .42 - e essa, neste produto, e a chamada
+de avaliacao, nao este teste. Temperaturas e regras de alergenios seguem pratica
+UE, porque o emprego e em Portugal; onde o numero varia entre paises, o item
+pergunta o principio.
+
+### Fica por fazer
+
+- **Tudo esta em ingles, itens tecnicos incluidos.** Um bom cozinheiro com
+  ingles fraco pontua mal na seccao de competencias por uma razao que nada tem a
+  ver com cozinhar, que e o contrario do que uma seccao de ingles separada
+  serve. Traduzir os itens de competencias e a maior melhoria de validade que
+  resta.
+- `property-manager` (8 itens, 3 eixos) e as duas vagas de IT (2 eixos) sao
+  agora as mais magras. Um relatorio com 2 eixos e pouco para o que se cobra.
+- Nenhum destes conjuntos foi revisto por quem faz o trabalho. Continuam nao
+  calibrados.
+
+---
+
 ## Bloco 39 - 07 Oct 2026, 09:10, abilio.diz@smithandadams.com
 
 **Taxa de colocacao retirada do site, por instrucao do Abilio.**
