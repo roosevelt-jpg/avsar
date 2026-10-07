@@ -57,6 +57,7 @@ export type Item = {
 
 import { EXPERIENCE_ITEMS, ENGLISH_ITEMS, PROFILE_ITEMS } from './bank/shared';
 import { IT_ITEMS } from './bank/it';
+import { CHEF_ITEMS, FB_SERVICE_ITEMS } from './bank/food-beverage';
 import {
   HOSPITALITY_ITEMS,
   PROPERTY_ITEMS,
@@ -75,6 +76,8 @@ import {
  */
 export const ITEM_BANK: readonly Item[] = [
   ...HOSPITALITY_ITEMS,
+  ...CHEF_ITEMS,
+  ...FB_SERVICE_ITEMS,
   ...PROPERTY_ITEMS,
   ...CLEANING_ITEMS,
   ...DRIVER_ITEMS,

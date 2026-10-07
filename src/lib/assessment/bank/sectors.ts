@@ -13,88 +13,52 @@ import type { Item } from '../items';
  */
 
 export const HOSPITALITY_ITEMS: Item[] = [
+  /*
+    What is left of the old shared bank: the items both a cook and a waiter
+    need. The six housekeeping items that used to sit here moved to the
+    cleaning bank, where there is a position that actually does that work, and
+    two went entirely. The role-specific sets live in `food-beverage.ts`.
+  */
   {
-    id: 'hosp-01', section: 'skills', sector: 'hospitality', axis: 'Guest service',
-    label: 'SKILLS · GUEST SERVICE',
-    prompt: 'A guest complains their room was not cleaned. What do you do first?',
-    options: ['Explain the housekeeper was busy', 'Apologise, then have it cleaned immediately', 'Ask them to come back later', 'Tell them to call the manager'],
-    correct: 1,
-  },
-  {
-    id: 'hosp-02', section: 'skills', sector: 'hospitality', axis: 'Housekeeping standards',
-    label: 'SKILLS · HOUSEKEEPING',
-    prompt: 'Which order is correct when servicing an occupied guest room?',
-    options: ['Bathroom, dusting, beds, floors', 'Beds, dusting, bathroom, floors', 'Floors, beds, bathroom, dusting', 'Dusting, floors, beds, bathroom'],
-    correct: 1,
-  },
-  {
-    id: 'hosp-03', section: 'skills', sector: 'hospitality', axis: 'Housekeeping standards',
-    label: 'SKILLS · HOUSEKEEPING',
-    prompt: 'You find a guest’s passport while cleaning. What do you do?',
-    options: ['Leave it where it is', 'Put it in a drawer out of sight', 'Report it to your supervisor and log it', 'Take it to reception yourself without telling anyone'],
-    correct: 2,
-  },
-  {
-    id: 'hosp-04', section: 'skills', sector: 'hospitality', axis: 'Guest service',
-    label: 'SKILLS · GUEST SERVICE',
-    prompt: 'A guest asks for something you are not allowed to give. What is best?',
-    options: ['Say no and walk away', 'Explain what you can offer instead', 'Say yes and hope nobody notices', 'Pretend not to understand'],
-    correct: 1,
-  },
-  {
-    id: 'hosp-05', section: 'skills', sector: 'hospitality', axis: 'Health and safety',
+    id: 'hosp-05', section: 'skills', sector: 'hospitality', axis: 'Food safety',
     label: 'SKILLS · FOOD SAFETY',
     prompt: 'Cooked food is left out at room temperature. After how long should it not be served?',
     options: ['30 minutes', '2 hours', '6 hours', 'It is fine all day if it looks good'],
     correct: 1,
   },
   {
-    id: 'hosp-06', section: 'skills', sector: 'hospitality', axis: 'Health and safety',
+    id: 'hosp-06', section: 'skills', sector: 'hospitality', axis: 'Food safety',
     label: 'SKILLS · FOOD SAFETY',
     prompt: 'Raw meat should be stored where in a fridge?',
     options: ['Top shelf', 'Middle shelf', 'Bottom shelf', 'Anywhere, if it is wrapped'],
     correct: 2,
   },
   {
-    id: 'hosp-07', section: 'skills', sector: 'hospitality', axis: 'Housekeeping standards',
-    label: 'SKILLS · LINEN',
-    prompt: 'A sheet has a small stain after washing. What do you do?',
-    options: ['Put it on the bed, the stain is small', 'Fold it so the stain does not show', 'Take it out of service and report it', 'Use it as a spare'],
-    correct: 2,
-  },
-  {
-    id: 'hosp-08', section: 'skills', sector: 'hospitality', axis: 'Guest service',
-    label: 'SKILLS · COMPLAINTS',
-    prompt: 'A guest is shouting at you about a problem you did not cause. What is best?',
-    options: ['Explain it was not your fault', 'Listen, apologise for the situation, and get help', 'Walk away until they calm down', 'Shout back so they take you seriously'],
-    correct: 1,
-  },
-  {
-    id: 'hosp-09', section: 'skills', sector: 'hospitality', axis: 'Health and safety',
+    id: 'hosp-09', section: 'skills', sector: 'hospitality', axis: 'Allergens',
     label: 'SKILLS · ALLERGENS',
     prompt: 'A guest says they are allergic to nuts. What must you do?',
     options: ['Tell them most dishes are fine', 'Check with the kitchen before serving anything', 'Remove visible nuts from the dish', 'Suggest they order something simple'],
     correct: 1,
   },
   {
-    id: 'hosp-10', section: 'skills', sector: 'hospitality', axis: 'Housekeeping standards',
-    label: 'SKILLS · ROOM CHECK',
-    prompt: 'What should you check last before leaving a serviced room?',
-    options: ['That the bed is made', 'That the bathroom is dry', 'A final look from the doorway', 'That the curtains are open'],
-    correct: 2,
-  },
-  {
-    id: 'hosp-11', section: 'skills', sector: 'hospitality', axis: 'Guest service',
-    label: 'SKILLS · PRIVACY',
-    prompt: 'Someone phones asking whether a named guest is staying at the hotel. What do you say?',
-    options: ['Confirm if they sound like family', 'Say you cannot give out guest information', 'Put them through to the room', 'Ask the guest first, then call back'],
+    id: 'hosp-12', section: 'skills', sector: 'hospitality', axis: 'Health and safety',
+    label: 'SKILLS · FIRE',
+    prompt: 'The fire alarm sounds during service. What do you do?',
+    options: ['Finish what you are doing first', 'Leave by the nearest exit and report to the assembly point', 'Look for the fire', 'Wait for a supervisor to tell you'],
     correct: 1,
   },
   {
-    id: 'hosp-12', section: 'skills', sector: 'hospitality', axis: 'Health and safety',
-    label: 'SKILLS · FIRE',
-    prompt: 'The fire alarm sounds while you are cleaning a room. What do you do?',
-    options: ['Finish the room first', 'Leave by the nearest exit and report to the assembly point', 'Look for the fire', 'Wait for a supervisor to tell you'],
+    id: 'hosp-04', section: 'skills', sector: 'hospitality', positions: ['fb-service'],
+    axis: 'Guest service', label: 'SKILLS · GUEST SERVICE',
+    prompt: 'A guest asks for something you are not allowed to give. What is best?',
+    options: ['Say no and walk away', 'Explain what you can offer instead', 'Say yes and hope nobody notices', 'Pretend not to understand'],
+    correct: 1,
+  },
+  {
+    id: 'hosp-08', section: 'skills', sector: 'hospitality', positions: ['fb-service'],
+    axis: 'Guest service', label: 'SKILLS · COMPLAINTS',
+    prompt: 'A guest is shouting at you about a problem you did not cause. What is best?',
+    options: ['Explain it was not your fault', 'Listen, apologise for the situation, and get help', 'Walk away until they calm down', 'Shout back so they take you seriously'],
     correct: 1,
   },
 ];
@@ -214,6 +178,40 @@ export const CLEANING_ITEMS: Item[] = [
     prompt: 'You break something while cleaning and nobody saw. What do you do?',
     options: ['Hide the pieces', 'Report it yourself', 'Wait to see if anyone notices', 'Replace it at your own cost quietly'],
     correct: 1,
+  },
+  /*
+    Rehomed from the hospitality bank. These are housekeeping questions, and
+    the cleaner is the position that does housekeeping; chef and food and
+    beverage service were the only roles drawing on hospitality, so here is
+    where they were always meant to be.
+  */
+  {
+    id: 'clean-09', section: 'skills', sector: 'cleaning', axis: 'Guest service',
+    label: 'SKILLS · GUEST SERVICE',
+    prompt: 'A guest complains their room was not cleaned. What do you do first?',
+    options: ['Explain the housekeeper was busy', 'Apologise, then have it cleaned immediately', 'Ask them to come back later', 'Tell them to call the manager'],
+    correct: 1,
+  },
+  {
+    id: 'clean-10', section: 'skills', sector: 'cleaning', axis: 'Trust and discretion',
+    label: 'SKILLS · VALUABLES',
+    prompt: 'You find a guest\u2019s passport while cleaning. What do you do?',
+    options: ['Leave it where it is', 'Put it in a drawer out of sight', 'Report it to your supervisor and log it', 'Take it to reception yourself without telling anyone'],
+    correct: 2,
+  },
+  {
+    id: 'clean-11', section: 'skills', sector: 'cleaning', axis: 'Standards',
+    label: 'SKILLS · LINEN',
+    prompt: 'A sheet has a small stain after washing. What do you do?',
+    options: ['Put it on the bed, the stain is small', 'Fold it so the stain does not show', 'Take it out of service and report it', 'Use it as a spare'],
+    correct: 2,
+  },
+  {
+    id: 'clean-12', section: 'skills', sector: 'cleaning', axis: 'Standards',
+    label: 'SKILLS · ROOM CHECK',
+    prompt: 'What should you check last before leaving a serviced room?',
+    options: ['That the bed is made', 'That the bathroom is dry', 'A final look from the doorway', 'That the curtains are open'],
+    correct: 2,
   },
 ];
 
