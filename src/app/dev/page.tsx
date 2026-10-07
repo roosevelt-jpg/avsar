@@ -48,7 +48,7 @@ const GROUPS: { title: string; note: string; rows: [string, string, string][] }[
   },
   {
     title: 'Legal',
-    note: 'Every odds disclosure links here. All marked DRAFT, all need review.',
+    note: 'Every odds disclosure links here. Reviewed and approved, 6 October 2026.',
     rows: [
       ['/en/selection-rules', 'Selection rules', 'the odds, in plain words'],
       ['/en/refund-policy', 'Refund policy', ''],

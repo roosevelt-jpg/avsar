@@ -5,9 +5,11 @@ import type { MetadataRoute } from 'next';
  *
  * Reaching the site at its own address and being listed in Google are two
  * different decisions, and only the first one has been taken. The legal pages
- * are still marked DRAFT and the payment rail is waiting on EximPe's approval,
- * and a crawler that arrives now indexes and caches both. Getting a page out
- * of an index is slower and less reliable than keeping it out.
+ * were approved on 6 October 2026, so what is left is the payment rail: a
+ * candidate arriving from a search result today finishes the assessment and
+ * meets a checkout that cannot charge, because EximPe has not approved the
+ * account yet. Getting a page out of an index is slower and less reliable
+ * than keeping it out, so it stays out until that leg works.
  *
  * Opening it is one environment variable and no deploy: set `ALLOW_INDEXING`
  * to `true` in Vercel.
