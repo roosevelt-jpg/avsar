@@ -67,10 +67,33 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
           group is worth more to somebody deciding whether to trust an unknown
           recruitment site than it is to somebody already convinced, so it is
           read before the claim rather than after it.
+
+          The mark is the ink version. The one in the footer is white artwork
+          over transparency, drawn for a dark band, and it would be invisible
+          here; this is the same alpha channel with the colour swapped, so the
+          letterforms are identical rather than resampled.
+
+          It opens in a new tab deliberately. Somebody halfway through deciding
+          whether to apply should be able to go and look at the group without
+          losing this page.
         */}
-        <p className="m-0 mt-5 mb-[clamp(24px,4cqi,44px)] text-[15px] leading-[1.5] text-muted">
-          {BRAND.tagline}
-        </p>
+        <div className="mt-6 mb-[clamp(24px,4cqi,44px)]">
+          <a
+            href="https://www.smithandadams.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="t-colors inline-block opacity-80 hover:opacity-100"
+          >
+            <Image
+              src="/smith-adams-group-ink-640.png"
+              alt={`${BRAND.parent} Group`}
+              width={640}
+              height={136}
+              className="h-auto w-[164px]"
+            />
+          </a>
+          <p className="m-0 mt-3 text-[15px] leading-[1.5] text-muted">{BRAND.tagline}</p>
+        </div>
 
         <div className="grid items-center gap-[clamp(28px,5cqi,64px)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
           <div>
