@@ -63,7 +63,10 @@ export const metadata: Metadata = {
   },
   description:
     'A recruitment agency under the Smith & Adams brand, hiring in India for jobs in Portugal. Assessment, contract, accommodation, meals and legal support through the whole visa process.',
-  metadataBase: new URL('https://avsar-platform-bay.vercel.app'),
+  /* The canonical home. Every relative URL in metadata, including the Open
+     Graph image and the canonical tag, is resolved against it, so a stale
+     value here puts the preview URL on every card the brand shares. */
+  metadataBase: new URL(process.env.SITE_ORIGIN ?? 'https://recruitment.smithandadams.com'),
   icons: {
     /* The favicon is a simplified mark with no dotted route, because the route
        turns to mud at 16px. The full mark is used everywhere it has room. */
