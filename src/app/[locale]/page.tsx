@@ -54,9 +54,22 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
         side, so both are visible at once, and the jobs follow immediately.
       */}
       <section className="px-[clamp(20px,4cqi,56px)] pt-[clamp(32px,6cqi,72px)] pb-[clamp(32px,5cqi,64px)]">
-        <p className="m-0 mb-[clamp(24px,4cqi,44px)] inline-flex items-center gap-2 rounded-full border border-line-strong bg-surface px-[14px] py-1.5 font-mono text-[12px] text-ink-2">
+        <p className="m-0 inline-flex items-center gap-2 rounded-full border border-line-strong bg-surface px-[14px] py-1.5 font-mono text-[12px] text-ink-2">
           <span aria-hidden className="size-[7px] rounded-full bg-success" />
           {t.eyebrow}
+        </p>
+
+        {/*
+          Who is behind this, said once and early.
+
+          It used to appear only in the orange band, which a candidate reached
+          after the steps, the fee and the funnel. The name of an established
+          group is worth more to somebody deciding whether to trust an unknown
+          recruitment site than it is to somebody already convinced, so it is
+          read before the claim rather than after it.
+        */}
+        <p className="m-0 mt-5 mb-[clamp(24px,4cqi,44px)] text-[15px] leading-[1.5] text-muted">
+          {BRAND.tagline}
         </p>
 
         <div className="grid items-center gap-[clamp(28px,5cqi,64px)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
@@ -79,6 +92,29 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
             at about a third of its column.
           */}
           <IntroVideo t={t} />
+        </div>
+      </section>
+
+      {/*
+        The call to action, straight after the film.
+
+        It used to close the page. Somebody who has just watched a minute of
+        film is as ready to apply as they will ever be, and making them scroll
+        past five sections to find the button spent that.
+
+        The tagline that used to sit here has moved to the top of the page.
+      */}
+      <section className="px-[clamp(20px,4cqi,56px)] pb-[clamp(44px,6cqi,80px)]">
+        <div className="flex flex-wrap items-center justify-between gap-6 rounded-[28px] bg-accent px-[clamp(24px,4cqi,56px)] py-[clamp(28px,4cqi,48px)]">
+          <h2 className="m-0 max-w-[24ch] text-[clamp(24px,3.2cqi,40px)] font-semibold leading-[1.15] tracking-[-0.03em] text-white">
+            {t.ctaTitle}
+          </h2>
+          <Link
+            href={`/${locale}/signup`}
+            className="t-colors shrink-0 rounded-[12px] bg-white px-5 py-3 text-[15px] font-medium text-ink no-underline hover:bg-paper"
+          >
+            {t.cta} →
+          </Link>
         </div>
       </section>
 
@@ -315,24 +351,6 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
         <p className="mt-7 mb-0 max-w-[68ch] text-[14px] leading-[1.6] text-muted">
           {t.documents.optionalNote}
         </p>
-      </section>
-
-      {/* --------------------------------------------------------------- CTA band */}
-      <section className="px-[clamp(20px,4cqi,56px)] pb-[clamp(56px,8cqi,104px)]">
-        <div className="flex flex-wrap items-center justify-between gap-6 rounded-[28px] bg-accent px-[clamp(24px,4cqi,56px)] py-[clamp(32px,5cqi,56px)]">
-          <div>
-            <h2 className="m-0 max-w-[24ch] text-[clamp(24px,3.2cqi,40px)] font-semibold leading-[1.15] tracking-[-0.03em] text-white">
-              {t.ctaTitle}
-            </h2>
-            <p className="m-0 mt-3 text-[15px] text-white/85">{BRAND.tagline}</p>
-          </div>
-          <Link
-            href={`/${locale}/signup`}
-            className="t-colors shrink-0 rounded-[12px] bg-white px-5 py-3 text-[15px] font-medium text-ink no-underline hover:bg-paper"
-          >
-            {t.cta} →
-          </Link>
-        </div>
       </section>
 
       <SiteFooter locale={locale} />

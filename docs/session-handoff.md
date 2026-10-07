@@ -4,6 +4,47 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 42 - 07 Oct 2026, 11:20, abilio.diz@smithandadams.com
+
+**Topo da landing reorganizado, em dois passos.**
+
+Ordem agora:
+
+1. selo `India -> Portugal · Applications open`
+2. **tagline** `A recruitment agency under the Smith & Adams brand`, linha propria
+   a toda a largura
+3. titulo + paragrafo a esquerda, **video a direita**
+4. faixa laranja `Applications are open.` + botao
+5. `Positions we are hiring for`
+
+Antes era uma coluna unica centrada (selo, titulo, paragrafo, video, selector) e
+a grelha de vagas so aparecia depois dos passos, do preco, do funil e dos
+documentos. A faixa laranja fechava a pagina.
+
+Razoes: texto centrado longo le-se mal; o video ficava abaixo da dobra num
+portatil, e e a unica coisa que explica o produto em menos de um minuto; quem
+acaba de ver o filme esta tao pronto a candidatar-se como alguma vez estara, e
+obriga-lo a descer cinco seccoes para achar o botao desperdica isso.
+
+- O video e **segundo no markup**, por isso no telemovel a promessa vem primeiro
+- A tagline saiu da faixa laranja (senao aparecia duas vezes a 300px)
+- O selector de vaga e as letras pequenas desceram para baixo da grelha: ficavam
+  dois selectores de vaga encostados
+
+### Armadilha apanhada
+
+`IntroVideo` dentro de um wrapper com `justify-self-end` colapsava: shrink-to-fit
+deixa o `w-full` do figure sem nada contra o que resolver e o filme renderizava a
+um terco da coluna. Agora e filho directo da grelha.
+
+### Nota
+
+O selo diz "Applications open" e a faixa laranja diz "Applications are open." - a
+mesma mensagem duas vezes no mesmo ecra. Sugerido ao Abilio cortar o selo para so
+`India -> Portugal`; por decidir.
+
+---
+
 ## Bloco 41 - 07 Oct 2026, 10:30, abilio.diz@smithandadams.com
 
 **Assessment "exímio e pro": bug crítico, hindi, baralhar opções, calibração.**
