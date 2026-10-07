@@ -140,8 +140,10 @@ export const ASSESSMENT_FEE = {
  *                  to the candidate and disclosed before checkout
  *  - `v3-2026-10`  the fee moved to after the assessment, so sitting it is free
  *                  and the disclosure moved to the end of signup
+ *  - `v4-2026-10`  the placement fee withheld from the site, so the sentence
+ *                  about it left the consent somebody is asked to tick
  */
-export const CONSENT_VERSION = 'v3-2026-10';
+export const CONSENT_VERSION = 'v4-2026-10';
 
 /** Working days from a completed application to an answer. */
 export const RESPONSE_DAYS = 15;
@@ -181,10 +183,38 @@ export const PLACEMENT_FEE = {
    * puts the amount and the condition on the landing page, in the terms, and
    * in front of them at checkout before the assessment fee is taken.
    */
+  /**
+   * Withheld from the site, on the owner's instruction, 7 October 2026.
+   *
+   * This is the only setting in the file that makes the product say less than
+   * it knows, so it is written down rather than achieved by deleting a
+   * paragraph somebody later cannot find.
+   *
+   * It is safe only while nobody can pay. The assessment fee is what induces
+   * payment, and taking it from a candidate who has not been told that €1,000
+   * follows is a misleading omission: `/api/payments/checkout` therefore
+   * refuses outright while `payer` is 'candidate' and this is false, so the
+   * hidden state cannot quietly become a state in which money changes hands.
+   *
+   * Two ways out, and both close it honestly. Set this back to true, or move
+   * `payer` to 'employer', which is the model the Portuguese market already
+   * uses and the one the note above recommends.
+   */
+  disclosed: false,
+
   get visibleToCandidates(): boolean {
-    return this.payer === 'candidate';
+    return this.payer === 'candidate' && this.disclosed;
   },
 } as const;
+
+/**
+ * True when the product is charging for something it has not disclosed.
+ *
+ * Read by the checkout, which refuses, and by the consent text, which drops
+ * the sentence it can no longer honestly make somebody agree to.
+ */
+export const PLACEMENT_FEE_UNDISCLOSED =
+  PLACEMENT_FEE.payer === 'candidate' && !PLACEMENT_FEE.disclosed;
 
 export const CANDIDATE_PAYS_NO_PLACEMENT_FEE = PLACEMENT_FEE.payer === 'employer';
 

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
 import { Mono } from '@/components/ui/Mono';
-import { ENTITY, PLACEMENT_FEE } from '@/lib/data/brand';
+import { ENTITY, PLACEMENT_FEE, PLACEMENT_FEE_UNDISCLOSED } from '@/lib/data/brand';
 import { AREAS, POSITIONS, positionsInArea, type PositionSlug } from '@/lib/data/positions';
 import { formatInr, activePrice } from '@/lib/data/cohort';
 import { fill, type Dictionary, type Locale } from '@/lib/i18n';
@@ -440,7 +440,9 @@ export function SignupFlow({
               {consent ? '✓' : ''}
             </span>
             <span id="consent-text" className="text-[13px] leading-[1.55] text-ink-2">
-              {s.consent}{' '}
+              {/* The box is a record of what somebody agreed to, so it cannot
+                  name an amount the site is not showing them. */}
+              {PLACEMENT_FEE_UNDISCLOSED ? s.consentNoPlacement : s.consent}{' '}
               <Link href={`/${locale}/selection-rules`} className="prose-link">
                 {s.consentRules}
               </Link>{' '}

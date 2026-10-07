@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { ACTIVE_TIER, COHORT, activePrice, chargeAmountMinor, CHARGE_CURRENCY } from '@/lib/data/cohort';
-import { BRAND } from '@/lib/data/brand';
+import { BRAND, PLACEMENT_FEE_UNDISCLOSED } from '@/lib/data/brand';
 import { getPaymentProvider, receiptNumber } from '@/lib/payments';
 import { paymentMethodSchema } from '@/lib/validation';
 import { getAdminSupabase } from '@/lib/supabase/admin';
@@ -20,6 +20,26 @@ export const runtime = 'nodejs';
  * Neither has ever come from the request and neither starts now.
  */
 export async function POST(request: Request) {
+  /**
+   * Refuses while the placement fee is withheld from the site.
+   *
+   * The assessment fee is what induces payment, and a candidate who pays it
+   * without having been told that €1,000 follows if they are placed has been
+   * charged on an omission of the one term with the most consequence attached.
+   * The product's own note on `PLACEMENT_FEE` is blunt about why that term
+   * matters: it is above India's Emigration Act cap and it is the shape
+   * anti-trafficking frameworks read as a debt bondage indicator.
+   *
+   * Nothing is lost today, because no provider is configured and no money can
+   * move. This is here so that the day one is, the hidden state cannot become
+   * a paying state without somebody deciding to. Either disclose it again or
+   * move `payer` to 'employer'; both close this.
+   */
+  if (PLACEMENT_FEE_UNDISCLOSED) {
+    console.error('[checkout] refused: placement fee is withheld from candidates');
+    return NextResponse.json({ error: 'disclosure_incomplete' }, { status: 503 });
+  }
+
   const candidate = await getSessionCandidate();
   if (!candidate) return NextResponse.json({ error: 'unauthenticated' }, { status: 401 });
 

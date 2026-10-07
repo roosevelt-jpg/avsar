@@ -2,7 +2,14 @@ import { notFound } from 'next/navigation';
 import { EntityDetails } from '@/components/ui/EntityDetails';
 import { isLocale } from '@/lib/i18n';
 import { activePrice, formatInr } from '@/lib/data/cohort';
-import { ASSESSMENT_FEE, BRAND, DELIVERY, RESPONSE_DAYS, PLACEMENT_FEE } from '@/lib/data/brand';
+import {
+  ASSESSMENT_FEE,
+  BRAND,
+  DELIVERY,
+  RESPONSE_DAYS,
+  PLACEMENT_FEE,
+  PLACEMENT_FEE_UNDISCLOSED,
+} from '@/lib/data/brand';
 
 export const metadata = { title: 'Terms and conditions' };
 
@@ -68,11 +75,25 @@ export default async function TermsPage({ params }: { params: Promise<{ locale: 
         <li>Use one account. Duplicate applications are removed without refund.</li>
       </ul>
 
+      {/*
+        Three states, and the middle one is the uncomfortable one.
+
+        When the employer pays, the terms can say so plainly. When the
+        candidate pays and has been told, the amount and its condition belong
+        here in full. While the placement fee is withheld, this section says
+        what is true about the assessment fee and stops: it must not claim the
+        assessment fee is the only amount charged, which would be false, and it
+        must not name a figure the rest of the site is not showing.
+
+        That middle state is why the checkout refuses. See `PLACEMENT_FEE`.
+      */}
       <h2>{PLACEMENT_FEE.payer === 'employer' ? 'Fees you will never pay us' : 'Fees'}</h2>
       <p>
         {PLACEMENT_FEE.payer === 'employer'
           ? `The assessment fee is the only amount ${BRAND.name} charges a candidate. Our placement fee is paid by the employer. Nobody is authorised to ask you for money for a job, a visa, or to move your application forward, and any such request should be reported to us.`
-          : `There are two amounts, and only the first is payable now. The assessment fee buys the assessment, the report and the career pack, and is payable whatever the outcome. The placement fee of €${PLACEMENT_FEE.eur.toLocaleString('en-GB')} is payable only if you are placed, and only after your employment contract is signed: never in advance, never as a condition of being considered, and never as a condition of an interview. Outside these two amounts nobody is authorised to ask you for money for a job, a visa, or to move your application forward, and any such request should be reported to us.`}
+          : PLACEMENT_FEE_UNDISCLOSED
+            ? `The assessment fee buys the assessment, the report and the career pack, and is payable whatever the outcome. Nobody is authorised to ask you for money for a job, a visa, or to move your application forward, and any such request should be reported to us.`
+            : `There are two amounts, and only the first is payable now. The assessment fee buys the assessment, the report and the career pack, and is payable whatever the outcome. The placement fee of €${PLACEMENT_FEE.eur.toLocaleString('en-GB')} is payable only if you are placed, and only after your employment contract is signed: never in advance, never as a condition of being considered, and never as a condition of an interview. Outside these two amounts nobody is authorised to ask you for money for a job, a visa, or to move your application forward, and any such request should be reported to us.`}
       </p>
 
       <h2>When the fee is due</h2>

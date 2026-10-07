@@ -10,6 +10,8 @@
  * handoff. Adding one means adding a key to `locales` and a block below.
  */
 
+import { PLACEMENT_FEE_UNDISCLOSED } from '@/lib/data/brand';
+
 export const locales = ['en', 'hi'] as const;
 export type Locale = (typeof locales)[number];
 export const defaultLocale: Locale = 'en';
@@ -103,6 +105,8 @@ export type Dictionary = {
     englishOptions: readonly string[];
     cityState: string;
     consent: string;
+    /** The same wording minus the placement fee, used while it is withheld. */
+    consentNoPlacement: string;
     consentRules: string;
     consentRefund: string;
     back: string;
@@ -463,6 +467,8 @@ const en: Dictionary = {
     cityState: 'City and state',
     consent:
       'I understand the assessment is free to sit, and that the fee is payable afterwards if I want my skills report, my rewritten CV and my place in the talent pool. Selection for a Portugal placement is not guaranteed. If I am placed, a placement fee of €1,000 is payable after my job is confirmed and my contract is signed. I have read the',
+    consentNoPlacement:
+      'I understand the assessment is free to sit, and that the fee is payable afterwards if I want my skills report, my rewritten CV and my place in the talent pool. Selection for a Portugal placement is not guaranteed. I have read the',
     consentRules: 'selection rules',
     consentRefund: 'refund policy',
     back: 'Back',
@@ -898,6 +904,8 @@ const hi: Dictionary = {
     cityState: 'शहर और राज्य',
     consent:
       'मैं समझता/समझती हूँ कि आकलन देना मुफ़्त है, और शुल्क उसके बाद देना होता है यदि मुझे अपनी स्किल्स रिपोर्ट, नया सीवी और टैलेंट पूल में जगह चाहिए। पुर्तगाल प्लेसमेंट के लिए चयन की गारंटी नहीं है। यदि मुझे नौकरी मिलती है, तो नौकरी पक्की होने और अनुबंध पर हस्ताक्षर के बाद €1,000 की प्लेसमेंट फ़ीस देय होगी। मैंने',
+    consentNoPlacement:
+      'मैं समझता/समझती हूँ कि आकलन देना मुफ़्त है, और शुल्क उसके बाद देना होता है यदि मुझे अपनी स्किल्स रिपोर्ट, नया सीवी और टैलेंट पूल में जगह चाहिए। पुर्तगाल प्लेसमेंट के लिए चयन की गारंटी नहीं है। मैंने',
     consentRules: 'चयन नियम',
     consentRefund: 'रिफ़ंड नीति',
     back: 'पीछे',
@@ -1221,8 +1229,31 @@ const hi: Dictionary = {
 
 export const dictionaries: Record<Locale, Dictionary> = { en, hi };
 
+/**
+ * Blanked while the placement fee is withheld, so the wording is not merely
+ * unrendered but absent.
+ *
+ * The whole dictionary is handed to client components and therefore serialised
+ * into the page, so leaving these in place would have published the sentence in
+ * the source of every page while no element displayed it. Hidden in the markup
+ * and hidden from the reader are not the same thing, and only the second one
+ * was asked for.
+ *
+ * Nothing reads them in this state: each render site is behind
+ * `PLACEMENT_FEE.visibleToCandidates`, which is false for the same reason. Set
+ * `PLACEMENT_FEE.disclosed` back to true and the strings come back with it.
+ */
 export function getDictionary(locale: Locale): Dictionary {
-  return dictionaries[locale];
+  const dictionary = dictionaries[locale];
+  if (!PLACEMENT_FEE_UNDISCLOSED) return dictionary;
+
+  return {
+    ...dictionary,
+    placementFee: '',
+    placementFeeShort: '',
+    noPlacementFee: '',
+    signup: { ...dictionary.signup, consent: '' },
+  };
 }
 
 /** Sector labels in English, used as the canonical value stored in the database. */

@@ -4,6 +4,53 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 39 - 07 Oct 2026, 09:10, abilio.diz@smithandadams.com
+
+**Taxa de colocacao retirada do site, por instrucao do Abilio.**
+
+`PLACEMENT_FEE.disclosed = false`. `visibleToCandidates` passou a ser
+`payer === 'candidate' && disclosed`, por isso as quatro superficies que ja
+liam essa flag (landing, SignupFlow, UnlockReport, e agora os termos) apagam-se
+sozinhas. Novo `PLACEMENT_FEE_UNDISCLOSED` exportado para quem precisa de saber
+que se esta a cobrar algo que nao foi divulgado.
+
+- **Consentimento.** A checkbox nomeava os €1.000. A caixa e o registo do que
+  alguem aceitou, por isso nao pode nomear um valor que o site nao mostra:
+  variante `consentNoPlacement` em EN e HI. `CONSENT_VERSION` -> `v4-2026-10`.
+- **Termos.** Tres estados agora. Com `payer = employer` dizem-no. Divulgada,
+  o valor e a condicao vem por inteiro. Retirada, a seccao diz o que e verdade
+  sobre a taxa de avaliacao e para: nao pode afirmar que a taxa de avaliacao e
+  o unico valor cobrado, que seria falso.
+- **Dicionario.** As strings sao postas a vazio no `getDictionary`. O
+  dicionario inteiro e serializado para os client components, por isso deixa-las
+  la publicava a frase no codigo-fonte de todas as paginas sem nenhum elemento a
+  mostrar. Escondido no markup e escondido do leitor nao e a mesma coisa.
+
+### O checkout recusa
+
+`/api/payments/checkout` devolve **503 `disclosure_incomplete`** enquanto
+`payer = candidate` e `disclosed = false`, antes mesmo de ler a sessao, porque
+e uma propriedade da configuracao e nao de quem chama.
+
+Porque: a taxa de avaliacao e o que induz o pagamento, e cobra-la a quem nao foi
+informado de que se seguem €1.000 e omissao de um termo material. A nota que ja
+estava no `PLACEMENT_FEE` e explicita sobre o porque de ser este o termo que
+pesa: esta acima do tecto do Emigration Act indiano (₹20.000) e e a forma que os
+quadros anti-trafico leem como indicador de servidao por divida.
+
+Hoje nao custa nada: nao ha provider configurado e nao se move dinheiro. Esta la
+para que, no dia em que houver, o estado escondido nao se torne um estado em que
+alguem paga sem decisao de ninguem. Fecha de duas maneiras, ambas honestas:
+`disclosed = true`, ou `payer = 'employer'`, que e o modelo que o mercado
+portugues ja usa e o que a propria nota do ficheiro recomenda.
+
+### Verificado
+
+`/en`, `/en/terms`, `/en/signup` e os tres equivalentes em HI: limpos, incluindo
+o payload serializado. Checkout devolve 503.
+
+---
+
 ## Bloco 38 - 07 Oct 2026, 08:50, abilio.diz@smithandadams.com
 
 **O site esta publicado em https://recruitment.smithandadams.com**
