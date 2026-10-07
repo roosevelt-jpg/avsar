@@ -25,8 +25,12 @@ export type ReportRow = {
   breakdown: { label: string; score: number }[];
 };
 
-export function buildReport(answers: AnswerMap, sector: SectorSlug): ReportRow {
-  const result = score(answers, sector);
+export function buildReport(
+  answers: AnswerMap,
+  sector: SectorSlug,
+  position?: string,
+): ReportRow {
+  const result = score(answers, sector, position);
   const cefr = cefrFromScore(result.sections.english ?? 0);
 
   return {

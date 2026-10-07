@@ -72,13 +72,15 @@ export async function POST(request: Request) {
     answers[row.item_id as string] = row.option_index as number;
   }
 
-  /* Scoring is scoped to the sector. Without it a housekeeper would be marked
-     against scaffolding questions they were never asked. */
+  /* Scoring is scoped to the sector AND the position, matching exactly what
+     the candidate was offered. Sector alone is not enough: a chef and a waiter
+     share a sector and not a question set, and an item nobody was shown scores
+     zero. */
   const sector: SectorSlug = (SECTOR_SLUGS as readonly string[]).includes(candidate.sector ?? '')
     ? (candidate.sector as SectorSlug)
     : SECTOR_SLUGS[0];
 
-  const report = buildReport(answers, sector);
+  const report = buildReport(answers, sector, candidate.position ?? undefined);
 
   const { error: reportError } = await admin
     .from('reports')

@@ -28,14 +28,26 @@ const SECTION_WEIGHTS: Record<SectionId, number> = {
 };
 
 /**
- * Items a candidate in this sector could have been shown.
+ * Items this candidate could have been shown.
  *
- * Scoping by sector matters now that the bank spans six trades: without it, a
- * housekeeper is marked against questions about scaffolding they were never
- * asked, and every score collapses.
+ * The filter has to match `itemsForSection` exactly, position included, and
+ * leaving the position out does not merely blur the score, it deletes most of
+ * it. A position-scoped item fails the test `positions === undefined ||
+ * positions.includes(position)` whenever no position is passed, so every
+ * role-specific item drops out of the pool and is never marked at all.
+ *
+ * Measured, not assumed: a chef who answered all twelve chef items wrongly
+ * scored 100 on skills, because only the four items shared with the waiter were
+ * counted, and the report showed three skills axes instead of six. The
+ * role-specific questions were being asked and then thrown away.
  */
-function visibleItems(sector: SectorSlug): Item[] {
-  return ITEM_BANK.filter((item) => item.sector === undefined || item.sector === sector);
+function visibleItems(sector: SectorSlug, position?: string): Item[] {
+  return ITEM_BANK.filter(
+    (item) =>
+      (item.sector === undefined || item.sector === sector) &&
+      (item.positions === undefined ||
+        (position !== undefined && item.positions.includes(position))),
+  );
 }
 
 /** An item contributes a score either against a key or by ordinal position. */
@@ -43,8 +55,8 @@ function isScorable(item: Item): boolean {
   return item.correct !== undefined || item.scale === true;
 }
 
-export function score(answers: AnswerMap, sector: SectorSlug): ScoreResult {
-  const pool = visibleItems(sector);
+export function score(answers: AnswerMap, sector: SectorSlug, position?: string): ScoreResult {
+  const pool = visibleItems(sector, position);
   const byId = new Map<string, Item>(pool.map((item) => [item.id, item]));
 
   const sections = {} as Record<SectionId, number>;
