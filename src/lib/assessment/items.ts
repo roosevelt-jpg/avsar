@@ -79,6 +79,7 @@ import {
   CONSTRUCTION_WORKER_ITEMS,
 } from './bank/trades';
 import { DRIVER_ROLE_ITEMS, LOGISTICS_ITEMS } from './bank/logistics';
+import { HI } from './bank/hi';
 import {
   HOSPITALITY_ITEMS,
   PROPERTY_ITEMS,
@@ -95,7 +96,7 @@ import {
  * A hospitality supervisor can read the hospitality file and say whether the
  * questions are fair; nobody can usefully review one list of a hundred.
  */
-export const ITEM_BANK: readonly Item[] = [
+const ENGLISH_BANK: readonly Item[] = [
   ...HOSPITALITY_ITEMS,
   ...CHEF_ITEMS,
   ...FB_SERVICE_ITEMS,
@@ -115,6 +116,35 @@ export const ITEM_BANK: readonly Item[] = [
   ...ENGLISH_ITEMS,
   ...PROFILE_ITEMS,
 ];
+
+/**
+ * The bank, with the Hindi side attached.
+ *
+ * A translation whose option count does not match the English is dropped rather
+ * than served. `correct` indexes one array for both languages, so a Hindi item
+ * with three options where the English has four does not fail: it quietly
+ * renders a different question with the key pointing somewhere else. Losing the
+ * translation is recoverable, and the English item still works; a misaligned
+ * key is a wrong score that nobody sees.
+ */
+export const ITEM_BANK: readonly Item[] = ENGLISH_BANK.map((item) => {
+  const hi = HI[item.id];
+  if (!hi) return item;
+
+  if (hi.options.length !== item.options.length) {
+    console.error(
+      `[items] Hindi translation for ${item.id} has ${hi.options.length} options, English has ${item.options.length}. Dropped.`,
+    );
+    return item;
+  }
+
+  return { ...item, hi };
+});
+
+/** Items with no translation yet. Read by the item-coverage check. */
+export function untranslatedItems(): Item[] {
+  return ENGLISH_BANK.filter((item) => item.section !== 'english' && !HI[item.id]);
+}
 
 /** Shape sent to the browser. Never includes `correct`. */
 export type ClientItem = Omit<Item, 'correct' | 'axis' | 'hi'>;
