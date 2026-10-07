@@ -53,6 +53,20 @@ export type Item = {
   positions?: readonly string[];
   /** Report axis this item feeds, matched against `dash.breakdownLabels`. */
   axis?: string;
+  /**
+   * The same item in Hindi.
+   *
+   * Options must stay in the same order as the English ones, because `correct`
+   * indexes one array and serves both. The English section deliberately has
+   * none of these: it is the only section where the language is the thing being
+   * measured.
+   */
+  hi?: {
+    label?: string;
+    passage?: string;
+    prompt: string;
+    options: readonly string[];
+  };
 };
 
 import { EXPERIENCE_ITEMS, ENGLISH_ITEMS, PROFILE_ITEMS } from './bank/shared';
@@ -103,12 +117,62 @@ export const ITEM_BANK: readonly Item[] = [
 ];
 
 /** Shape sent to the browser. Never includes `correct`. */
-export type ClientItem = Omit<Item, 'correct' | 'axis'>;
+export type ClientItem = Omit<Item, 'correct' | 'axis' | 'hi'>;
 
-export function toClientItem(item: Item): ClientItem {
+/**
+ * The order this candidate sees the options in.
+ *
+ * Fixed option order is how an unsupervised test leaks: the answer travels as
+ * "it is always B" rather than as knowledge, and one shared screenshot devalues
+ * the item for everybody. The permutation is derived from the attempt and the
+ * item, so it is the same on every reload without storing anything, and it can
+ * be recomputed wherever an answer has to be read back.
+ *
+ * Ordinal items are never shuffled. Their options run from least to most and
+ * the position *is* the meaning, so reordering them would turn "I supervised
+ * nobody" into a top score.
+ */
+export function optionOrder(item: Item, seed: string): number[] {
+  const identity = item.options.map((_, index) => index);
+  if (item.scale) return identity;
+  return shuffleSeeded(identity, `${seed}:opt:${item.id}`);
+}
+
+/** What the candidate pressed, in the bank's own numbering. */
+export function toCanonicalOption(item: Item, seed: string, displayIndex: number): number {
+  return optionOrder(item, seed)[displayIndex] ?? displayIndex;
+}
+
+/** The stored answer, in the order this candidate is looking at. */
+export function toDisplayOption(item: Item, seed: string, canonicalIndex: number): number {
+  const found = optionOrder(item, seed).indexOf(canonicalIndex);
+  return found === -1 ? canonicalIndex : found;
+}
+
+export function itemById(id: string): Item | undefined {
+  return ITEM_BANK.find((item) => item.id === id);
+}
+
+/**
+ * Strips the answer key, shuffles the options, and picks the language.
+ *
+ * `correct` indexes the English options, and the Hindi options are written in
+ * the same order deliberately, so one key serves both and a translation cannot
+ * silently move the right answer.
+ */
+export function toClientItem(item: Item, seed: string, locale: string): ClientItem {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars -- discarding the answer key on purpose
-  const { correct: _correct, axis: _axis, ...rest } = item;
-  return rest;
+  const { correct: _correct, axis: _axis, hi, ...rest } = item;
+  const source = locale === 'hi' && hi ? hi : item;
+  const order = optionOrder(item, seed);
+
+  return {
+    ...rest,
+    label: source.label ?? item.label,
+    prompt: source.prompt,
+    passage: source.passage ?? item.passage,
+    options: order.map((index) => source.options[index] ?? item.options[index] ?? ''),
+  };
 }
 
 /**

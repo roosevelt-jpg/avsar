@@ -1,7 +1,13 @@
 import { notFound, redirect } from 'next/navigation';
 import { AssessmentRunner } from '@/components/candidate/AssessmentRunner';
 import { getDictionary, isLocale } from '@/lib/i18n';
-import { itemsForSection, toClientItem, SECTION_ORDER, type SectionId } from '@/lib/assessment/items';
+import {
+  itemsForSection,
+  toClientItem,
+  toDisplayOption,
+  SECTION_ORDER,
+  type SectionId,
+} from '@/lib/assessment/items';
 import { SECTOR_SLUGS, type SectorSlug } from '@/lib/data/sectors';
 import { getServerSupabase } from '@/lib/supabase/server';
 import { secondsUntil } from '@/lib/clock';
@@ -104,8 +110,22 @@ export default async function AssessmentPage({
     }
   }
 
-  /* `toClientItem` strips the answer key before the items cross to the browser. */
-  const items = itemsForSection(section, sector, attemptId ?? 'preview', position).map(toClientItem);
+  /*
+    `toClientItem` strips the answer key, puts the options in this candidate's
+    own order and renders the item in their language.
+
+    The seed is the attempt, so the order survives a reload and a resume, and
+    the saved answers have to be translated into the same order or a resumed
+    section shows the wrong option already selected.
+  */
+  const seed = attemptId ?? 'preview';
+  const pool = itemsForSection(section, sector, seed, position);
+  const items = pool.map((item) => toClientItem(item, seed, locale));
+
+  for (const item of pool) {
+    const stored = savedAnswers[item.id];
+    if (stored !== undefined) savedAnswers[item.id] = toDisplayOption(item, seed, stored);
+  }
 
   return (
     <AssessmentRunner

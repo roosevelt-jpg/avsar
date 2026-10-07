@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { answerSchema } from '@/lib/validation';
 import { getServerSupabase } from '@/lib/supabase/server';
+import { itemById, toCanonicalOption } from '@/lib/assessment/items';
 
 export const runtime = 'nodejs';
 
@@ -24,13 +25,26 @@ export async function POST(request: Request) {
 
   const { attemptId, itemId, optionIndex } = parsed.data;
 
+  /*
+    The browser answers in the order it was shown, which is this attempt's own
+    shuffle. What gets stored is the bank's numbering, recomputed from the same
+    seed rather than carried in the request: a client-supplied mapping would let
+    somebody rewrite which option they had picked.
+
+    An unknown id stores the index as given. The item bank changes between
+    deploys and refusing here would break an attempt in progress over a question
+    that no longer exists; scoring ignores items it cannot find.
+  */
+  const item = itemById(itemId);
+  const canonical = item ? toCanonicalOption(item, attemptId, optionIndex) : optionIndex;
+
   /* RLS restricts this to the signed-in candidate's own attempt, and refuses
      once the attempt is submitted, so a late answer cannot rewrite a score. */
   const { error } = await supabase.from('assessment_answers').upsert(
     {
       attempt_id: attemptId,
       item_id: itemId,
-      option_index: optionIndex,
+      option_index: canonical,
       answered_at: new Date().toISOString(),
     },
     { onConflict: 'attempt_id,item_id' },
