@@ -5,7 +5,6 @@ import { Mono } from '@/components/ui/Mono';
 import { PhoneWalkthrough } from '@/components/candidate/PhoneWalkthrough';
 import { Reveal } from '@/components/motion/Reveal';
 import { PositionGrid } from '@/components/candidate/PositionGrid';
-import { IntroVideo } from '@/components/candidate/IntroVideo';
 import { positionCopy } from '@/lib/data/position-copy';
 import { SiteHeader } from '@/components/candidate/SiteHeader';
 import { SiteFooter } from '@/components/candidate/SiteFooter';
@@ -44,15 +43,17 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
       <SiteHeader locale={locale} />
 
       {/*
-        The hero reads across rather than down.
+        One centred column again, and no film.
 
-        It used to be one centred column: badge, headline, paragraph, film,
-        selector. Centred text that long is hard to read, and the film sat below
-        the fold on a laptop, which is the one thing on the page that explains
-        the product in under a minute. The claim and the film now sit side by
-        side, so both are visible at once, and the jobs follow immediately.
+        The film was a minute of India and Portugal, and the product is now
+        worldwide to the UAE, so it says the wrong thing until it is reshot. It
+        comes back when there is a cut that matches.
+
+        What is left is the claim, and the claim is what the page is for, so it
+        is centred and given the width: the slogan, the destination, who it is
+        for, and what the assessment is.
       */}
-      <section className="px-[clamp(20px,4cqi,56px)] pt-[clamp(32px,6cqi,72px)] pb-[clamp(32px,5cqi,64px)]">
+      <section className="flex flex-col items-center gap-0 px-[clamp(20px,4cqi,56px)] pt-[clamp(36px,6cqi,80px)] pb-[clamp(36px,5cqi,64px)] text-center">
         <p className="m-0 inline-flex items-center gap-2 rounded-full border border-line-strong bg-surface px-[14px] py-1.5 font-mono text-[12px] text-ink-2">
           <span aria-hidden className="size-[7px] rounded-full bg-success" />
           {t.eyebrow}
@@ -61,11 +62,9 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
         {/*
           Who is behind this, said once and early.
 
-          It used to appear only in the orange band, which a candidate reached
-          after the steps, the fee and the funnel. The name of an established
-          group is worth more to somebody deciding whether to trust an unknown
-          recruitment site than it is to somebody already convinced, so it is
-          read before the claim rather than after it.
+          The name of an established group is worth more to somebody deciding
+          whether to trust an unknown recruitment site than it is to somebody
+          already convinced, so it is read before the claim rather than after it.
 
           The mark is the ink version. The one in the footer is white artwork
           over transparency, drawn for a dark band, and it would be invisible
@@ -76,53 +75,52 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
           whether to apply should be able to go and look at the group without
           losing this page.
         */}
-        <div className="mt-6 mb-[clamp(24px,4cqi,44px)]">
-          <a
-            href="https://www.smithandadams.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="t-colors inline-block opacity-80 hover:opacity-100"
-          >
-            <Image
-              src="/smith-adams-group-ink-640.png"
-              alt={`${BRAND.parent} Group`}
-              width={640}
-              height={136}
-              className="h-auto w-[164px]"
-            />
-          </a>
-          <p className="m-0 mt-3 text-[15px] leading-[1.5] text-muted">{BRAND.tagline}</p>
-        </div>
+        <a
+          href="https://www.smithandadams.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="t-colors mt-7 inline-block opacity-80 hover:opacity-100"
+        >
+          <Image
+            src="/smith-adams-group-ink-640.png"
+            alt={`${BRAND.parent} Group`}
+            width={640}
+            height={136}
+            className="h-auto w-[164px]"
+          />
+        </a>
+        <p className="m-0 mt-3 text-[15px] leading-[1.5] text-muted">{BRAND.tagline}</p>
 
-        <div className="grid items-center gap-[clamp(28px,5cqi,64px)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
-          <div>
-            <h1 className="m-0 max-w-[20ch] text-balance text-[clamp(32px,4.4cqi,54px)] font-semibold leading-[1.06] tracking-[-0.035em]">
-              {t.heroTitle}
-            </h1>
+        {/*
+          The slogan, promoted out of the footer.
 
-            <p className="mt-5 mb-0 max-w-[52ch] text-[clamp(16px,1.6cqi,18px)] leading-[1.6] text-ink-2">
-              {t.heroSub}
-            </p>
-          </div>
+          It is the one line that says what the company claims to be good at
+          rather than what it sells, and it was reaching people only after they
+          had already decided. Set in the accent and letterspaced so it reads as
+          a mark rather than as a sentence competing with the headline below it.
+        */}
+        <p className="m-0 mt-[clamp(32px,5cqi,56px)] font-mono text-[clamp(12px,1.3cqi,14px)] uppercase tracking-[0.22em] text-accent-deep">
+          {BRAND.slogan}
+        </p>
 
-          {/*
-            Second in the markup, so a phone gets the claim before the film.
+        <h1 className="m-0 mt-4 max-w-[17ch] text-balance text-[clamp(36px,6cqi,72px)] font-semibold leading-[1.03] tracking-[-0.035em]">
+          {t.heroTitle}
+        </h1>
 
-            Directly a grid child rather than wrapped. A wrapper with
-            `justify-self-end` shrinks to fit its contents, which left the
-            figure's `w-full` resolving against nothing and the film rendering
-            at about a third of its column.
-          */}
-          <IntroVideo t={t} />
-        </div>
+        <p className="m-0 mt-4 max-w-[34ch] text-balance text-[clamp(19px,2.2cqi,26px)] font-medium leading-[1.3] tracking-[-0.02em] text-ink-2">
+          {t.heroSubheadline}
+        </p>
+
+        <p className="m-0 mt-6 max-w-[58ch] text-[clamp(16px,1.6cqi,18px)] leading-[1.6] text-ink-2">
+          {t.heroSub}
+        </p>
       </section>
 
       {/*
-        The call to action, straight after the film.
+        The call to action, straight after the claim.
 
-        It used to close the page. Somebody who has just watched a minute of
-        film is as ready to apply as they will ever be, and making them scroll
-        past five sections to find the button spent that.
+        It used to close the page, which meant somebody convinced by the first
+        screen had to scroll past five sections to find the button.
 
         The tagline that used to sit here has moved to the top of the page.
       */}
