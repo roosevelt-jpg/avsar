@@ -4,6 +4,70 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 44 - 08 Oct 2026, abilio.diz@smithandadams.com
+
+**Video de fundo no hero, por tras de uma cortina terracota.**
+
+### A montagem
+
+Tres clipes do Abilio, cortados e ligados com ffmpeg:
+
+- obra (trabalhadores em armadura de ferro), 3,2s -> 8,7s
+- cozinha (empratamento), 1,2s -> 6,2s
+- sala (empregada com bandeja), 1,8s -> 7,3s
+
+Crossfades de 0,7s entre eles. **720p e nao 1080p**: esta por tras de uma camada
+de cor, o detalhe perde-se de qualquer maneira, e corta metade dos bytes. Sem
+audio, que num fundo nunca toca e so pesa. CRF 27, `+faststart`.
+
+Resultado: **14,6s, 2,9 MB**. Poster de 126 KB.
+
+### A cortina
+
+Duas camadas, nao uma. Um preenchimento liso do acento apagava a filmagem; a
+filmagem sem lavagem por baixo de tipo branco fica ilegivel no primeiro
+fotograma claro.
+
+- `bg-accent opacity-90 mix-blend-multiply` -> duotone terracota que mantem as
+  formas do clipe
+- gradiente `from-ink/55 via-ink/30 to-ink/75` por cima -> contraste estavel seja
+  qual for a exposicao
+
+A seccao do hero passou a `bg-ink text-paper`, e o tipo todo foi recolorido. **O
+logo do grupo voltou a versao branca** - a versao em tinta tinha sido feita para
+quando o hero era papel. **O slogan deixou de ser `text-accent-deep`**, que
+desaparecia dentro da sua propria cor de fundo.
+
+### Quando o video nao carrega
+
+`HeroBackdrop` e client component com `useSyncExternalStore`. O snapshot do
+servidor diz "retem", por isso o HTML servido traz **o poster e zero tags
+`<video>`** (verificado com curl) e nao ha hipotese de mismatch de hidratacao.
+
+Tres motivos para reter, qualquer um chega:
+
+- `prefers-reduced-motion`
+- `navigator.connection.saveData`
+- `effectiveType` 2g ou slow-2g
+
+O terceiro e deliberado: 3 MB de decoracao num telemovel com dados medidos, num
+mercado onde os dados se compram as centenas de megabytes, e um custo cobrado
+exactamente a pessoa para quem a pagina existe.
+
+### Verificado
+
+Desktop 1200 e telemovel 390: video a tocar, em loop, sem som, inline, texto
+legivel, sem overflow horizontal. HTML servido sem `<video>`.
+
+### Nota
+
+Os tres clipes sao stock com rostos identificaveis. Estao como ambiente por tras
+de uma cortina, nunca apresentados como candidatos nossos nem como colocacoes -
+que e a distincao que o comentario das fotos ja fazia. Confirmar a licenca de
+uso comercial dos tres antes de producao.
+
+---
+
 ## Bloco 43 - 08 Oct 2026, abilio.diz@smithandadams.com
 
 **Pivot: India -> Portugal passou a mundo -> Emirados. E arabe como 3.o idioma.**

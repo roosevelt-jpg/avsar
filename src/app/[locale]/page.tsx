@@ -5,6 +5,7 @@ import { Mono } from '@/components/ui/Mono';
 import { PhoneWalkthrough } from '@/components/candidate/PhoneWalkthrough';
 import { Reveal } from '@/components/motion/Reveal';
 import { PositionGrid } from '@/components/candidate/PositionGrid';
+import { HeroBackdrop } from '@/components/candidate/HeroBackdrop';
 import { positionCopy } from '@/lib/data/position-copy';
 import { SiteHeader } from '@/components/candidate/SiteHeader';
 import { SiteFooter } from '@/components/candidate/SiteFooter';
@@ -53,8 +54,10 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
         is centred and given the width: the slogan, the destination, who it is
         for, and what the assessment is.
       */}
-      <section className="flex flex-col items-center gap-0 px-[clamp(20px,4cqi,56px)] pt-[clamp(36px,6cqi,80px)] pb-[clamp(36px,5cqi,64px)] text-center">
-        <p className="m-0 inline-flex items-center gap-2 rounded-full border border-line-strong bg-surface px-[14px] py-1.5 font-mono text-[12px] text-ink-2">
+      <section className="relative isolate flex flex-col items-center gap-0 overflow-hidden bg-ink px-[clamp(20px,4cqi,56px)] pt-[clamp(56px,8cqi,104px)] pb-[clamp(56px,7cqi,96px)] text-center text-paper">
+        <HeroBackdrop />
+
+        <p className="relative m-0 inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-[14px] py-1.5 font-mono text-[12px] text-paper backdrop-blur-[2px]">
           <span aria-hidden className="size-[7px] rounded-full bg-success" />
           {t.eyebrow}
         </p>
@@ -79,17 +82,19 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
           href="https://www.smithandadams.com"
           target="_blank"
           rel="noopener noreferrer"
-          className="t-colors mt-7 inline-block opacity-80 hover:opacity-100"
+          className="t-colors relative mt-7 inline-block opacity-85 hover:opacity-100"
         >
+          {/* The white artwork again. The ink version was made for the hero when
+              the hero was paper; the curtain made it the wrong one. */}
           <Image
-            src="/smith-adams-group-ink-640.png"
+            src="/smith-adams-group-light-640.png"
             alt={`${BRAND.parent} Group`}
             width={640}
             height={136}
             className="h-auto w-[164px]"
           />
         </a>
-        <p className="m-0 mt-3 text-[15px] leading-[1.5] text-muted">{BRAND.tagline}</p>
+        <p className="relative m-0 mt-3 text-[15px] leading-[1.5] text-white/70">{BRAND.tagline}</p>
 
         {/*
           The slogan, promoted out of the footer.
@@ -99,19 +104,21 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
           had already decided. Set in the accent and letterspaced so it reads as
           a mark rather than as a sentence competing with the headline below it.
         */}
-        <p className="m-0 mt-[clamp(32px,5cqi,56px)] font-mono text-[clamp(12px,1.3cqi,14px)] uppercase tracking-[0.22em] text-accent-deep">
+        {/* Paper, not the accent: the curtain is already the accent, and the
+            slogan set in it would disappear into its own background. */}
+        <p className="relative m-0 mt-[clamp(32px,5cqi,56px)] font-mono text-[clamp(12px,1.3cqi,14px)] uppercase tracking-[0.22em] text-white/75">
           {BRAND.slogan}
         </p>
 
-        <h1 className="m-0 mt-4 max-w-[17ch] text-balance text-[clamp(36px,6cqi,72px)] font-semibold leading-[1.03] tracking-[-0.035em]">
+        <h1 className="relative m-0 mt-4 max-w-[17ch] text-balance text-[clamp(36px,6cqi,72px)] font-semibold leading-[1.03] tracking-[-0.035em] [text-shadow:0_1px_24px_rgba(27,26,23,0.35)]">
           {t.heroTitle}
         </h1>
 
-        <p className="m-0 mt-4 max-w-[34ch] text-balance text-[clamp(19px,2.2cqi,26px)] font-medium leading-[1.3] tracking-[-0.02em] text-ink-2">
+        <p className="relative m-0 mt-4 max-w-[34ch] text-balance text-[clamp(19px,2.2cqi,26px)] font-medium leading-[1.3] tracking-[-0.02em] text-white/90">
           {t.heroSubheadline}
         </p>
 
-        <p className="m-0 mt-6 max-w-[58ch] text-[clamp(16px,1.6cqi,18px)] leading-[1.6] text-ink-2">
+        <p className="relative m-0 mt-6 max-w-[58ch] text-[clamp(16px,1.6cqi,18px)] leading-[1.6] text-white/80">
           {t.heroSub}
         </p>
       </section>
