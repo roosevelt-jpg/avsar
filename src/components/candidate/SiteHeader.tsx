@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Wordmark } from '@/components/ui/Wordmark';
 import { LocaleToggle } from './LocaleToggle';
 import { getDictionary, type Locale } from '@/lib/i18n';
+import { ENTITY } from '@/lib/data/brand';
 import { AccountMenu } from '@/components/auth/AccountMenu';
 
 export async function SiteHeader({ locale }: { locale: Locale }) {
@@ -23,7 +24,26 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
           {t.navEmployers}
         </Link>
       </nav>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        {/*
+          The support line, in the one place it is on every page.
+
+          It was only in the footer, at the very bottom of the page, where it
+          works as the company's legal record and as a contact number works not
+          at all: somebody deciding whether to trust an unfamiliar recruiter is
+          not going to scroll past the whole site to find a number.
+
+          `dir="ltr"` because a phone number is not prose, and it would otherwise
+          reorder inside the Arabic layout. `tabular-nums` so the digits do not
+          jitter against the rest of the header.
+        */}
+        <a
+          href={`tel:${ENTITY.phone.replace(/\s/g, '')}`}
+          dir="ltr"
+          className="t-colors whitespace-nowrap font-mono text-[14px] tabular-nums text-ink-2 no-underline hover:text-accent"
+        >
+          {ENTITY.phone}
+        </a>
         <LocaleToggle locale={locale} />
         <AccountMenu locale={locale} />
       </div>
