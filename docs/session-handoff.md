@@ -33,18 +33,12 @@ dizia "Work in Portugal".
   Nao e falta: e escolha.
 - **Migracao 0013 confirmada corrida** - `item_stats` responde 200.
 
-### Por confirmar
+### Migracoes
 
-A **0012** nao da para verificar de fora: o PostgREST nao expoe a definicao da
-funcao e `start_assessment_attempt` falha da mesma maneira nas duas versoes
-quando chamada sem sessao. Para confirmar, no SQL editor:
-
-```sql
-select pg_get_functiondef(oid) ilike '%payment_status%' as ainda_exige_pagamento
-from pg_proc where proname = 'start_assessment_attempt';
-```
-
-`false` = a 0012 esta corrida.
+**Todas corridas.** 0013 confirmada por mim (`item_stats` responde 200); a 0012
+confirmada pelo Abilio, que nao da para verificar de fora porque o PostgREST nao
+expoe a definicao da funcao e `start_assessment_attempt` falha da mesma maneira
+nas duas versoes quando chamada sem sessao.
 
 ---
 
