@@ -293,6 +293,30 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
           </p>
         </div>
 
+        {/*
+          Dubai, not a bedroom.
+
+          The slot was labelled "staff accommodation" once, and a stock
+          photograph of an unrelated flat beside a list that promises housing
+          reads as a picture of the housing. This shows the city the job is in,
+          which is something the page can stand behind: Sheikh Zayed Road at
+          sunset, with the Burj in the skyline, is unmistakably Dubai rather
+          than any city with towers.
+
+          It replaces the Lisbon photograph that stood here until the
+          destination changed.
+        */}
+        <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[24px]">
+          <Image
+            src="/dubai-skyline-1200.jpg"
+            alt="Sheikh Zayed Road in Dubai at sunset, looking along the skyline towards the Burj Khalifa"
+            fill
+            sizes="(max-width: 900px) 100vw, 480px"
+            placeholder="blur"
+            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAZABQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDaVl+0mD+IKGq5HHWZ58K6hPKrBm8tdpHfrWjBdxu7rkfK+3603ISiWQvFFRWlyJkcnqrlfyoqblWORnmEV3AeB8uDtGOgNTvdeQxKyjdId2NuMZ6D61Vu/wDkKx/Q/wA6rD76f59KQzorOVUib/SA2WJziise0/1A+tFAH//Z"
+            className="object-cover"
+          />
+        </div>
       </section>
 
       {/* -------------------------------------------------------------- funnel */}

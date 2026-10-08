@@ -4,6 +4,50 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 45 - 08 Oct 2026, abilio.diz@smithandadams.com
+
+**Fecho das pendencias do pivot.**
+
+### Foto do Dubai
+
+`dubai-skyline-sunset-time-united-arab-emirates.jpg` (3000x4500, 8,6 MB) ->
+`public/dubai-skyline-800.jpg` (131 KB) e `-1200.jpg` (269 KB), corte 4:5, q80
+progressivo 4:2:0, mais LQIP inline. Cortada **a partir do topo e nao do
+centro**: o fundo do enquadramento e a grade de uma varanda, e o que torna a
+foto inequivocamente Dubai sao as torres e o Burj.
+
+Ocupa o lugar que a foto de Lisboa deixou vago na seccao "What a selected
+candidate receives". Verificado a carregar e a enquadrar.
+
+### Cartao de partilha redesenhado
+
+`public/brand/og.png` refeito com a hierarquia nova: o **slogan como titulo**,
+"Work in the UAE." como linha de apoio, e o dominio no rodape. O anterior ainda
+dizia "Work in Portugal".
+
+### Confirmado / decidido pelo Abilio
+
+- **Traducoes hindi e arabe aprovadas.** Deixa de estar pendente leitura por
+  nativo.
+- **Os 138 itens do assessment ficam a cair para ingles em arabe**, por decisao.
+  Nao e falta: e escolha.
+- **Migracao 0013 confirmada corrida** - `item_stats` responde 200.
+
+### Por confirmar
+
+A **0012** nao da para verificar de fora: o PostgREST nao expoe a definicao da
+funcao e `start_assessment_attempt` falha da mesma maneira nas duas versoes
+quando chamada sem sessao. Para confirmar, no SQL editor:
+
+```sql
+select pg_get_functiondef(oid) ilike '%payment_status%' as ainda_exige_pagamento
+from pg_proc where proname = 'start_assessment_attempt';
+```
+
+`false` = a 0012 esta corrida.
+
+---
+
 ## Bloco 44 - 08 Oct 2026, abilio.diz@smithandadams.com
 
 **Video de fundo no hero, por tras de uma cortina terracota.**
