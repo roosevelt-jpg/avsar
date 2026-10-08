@@ -97,29 +97,19 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
         <p className="relative m-0 mt-3 text-[15px] leading-[1.5] text-white/70">{BRAND.tagline}</p>
 
         {/*
-          The slogan, promoted out of the footer.
+          The slogan is the headline now.
 
-          It is the one line that says what the company claims to be good at
-          rather than what it sells, and it was reaching people only after they
-          had already decided. Set in the accent and letterspaced so it reads as
-          a mark rather than as a sentence competing with the headline below it.
+          It stays in English in all three locales, on purpose. A slogan is part
+          of the mark rather than part of the copy: translating it would give
+          the company three different claims about itself depending on which
+          button a reader pressed.
         */}
-        {/* Paper, not the accent: the curtain is already the accent, and the
-            slogan set in it would disappear into its own background. */}
-        <p className="relative m-0 mt-[clamp(32px,5cqi,56px)] font-mono text-[clamp(12px,1.3cqi,14px)] uppercase tracking-[0.22em] text-white/75">
+        <h1 className="relative m-0 mt-[clamp(32px,5cqi,56px)] max-w-[16ch] text-balance text-[clamp(38px,6.4cqi,76px)] font-semibold leading-[1.02] tracking-[-0.035em] [text-shadow:0_1px_24px_rgba(27,26,23,0.35)]">
           {BRAND.slogan}
-        </p>
-
-        <h1 className="relative m-0 mt-4 max-w-[17ch] text-balance text-[clamp(36px,6cqi,72px)] font-semibold leading-[1.03] tracking-[-0.035em] [text-shadow:0_1px_24px_rgba(27,26,23,0.35)]">
-          {t.heroTitle}
         </h1>
 
-        <p className="relative m-0 mt-4 max-w-[34ch] text-balance text-[clamp(19px,2.2cqi,26px)] font-medium leading-[1.3] tracking-[-0.02em] text-white/90">
-          {t.heroSubheadline}
-        </p>
-
-        <p className="relative m-0 mt-6 max-w-[58ch] text-[clamp(16px,1.6cqi,18px)] leading-[1.6] text-white/80">
-          {t.heroSub}
+        <p className="relative m-0 mt-5 max-w-[32ch] text-balance text-[clamp(19px,2.4cqi,28px)] font-medium leading-[1.3] tracking-[-0.02em] text-white/90">
+          {t.heroTitle}
         </p>
       </section>
 
@@ -131,11 +121,16 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
 
         The tagline that used to sit here has moved to the top of the page.
       */}
-      <section className="px-[clamp(20px,4cqi,56px)] pb-[clamp(44px,6cqi,80px)]">
+      <section className="px-[clamp(20px,4cqi,56px)] pt-[clamp(40px,6cqi,72px)] pb-[clamp(44px,6cqi,80px)]">
         <div className="flex flex-wrap items-center justify-between gap-6 rounded-[28px] bg-accent px-[clamp(24px,4cqi,56px)] py-[clamp(28px,4cqi,48px)]">
-          <h2 className="m-0 max-w-[24ch] text-[clamp(24px,3.2cqi,40px)] font-semibold leading-[1.15] tracking-[-0.03em] text-white">
-            {t.ctaTitle}
-          </h2>
+          <div className="max-w-[30ch]">
+            <h2 className="m-0 text-[clamp(24px,3.2cqi,40px)] font-semibold leading-[1.15] tracking-[-0.03em] text-white">
+              {t.ctaTitle}
+            </h2>
+            <p className="m-0 mt-2.5 text-[clamp(16px,1.7cqi,19px)] leading-[1.45] text-white/85">
+              {t.heroSubheadline}
+            </p>
+          </div>
           <Link
             href={`/${locale}/signup`}
             className="t-colors shrink-0 rounded-[12px] bg-white px-5 py-3 text-[15px] font-medium text-ink no-underline hover:bg-paper"
@@ -143,6 +138,22 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
             {t.cta} →
           </Link>
         </div>
+      </section>
+
+      {/*
+        What the thing actually is, before the list of jobs.
+
+        Somebody who has read the slogan and the destination still does not know
+        what they are being offered. This is that paragraph, and it sits here
+        because the next thing on the page asks them to pick a trade.
+      */}
+      <section className="px-[clamp(20px,4cqi,56px)] pb-[clamp(44px,6cqi,80px)]">
+        <h2 className="m-0 max-w-[24ch] text-[clamp(28px,4cqi,48px)] font-semibold leading-[1.1] tracking-[-0.03em]">
+          {t.howTitle}
+        </h2>
+        <p className="mt-4 mb-0 max-w-[62ch] text-[clamp(16px,1.7cqi,19px)] leading-[1.6] text-ink-2">
+          {t.heroSub}
+        </p>
       </section>
 
       {/* ------------------------------------------------------------ positions */}
