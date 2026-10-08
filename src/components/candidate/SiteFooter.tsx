@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { BRAND } from '@/lib/data/brand';
+import { BRAND, ENTITY } from '@/lib/data/brand';
 import { getDictionary, type Locale } from '@/lib/i18n';
 
 export function SiteFooter({ locale }: { locale: Locale }) {
@@ -33,7 +33,7 @@ export function SiteFooter({ locale }: { locale: Locale }) {
         </nav>
       </div>
       {/*
-        The parent mark. A candidate in India is being asked to send money to a
+        The parent mark. A candidate abroad is being asked to send money to a
         company they have never heard of, and the one thing that makes that
         reasonable is that it belongs to a business with a name and an address.
         Hiding the parent would be the strange choice.
@@ -59,6 +59,35 @@ export function SiteFooter({ locale }: { locale: Locale }) {
           {BRAND.slogan}
         </p>
         <p className="m-0 font-mono text-[12px] text-dark-muted">{t.footerLegal}</p>
+      </div>
+
+      {/*
+        Who is actually being paid.
+
+        The legal name, the licence number and the registered address, in full,
+        because the company a candidate pays is not the name above the door and
+        they should not have to find that out from their bank statement. It is
+        also the first thing a payment provider's compliance review looks for on
+        a live site, and the cheapest place to put it is where it already
+        belongs.
+      */}
+      <div className="mt-6 flex flex-col gap-1 border-t border-dark-line pt-6 font-mono text-[12px] leading-[1.6] text-dark-muted">
+        <p className="m-0">
+          {ENTITY.legalName} · {ENTITY.registrationLabel} {ENTITY.registrationNumber}
+        </p>
+        <p className="m-0">{ENTITY.registeredAddress}</p>
+        <p className="m-0">
+          <a href={`tel:${ENTITY.phone.replace(/\s/g, '')}`} className="hover:text-paper t-colors">
+            {ENTITY.phone}
+          </a>
+          {' · '}
+          <a href={`mailto:${ENTITY.supportEmail}`} className="hover:text-paper t-colors">
+            {ENTITY.supportEmail}
+          </a>
+        </p>
+        <p className="m-0">
+          Trading as {ENTITY.tradingAs}. Charges appear as {ENTITY.statementDescriptor}.
+        </p>
       </div>
     </footer>
   );

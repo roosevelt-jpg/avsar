@@ -96,6 +96,8 @@ export type Dictionary = {
     fullName: string;
     fullNameHint: string;
     mobile: string;
+    /** Accessible name for the dialling-code selector beside it. */
+    countryCode: string;
     email: string;
     passportQ: string;
     passportYes: string;
@@ -458,6 +460,7 @@ const en: Dictionary = {
     fullName: 'Full name',
     fullNameHint: 'as on passport',
     mobile: 'Mobile number',
+    countryCode: 'Country dialling code',
     email: 'Email',
     passportQ: 'Do you have a valid passport?',
     passportYes: 'Yes',
@@ -896,6 +899,7 @@ const hi: Dictionary = {
     fullName: 'पूरा नाम',
     fullNameHint: 'पासपोर्ट के अनुसार',
     mobile: 'मोबाइल नंबर',
+    countryCode: 'देश का डायलिंग कोड',
     email: 'ईमेल',
     passportQ: 'क्या आपके पास वैध पासपोर्ट है?',
     passportYes: 'हाँ',

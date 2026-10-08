@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { registerSchema } from '@/lib/validation';
+import { registerSchema, toE164 } from '@/lib/validation';
 import { COHORT } from '@/lib/data/cohort';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { getServerSupabase } from '@/lib/supabase/server';
@@ -34,8 +34,22 @@ export async function POST(request: Request) {
 
   const input = parsed.data;
   const email = input.email.toLowerCase();
-  const phone = `+91${input.mobile}`;
-  const phoneHash = identityHash(input.mobile);
+  /**
+   * E.164, and the hash is of the whole number.
+   *
+   * It used to be `+91` glued to ten digits, and the hash was of the national
+   * part alone. With candidates from two hundred countries that is a collision
+   * waiting to happen: 50 123 4567 is a real number in several of them, and two
+   * different people would have shared a `phone_hash` and therefore a row.
+   */
+  const phone = toE164(input.country, input.mobile);
+  if (!phone) {
+    return NextResponse.json(
+      { error: 'validation_failed', issues: { mobile: ['invalid_mobile'] } },
+      { status: 422 },
+    );
+  }
+  const phoneHash = identityHash(phone);
   const locale = request.headers.get('x-avsar-locale') ?? 'en';
 
   const admin = getAdminSupabase();

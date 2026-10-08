@@ -1,12 +1,52 @@
 import { z } from 'zod';
+import parsePhoneNumberFromString, { type CountryCode } from 'libphonenumber-js';
+import { isSupportedCountry } from '@/lib/data/dial-codes';
 import { SECTOR_SLUGS } from '@/lib/data/sectors';
 
-/** Indian mobile: 10 digits starting 6-9, per the handoff's validation note. */
-export const indianMobile = z
-  .string()
-  .trim()
-  .transform((value) => value.replace(/[\s-]/g, ''))
-  .pipe(z.string().regex(/^[6-9]\d{9}$/));
+/**
+ * A mobile number from anywhere, validated against the rules of its own country.
+ *
+ * It used to be ten digits starting 6 to 9, which is correct for India and
+ * wrong for everywhere else, and the platform now takes candidates from
+ * anywhere. A regex that covers two hundred and forty-five numbering plans does
+ * not exist, so the country comes in beside the number and `libphonenumber-js`
+ * answers whether the pair is a real mobile.
+ *
+ * Validated as a pair rather than as two fields, because neither is meaningful
+ * alone: 50 123 4567 is a valid UAE mobile and not a valid Indian one.
+ */
+export const phoneFields = z
+  .object({
+    /** ISO 3166-1 alpha-2, from the selector. */
+    country: z.string().length(2).toUpperCase(),
+    mobile: z
+      .string()
+      .trim()
+      .transform((value) => value.replace(/[\s\-().]/g, '')),
+  })
+  .refine(({ country }) => isSupportedCountry(country), {
+    message: 'unknown_country',
+    path: ['country'],
+  })
+  .refine(
+    ({ country, mobile }) => {
+      const parsed = parsePhoneNumberFromString(mobile, country as CountryCode);
+      /* MOBILE or the ambiguous type, because in several countries the ranges
+         overlap and the library will not commit. Refusing those would turn a
+         real number into a form somebody cannot get past. */
+      return Boolean(
+        parsed?.isValid() &&
+          (parsed.getType() === 'MOBILE' || parsed.getType() === 'FIXED_LINE_OR_MOBILE' || parsed.getType() === undefined),
+      );
+    },
+    { message: 'invalid_mobile', path: ['mobile'] },
+  );
+
+/** E.164, which is the only form worth storing. */
+export function toE164(country: string, mobile: string): string | null {
+  const parsed = parsePhoneNumberFromString(mobile, country as CountryCode);
+  return parsed?.isValid() ? parsed.number : null;
+}
 
 /**
  * Eight characters, not Supabase's default six.
@@ -18,15 +58,35 @@ export const indianMobile = z
  */
 export const password = z.string().min(8).max(200);
 
-export const signupAccountSchema = z.object({
-  fullName: z.string().trim().min(2).max(120),
-  mobile: indianMobile,
-  email: z.string().trim().email().max(200),
+const accountFields = z.object({
+    fullName: z.string().trim().min(2).max(120),
+    country: z.string().length(2).toUpperCase(),
+    mobile: z.string().trim().max(24),
+    email: z.string().trim().email().max(200),
   hasPassport: z.boolean(),
 });
 
+/**
+ * The phone check, applied where a schema is finished rather than in the middle.
+ *
+ * `superRefine` returns a ZodEffects, and a ZodEffects cannot be extended or
+ * merged. Refining the base object would therefore have made it the last thing
+ * any schema could do with these fields, so the raw object stays composable and
+ * every final schema ends with this.
+ */
+function withPhoneCheck<T extends z.ZodTypeAny>(schema: T) {
+  return schema.superRefine((value, ctx) => {
+    const { country, mobile } = value as { country: string; mobile: string };
+    const result = phoneFields.safeParse({ country, mobile });
+    if (result.success) return;
+    for (const issue of result.error.issues) ctx.addIssue(issue);
+  });
+}
+
+export const signupAccountSchema = withPhoneCheck(accountFields);
+
 /** The first step: enough to open the account, and nothing more. */
-export const registerSchema = signupAccountSchema.extend({ password });
+export const registerSchema = withPhoneCheck(accountFields.extend({ password }));
 
 export type RegisterInput = z.infer<typeof registerSchema>;
 
@@ -39,7 +99,8 @@ export const signupProfileSchema = z.object({
 
 export const paymentMethodSchema = z.enum(['upi', 'card', 'netbanking']);
 
-export const signupSchema = signupAccountSchema.merge(signupProfileSchema).extend({
+export const signupSchema = withPhoneCheck(
+  accountFields.merge(signupProfileSchema).extend({
   /**
    * Mandatory, and stored rather than merely checked.
    *
@@ -51,8 +112,9 @@ export const signupSchema = signupAccountSchema.merge(signupProfileSchema).exten
    * No payment method here any more. That is asked for at checkout, which is
    * its own step and its own route.
    */
-  consent: z.literal(true),
-});
+    consent: z.literal(true),
+  }),
+);
 
 export type SignupInput = z.infer<typeof signupSchema>;
 
