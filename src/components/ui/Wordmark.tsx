@@ -68,7 +68,16 @@ export function Wordmark({
   size?: number;
 }) {
   const inner = (
+    /*
+      Pinned to `ltr`, inside an Arabic page that is `rtl`.
+
+      Flex children reverse under `dir="rtl"`, which turned the mark into
+      "Recruitment S&A" and put the logo on the wrong side of it. A company name
+      is not a sentence: it does not translate and it does not reverse. The
+      surrounding page still flips, and this one object does not.
+    */
     <span
+      dir="ltr"
       aria-label={BRAND.name}
       className={`flex flex-wrap items-center gap-x-2.5 gap-y-0.5 ${
         tone === 'dark' ? 'text-paper' : 'text-ink'

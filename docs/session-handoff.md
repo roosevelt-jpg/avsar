@@ -4,6 +4,97 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Bloco 43 - 08 Oct 2026, abilio.diz@smithandadams.com
+
+**Pivot: India -> Portugal passou a mundo -> Emirados. E arabe como 3.o idioma.**
+
+### Dinheiro
+
+AED em vez de INR. `ASSESSMENT_FEE` agora `eur: 25, aedPerEur: 4` -> **AED 99**.
+IVA dos Emirados **5%** dentro do total, em vez de GST indiano 18%. `paise` ->
+`fils`, `formatInr` -> `formatAed`, `GST_RATE` -> `VAT_RATE`, token `{inr}` ->
+`{price}`. As colunas da BD (`amount_paise`, `gst_paise`) ficaram com o nome
+antigo: nao houve pagamentos, mas renomear exigia migracao e ja ha duas por
+correr.
+
+### Portugal fora
+
+79 ocorrencias em 20 ficheiros. Tres nao eram so palavras:
+
+- **Foto dos telhados de Lisboa apagada.** Estava legendada como a cidade do
+  emprego, o que num site dos Emirados e falso. **Falta uma foto do Dubai.**
+- **Foto da cozinha ficou** (mostra trabalho e nao um lugar) mas o ficheiro foi
+  renomeado: `/lisbon-kitchen-` no codigo-fonte e uma afirmacao sobre o destino
+  que qualquer um le.
+- **Dois itens do assessment ficaram errados** com a mudanca: um pedia as horas
+  de conducao da UE e outro a tensao de Portugal. O primeiro passou a perguntar
+  para que serve o limite, o segundo pergunta pelos Emirados. E o item de perfil
+  sobre aprender portugues pergunta agora por arabe.
+
+### Telefone
+
+Indicativo de pais com **245 paises**, construido a partir do
+`libphonenumber-js` e do `Intl.DisplayNames` - uma lista de 250 paises escrita a
+mao tem erros, e os erros caem nos candidatos dos sitios que ninguem verificou.
+A mesma biblioteca valida no formulario e no servidor. Guardado em **E.164**, e
+o `identityHash` passou a ser do numero inteiro: antes era so da parte nacional,
+e com candidatos de 200 paises isso e uma colisao a espera de acontecer.
+Telefone da empresa: **+971 58 568 0441**.
+
+Verificado contra a app: numero dos Emirados guarda `+971583116678`, invalido da
+422, indiano continua a passar.
+
+### Hero
+
+Centrado, **sem video** (era um minuto de India e Portugal; volta quando houver
+uma versao que bata certo), slogan em destaque em terracota por cima do titulo,
+subheadline novo.
+
+**Nao escrevi "N1 recruitment agency in UAE".** E alegacao de superioridade
+factual, nao verificavel, e ainda nao colocaram ninguem. Ficou
+`Hiring for the UAE, from anywhere in the world.` a espera de decisao.
+
+### Arabe
+
+`locales = ['en','hi','ar']`. Dicionario completo em `lib/i18n/ar.ts` (~425
+strings, MSA, digitos ocidentais). O tipo `Dictionary` recusa um dicionario
+parcial, de proposito: pagina meio traduzida e pior do que pagina atrasada.
+
+- `localeDirection` e `dir` no wrapper do locale -> RTL herda para tudo
+- Noto Sans Arabic encadeado no `--font-sans` **e** no `--font-mono` (JetBrains
+  nao tem glifos arabes, e as etiquetas pequenas levam arabe)
+- **Wordmark fixado em `dir="ltr"`**: o flex invertia e lia-se "Recruitment S&A".
+  Um nome de empresa nao e uma frase, nao traduz e nao inverte
+- `formatAed` embrulhado em isolados Unicode (U+2066/U+2069), senao o algoritmo
+  bidi troca "AED 99" dentro de frases arabes
+- Select de indicativo e campo de telefone tambem `dir="ltr"`
+
+Verificado em `/ar` e `/ar/signup`: RTL correcto, 245 paises, resumo do pedido a
+dar AED 94 + AED 5 IVA = AED 99, sem overflow horizontal.
+
+### Por fazer
+
+- **Os 138 itens do assessment nao tem arabe.** Caem para ingles, que funciona e
+  nao rebenta, mas um candidato que escolheu arabe faz o teste em ingles.
+- **O arabe precisa de leitura por nativo** antes de ir para a frente de alguem.
+  Esta completo e cuidado; nao e o mesmo que estar verificado.
+- Cartao OG ainda diz "Work in Portugal" - e imagem, tem de ser redesenhada.
+- Falta foto do Dubai para o lugar dos telhados de Lisboa.
+- `cashfree.ts` tira `^\+91` do telefone; so afecta esse adaptador, que nao esta
+  configurado.
+
+### Avisos dados ao Abilio
+
+A lei dos Emirados (Decreto-Lei Federal 33/2021, art. 6) proibe uma agencia de
+recrutamento de cobrar ao trabalhador, e exige licenca MOHRE para actividade de
+mediacao. Posicionar como plataforma de recrutamento, para empregos nos
+Emirados, a partir de uma entidade dos Emirados, cobrando ao candidato, e a
+configuracao que a lei visa. A saida sugerida foi posicionar como plataforma de
+**avaliacao e documentacao de carreira**, que e o que o `merchant-description.md`
+ja diz que se vende pelos 25 euros.
+
+---
+
 ## Bloco 42 - 07 Oct 2026, 11:20, abilio.diz@smithandadams.com
 
 **Topo da landing reorganizado, em dois passos.**

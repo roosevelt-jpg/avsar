@@ -1,5 +1,6 @@
 export {
   locales,
+  localeDirection,
   defaultLocale,
   isLocale,
   localeLabels,

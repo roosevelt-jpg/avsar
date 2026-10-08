@@ -116,7 +116,14 @@ export function activePrice() {
  */
 export function formatAed(fils: number): string {
   const dirhams = Math.round(fils / 100);
-  return `AED ${dirhams.toLocaleString('en-US')}`;
+  /*
+    Wrapped in a Unicode isolate, because this string is dropped into Arabic
+    sentences. Without it the bidi algorithm can reorder "AED 99" against the
+    surrounding right-to-left text and show the number on the wrong side of the
+    currency. The two characters are invisible and cost nothing in the two
+    left-to-right locales.
+  */
+  return `\u2066AED ${dirhams.toLocaleString('en-US')}\u2069`;
 }
 
 /**

@@ -264,6 +264,9 @@ export function SignupFlow({
               <select
                 value={country}
                 onChange={(event) => setCountry(event.target.value)}
+                /* Country code and number read left to right in every locale:
+                   a dialling code is a number, not prose. */
+                dir="ltr"
                 aria-label={s.countryCode}
                 autoComplete="tel-country-code"
                 className="max-w-[9.5rem] shrink-0 cursor-pointer border-0 border-r border-line-strong bg-surface-subtle py-3 pl-3.5 pr-2 font-mono text-[14px] text-ink-2 outline-none"
@@ -277,6 +280,7 @@ export function SignupFlow({
               <input
                 value={mobile}
                 onChange={(event) => setMobile(event.target.value.replace(/[^\d\s-]/g, ''))}
+                dir="ltr"
                 inputMode="tel"
                 autoComplete="tel-national"
                 maxLength={20}

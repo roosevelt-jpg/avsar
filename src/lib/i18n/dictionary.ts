@@ -6,13 +6,16 @@
  * for Hindi to be extended beyond the landing page, so sign-up, assessment,
  * dashboard and FAQ copy is translated here.
  *
- * Tamil, Telugu, Malayalam and Punjabi are listed as later candidates in the
- * handoff. Adding one means adding a key to `locales` and a block below.
+ * English and Hindi live in this file; Arabic is large enough to live in its
+ * own. Adding a language means a key in `locales`, a label, a direction, and a
+ * complete block: the `Dictionary` type refuses a partial one, which is
+ * deliberate, because a half-translated page is worse than a late one.
  */
 
 import { PLACEMENT_FEE_UNDISCLOSED } from '@/lib/data/brand';
+import { ar } from './ar';
 
-export const locales = ['en', 'hi'] as const;
+export const locales = ['en', 'hi', 'ar'] as const;
 export type Locale = (typeof locales)[number];
 export const defaultLocale: Locale = 'en';
 
@@ -20,8 +23,18 @@ export function isLocale(value: string): value is Locale {
   return (locales as readonly string[]).includes(value);
 }
 
-/** Label shown in the EN/हिं pill toggle. */
-export const localeLabels: Record<Locale, string> = { en: 'EN', hi: 'हिं' };
+/** Label shown in the language pill. Each in its own script. */
+export const localeLabels: Record<Locale, string> = { en: 'EN', hi: 'हिं', ar: 'ع' };
+
+/**
+ * Writing direction.
+ *
+ * Set on the locale wrapper rather than on `<html>`, because the root layout is
+ * shared by routes that have no locale at all. `dir` inherits, so everything
+ * inside flips: text alignment, list markers, the order of flex and grid
+ * children, and scrollbars.
+ */
+export const localeDirection: Record<Locale, 'ltr' | 'rtl'> = { en: 'ltr', hi: 'ltr', ar: 'rtl' };
 
 type Pair = readonly [title: string, body: string];
 
@@ -496,7 +509,7 @@ const en: Dictionary = {
     summaryNote:
       'One price, charged once, after the assessment. Full refund if you cancel before starting it.',
     errRequired: 'This field is required.',
-    errMobile: 'Enter a 10-digit Indian mobile number starting with 6, 7, 8 or 9.',
+    errMobile: 'Enter a valid mobile number for the country you selected.',
     errEmail: 'Enter a valid email address.',
     errConsent: 'Please confirm you have read the selection rules.',
     errPassword: 'Use at least 8 characters.',
@@ -935,7 +948,7 @@ const hi: Dictionary = {
     summaryNote:
       'एक ही क़ीमत, मूल्यांकन के बाद एक बार। शुरू करने से पहले रद्द करने पर पूरा रिफ़ंड।',
     errRequired: 'यह फ़ील्ड आवश्यक है।',
-    errMobile: '6, 7, 8 या 9 से शुरू होने वाला 10 अंकों का भारतीय मोबाइल नंबर डालें।',
+    errMobile: 'आपने जो देश चुना है, उसके लिए मान्य मोबाइल नंबर डालें।',
     errEmail: 'मान्य ईमेल पता डालें।',
     errConsent: 'कृपया पुष्टि करें कि आपने चयन नियम पढ़ लिए हैं।',
     errPassword: 'कम से कम 8 अक्षर इस्तेमाल करें।',
@@ -1235,7 +1248,7 @@ const hi: Dictionary = {
   },
 };
 
-export const dictionaries: Record<Locale, Dictionary> = { en, hi };
+export const dictionaries: Record<Locale, Dictionary> = { en, hi, ar };
 
 /**
  * Blanked while the placement fee is withheld, so the wording is not merely

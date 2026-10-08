@@ -6,6 +6,7 @@ import {
   DM_Sans,
   DM_Serif_Display,
   Noto_Serif_Devanagari,
+  Noto_Sans_Arabic,
 } from 'next/font/google';
 import './globals.css';
 
@@ -25,6 +26,21 @@ const devanagari = Noto_Sans_Devanagari({
   subsets: ['devanagari'],
   weight: ['400', '500', '600', '700'],
   variable: '--font-devanagari',
+  display: 'swap',
+});
+
+/**
+ * Arabic, for the third locale.
+ *
+ * Chained into both the sans and the mono stacks rather than swapped in. A page
+ * in Arabic still carries Latin strings: the company name, AED, an email
+ * address, the dialling codes. Swapping the family would leave those to a
+ * fallback and the two would not sit on the same baseline.
+ */
+const arabic = Noto_Sans_Arabic({
+  subsets: ['arabic'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-arabic',
   display: 'swap',
 });
 
@@ -116,7 +132,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body
-        className={`${sans.variable} ${devanagari.variable} ${mono.variable} ${bSerif.variable} ${bSans.variable} ${bDevanagari.variable}`}
+        className={`${sans.variable} ${devanagari.variable} ${mono.variable} ${bSerif.variable} ${bSans.variable} ${bDevanagari.variable} ${arabic.variable}`}
       >
         {/* The scroll reveals start hidden and are uncovered by an observer,
             so without scripting they would never arrive. Crawlers run the

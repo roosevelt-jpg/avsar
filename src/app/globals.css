@@ -37,8 +37,10 @@
   --color-success: oklch(0.62 0.14 150);
 
   /* Type. The --font-* variables come from next/font in the root layout. */
-  --font-sans: var(--font-schibsted), var(--font-devanagari), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+  --font-sans: var(--font-schibsted), var(--font-devanagari), var(--font-arabic), ui-sans-serif, system-ui, sans-serif;
+  /* Arabic in the mono stack too: the small uppercase labels carry Arabic in
+     the third locale, and JetBrains Mono has no Arabic glyphs at all. */
+  --font-mono: var(--font-jetbrains), var(--font-arabic), ui-monospace, monospace;
 
   /* Radius */
   --radius-card: 16px;
