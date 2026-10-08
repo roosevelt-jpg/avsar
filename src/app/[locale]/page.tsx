@@ -147,7 +147,7 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
         what they are being offered. This is that paragraph, and it sits here
         because the next thing on the page asks them to pick a trade.
       */}
-      <section className="px-[clamp(20px,4cqi,56px)] pb-[clamp(44px,6cqi,80px)]">
+      <section id="how" className="px-[clamp(20px,4cqi,56px)] pb-[clamp(44px,6cqi,80px)]">
         <h2 className="m-0 max-w-[24ch] text-[clamp(28px,4cqi,48px)] font-semibold leading-[1.1] tracking-[-0.03em]">
           {t.howTitle}
         </h2>
@@ -204,7 +204,7 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
       </div>
 
       {/* ------------------------------------------------------- the six steps */}
-      <section id="how" className="bg-ink px-[clamp(20px,4cqi,56px)] py-[clamp(56px,8cqi,104px)] text-paper">
+      <section className="bg-ink px-[clamp(20px,4cqi,56px)] py-[clamp(56px,8cqi,104px)] text-paper">
         {/* One measure for the whole section. The heading used to start at the
             page gutter while the walkthrough was centred under it, so the block
             had two different left edges. */}

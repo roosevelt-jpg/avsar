@@ -603,7 +603,11 @@ const en: Dictionary = {
   },
 
   process: {
-    title: 'How it works',
+    /* Not "How it works" any more. That heading now belongs to the short
+       section near the top, which is the one the navigation points at; this is
+       the detail underneath it, and two headings with the same words sent a
+       reader past the first one without seeing it. */
+    title: 'Step by step',
     lead: 'Six steps, and you know where you stand at every one of them.',
     steps: [
       ['Register', 'Create your account with your name, mobile and email. It takes two minutes.'],
@@ -1040,7 +1044,7 @@ const hi: Dictionary = {
   },
 
   process: {
-    title: 'यह कैसे काम करता है',
+    title: 'कदम दर कदम',
     lead: 'छह चरण, और हर चरण पर आपको पता रहता है कि आप कहाँ हैं।',
     steps: [
       ['रजिस्टर करें', 'अपने नाम, मोबाइल और ईमेल से खाता बनाएँ। दो मिनट लगते हैं।'],
