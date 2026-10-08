@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { EntityDetails } from '@/components/ui/EntityDetails';
 import { isLocale } from '@/lib/i18n';
-import { activePrice, formatInr } from '@/lib/data/cohort';
+import { activePrice, formatAed } from '@/lib/data/cohort';
 import {
   ASSESSMENT_FEE,
   BRAND,
@@ -24,7 +24,7 @@ export const metadata = { title: 'Terms and conditions' };
 export default async function TermsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
-  const price = formatInr(activePrice().totalPaise);
+  const price = formatAed(activePrice().totalFils);
 
   return (
     <>

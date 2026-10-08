@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { getDictionary, isLocale } from '@/lib/i18n';
-import { activePrice, formatInr } from '@/lib/data/cohort';
+import { activePrice, formatAed } from '@/lib/data/cohort';
 
 export const metadata = { title: 'Refund policy' };
 
@@ -31,7 +31,7 @@ export default async function RefundPolicyPage({ params }: { params: Promise<{ l
 
       <h2>If you have paid and not downloaded anything</h2>
       <p>
-        Write to us within 14 days and the full {formatInr(price.totalPaise)},
+        Write to us within 14 days and the full {formatAed(price.totalFils)},
         including the GST component, is refunded to the original payment method.
         Nothing has been delivered, so there is nothing to argue about.
       </p>

@@ -37,6 +37,8 @@ export type Dictionary = {
   eyebrow: string;
   heroTitle: string;
   heroSub: string;
+  /** Under the headline. Says who the platform is for, in one line. */
+  heroSubheadline: string;
   /** Under the hero film. Says what it is and how long it takes. */
   videoLabel: string;
   videoPlay: string;
@@ -118,7 +120,7 @@ export type Dictionary = {
     summaryItem: string;
     summaryIncludes: readonly string[];
     summaryEarly: string;
-    summaryGst: string;
+    summaryVat: string;
     summaryTotal: string;
     summaryNote: string;
     errRequired: string;
@@ -362,16 +364,17 @@ const en: Dictionary = {
   navEmployers: 'For employers',
   signIn: 'Sign in',
 
-  eyebrow: 'India → Portugal · Applications open',
-  heroTitle: 'Work in Portugal. We handle everything after you are selected.',
+  eyebrow: 'Worldwide → UAE · Applications open',
+  heroTitle: 'Work in the UAE. We handle everything after you are selected.',
+  heroSubheadline: 'Hiring for the UAE, from anywhere in the world.',
   heroSub:
-    'A professional assessment of your skills, experience and English. Selected candidates receive a contract with a Portuguese employer, accommodation, meals and legal support through the whole visa process.',
+    'A professional assessment of your skills, experience and English. Selected candidates receive a contract with a UAE employer, accommodation, meals and legal support through the whole visa process.',
   videoLabel: 'Watch how it works · 53 seconds',
   videoPlay: 'Play the film',
   askWork: 'What position are you applying for?',
   cta: 'Start your application',
   fine: 'You pay the assessment fee once, after you have seen what the assessment involves. Selection is not guaranteed, and we tell you either way within {days} days.',
-  heroMeta: '{inr} · 20–30 min · online',
+  heroMeta: '{price} · 20–30 min · online',
 
   includesTitle: 'What your fee includes',
   howTitle: 'How it works',
@@ -386,7 +389,7 @@ const en: Dictionary = {
   noPlacementFee:
     'You never pay us for the job itself. The assessment fee is the only thing you pay. The employer pays our placement fee, not you.',
   placementFee:
-    'If you are placed, there is a placement fee of €{eur}. You pay it only once your job is confirmed and your contract is signed, never before. The {inr} assessment fee is separate and is what you pay now.',
+    'If you are placed, there is a placement fee of €{eur}. You pay it only once your job is confirmed and your contract is signed, never before. The {price} assessment fee is separate and is what you pay now.',
   placementFeeShort: 'Placement fee €{eur}, payable only after your job is confirmed.',
   rateLine:
     '{rate}% of the candidates we put in front of an employer are hired. Getting to that stage is the hard part, and this is what it looks like.',
@@ -414,7 +417,7 @@ const en: Dictionary = {
     ['Selection', 'Shortlisted candidates are interviewed and presented to employers. Selection is not guaranteed.'],
   ],
   place: [
-    '{years}-year employment contract with a Portuguese employer',
+    '{years}-year employment contract with a UAE employer',
     'Monthly salary',
     'Accommodation',
     'Meals',
@@ -441,7 +444,7 @@ const en: Dictionary = {
   footerDelivery: 'Service delivery',
   footerPrivacy: 'Privacy',
   footerContact: 'Contact',
-  footerLegal: '© 2026 S&A Recruitment, a Smith & Adams company · Lisbon · New Delhi',
+  footerLegal: '© 2026 S&A Recruitment, a Smith & Adams company · Dubai, United Arab Emirates',
 
   signup: {
     help: 'Need help? Call or message {phone}',
@@ -466,9 +469,9 @@ const en: Dictionary = {
     englishOptions: ['Basic', 'Conversational', 'Fluent'],
     cityState: 'City and state',
     consent:
-      'I understand the assessment is free to sit, and that the fee is payable afterwards if I want my skills report, my rewritten CV and my place in the talent pool. Selection for a Portugal placement is not guaranteed. If I am placed, a placement fee of €1,000 is payable after my job is confirmed and my contract is signed. I have read the',
+      'I understand the assessment is free to sit, and that the fee is payable afterwards if I want my skills report, my rewritten CV and my place in the talent pool. Selection for a UAE placement is not guaranteed. If I am placed, a placement fee of €1,000 is payable after my job is confirmed and my contract is signed. I have read the',
     consentNoPlacement:
-      'I understand the assessment is free to sit, and that the fee is payable afterwards if I want my skills report, my rewritten CV and my place in the talent pool. Selection for a Portugal placement is not guaranteed. I have read the',
+      'I understand the assessment is free to sit, and that the fee is payable afterwards if I want my skills report, my rewritten CV and my place in the talent pool. Selection for a UAE placement is not guaranteed. I have read the',
     consentRules: 'selection rules',
     consentRefund: 'refund policy',
     back: 'Back',
@@ -485,10 +488,10 @@ const en: Dictionary = {
       'Verified talent-pool profile, 12 months',
     ],
     summaryEarly: 'Early registration',
-    summaryGst: 'GST 18%',
+    summaryVat: 'VAT 5%',
     summaryTotal: 'Total',
     summaryNote:
-      'Price rises to ₹2,499 when early registration closes. Full refund if you cancel before starting the assessment.',
+      'One price, charged once, after the assessment. Full refund if you cancel before starting it.',
     errRequired: 'This field is required.',
     errMobile: 'Enter a 10-digit Indian mobile number starting with 6, 7, 8 or 9.',
     errEmail: 'Enter a valid email address.',
@@ -528,7 +531,7 @@ const en: Dictionary = {
     title: 'Record a short introduction',
     lead: 'Forty-five seconds of you speaking, attached to your profile. Employers listen to it alongside your report and your CV.',
     notMarked: 'This is not marked and it does not change your score. It is here because a minute of hearing someone speak tells an employer more than any grade, and because they should judge your English themselves rather than take our word for it.',
-    prompt: 'Say your name, the work you have done, and why you want to work in Portugal. Speak as you normally would. Nobody is listening for a perfect accent.',
+    prompt: 'Say your name, the work you have done, and why you want to work in the UAE. Speak as you normally would. Nobody is listening for a perfect accent.',
     record: 'Start recording',
     asking: 'Waiting for permission to use your microphone…',
     stop: 'Stop',
@@ -580,7 +583,7 @@ const en: Dictionary = {
       'Selection announced',
     ],
     visible: 'Visible to employers',
-    visibleNote: 'Vetted employers in Portugal and Europe can find your profile.',
+    visibleNote: 'Vetted employers across the UAE can find your profile.',
   },
 
   process: {
@@ -601,7 +604,7 @@ const en: Dictionary = {
     title: 'What a selected candidate receives',
     lead: 'Everything needed to arrive and start work, arranged before you travel.',
     items: [
-      ['Employment contract', 'A {years}-year contract with a Portuguese employer, signed before you leave.'],
+      ['Employment contract', 'A {years}-year contract with a UAE employer, signed before you leave.'],
       ['Accommodation', 'Housing arranged and ready on arrival.'],
       ['Meals', 'Provided as part of the placement.'],
       ['Legal support', 'The visa, the residence permit and the paperwork after arrival, handled with you throughout.'],
@@ -692,7 +695,7 @@ const en: Dictionary = {
     readyTitle: 'Availability',
     availability: 'How soon could you start abroad?',
     availabilityOptions: ['Within 1 month', '1 to 3 months', '3 to 6 months', 'More than 6 months'],
-    relocation: 'Are you ready to relocate to Portugal?',
+    relocation: 'Are you ready to relocate to the UAE?',
     relocationYes: 'Yes',
     relocationNo: 'Not yet',
     remove: 'Remove',
@@ -732,7 +735,7 @@ const en: Dictionary = {
     startCta: 'Start assessment',
     candidates: 'CANDIDATES',
     candidatesPeriod: 'one-time',
-    candidatesNote: 'Early registration. ₹2,499 after. About €20–€25.',
+    candidatesNote: 'One price, charged once, after the assessment.',
     candidatesFeatures: [
       'Full assessment',
       'Skills report',
@@ -778,7 +781,7 @@ const en: Dictionary = {
       ],
       [
         'What does the placement include?',
-        'A {years}-year employment contract with a Portuguese employer, a monthly salary, accommodation, meals, and legal support through the visa process and the paperwork after you arrive.',
+        'A {years}-year employment contract with a UAE employer, a monthly salary, accommodation, meals, and legal support through the visa process and the paperwork after you arrive.',
       ],
       [
         'Can I get a refund?',
@@ -786,7 +789,7 @@ const en: Dictionary = {
       ],
       [
         'Is S&A Recruitment a licensed recruitment agency?',
-        'Registration details for India and Portugal will be listed here before applications open.',
+        'Registration details will be listed here before applications open.',
       ],
     ],
   },
@@ -799,16 +802,17 @@ const hi: Dictionary = {
   navEmployers: 'नियोक्ताओं के लिए',
   signIn: 'साइन इन',
 
-  eyebrow: 'भारत → पुर्तगाल · आवेदन खुले हैं',
-  heroTitle: 'पुर्तगाल में काम करें। चुने जाने के बाद सब कुछ हम संभालते हैं।',
+  eyebrow: 'दुनिया भर से → यूएई · आवेदन खुले हैं',
+  heroTitle: 'यूएई में काम करें। चुने जाने के बाद सब कुछ हम संभालते हैं।',
+  heroSubheadline: 'दुनिया में कहीं से भी, यूएई के लिए भर्ती।',
   heroSub:
-    'आपके कौशल, अनुभव और अंग्रेज़ी का पेशेवर मूल्यांकन। चुने गए उम्मीदवारों को पुर्तगाली नियोक्ता के साथ अनुबंध, आवास, भोजन और पूरी वीज़ा प्रक्रिया में क़ानूनी सहायता मिलती है।',
+    'आपके कौशल, अनुभव और अंग्रेज़ी का पेशेवर मूल्यांकन। चुने गए उम्मीदवारों को यूएई के नियोक्ता के साथ अनुबंध, आवास, भोजन और पूरी वीज़ा प्रक्रिया में क़ानूनी सहायता मिलती है।',
   videoLabel: 'देखिए यह कैसे काम करता है · 53 सेकंड',
   videoPlay: 'वीडियो चलाएँ',
   askWork: 'आप किस पद के लिए आवेदन कर रहे हैं?',
   cta: 'अपना आवेदन शुरू करें',
   fine: 'मूल्यांकन शुल्क एक बार देना होता है, और वह भी मूल्यांकन देखने के बाद। चयन की गारंटी नहीं है, और {days} दिनों के भीतर हम आपको दोनों हालात में बताते हैं।',
-  heroMeta: '{inr} · 20–30 मिनट · ऑनलाइन',
+  heroMeta: '{price} · 20–30 मिनट · ऑनलाइन',
 
   includesTitle: 'आपकी फ़ीस में क्या शामिल है',
   howTitle: 'यह कैसे काम करता है',
@@ -823,7 +827,7 @@ const hi: Dictionary = {
   noPlacementFee:
     'नौकरी के लिए आप हमें कभी भुगतान नहीं करते। आप केवल मूल्यांकन शुल्क देते हैं। हमारी प्लेसमेंट फ़ीस नियोक्ता देता है, आप नहीं।',
   placementFee:
-    'यदि आपका चयन होता है, तो €{eur} की प्लेसमेंट फ़ीस है। यह आप तभी देते हैं जब आपकी नौकरी पक्की हो जाए और अनुबंध पर हस्ताक्षर हो जाएँ, उससे पहले कभी नहीं। {inr} की आकलन फ़ीस अलग है और वही आप अभी दे रहे हैं।',
+    'यदि आपका चयन होता है, तो €{eur} की प्लेसमेंट फ़ीस है। यह आप तभी देते हैं जब आपकी नौकरी पक्की हो जाए और अनुबंध पर हस्ताक्षर हो जाएँ, उससे पहले कभी नहीं। {price} की आकलन फ़ीस अलग है और वही आप अभी दे रहे हैं।',
   placementFeeShort: 'प्लेसमेंट फ़ीस €{eur}, नौकरी पक्की होने के बाद ही देय।',
   rateLine:
     'जिन उम्मीदवारों को हम नियोक्ता के सामने रखते हैं, उनमें से {rate}% को नौकरी मिलती है। मुश्किल हिस्सा उस चरण तक पहुँचना है, और वह ऐसा दिखता है।',
@@ -848,10 +852,10 @@ const hi: Dictionary = {
     ['रजिस्टर करें', 'अपने नाम, मोबाइल और ईमेल से खाता बनाएँ। दो मिनट लगते हैं।'],
     ['मूल्यांकन दें', 'इसे अपने फ़ोन या कंप्यूटर से, अपनी सुविधा के समय ऑनलाइन पूरा करें।'],
     ['अपनी रिपोर्ट पाएँ', 'आपकी स्किल्स रिपोर्ट और प्रोफ़ाइल 7 दिनों के भीतर तैयार हो जाती है।'],
-    ['चयन', 'हर कोहॉर्ट के सर्वश्रेष्ठ उम्मीदवार को पुर्तगाल में पूरा प्लेसमेंट दिया जाता है।'],
+    ['चयन', 'हर कोहॉर्ट के सर्वश्रेष्ठ उम्मीदवार को यूएई में पूरा प्लेसमेंट दिया जाता है।'],
   ],
   place: [
-    'पुर्तगाली नियोक्ता के साथ {years} साल का रोज़गार अनुबंध',
+    'यूएई के नियोक्ता के साथ {years} साल का रोज़गार अनुबंध',
     'मासिक वेतन',
     'आवास',
     'भोजन',
@@ -903,9 +907,9 @@ const hi: Dictionary = {
     englishOptions: ['बुनियादी', 'बातचीत योग्य', 'प्रवाही'],
     cityState: 'शहर और राज्य',
     consent:
-      'मैं समझता/समझती हूँ कि आकलन देना मुफ़्त है, और शुल्क उसके बाद देना होता है यदि मुझे अपनी स्किल्स रिपोर्ट, नया सीवी और टैलेंट पूल में जगह चाहिए। पुर्तगाल प्लेसमेंट के लिए चयन की गारंटी नहीं है। यदि मुझे नौकरी मिलती है, तो नौकरी पक्की होने और अनुबंध पर हस्ताक्षर के बाद €1,000 की प्लेसमेंट फ़ीस देय होगी। मैंने',
+      'मैं समझता/समझती हूँ कि आकलन देना मुफ़्त है, और शुल्क उसके बाद देना होता है यदि मुझे अपनी स्किल्स रिपोर्ट, नया सीवी और टैलेंट पूल में जगह चाहिए। यूएई प्लेसमेंट के लिए चयन की गारंटी नहीं है। यदि मुझे नौकरी मिलती है, तो नौकरी पक्की होने और अनुबंध पर हस्ताक्षर के बाद €1,000 की प्लेसमेंट फ़ीस देय होगी। मैंने',
     consentNoPlacement:
-      'मैं समझता/समझती हूँ कि आकलन देना मुफ़्त है, और शुल्क उसके बाद देना होता है यदि मुझे अपनी स्किल्स रिपोर्ट, नया सीवी और टैलेंट पूल में जगह चाहिए। पुर्तगाल प्लेसमेंट के लिए चयन की गारंटी नहीं है। मैंने',
+      'मैं समझता/समझती हूँ कि आकलन देना मुफ़्त है, और शुल्क उसके बाद देना होता है यदि मुझे अपनी स्किल्स रिपोर्ट, नया सीवी और टैलेंट पूल में जगह चाहिए। यूएई प्लेसमेंट के लिए चयन की गारंटी नहीं है। मैंने',
     consentRules: 'चयन नियम',
     consentRefund: 'रिफ़ंड नीति',
     back: 'पीछे',
@@ -922,10 +926,10 @@ const hi: Dictionary = {
       'सत्यापित टैलेंट पूल प्रोफ़ाइल, 12 महीने',
     ],
     summaryEarly: 'जल्दी रजिस्ट्रेशन',
-    summaryGst: 'जीएसटी 18%',
+    summaryVat: 'वैट 5%',
     summaryTotal: 'कुल',
     summaryNote:
-      'जल्दी रजिस्ट्रेशन बंद होने पर कीमत ₹2,499 हो जाएगी। मूल्यांकन शुरू करने से पहले रद्द करने पर पूरा रिफ़ंड मिलता है।',
+      'एक ही क़ीमत, मूल्यांकन के बाद एक बार। शुरू करने से पहले रद्द करने पर पूरा रिफ़ंड।',
     errRequired: 'यह फ़ील्ड आवश्यक है।',
     errMobile: '6, 7, 8 या 9 से शुरू होने वाला 10 अंकों का भारतीय मोबाइल नंबर डालें।',
     errEmail: 'मान्य ईमेल पता डालें।',
@@ -963,7 +967,7 @@ const hi: Dictionary = {
     title: 'एक छोटा परिचय रिकॉर्ड करें',
     lead: 'आपकी आवाज़ में पैंतालीस सेकंड, आपकी प्रोफ़ाइल के साथ। नियोक्ता इसे आपकी रिपोर्ट और सीवी के साथ सुनते हैं।',
     notMarked: 'इसका मूल्यांकन नहीं होता और इससे आपका स्कोर नहीं बदलता। यह इसलिए है क्योंकि किसी को बोलते सुनना किसी भी ग्रेड से ज़्यादा बताता है, और क्योंकि आपकी अंग्रेज़ी का फ़ैसला नियोक्ता ख़ुद करें, हमारे कहने पर नहीं।',
-    prompt: 'अपना नाम बताएं, आपने कौन-सा काम किया है, और आप पुर्तगाल में क्यों काम करना चाहते हैं। जैसे आप सामान्य रूप से बोलते हैं वैसे ही बोलें। किसी को सही उच्चारण नहीं चाहिए।',
+    prompt: 'अपना नाम बताएं, आपने कौन-सा काम किया है, और आप यूएई में क्यों काम करना चाहते हैं। जैसे आप सामान्य रूप से बोलते हैं वैसे ही बोलें। किसी को सही उच्चारण नहीं चाहिए।',
     record: 'रिकॉर्डिंग शुरू करें',
     asking: 'माइक्रोफ़ोन की अनुमति का इंतज़ार…',
     stop: 'रोकें',
@@ -1015,7 +1019,7 @@ const hi: Dictionary = {
       'चयन की घोषणा',
     ],
     visible: 'नियोक्ताओं को दिखाई दे',
-    visibleNote: 'पुर्तगाल और यूरोप के जाँचे-परखे नियोक्ता आपकी प्रोफ़ाइल देख सकते हैं।',
+    visibleNote: 'यूएई के जाँचे-परखे नियोक्ता आपकी प्रोफ़ाइल देख सकते हैं।',
   },
 
   process: {
@@ -1036,7 +1040,7 @@ const hi: Dictionary = {
     title: 'चुने गए उम्मीदवार को क्या मिलता है',
     lead: 'पहुँचने और काम शुरू करने के लिए सब कुछ, यात्रा से पहले ही तय।',
     items: [
-      ['रोज़गार अनुबंध', 'पुर्तगाली नियोक्ता के साथ {years} साल का अनुबंध, आपके जाने से पहले हस्ताक्षरित।'],
+      ['रोज़गार अनुबंध', 'यूएई के नियोक्ता के साथ {years} साल का अनुबंध, आपके जाने से पहले हस्ताक्षरित।'],
       ['आवास', 'पहुँचने पर तैयार आवास।'],
       ['भोजन', 'प्लेसमेंट का हिस्सा।'],
       ['क़ानूनी सहायता', 'वीज़ा, निवास परमिट और पहुँचने के बाद के काग़ज़ात, पूरे रास्ते आपके साथ।'],
@@ -1127,7 +1131,7 @@ const hi: Dictionary = {
     readyTitle: 'उपलब्धता',
     availability: 'आप विदेश में कितनी जल्दी शुरू कर सकते हैं?',
     availabilityOptions: ['1 महीने के भीतर', '1 से 3 महीने', '3 से 6 महीने', '6 महीने से ज़्यादा'],
-    relocation: 'क्या आप पुर्तगाल जाने के लिए तैयार हैं?',
+    relocation: 'क्या आप यूएई जाने के लिए तैयार हैं?',
     relocationYes: 'हाँ',
     relocationNo: 'अभी नहीं',
     remove: 'हटाएँ',
@@ -1167,7 +1171,7 @@ const hi: Dictionary = {
     startCta: 'मूल्यांकन शुरू करें',
     candidates: 'उम्मीदवार',
     candidatesPeriod: 'एक बार',
-    candidatesNote: 'जल्दी रजिस्ट्रेशन। बाद में ₹2,499। लगभग €20–€25।',
+    candidatesNote: 'एक ही क़ीमत, मूल्यांकन के बाद एक बार।',
     candidatesFeatures: [
       'पूरा मूल्यांकन',
       'स्किल्स रिपोर्ट',
@@ -1213,7 +1217,7 @@ const hi: Dictionary = {
       ],
       [
         'प्लेसमेंट में क्या शामिल है?',
-        'पुर्तगाली नियोक्ता के साथ {years} साल का रोज़गार अनुबंध, मासिक वेतन, आवास, भोजन, और वीज़ा प्रक्रिया तथा पहुँचने के बाद के काग़ज़ात में क़ानूनी सहायता।',
+        'यूएई के नियोक्ता के साथ {years} साल का रोज़गार अनुबंध, मासिक वेतन, आवास, भोजन, और वीज़ा प्रक्रिया तथा पहुँचने के बाद के काग़ज़ात में क़ानूनी सहायता।',
       ],
       [
         'क्या मुझे रिफ़ंड मिल सकता है?',
@@ -1221,7 +1225,7 @@ const hi: Dictionary = {
       ],
       [
         'क्या S&A Recruitment एक लाइसेंस प्राप्त भर्ती एजेंसी है?',
-        'आवेदन खुलने से पहले भारत और पुर्तगाल के रजिस्ट्रेशन विवरण यहाँ सूचीबद्ध किए जाएँगे।',
+        'आवेदन खुलने से पहले रजिस्ट्रेशन विवरण यहाँ सूचीबद्ध किए जाएँगे।',
       ],
     ],
   },

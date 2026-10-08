@@ -1,5 +1,5 @@
 import { Mono } from '@/components/ui/Mono';
-import { activePrice, formatInr } from '@/lib/data/cohort';
+import { activePrice, formatAed } from '@/lib/data/cohort';
 import type { Dictionary } from '@/lib/i18n';
 
 export function OrderSummary({ t }: { t: Dictionary }) {
@@ -28,15 +28,15 @@ export function OrderSummary({ t }: { t: Dictionary }) {
       <dl className="m-0 flex flex-col gap-2.5 py-5 text-[14px]">
         <div className="flex justify-between">
           <dt className="text-ink-2">{s.summaryEarly}</dt>
-          <dd className="m-0 font-mono">{formatInr(price.netPaise)}</dd>
+          <dd className="m-0 font-mono">{formatAed(price.netFils)}</dd>
         </div>
         <div className="flex justify-between">
-          <dt className="text-ink-2">{s.summaryGst}</dt>
-          <dd className="m-0 font-mono">{formatInr(price.gstPaise)}</dd>
+          <dt className="text-ink-2">{s.summaryVat}</dt>
+          <dd className="m-0 font-mono">{formatAed(price.vatFils)}</dd>
         </div>
         <div className="mt-1.5 flex justify-between border-t border-line-soft pt-3.5 text-[17px] font-semibold">
           <dt>{s.summaryTotal}</dt>
-          <dd className="m-0 font-mono">{formatInr(price.totalPaise)}</dd>
+          <dd className="m-0 font-mono">{formatAed(price.totalFils)}</dd>
         </div>
       </dl>
 

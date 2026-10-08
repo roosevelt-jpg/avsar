@@ -11,14 +11,13 @@ import { SiteHeader } from '@/components/candidate/SiteHeader';
 import { SiteFooter } from '@/components/candidate/SiteFooter';
 import { PositionSelector } from '@/components/candidate/PositionSelector';
 import { fill, getDictionary, isLocale } from '@/lib/i18n';
-import { activePrice, formatInr } from '@/lib/data/cohort';
+import { activePrice, formatAed } from '@/lib/data/cohort';
 import {
   BRAND,
   CONTRACT_YEARS,
   RESPONSE_DAYS,
   SELECTION_FUNNEL,
   applicantHireRate,
-  ASSESSMENT_FEE,
   CANDIDATE_PAYS_NO_PLACEMENT_FEE,
   PLACEMENT_FEE,
 } from '@/lib/data/brand';
@@ -28,7 +27,7 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
   if (!isLocale(locale)) notFound();
   const t = getDictionary(locale);
 
-  const money = { days: RESPONSE_DAYS, years: CONTRACT_YEARS, inr: formatInr(activePrice().totalPaise) };
+  const money = { days: RESPONSE_DAYS, years: CONTRACT_YEARS, price: formatAed(activePrice().totalFils) };
 
   const stages = SELECTION_FUNNEL.perHundredApplicants;
   const funnelValues = {
@@ -37,7 +36,7 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
     presented: stages.presentedToEmployer,
     hired: stages.hired,
     applicantRate: applicantHireRate(),
-    fee: formatInr(activePrice().totalPaise),
+    fee: formatAed(activePrice().totalFils),
   };
 
   return (
@@ -224,10 +223,6 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
             </li>
           ))}
         </ul>
-        <p className="mt-6 mb-0 font-mono text-[13px] text-muted">
-          {formatInr(activePrice().totalPaise)} · about €{ASSESSMENT_FEE.eur} · includes GST
-        </p>
-
         {/* Both are derived, never written into copy, so neither claim can
             outlive the setting that makes it true. The placement fee is shown
             to candidates precisely because they are the ones who pay it: the
@@ -242,7 +237,7 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
           <p className="mt-5 mb-0 max-w-[62ch] rounded-[16px] border border-accent bg-accent-tint px-5 py-4 text-[15px] leading-[1.6] text-ink">
             {fill(t.placementFee, {
               eur: PLACEMENT_FEE.eur.toLocaleString('en-GB'),
-              inr: formatInr(activePrice().totalPaise),
+              price: formatAed(activePrice().totalFils),
             })}
           </p>
         )}

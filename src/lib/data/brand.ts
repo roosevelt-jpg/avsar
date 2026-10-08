@@ -56,8 +56,8 @@ export const ENTITY = {
    * The name a candidate actually knows us by.
    *
    * It has to reach the card and UPI statement too. Someone who signed up at
-   * S&A Recruitment and then sees an unfamiliar company name debit 2,299
-   * rupees files a dispute, and they are right to.
+   * S&A Recruitment and then sees an unfamiliar company name debit 99 dirhams
+   * files a dispute, and they are right to.
    */
   tradingAs: 'S&A Recruitment',
   /**
@@ -80,14 +80,13 @@ export const ENTITY = {
   registeredAddress:
     'Office 102-08, Salem Abdullah Bin Dasmal Building, Al Quoz Industrial First, Dubai',
   /**
-   * The Portuguese line, deliberately, on a company registered in Dubai.
+   * A UAE line, now that the work and the company are both in the UAE.
    *
-   * It is the number a candidate rings, and it is answered in Lisbon by the
-   * people who place them in Portugal. A support line in the country of the
-   * job is the useful one; the registered address above says where the company
-   * is, and the two are different facts.
+   * It replaced a Portuguese number that was answered in Lisbon, from when the
+   * jobs were there. A support line somewhere other than the country of the job
+   * is a question a candidate should not have to ask.
    */
-  phone: '+351 938 227 348',
+  phone: '+971 58 568 0441',
   supportEmail: 'candidates@smithandadams.com',
   employerEmail: 'employers@smithandadams.com',
   reportEmail: 'report@smithandadams.com',
@@ -110,21 +109,24 @@ export const DELIVERY = {
 } as const;
 
 /**
- * Candidate assessment fee.
+ * Candidate assessment fee, in dirhams.
  *
- * Priced in euros and shown in rupees. The rupee figure is a display
- * conversion, not a second price: the charge is one amount, and quoting two
- * that drift apart is how a candidate ends up paying more than the site said.
+ * It used to be quoted in rupees, because the whole product pointed at India.
+ * The platform now takes candidates from anywhere for work in the UAE, so the
+ * price is quoted in the currency of the place the job is, which is also the
+ * currency the company banks in and the one its tax is reckoned in.
  *
- * Update `inrPerEur` deliberately. A live FX feed would move the headline price
- * between the moment someone reads it and the moment they pay.
+ * The euro figure stays as the internal anchor and nothing else. Update
+ * `aedPerEur` deliberately: a live FX feed would move the headline price
+ * between the moment somebody reads it and the moment they pay.
  */
 export const ASSESSMENT_FEE = {
   eur: 25,
-  inrPerEur: 92,
+  /** The dirham is pegged to the dollar, so this moves slowly and on purpose. */
+  aedPerEur: 4,
   /** Recomputed from the two above. Rounded to a price that reads naturally. */
-  get inr(): number {
-    return Math.round((this.eur * this.inrPerEur) / 100) * 100 - 1;
+  get aed(): number {
+    return Math.round((this.eur * this.aedPerEur) / 100) * 100 - 1;
   },
 } as const;
 

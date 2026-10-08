@@ -55,44 +55,47 @@ export async function assessedCount(): Promise<number> {
  * someone changes the price is how a candidate is charged more than the site
  * quoted.
  *
- * GST is inside the total, not added to it. India's OIDAR regime makes a
- * foreign supplier of a digital service liable for 18% on a sale to an Indian
- * consumer, so the tax is the platform's to pay out of what it collects rather
- * than a surcharge at the till.
+ * VAT is inside the total, not added to it. The UAE rate is 5%, and a price
+ * that grows at the till is the single most common reason somebody abandons a
+ * checkout they had already decided to complete.
+ *
+ * It was 18% when this was an Indian product and the tax was India's OIDAR
+ * charge on a foreign supplier of a digital service. The jurisdiction moved
+ * with the rest of the business.
  */
-export const GST_RATE = 0.18;
+export const VAT_RATE = 0.05;
 
-function priceFromInr(inr: number) {
-  const totalPaise = inr * 100;
-  const netPaise = Math.round(totalPaise / (1 + GST_RATE));
-  return { netPaise, gstPaise: totalPaise - netPaise, totalPaise };
+function priceFromAed(aed: number) {
+  const totalFils = aed * 100;
+  const netFils = Math.round(totalFils / (1 + VAT_RATE));
+  return { netFils, vatFils: totalFils - netFils, totalFils };
 }
 
 /**
  * The currency the candidate is actually charged in.
  *
- * INR is what the site quotes and what a candidate expects to see on their
- * statement. Not every provider can present in rupees from a European account,
- * and when it cannot, the candidate's own bank converts and adds a
- * foreign-transaction fee on top of a price the site advertised in rupees.
+ * AED is what the site quotes and what a candidate expects to see on their
+ * statement. A candidate paying from outside the UAE has their own bank
+ * convert, which is normal and visible; what is not acceptable is the site
+ * quoting one currency and the charge arriving in another.
  *
- * CHARGE_CURRENCY=EUR falls back to the euro headline rather than leaving the
- * checkout broken. Confirm INR presentment with the provider before assuming
+ * CHARGE_CURRENCY=EUR falls back to the euro anchor rather than leaving the
+ * checkout broken. Confirm AED presentment with the provider before assuming
  * the default works.
  */
-export const CHARGE_CURRENCY: 'INR' | 'EUR' =
-  process.env.CHARGE_CURRENCY === 'EUR' ? 'EUR' : 'INR';
+export const CHARGE_CURRENCY: 'AED' | 'EUR' =
+  process.env.CHARGE_CURRENCY === 'EUR' ? 'EUR' : 'AED';
 
 export const PRICING = {
-  early: priceFromInr(ASSESSMENT_FEE.inr),
-  standard: priceFromInr(ASSESSMENT_FEE.inr),
-  gstRate: GST_RATE,
+  early: priceFromAed(ASSESSMENT_FEE.aed),
+  standard: priceFromAed(ASSESSMENT_FEE.aed),
+  vatRate: VAT_RATE,
   currency: CHARGE_CURRENCY,
 } as const;
 
-/** Minor units in the charge currency: paise for INR, cents for EUR. */
+/** Minor units in the charge currency: fils for AED, cents for EUR. */
 export function chargeAmountMinor(): number {
-  return CHARGE_CURRENCY === 'EUR' ? ASSESSMENT_FEE.eur * 100 : activePrice().totalPaise;
+  return CHARGE_CURRENCY === 'EUR' ? ASSESSMENT_FEE.eur * 100 : activePrice().totalFils;
 }
 
 export type PriceTier = 'early' | 'standard';
@@ -104,10 +107,16 @@ export function activePrice() {
   return PRICING[ACTIVE_TIER];
 }
 
-/** 199900 -> "₹1,999". Indian digit grouping, no decimals. */
-export function formatInr(paise: number): string {
-  const rupees = Math.round(paise / 100);
-  return `₹${rupees.toLocaleString('en-IN')}`;
+/**
+ * 9900 -> "AED 99".
+ *
+ * The three-letter code rather than the Arabic symbol. The audience is now
+ * worldwide and reads the site in English or Hindi, and "AED" is unambiguous
+ * to all of them in a way that "د.إ" is not.
+ */
+export function formatAed(fils: number): string {
+  const dirhams = Math.round(fils / 100);
+  return `AED ${dirhams.toLocaleString('en-US')}`;
 }
 
 /**
