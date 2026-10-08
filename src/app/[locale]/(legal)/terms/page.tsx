@@ -47,7 +47,7 @@ export default async function TermsPage({ params }: { params: Promise<{ locale: 
       </p>
       <p>
         The fee buys the assessment and the report. It does not buy a job, a visa, a placement in
-        Portugal, or any promise of one, and paying it places you ahead of nobody.
+        the UAE, or any promise of one, and paying it places you ahead of nobody.
       </p>
 
       <h2>What we undertake to do</h2>
@@ -113,7 +113,7 @@ export default async function TermsPage({ params }: { params: Promise<{ locale: 
 
       <h2>Selection</h2>
       <p>
-        Selection for a placement in Portugal is not guaranteed and is decided on assessment score,
+        Selection for a placement in the UAE is not guaranteed and is decided on assessment score,
         interview and document checks. The selection rules page sets out the process and the
         published success rate.
       </p>

@@ -285,7 +285,7 @@ export const PROFILE_ITEMS: Item[] = [
     id: 'pro-05',
     section: 'profile',
     label: 'PROFILE · LANGUAGE',
-    prompt: 'Would you be willing to learn basic Portuguese before arriving?',
+    prompt: 'Would you be willing to learn basic Arabic before arriving?',
     options: ['Yes, I have already started', 'Yes', 'If it is provided', 'I would rather not'],
   },
 ];

@@ -15,7 +15,7 @@ export const metadata = {
 const STEPS = [
   ['Search and shortlist', 'Describe the role in plain words. Filter by sector, English level and experience.'],
   ['Interview', 'Video interviews with shortlisted candidates, with their full skills report attached.'],
-  ['We relocate them', 'Work visa, travel, housing and arrival support, handled by our team in Portugal.'],
+  ['We relocate them', 'Work visa, travel, housing and arrival support, handled by our team in the UAE.'],
 ] as const;
 
 export default async function EmployerLanding() {
@@ -53,7 +53,7 @@ export default async function EmployerLanding() {
 
       <section className="flex flex-col items-start gap-6 px-[clamp(20px,4cqi,56px)] pt-[clamp(48px,9cqi,110px)] pb-[clamp(40px,6cqi,72px)]">
         <h1 className="m-0 max-w-[22ch] text-balance text-[clamp(36px,6cqi,72px)] font-semibold leading-[1.04] tracking-[-0.035em]">
-          Hire pre-assessed workers from India for your team in Portugal.
+          Hire pre-assessed workers from around the world for your team in the UAE.
         </h1>
         <p className="m-0 max-w-[60ch] text-[clamp(16px,1.8cqi,19px)] leading-[1.55] text-ink-2">
           Search a pool of candidates scored on skills, experience and English. We handle visas,
@@ -124,7 +124,7 @@ export default async function EmployerLanding() {
       <footer className="bg-ink px-[clamp(20px,4cqi,56px)] py-[clamp(40px,6cqi,64px)] text-dark-muted-2">
         <Wordmark tone="dark" accent="employer" />
         <p className="mt-8 border-t border-dark-line pt-6 font-mono text-[12px] text-dark-muted">
-          © 2026 S&A Recruitment, a Smith & Adams company · Lisbon · New Delhi
+          © 2026 S&A Recruitment, a Smith & Adams company · Dubai, United Arab Emirates
         </p>
       </footer>
     </div>

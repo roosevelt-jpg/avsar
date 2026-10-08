@@ -8,7 +8,7 @@ import type { PositionSlug } from '@/lib/data/positions';
  * managed portfolio of several hundred apartments, cafés and restaurants, and
  * the renovation work that keeps both running. That is why the cleaner entry
  * talks about turnarounds between guests and the electrician entry talks about
- * old Lisbon buildings. A candidate deciding whether to spend an evening on an
+ * towers and villas across the Emirates. A candidate deciding whether to spend an evening on an
  * assessment deserves to know which of these is their work.
  *
  * Kept out of the main dictionary because this is content that will be edited
@@ -25,7 +25,7 @@ const en: Record<PositionSlug, PositionCopy> = {
   'property-manager': {
     summary: 'Running occupied buildings day to day, and the people in them.',
     detail:
-      'Managed residential buildings in Lisbon, Porto and the Algarve: check-ins and check-outs, guests and tenants, keys, suppliers, and the small problems that have to be solved the same day. You are the person on site when a boiler fails on a Saturday.',
+      'Managed residential buildings across Dubai, Abu Dhabi and Sharjah: check-ins and check-outs, guests and tenants, keys, suppliers, and the small problems that have to be solved the same day. You are the person on site when the air conditioning fails on a Friday.',
     looksFor: ['Calm with people', 'Written English', 'Organised without being told to be'],
   },
   cleaner: {
@@ -49,7 +49,7 @@ const en: Record<PositionSlug, PositionCopy> = {
   driver: {
     summary: 'Deliveries, transfers and the routes between them.',
     detail:
-      'Vans and light commercial vehicles for deliveries, linen runs between properties, and passenger transfers. Portuguese city driving is close quarters and the hours are early; a licence that transfers and a clean record matter more than years behind a wheel.',
+      'Vans and light commercial vehicles for deliveries, linen runs between properties, and passenger transfers. Driving here means long multi-lane roads, heavy traffic at peak and early hours; a licence that converts and a clean record matter more than years behind a wheel.',
     looksFor: ['Clean licence', 'City driving', 'Punctuality that can be relied on'],
   },
   logistics: {
@@ -61,13 +61,13 @@ const en: Record<PositionSlug, PositionCopy> = {
   'construction-worker': {
     summary: 'Renovation and fit-out, mostly in buildings already standing.',
     detail:
-      'Portuguese construction leans heavily on renovation of older buildings rather than new build: demolition, screed, plaster, tiling and making good. Sites are often small, in occupied streets, with restricted access and neighbours.',
+      'Fit-out and renovation as much as new build: demolition, screed, plaster, tiling and making good. A great deal of it happens inside occupied towers, with restricted access, booked lifts and work that has to be finished before the building wakes up.',
     looksFor: ['Site experience', 'Safety discipline', 'Finishing work'],
   },
   electrician: {
     summary: 'Installation and fault-finding, often in old wiring.',
     detail:
-      'Circuits, boards, lighting and fault-finding across apartments and commercial spaces. A great deal of the work in Lisbon is in buildings a century old, where the first job is working out what the last person did.',
+      'Circuits, boards, lighting and fault-finding across apartments and commercial spaces. Much of it is in buildings that were fitted out fast and extended since, where the first job is working out what the last person did.',
     looksFor: ['Reading a board', 'Fault-finding', 'Working to a standard'],
   },
   plumber: {

@@ -153,7 +153,7 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
       </section>
 
       {/*
-        A real kitchen in Lisbon, in a business the group runs.
+        A real kitchen in a business the group runs.
 
         Chosen over stock for two reasons. It is the work this page is actually
         about, rather than a photograph of somebody else's. And neither face is
@@ -161,15 +161,20 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
         it, and putting an identifiable face on a recruitment advert implies
         they are connected to the service.
 
+        It shows the work and not a place, which is why it survived the move to
+        the UAE while the city photograph did not. The file was renamed with it:
+        a path reading `lisbon-` is a claim about the destination that anybody
+        can read in the page source.
+
         `blurDataURL` is a twenty-pixel version inlined, so the band holds the
-        picture rather than a hole while the file arrives over Indian mobile
-        data.
+        picture rather than a hole while the file arrives over a slow
+        connection.
       */}
       <div className="px-[clamp(20px,4cqi,56px)] pb-[clamp(40px,6cqi,80px)]">
         <div className="relative h-[clamp(220px,38cqi,460px)] w-full overflow-hidden rounded-[24px]">
           <Image
-            src="/lisbon-kitchen-2400.jpg"
-            alt="Two kitchen staff preparing food behind the counter of a café in Lisbon"
+            src="/kitchen-work-2400.jpg"
+            alt="Two kitchen staff preparing food behind the counter of a café"
             fill
             sizes="(max-width: 900px) 100vw, 1400px"
             placeholder="blur"
@@ -270,26 +275,6 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
           </p>
         </div>
 
-        {/*
-          Lisbon, not a bedroom.
-
-          The slot was labelled "staff accommodation", and a stock photograph of
-          an unrelated flat beside a list that promises housing would read as a
-          picture of the housing. This shows the city the job is in, which is
-          something the page can stand behind: the bridge and the Cristo Rei are
-          what make it unmistakably Lisbon rather than any red-roofed town.
-        */}
-        <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[24px]">
-          <Image
-            src="/lisbon-rooftops-1200.jpg"
-            alt="Rooftops of central Lisbon, with the 25 de Abril bridge on the horizon"
-            fill
-            sizes="(max-width: 900px) 100vw, 480px"
-            placeholder="blur"
-            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD//gA8Q1JFQVRPUjogZ2QtanBlZyB2MS4wICh1c2luZyBJSkcgSlBFRyB2ODApLCBxdWFsaXR5ID0gMTAwCv/bAEMAFA4PEg8NFBIQEhcVFBgeMiEeHBwePSwuJDJJQExLR0BGRVBac2JQVW1WRUZkiGVtd3uBgoFOYI2XjH2Wc36BfP/bAEMBFRcXHhoeOyEhO3xTRlN8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fP/AABEIABQAEAMBIgACEQEDEQH/xAAfAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgv/xAC1EAACAQMDAgQDBQUEBAAAAX0BAgMABBEFEiExQQYTUWEHInEUMoGRoQgjQrHBFVLR8CQzYnKCCQoWFxgZGiUmJygpKjQ1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4eLj5OXm5+jp6vHy8/T19vf4+fr/xAAfAQADAQEBAQEBAQEBAAAAAAAAAQIDBAUGBwgJCgv/xAC1EQACAQIEBAMEBwUEBAABAncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2dri4+Tl5ufo6ery8/T19vf4+fr/2gAMAwEAAhEDEQA/AN1YFPQj86kFuvqK5rzZF4K7sdQrZNNWaR2IUjYezHDfjmtOdkciMiaeRiq7yFY8gU+WR4UwjtheRk0UVkbPc//Z"
-            className="object-cover"
-          />
-        </div>
       </section>
 
       {/* -------------------------------------------------------------- funnel */}

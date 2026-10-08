@@ -31,19 +31,18 @@ const SECTOR_HINTS: Record<SectorSlug, readonly string[]> = {
   it: ['data analyst', 'analyst', 'qa', 'tester', 'testing', 'sql', 'developer', 'it'],
 };
 
-const PORTUGAL_PLACES = [
-  'lisbon',
-  'lisboa',
-  'porto',
-  'algarve',
-  'faro',
-  'cascais',
-  'sintra',
-  'braga',
-  'coimbra',
-  'madeira',
-  'azores',
-];
+const UAE_PLACES = [
+  'dubai',
+  'abu dhabi',
+  'sharjah',
+  'ajman',
+  'fujairah',
+  'ras al khaimah',
+  'umm al quwain',
+  'uae',
+  'emirates',
+  'u.a.e.',
+]
 
 export function parseQuery(raw: string): ParsedQuery {
   const text = raw.toLowerCase();
@@ -73,7 +72,7 @@ export function parseQuery(raw: string): ParsedQuery {
   const count = ofCount?.[1] ?? leadCount?.[1];
   if (count) result.headcount = Number(count);
 
-  const place = PORTUGAL_PLACES.find((p) => text.includes(p));
+  const place = UAE_PLACES.find((p) => text.includes(p));
   if (place) result.location = place;
 
   const consumed = new Set<string>([

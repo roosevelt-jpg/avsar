@@ -11,8 +11,9 @@ import type { Item } from '../items';
  * The shared bank keeps the items that are genuinely common: daily checks,
  * fatigue, collisions. These are what each role needs on top.
  *
- * European rules where they differ, because the job is in Portugal: EU driving
- * and rest times, tachographs, the CAM certificate for professional drivers.
+ * Written to the principle rather than to one country's rule book, because the
+ * candidates come from everywhere and the job is in the UAE. Where a limit is
+ * a number in law somewhere, the item asks what the number is for.
  * Still uncalibrated.
  */
 
@@ -20,12 +21,12 @@ export const DRIVER_ROLE_ITEMS: Item[] = [
   {
     id: 'drv-01', section: 'skills', sector: 'drivers', positions: ['driver'],
     axis: 'Hours and rest', label: 'SKILLS · HOURS',
-    prompt: 'Under EU rules, how long may a professional driver drive before taking a break?',
+    prompt: 'Why do professional driving rules put a hard limit on hours at the wheel?',
     options: [
-      '3 hours, then a 30 minute break',
-      '4.5 hours, then a break of at least 45 minutes',
-      '6 hours, then a 20 minute break',
-      'There is no limit if you feel alert',
+      'To spread the work fairly between drivers',
+      'Because reaction time falls long before a driver notices it has',
+      'To keep fuel consumption down',
+      'Because the vehicle needs to cool between runs',
     ],
     correct: 1,
   },

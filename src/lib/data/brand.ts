@@ -14,7 +14,7 @@ export const BRAND = {
   /**
    * What the company is, and whose it is. Not the slogan.
    *
-   * This line exists to establish that a candidate in India is dealing with a
+   * This line exists to establish that a candidate abroad is dealing with a
    * business that has a parent, a name and an address. It does a different job
    * from the slogan and the two are not interchangeable.
    */
@@ -29,7 +29,7 @@ export const BRAND = {
    * No full stop. A slogan under a logo is a name, not a sentence.
    */
   slogan: 'Connecting Talent, Spot On',
-  locations: 'Lisbon · New Delhi',
+  locations: 'Dubai, United Arab Emirates',
 } as const;
 
 /**
