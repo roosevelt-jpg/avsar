@@ -59,8 +59,8 @@ export const stripeProvider: PaymentProvider = {
           },
         },
       ],
-      /* GST is already inside `amountMinor`: India's OIDAR regime makes the
-         supplier liable for 18% on B2C digital services, and the order summary
+      /* VAT is already inside `amountMinor`. The headline price carries the
+         5% UAE rate rather than adding it at the till, and the order summary
          shows it broken out, so Stripe must not add tax on top. */
       metadata: request.metadata,
       payment_intent_data: {

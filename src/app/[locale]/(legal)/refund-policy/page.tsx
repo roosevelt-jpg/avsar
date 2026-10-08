@@ -32,7 +32,7 @@ export default async function RefundPolicyPage({ params }: { params: Promise<{ l
       <h2>If you have paid and not downloaded anything</h2>
       <p>
         Write to us within 14 days and the full {formatAed(price.totalFils)},
-        including the GST component, is refunded to the original payment method.
+        including the VAT component, is refunded to the original payment method.
         Nothing has been delivered, so there is nothing to argue about.
       </p>
 
@@ -52,7 +52,7 @@ export default async function RefundPolicyPage({ params }: { params: Promise<{ l
       <p>
         Write from the email address on the account, or use the contact page. We reply within two
         working days. Approved refunds are issued within 7 working days to the original payment
-        method, including the GST component; how long the money then takes to appear depends on your
+        method, including the VAT component; how long the money then takes to appear depends on your
         bank and the payment method used.
       </p>
 

@@ -13,6 +13,11 @@ Recruitment for migrant workers is a flagged category at every acquirer, for a
 reason: charging a job seeker up front is the shape of a common fraud. The
 application is read by someone looking for that shape.
 
+A UAE acquirer reads it with one more thing in mind. Federal Decree-Law 33/2021
+article 6 prohibits charging a worker for recruitment, so a UAE merchant in this
+category describing a candidate-paid placement fee is describing something the
+law of its own jurisdiction forbids.
+
 So the description does not argue. It states what is delivered, when, for how
 much, what is refundable, and what the candidate pays later. The second fee is
 the one that decides this: an acquirer that learns about a €1,000 charge from a
@@ -21,19 +26,20 @@ misrepresented too.
 
 ## Short description
 
-> Online skills assessment and career documentation for people in India seeking
-> work in Portugal. Candidates pay ₹2,299 (about €25) for an assessment of their
-> trade skills, experience and English, a written skills report, a rewritten CV
-> and interview preparation, and a profile shown to vetted employers for 12
-> months. Employment is not guaranteed.
+> Online skills assessment and career documentation for people anywhere in the
+> world seeking work in the United Arab Emirates. Candidates pay AED 99 for an
+> assessment of their trade skills, experience and English, a written skills
+> report, a rewritten CV and interview preparation, and a profile shown to
+> vetted employers for 12 months. Employment is not guaranteed.
 
 ## Full description
 
-> S&A Recruitment is a recruitment agency operating under the Smith & Adams
-> brand, placing candidates from India in jobs with employers in Portugal.
+> S&A Recruitment is an online skills assessment and career documentation
+> service operated under the Smith & Adams brand, for candidates worldwide
+> seeking work with employers in the United Arab Emirates.
 >
-> **What the candidate buys.** A single payment of ₹2,299, inclusive of 18%
-> GST, for: an online assessment of trade skills, work experience and English;
+> **What the candidate buys.** A single payment of AED 99, inclusive of 5%
+> VAT, charged after the assessment is completed, for: an online assessment of trade skills, work experience and English;
 > a written skills report delivered within 7 days; a career pack containing a
 > rewritten CV in three formats, interview preparation and a development plan;
 > and a profile visible to vetted employers for 12 months. These are delivered
@@ -48,11 +54,16 @@ misrepresented too.
 > **The second fee, disclosed up front.** If a candidate is placed, a placement
 > fee of €1,000 becomes payable, and only after their job is confirmed and their
 > employment contract is signed. It is never payable in advance, never a
-> condition of being considered, and never a condition of an interview. The
-> amount and that condition appear on the landing page, in the terms, and
-> directly above the consent checkbox at checkout, before the ₹2,299 is taken.
+> condition of being considered, and never a condition of an interview.
 >
-> **Refunds.** Full refund, including the GST component, at any time before the
+> **This paragraph is currently false on the site.** `PLACEMENT_FEE.disclosed`
+> is `false`, so the amount appears nowhere: not on the landing page, not in the
+> terms, and not above the consent checkbox. Do not paste the paragraph above
+> into an application until that is put back, or until `payer` moves to
+> `employer` and the paragraph is replaced by the one that says the candidate
+> pays nothing for placement. See `docs/commercial-terms.md`.
+>
+> **Refunds.** Full refund, including the VAT component, at any time before the
 > candidate starts the assessment. No refund after it is started, because the
 > service is being delivered at that point. Full refund if a cohort is cancelled
 > before assessments begin, or if a delay is ours. Requests are answered within
@@ -63,22 +74,23 @@ misrepresented too.
 > answer on the application within 15 working days, and the talent-pool profile
 > for 12 months.
 >
-> **Customers.** Adults in India applying for work in hospitality, construction,
-> logistics, services and IT. No goods are shipped. Nothing is sold to minors.
+> **Customers.** Adults anywhere in the world applying for work in the UAE in
+> hospitality, construction, logistics, services and IT. No goods are shipped.
+> Nothing is sold to minors.
 
 ## The fields that trip people up
 
 | Field | Answer |
 |---|---|
 | MCC | 7361, Employment Agencies and Temporary Help Services |
-| Average transaction | ₹2,299 |
-| Maximum transaction | ₹2,499 after early registration closes |
+| Average transaction | AED 99 |
+| Maximum transaction | AED 99. One price, no tiers |
 | Delivery timeframe | Immediate access; report within 7 days |
 | Physical goods | None |
 | Subscription or recurring | No. One payment per cohort application |
 | Trading name on statement | `SA RECRUITMENT` |
 | Customer service email | `candidates@smithandadams.com` |
-| Customer service phone | the Portuguese number in `ENTITY.phone` |
+| Customer service phone | the UAE number in `ENTITY.phone` |
 
 ## The company, for the KYC forms
 

@@ -43,7 +43,7 @@ export default async function TermsPage({ params }: { params: Promise<{ locale: 
         written skills report based on it, and a career pack: a rewritten CV built from your own
         experience, interview preparation, and a development plan. All of it is yours to keep and
         use with any employer. The fee is {price}, about €{ASSESSMENT_FEE.eur},
-        charged once. Indian GST at 18% is included in that amount and is not added at checkout.
+        charged once. UAE VAT at 5% is included in that amount and is not added at checkout.
       </p>
       <p>
         The fee buys the assessment and the report. It does not buy a job, a visa, a placement in
