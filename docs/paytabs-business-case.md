@@ -76,6 +76,57 @@ shipped and there are no delivery charges.
 | Talent-pool profile | Immediately, for 12 months |
 | Answer on the application | Within 15 working days |
 
+## Customer journey
+
+The order matters to a risk team, so it is stated step by step. The charge
+happens at step 7, after the service has largely been performed.
+
+**1. Arrival.** The candidate lands on `recruitment.smithandadams.com` from a
+search, an advertisement or a referral. The home page states what is sold, the
+price, and that employment is not guaranteed. Twelve roles are listed, each
+opening a description of the work.
+
+**2. Account.** They enter their full name, country and mobile number, email
+address and a password. The account is created and signed in immediately; a
+verification email goes out in the background so nothing in the journey waits
+on an inbox.
+
+**3. Profile.** Role applied for, years of experience, self-rated English, and
+city. A mandatory consent checkbox confirms they have read the selection rules,
+the refund policy and the terms, each linked from beside it. Nothing has been
+charged at this point.
+
+**4. CV and documents (optional).** They upload a CV, or fill the profile in by
+hand. An optional forty-five second voice introduction can be recorded. None of
+this is scored and none of it is required.
+
+**5. Assessment.** Four sections: trade skills, work experience, English, and
+profile questions. Twenty to thirty minutes, on a phone, free to sit. Every
+answer saves as it is given, so a dropped connection resumes at the same
+question. Option order is shuffled per attempt.
+
+**6. Scoring.** On submission the answers are scored on the server and the
+report is written. The candidate's overall score appears on their dashboard
+**whether or not they ever pay**.
+
+**7. Payment.** With the assessment complete, the dashboard offers the unlock:
+**AED 99, inclusive of 5% VAT, charged once**. The candidate is taken to the
+hosted checkout, pays, and returns. This is the only charge in the journey and
+it is the only time money is requested.
+
+**8. Delivery.** On a confirmed payment the account releases the skills report
+as a PDF, the career pack (rewritten CV in three formats, interview preparation,
+development plan) and the 12-month talent-pool listing. The report is released
+only once the email address has also been confirmed, because that is where it is
+sent.
+
+**9. After.** Shortlisted candidates are telephoned by a recruiter. Selected
+candidates receive a confirmation letter and the visa process begins. Every
+applicant gets an answer within 15 working days either way.
+
+Support is reachable at every step by email and telephone, both published in
+the page header and footer.
+
 ## Refunds and disputes
 
 - Full refund at any time **before** the candidate starts the assessment.
