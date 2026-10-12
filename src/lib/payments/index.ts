@@ -57,7 +57,21 @@ export type {
  * UPI by construction, so there is nothing to configure.
  */
 export function availablePaymentMethods(): PaymentMethodHint[] {
-  if (getPaymentProvider().name !== 'stripe') return ['upi', 'card', 'netbanking'];
+  const provider = getPaymentProvider().name;
+
+  /*
+    Viva is a European acquirer. It has no UPI and no Indian netbanking, and
+    offering them would put two choices in front of a candidate that the rail
+    cannot charge. Its hosted page decides the rest for itself from what is
+    enabled on the account, so one honest hint is enough here.
+
+    This used to say "anything that is not Stripe does all three", which was
+    true while every other rail was Indian and stopped being true the moment a
+    European one existed.
+  */
+  if (provider === 'viva') return ['card'];
+
+  if (provider !== 'stripe') return ['upi', 'card', 'netbanking'];
 
   const configured = (process.env.STRIPE_METHODS ?? 'card')
     .split(',')
