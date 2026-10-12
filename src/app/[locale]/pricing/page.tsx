@@ -5,7 +5,7 @@ import { SiteHeader } from '@/components/candidate/SiteHeader';
 import { SiteFooter } from '@/components/candidate/SiteFooter';
 import { FaqAccordion } from '@/components/candidate/FaqAccordion';
 import { getDictionary, isLocale } from '@/lib/i18n';
-import { EMPLOYER_PRICE_EUR, activePrice, formatAed } from '@/lib/data/cohort';
+import { EMPLOYER_PRICE_EUR, activePrice, formatPrice } from '@/lib/data/cohort';
 
 export const metadata = { title: 'Pricing' };
 
@@ -18,7 +18,7 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
   const plans = [
     {
       eyebrow: p.candidates,
-      price: formatAed(activePrice().totalFils),
+      price: formatPrice(activePrice().totalMinor),
       period: p.candidatesPeriod,
       note: p.candidatesNote,
       features: p.candidatesFeatures,

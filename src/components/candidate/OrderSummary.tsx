@@ -1,6 +1,6 @@
 import { Mono } from '@/components/ui/Mono';
-import { activePrice, formatAed } from '@/lib/data/cohort';
-import type { Dictionary } from '@/lib/i18n';
+import { activePrice, formatPrice, PRICING } from '@/lib/data/cohort';
+import { fill, type Dictionary } from '@/lib/i18n';
 
 export function OrderSummary({ t }: { t: Dictionary }) {
   const price = activePrice();
@@ -26,17 +26,28 @@ export function OrderSummary({ t }: { t: Dictionary }) {
       </ul>
 
       <dl className="m-0 flex flex-col gap-2.5 py-5 text-[14px]">
-        <div className="flex justify-between">
-          <dt className="text-ink-2">{s.summaryEarly}</dt>
-          <dd className="m-0 font-mono">{formatAed(price.netFils)}</dd>
-        </div>
-        <div className="flex justify-between">
-          <dt className="text-ink-2">{s.summaryVat}</dt>
-          <dd className="m-0 font-mono">{formatAed(price.vatFils)}</dd>
-        </div>
+        {/*
+          The net and VAT rows only exist when there is VAT to show. The seller
+          is Portuguese and the supply to a candidate outside the EU is outside
+          the scope of EU VAT, so the rate is 0 and a breakdown would print
+          "VAT: EUR 0" above a net line identical to the total. One honest total
+          beats three rows that invite the question of why one of them is zero.
+        */}
+        {price.vatMinor > 0 && (
+          <>
+            <div className="flex justify-between">
+              <dt className="text-ink-2">{s.summaryEarly}</dt>
+              <dd className="m-0 font-mono">{formatPrice(price.netMinor)}</dd>
+            </div>
+            <div className="flex justify-between">
+              <dt className="text-ink-2">{fill(s.summaryVat, { rate: PRICING.vatRate * 100 })}</dt>
+              <dd className="m-0 font-mono">{formatPrice(price.vatMinor)}</dd>
+            </div>
+          </>
+        )}
         <div className="mt-1.5 flex justify-between border-t border-line-soft pt-3.5 text-[17px] font-semibold">
           <dt>{s.summaryTotal}</dt>
-          <dd className="m-0 font-mono">{formatAed(price.totalFils)}</dd>
+          <dd className="m-0 font-mono">{formatPrice(price.totalMinor)}</dd>
         </div>
       </dl>
 

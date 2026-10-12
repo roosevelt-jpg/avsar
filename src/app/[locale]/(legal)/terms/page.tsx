@@ -1,10 +1,10 @@
 import { notFound } from 'next/navigation';
 import { EntityDetails } from '@/components/ui/EntityDetails';
 import { isLocale } from '@/lib/i18n';
-import { activePrice, formatAed } from '@/lib/data/cohort';
+import { activePrice, formatPrice } from '@/lib/data/cohort';
 import {
-  ASSESSMENT_FEE,
   BRAND,
+  ENTITY,
   DELIVERY,
   RESPONSE_DAYS,
   PLACEMENT_FEE,
@@ -24,7 +24,7 @@ export const metadata = { title: 'Terms and conditions' };
 export default async function TermsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
-  const price = formatAed(activePrice().totalFils);
+  const price = formatPrice(activePrice().totalMinor);
 
   return (
     <>
@@ -42,8 +42,10 @@ export default async function TermsPage({ params }: { params: Promise<{ locale: 
         A professional assessment of your work skills, experience and English, delivered online, a
         written skills report based on it, and a career pack: a rewritten CV built from your own
         experience, interview preparation, and a development plan. All of it is yours to keep and
-        use with any employer. The fee is {price}, about €{ASSESSMENT_FEE.eur},
-        charged once. UAE VAT at 5% is included in that amount and is not added at checkout.
+        use with any employer. The fee is {price}, charged once, and nothing is added at
+        checkout. The seller is {ENTITY.legalName}, the company behind the Smith &amp; Adams
+        brand, registered in Portugal. Your bank statement will show{' '}
+        {ENTITY.statementDescriptor} rather than the name you signed up under.
       </p>
       <p>
         The fee buys the assessment and the report. It does not buy a job, a visa, a placement in

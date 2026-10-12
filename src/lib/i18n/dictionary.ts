@@ -459,7 +459,8 @@ const en: Dictionary = {
   footerDelivery: 'Service delivery',
   footerPrivacy: 'Privacy',
   footerContact: 'Contact',
-  footerLegal: '© 2026 S&A Recruitment, a Smith & Adams company · Dubai, United Arab Emirates',
+  footerLegal:
+    '© 2026 S&A Recruitment, a Smith & Adams company · Benefit Discovery, Lda, Lisbon, Portugal',
 
   signup: {
     help: 'Need help? Call or message {phone}',
@@ -504,7 +505,7 @@ const en: Dictionary = {
       'Verified talent-pool profile, 12 months',
     ],
     summaryEarly: 'Early registration',
-    summaryVat: 'VAT 5%',
+    summaryVat: 'VAT {rate}%',
     summaryTotal: 'Total',
     summaryNote:
       'One price, charged once, after the assessment. Full refund if you cancel before starting it.',
@@ -902,7 +903,8 @@ const hi: Dictionary = {
   footerDelivery: 'सेवा वितरण',
   footerPrivacy: 'गोपनीयता',
   footerContact: 'संपर्क',
-  footerLegal: '© 2026 S&A Recruitment, a Smith & Adams company · लिस्बन · नई दिल्ली',
+  footerLegal:
+    '© 2026 S&A Recruitment, a Smith & Adams company · Benefit Discovery, Lda, लिस्बन, पुर्तगाल',
 
   signup: {
     help: 'मदद चाहिए? {phone} पर कॉल या मैसेज करें',
@@ -947,7 +949,7 @@ const hi: Dictionary = {
       'सत्यापित टैलेंट पूल प्रोफ़ाइल, 12 महीने',
     ],
     summaryEarly: 'जल्दी रजिस्ट्रेशन',
-    summaryVat: 'वैट 5%',
+    summaryVat: 'वैट {rate}%',
     summaryTotal: 'कुल',
     summaryNote:
       'एक ही क़ीमत, मूल्यांकन के बाद एक बार। शुरू करने से पहले रद्द करने पर पूरा रिफ़ंड।',

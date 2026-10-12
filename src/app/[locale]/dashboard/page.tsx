@@ -8,7 +8,7 @@ import { JourneyStatus } from '@/components/candidate/JourneyStatus';
 import { VerifyEmailBanner } from '@/components/candidate/VerifyEmailBanner';
 import { UnlockReport } from '@/components/candidate/UnlockReport';
 import { availablePaymentMethods, getPaymentProvider } from '@/lib/payments';
-import { activePrice, formatAed } from '@/lib/data/cohort';
+import { activePrice, formatPrice } from '@/lib/data/cohort';
 import { getCandidateStatus, type CandidateStatus } from '@/lib/candidate/status';
 import { CareerPack } from '@/components/candidate/CareerPack';
 import { getAdminSupabase } from '@/lib/supabase/admin';
@@ -183,7 +183,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
         {status?.awaitingPayment && (
           <UnlockReport
             t={t}
-            price={formatAed(activePrice().totalFils)}
+            price={formatPrice(activePrice().totalMinor)}
             methods={availablePaymentMethods()}
             provider={getPaymentProvider().name}
             providerMode={

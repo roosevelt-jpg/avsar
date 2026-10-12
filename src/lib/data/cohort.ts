@@ -55,47 +55,60 @@ export async function assessedCount(): Promise<number> {
  * someone changes the price is how a candidate is charged more than the site
  * quoted.
  *
- * VAT is inside the total, not added to it. The UAE rate is 5%, and a price
- * that grows at the till is the single most common reason somebody abandons a
- * checkout they had already decided to complete.
+ * VAT is inside the total, not added to it. A price that grows at the till is
+ * the single most common reason somebody abandons a checkout they had already
+ * decided to complete.
  *
- * It was 18% when this was an Indian product and the tax was India's OIDAR
- * charge on a foreign supplier of a digital service. The jurisdiction moved
- * with the rest of the business.
+ * The rate moved with the seller, twice. It was 18% as India's OIDAR charge on
+ * a foreign supplier of a digital service, then 5% as UAE VAT. It is 0 now, and
+ * that needs saying out loud rather than looking like an oversight:
+ *
+ * The seller is a Portuguese company supplying a digital service to consumers.
+ * To a consumer resident in the EU that is VAT of the consumer's own country,
+ * declared through the OSS return. To a consumer resident outside the EU the
+ * supply is outside the scope of EU VAT, and essentially every candidate this
+ * platform has is outside the EU: India, Nepal, Bangladesh, Pakistan, Sri
+ * Lanka, the Philippines, Egypt, Kenya.
+ *
+ * So 0 is right for the candidates who actually buy, and wrong for an EU one.
+ * CONFIRM WITH THE ACCOUNTANT before the first EU resident pays, and if they do
+ * the answer is per-country OSS rates keyed on residence, not a single rate
+ * here. Until then the site states a total payable and does not break out a VAT
+ * line it cannot stand behind.
  */
-export const VAT_RATE = 0.05;
+export const VAT_RATE = 0;
 
-function priceFromAed(aed: number) {
-  const totalFils = aed * 100;
-  const netFils = Math.round(totalFils / (1 + VAT_RATE));
-  return { netFils, vatFils: totalFils - netFils, totalFils };
+function priceFromEur(eur: number) {
+  const totalMinor = Math.round(eur * 100);
+  const netMinor = Math.round(totalMinor / (1 + VAT_RATE));
+  return { netMinor, vatMinor: totalMinor - netMinor, totalMinor };
 }
 
 /**
- * The currency the candidate is actually charged in.
+ * The currency the candidate is charged in.
  *
- * AED is what the site quotes and what a candidate expects to see on their
- * statement. A candidate paying from outside the UAE has their own bank
- * convert, which is normal and visible; what is not acceptable is the site
- * quoting one currency and the charge arriving in another.
+ * Euros, and only euros. The company that takes the money is Portuguese and
+ * the Viva account settles in euros; quoting anything else would mean the site
+ * saying one number and the bank taking another.
  *
- * CHARGE_CURRENCY=EUR falls back to the euro anchor rather than leaving the
- * checkout broken. Confirm AED presentment with the provider before assuming
- * the default works.
+ * This was an environment variable with an AED branch, from when the seller was
+ * the Dubai company. The branch is gone rather than left unreachable: a dead
+ * path that silently produces the wrong currency is worse than no path.
+ * Candidates who want a feel for the price in their own money get an indicative
+ * figure at checkout, which is never what gets charged. See `INDICATIVE_RATES`.
  */
-export const CHARGE_CURRENCY: 'AED' | 'EUR' =
-  process.env.CHARGE_CURRENCY === 'EUR' ? 'EUR' : 'AED';
+export const CHARGE_CURRENCY = 'EUR' as const;
 
 export const PRICING = {
-  early: priceFromAed(ASSESSMENT_FEE.aed),
-  standard: priceFromAed(ASSESSMENT_FEE.aed),
+  early: priceFromEur(ASSESSMENT_FEE.eur),
+  standard: priceFromEur(ASSESSMENT_FEE.eur),
   vatRate: VAT_RATE,
   currency: CHARGE_CURRENCY,
 } as const;
 
-/** Minor units in the charge currency: fils for AED, cents for EUR. */
+/** Minor units in the charge currency: euro cents. */
 export function chargeAmountMinor(): number {
-  return CHARGE_CURRENCY === 'EUR' ? ASSESSMENT_FEE.eur * 100 : activePrice().totalFils;
+  return activePrice().totalMinor;
 }
 
 export type PriceTier = 'early' | 'standard';
@@ -108,22 +121,20 @@ export function activePrice() {
 }
 
 /**
- * 9900 -> "AED 99".
+ * 2500 -> "EUR 25".
  *
- * The three-letter code rather than the Arabic symbol. The audience is now
- * worldwide and reads the site in English or Hindi, and "AED" is unambiguous
- * to all of them in a way that "د.إ" is not.
+ * The three-letter code rather than the symbol. The audience is worldwide and
+ * reads the site in English or Hindi, and "EUR" is unambiguous to all of them.
  */
-export function formatAed(fils: number): string {
-  const dirhams = Math.round(fils / 100);
+export function formatPrice(minor: number): string {
+  const units = Math.round(minor / 100);
   /*
     Wrapped in a Unicode isolate, because this string is dropped into Arabic
-    sentences. Without it the bidi algorithm can reorder "AED 99" against the
+    sentences. Without it the bidi algorithm can reorder "EUR 25" against the
     surrounding right-to-left text and show the number on the wrong side of the
-    currency. The two characters are invisible and cost nothing in the two
-    left-to-right locales.
+    currency. The two characters are invisible and cost nothing elsewhere.
   */
-  return `\u2066AED ${dirhams.toLocaleString('en-US')}\u2069`;
+  return `\u2066EUR ${units.toLocaleString('en-US')}\u2069`;
 }
 
 /**

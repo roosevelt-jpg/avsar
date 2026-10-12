@@ -11,7 +11,7 @@ import { SiteHeader } from '@/components/candidate/SiteHeader';
 import { SiteFooter } from '@/components/candidate/SiteFooter';
 import { PositionSelector } from '@/components/candidate/PositionSelector';
 import { fill, getDictionary, isLocale } from '@/lib/i18n';
-import { activePrice, formatAed } from '@/lib/data/cohort';
+import { activePrice, formatPrice } from '@/lib/data/cohort';
 import {
   BRAND,
   CONTRACT_YEARS,
@@ -27,7 +27,7 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
   if (!isLocale(locale)) notFound();
   const t = getDictionary(locale);
 
-  const money = { days: RESPONSE_DAYS, years: CONTRACT_YEARS, price: formatAed(activePrice().totalFils) };
+  const money = { days: RESPONSE_DAYS, years: CONTRACT_YEARS, price: formatPrice(activePrice().totalMinor) };
 
   const stages = SELECTION_FUNNEL.perHundredApplicants;
   const funnelValues = {
@@ -36,7 +36,7 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
     presented: stages.presentedToEmployer,
     hired: stages.hired,
     applicantRate: applicantHireRate(),
-    fee: formatAed(activePrice().totalFils),
+    fee: formatPrice(activePrice().totalMinor),
   };
 
   return (
@@ -258,7 +258,7 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
           <p className="mt-5 mb-0 max-w-[62ch] rounded-[16px] border border-accent bg-accent-tint px-5 py-4 text-[15px] leading-[1.6] text-ink">
             {fill(t.placementFee, {
               eur: PLACEMENT_FEE.eur.toLocaleString('en-GB'),
-              price: formatAed(activePrice().totalFils),
+              price: formatPrice(activePrice().totalMinor),
             })}
           </p>
         )}

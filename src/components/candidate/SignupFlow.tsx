@@ -8,7 +8,7 @@ import { ENTITY, PLACEMENT_FEE, PLACEMENT_FEE_UNDISCLOSED } from '@/lib/data/bra
 import { DIAL_CODES, DEFAULT_COUNTRY } from '@/lib/data/dial-codes';
 import { phoneFields } from '@/lib/validation';
 import { AREAS, POSITIONS, positionsInArea, type PositionSlug } from '@/lib/data/positions';
-import { formatAed, activePrice } from '@/lib/data/cohort';
+import { formatPrice, activePrice } from '@/lib/data/cohort';
 import { fill, type Dictionary, type Locale } from '@/lib/i18n';
 
 type Errors = Partial<
@@ -436,7 +436,7 @@ export function SignupFlow({
             <p className="m-0 rounded-[12px] border border-accent bg-accent-tint px-4 py-3.5 text-[14px] leading-[1.6] text-ink">
               {fill(t.placementFee, {
                 eur: PLACEMENT_FEE.eur.toLocaleString('en-GB'),
-                price: formatAed(price.totalFils),
+                price: formatPrice(price.totalMinor),
               })}
             </p>
           )}

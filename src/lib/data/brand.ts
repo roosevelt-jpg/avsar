@@ -39,11 +39,16 @@ export const BRAND = {
  * postal address, a working phone and a monitored email, all reachable from the
  * public site.
  *
- * The Dubai company. The Stripe route needed a Portuguese one, because Stripe
- * will not do UPI from an account registered in the UAE; EximPe removes that
- * constraint entirely, since its RBI PA-CB import authorisation collects rupees
- * by UPI and settles abroad whatever the merchant's country. The entity went
- * back to the one that holds the bank account and the trade licence.
+ * The Portuguese company, because that is the one that holds the Viva.com
+ * merchant account and therefore the one that actually takes the money. Viva
+ * passports an EU licence and onboards merchants registered in the EEA or the
+ * UK, so the Dubai company cannot be the seller on this rail whatever the site
+ * says.
+ *
+ * It is the legal entity behind the Smith & Adams brand, which is why the
+ * footer can name both without either being a fiction. The jobs are still in
+ * Dubai and the support line is still a UAE number; what moved is who the
+ * contract for the assessment is with.
  *
  * Fill these fields and every policy page completes itself. While one is
  * missing the pages say so plainly rather than printing an empty bracket,
@@ -51,7 +56,7 @@ export const BRAND = {
  * one reading an honest gap.
  */
 export const ENTITY = {
-  legalName: 'SMTADM REAL ESTATE L.L.C',
+  legalName: 'BENEFIT DISCOVERY, LDA',
   /**
    * The name a candidate actually knows us by.
    *
@@ -61,24 +66,21 @@ export const ENTITY = {
    */
   tradingAs: 'S&A Recruitment',
   /**
-   * What the bank or UPI app shows. Set the same string in the provider's
-   * dashboard: the two disagreeing is worse than either alone.
-   */
-  statementDescriptor: 'SA RECRUITMENT',
-  /** Dubai Department of Economy and Tourism. */
-  registrationNumber: '1174293',
-  registrationLabel: 'Trade licence',
-  /**
-   * The address on the trade licence, because that is the document a reviewer
-   * holds this against.
+   * What the bank shows.
    *
-   * It is not the only one on file: the Corporate Tax certificate and the bank
-   * statement both say Hor Al Anz, Deira. Three addresses across three
-   * documents is a routine cross-check failure, and the licence is the one to
-   * correct or to reconcile the others against.
+   * Viva settles to BENEFIT DISCOVERY and that is the name the statement
+   * carries, so this says the same rather than the brand the candidate signed
+   * up under. The gap between the two is real and cannot be wished away in a
+   * constant: the fix is that the site says, before the candidate pays, which
+   * name they will see. Check the descriptor Viva actually sends and set this
+   * to match it, because the two disagreeing is worse than either alone.
    */
-  registeredAddress:
-    'Office 102-08, Salem Abdullah Bin Dasmal Building, Al Quoz Industrial First, Dubai',
+  statementDescriptor: 'BENEFIT DISCOVERY',
+  /** Registo Comercial. The NIPC is also the VAT number, prefixed PT. */
+  registrationNumber: '517818817',
+  registrationLabel: 'NIPC',
+  /** The registered office on the certidão permanente. */
+  registeredAddress: 'Avenida da Liberdade 69, 4.º A, 1250-140 Lisboa, Portugal',
   /**
    * A UAE line, now that the work and the company are both in the UAE.
    *
@@ -90,7 +92,7 @@ export const ENTITY = {
   supportEmail: 'candidates@smithandadams.com',
   employerEmail: 'employers@smithandadams.com',
   reportEmail: 'report@smithandadams.com',
-  jurisdiction: 'Dubai, United Arab Emirates',
+  jurisdiction: 'Lisbon, Portugal',
 } as const;
 
 export function entityIsComplete(): boolean {
@@ -109,26 +111,71 @@ export const DELIVERY = {
 } as const;
 
 /**
- * Candidate assessment fee, in dirhams.
+ * Candidate assessment fee, in euros.
  *
- * It used to be quoted in rupees, because the whole product pointed at India.
- * The platform now takes candidates from anywhere for work in the UAE, so the
- * price is quoted in the currency of the place the job is, which is also the
- * currency the company banks in and the one its tax is reckoned in.
- *
- * The euro figure stays as the internal anchor and nothing else. Update
- * `aedPerEur` deliberately: a live FX feed would move the headline price
- * between the moment somebody reads it and the moment they pay.
+ * One price, one currency, everywhere. It was quoted in rupees when the product
+ * pointed at India and in dirhams when it pointed at the UAE; it is quoted in
+ * euros now because the company that takes the money is Portuguese and settles
+ * in euros, and a site that quotes one currency while the charge arrives in
+ * another is how somebody ends up paying more than they were told.
  */
 export const ASSESSMENT_FEE = {
   eur: 25,
-  /** The dirham is pegged to the dollar, so this moves slowly and on purpose. */
-  aedPerEur: 4,
-  /** Recomputed from the two above. Rounded to a price that reads naturally. */
-  get aed(): number {
-    return Math.round((this.eur * this.aedPerEur) / 100) * 100 - 1;
-  },
 } as const;
+
+/**
+ * Indicative conversions. For display only. Never charged.
+ *
+ * A candidate in Kochi or Kathmandu reads "EUR 25" and has no feel for what it
+ * costs them. Showing roughly what it is in their own money removes that, and
+ * that is the only job these do.
+ *
+ * Charging in the candidate's currency was considered and rejected. The dial
+ * code in the signup form is the country of the phone, not of the card and not
+ * of the residence, so it is the wrong signal to pick a currency from; the Viva
+ * account settles in euros, so anything else means either per-currency
+ * acceptance or dynamic conversion, and dynamic conversion gives the candidate a
+ * worse rate than their own bank; and ten source markets would mean ten prices
+ * drifting apart with the exchange rate. The candidate's bank converts, which is
+ * normal, visible, and theirs.
+ *
+ * Hardcoded and rounded on purpose. A live feed would move the figure between
+ * the moment somebody reads it and the moment they pay, which is the thing this
+ * exists to avoid, and a figure to the cent would read as a promise rather than
+ * an estimate. Update when one has drifted far enough to mislead.
+ *
+ * Last reviewed 12 October 2026.
+ */
+export const INDICATIVE_RATES = {
+  INR: 95,
+  PHP: 65,
+  NPR: 152,
+  BDT: 128,
+  PKR: 305,
+  LKR: 345,
+  AED: 4.1,
+  EGP: 54,
+  KES: 148,
+  NGN: 1750,
+  USD: 1.1,
+  GBP: 0.85,
+} as const;
+
+export type IndicativeCurrency = keyof typeof INDICATIVE_RATES;
+
+/**
+ * Rounds hard, because the number is an estimate and should read as one.
+ *
+ * 25 EUR at 95 rupees is 2,375; this says "about 2,400". Somebody who sees a
+ * round number understands they are being given a ballpark. Somebody who sees
+ * 2,375 and is charged the euro equivalent of 2,412 thinks they were misled.
+ */
+export function indicativeAmount(currency: IndicativeCurrency): number {
+  const raw = ASSESSMENT_FEE.eur * INDICATIVE_RATES[currency];
+  if (raw >= 1000) return Math.round(raw / 100) * 100;
+  if (raw >= 100) return Math.round(raw / 10) * 10;
+  return Math.round(raw);
+}
 
 /**
  * Which wording a candidate agreed to.
