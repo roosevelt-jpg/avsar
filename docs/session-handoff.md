@@ -42,6 +42,80 @@ nas duas versoes quando chamada sem sessao.
 
 ---
 
+## Bloco 47 - 12 Oct 2026, abilio.diz@smithandadams.com
+
+**Vendedor, moeda e taxa de colocacao: as tres decisoes fechadas.**
+
+### Quem cobra
+
+`ENTITY` passa a **BENEFIT DISCOVERY, LDA**, NIPC 517818817, Avenida da
+Liberdade 69, 4.o A, Lisboa. A Viva passaporta uma licenca da UE e so aceita
+comerciantes registados no EEE ou no Reino Unido, por isso a empresa do Dubai
+nao podia ser a vendedora nesta rail dissesse o site o que dissesse.
+
+Confirmado pelo dono: a Benefit Discovery **e a entidade legal por tras da marca
+Smith & Adams**, e por isso o rodape pode nomear as duas sem nenhuma ser ficcao.
+Os empregos continuam no Dubai e a linha de apoio continua a ser o numero dos
+Emirados; o que mudou foi com quem e o contrato da avaliacao.
+
+`statementDescriptor` passa a `BENEFIT DISCOVERY`, porque e para esse nome que a
+Viva liquida. A distancia entre isso e o nome com que o candidato se inscreveu e
+real: os termos dizem agora, antes de pagar, que nome vai aparecer no extrato.
+
+### Moeda
+
+Euros, e so euros. O ramo AED foi **removido**, nao deixado inacessivel: um
+caminho morto que produz em silencio a moeda errada e pior do que nao haver
+caminho. `CHARGE_CURRENCY` passou de variavel de ambiente a constante `'EUR'`,
+portanto **a variavel na Vercel esta morta e pode ser apagada** (ficou la com
+`INR`, da fase indiana).
+
+Cobrar na moeda de cada pais foi proposto e recusado, e a razao ficou escrita ao
+lado das taxas indicativas: o indicativo telefonico e o pais do **telemovel**,
+nao o do cartao nem o da residencia; conversao dinamica da ao candidato uma taxa
+pior que a do banco dele; e dez mercados seriam dez precos a afastar-se com o
+cambio.
+
+Em vez disso, `IndicativePrice` mostra no checkout quanto e **aproximadamente**
+na moeda do candidato, nunca cobrado. A regiao do browser escolhe qual abre
+primeiro - o mesmo raciocinio que excluiu o indicativo para cobrar, ao contrario:
+fraco de mais para decidir o que tirar de um cartao, bom que baste para decidir
+em que linha abre uma lista. Lido por `useSyncExternalStore`, nao por efeito.
+
+### IVA
+
+Era 5% dos Emirados, antes 18% da India. Agora **0**, e isso precisava de ser
+dito em voz alta: uma empresa portuguesa a prestar um servico digital a um
+consumidor fora da UE esta fora do ambito do IVA da UE, e praticamente todos os
+candidatos estao fora. **E errado para um residente na UE** - confirmar com o
+contabilista antes do primeiro, e nesse caso sao taxas OSS por pais, nao uma
+taxa aqui. O resumo do pedido deixa cair as linhas de liquido e IVA em vez de
+imprimir "IVA: EUR 0" por cima de um liquido igual ao total.
+
+### Taxa de colocacao
+
+**Divulgada outra vez** (decisao do dono, 12 Out). Passa a ser facturada
+separadamente, fora do site, mas continua a ser o candidato a dever, por isso
+mantem-se `payer: 'candidate'` e mantem-se divulgada. Tirar a cobranca do site
+remove-a da vista do prestador de pagamentos; nao a remove da do candidato, e e
+para o candidato que a divulgacao existe. As tres linguas dizem agora que e
+facturada em separado e nunca cobrada atraves do site.
+
+**O checkout deixa de devolver 503.** `CONSENT_VERSION` -> `v5-2026-10`.
+
+### Por fazer
+
+- `./scripts/push-env.sh` + `vercel deploy --prod --yes` para por isto em
+  producao (nada de novo no ambiente; o deploy e que traz o codigo)
+- Apagar `CHARGE_CURRENCY` da Vercel, agora sem leitor
+- Confirmar com o contabilista o tratamento de IVA para um candidato residente
+  na UE
+- Confirmar o descritor que a Viva envia de facto e alinhar `statementDescriptor`
+- Primeiro pagamento real de EUR 25, que e o unico modo de provar o formato do
+  payload do webhook e o `statusId: 'F'`
+
+---
+
 ## Bloco 46 - 12 Oct 2026, abilio.diz@smithandadams.com
 
 **Viva.com integrada e verificada em producao.**
