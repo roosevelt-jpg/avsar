@@ -19,6 +19,11 @@
  *  - **Razorpay**, as a domestic Indian rail. Cheapest of the three, and needs
  *    an Indian entity. Worth switching to if one exists anyway for the
  *    Emigration Act recruiting-agent registration.
+ *  - **Viva.com**, a European acquirer. Cheap card rates, and the only one here
+ *    that cannot run on the Dubai company: it passports an EU licence and
+ *    onboards merchants registered in the EEA or the UK. Using it means the
+ *    European entity is the one charging, and therefore the one the site has to
+ *    name. It does not do UPI, so India still needs a rail of its own.
  *
  * Everything above this interface is rail-agnostic, so which one is active is a
  * commercial decision rather than a rewrite.
@@ -62,7 +67,7 @@ export type WebhookResult = {
 };
 
 export interface PaymentProvider {
-  readonly name: 'stripe' | 'razorpay' | 'cashfree' | 'eximpe';
+  readonly name: 'stripe' | 'razorpay' | 'cashfree' | 'eximpe' | 'viva';
   isConfigured(): boolean;
   createCheckout(request: CheckoutRequest): Promise<CheckoutSession>;
   /** Confirms a session after the browser returns. Never trust the query string. */

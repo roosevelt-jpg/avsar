@@ -2,6 +2,7 @@ import { stripeProvider } from './stripe';
 import { razorpayProvider } from './razorpay';
 import { cashfreeProvider } from './cashfree';
 import { eximpeProvider } from './eximpe';
+import { vivaProvider } from './viva';
 import type { PaymentMethodHint, PaymentProvider } from './types';
 
 /**
@@ -14,6 +15,8 @@ import type { PaymentMethodHint, PaymentProvider } from './types';
  */
 export function getPaymentProvider(): PaymentProvider {
   switch (process.env.PAYMENT_PROVIDER) {
+    case 'viva':
+      return vivaProvider;
     case 'eximpe':
       return eximpeProvider;
     case 'cashfree':

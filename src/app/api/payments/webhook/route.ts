@@ -1,8 +1,26 @@
 import { NextResponse } from 'next/server';
 import { getPaymentProvider } from '@/lib/payments';
+import { vivaWebhookKey } from '@/lib/payments/viva';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 
 export const runtime = 'nodejs';
+
+/**
+ * Viva activates a webhook address by fetching it.
+ *
+ * They GET the URL and expect the account's key printed back. It proves we
+ * control the address, which is all it proves: it is a one-time handshake and
+ * not a signature, so nothing downstream may treat a later POST as trusted on
+ * the strength of it. See `handleWebhook` in `lib/payments/viva.ts`.
+ *
+ * 404 rather than an empty 200 when there is no key, so a deployment with no
+ * Viva credentials does not look like a Viva endpoint with a broken one.
+ */
+export async function GET() {
+  const key = vivaWebhookKey();
+  if (!key) return NextResponse.json({ error: 'not_found' }, { status: 404 });
+  return NextResponse.json({ Key: key });
+}
 
 /**
  * Payment webhook. The source of truth for payment state.

@@ -6,7 +6,7 @@ import { loadEximpe } from '@/lib/payments/eximpe-client';
 import { loadCashfree } from '@/lib/payments/cashfree-client';
 import { PLACEMENT_FEE } from '@/lib/data/brand';
 import { fill, type Dictionary } from '@/lib/i18n';
-import type { PaymentMethodHint } from '@/lib/payments/types';
+import type { PaymentMethodHint, PaymentProvider } from '@/lib/payments/types';
 
 /**
  * Asks for the fee, once the assessment is done.
@@ -39,7 +39,9 @@ export function UnlockReport({
   /** Formatted, from the server, so it matches every other place it appears. */
   price: string;
   methods: PaymentMethodHint[];
-  provider: 'stripe' | 'razorpay' | 'cashfree' | 'eximpe';
+  /* Taken from the interface rather than copied. The list was duplicated here
+     and went stale the moment a fifth rail was added. */
+  provider: PaymentProvider['name'];
   providerMode: 'sandbox' | 'production';
 }) {
   const s = t.status;
