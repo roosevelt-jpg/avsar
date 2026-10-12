@@ -339,6 +339,8 @@ export type Dictionary = {
     unlockBody: string;
     unlockCta: string;
     unlockFine: string;
+    indicative: string;
+    indicativeLabel: string;
     done: string;
     current: string;
     todo: string;
@@ -741,6 +743,8 @@ const en: Dictionary = {
     unlockCta: 'Pay {price} and unlock',
     unlockFine:
       'Your score is shown above whether you pay or not. The fee is for the documents you take away and the place in the talent pool.',
+    indicative: 'About {amount} in your currency, as a guide. You are charged in euros and your own bank converts.',
+    indicativeLabel: 'Show the fee in another currency',
     done: 'Done',
     current: 'Now',
     todo: 'Next',
@@ -1175,6 +1179,8 @@ const hi: Dictionary = {
     unlockCta: '{price} दें और अनलॉक करें',
     unlockFine:
       'आपका स्कोर ऊपर दिखता है, चाहे आप भुगतान करें या नहीं। शुल्क उन दस्तावेज़ों के लिए है जो आप अपने साथ ले जाते हैं, और टैलेंट पूल में जगह के लिए।',
+    indicative: 'आपकी मुद्रा में लगभग {amount}, केवल अनुमान के लिए। शुल्क यूरो में लिया जाता है और आपका बैंक रूपांतरण करता है।',
+    indicativeLabel: 'शुल्क दूसरी मुद्रा में देखें',
     profile: 'प्रोफ़ाइल और CV',
     assessment: 'मूल्यांकन',
     report: 'स्किल्स रिपोर्ट',

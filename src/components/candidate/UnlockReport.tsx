@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Mono } from '@/components/ui/Mono';
+import { IndicativePrice } from '@/components/candidate/IndicativePrice';
 import { loadEximpe } from '@/lib/payments/eximpe-client';
 import { loadCashfree } from '@/lib/payments/cashfree-client';
 import { PLACEMENT_FEE } from '@/lib/data/brand';
@@ -117,6 +118,7 @@ export function UnlockReport({
       <p className="m-0 max-w-[62ch] text-[15px] leading-[1.6] text-ink-2">
         {fill(s.unlockBody, { price })}
       </p>
+      <IndicativePrice t={t} />
 
       <div role="radiogroup" aria-label={s.unlockTitle} className="mt-5 flex flex-wrap gap-2.5">
         {methods.map((option) => {
