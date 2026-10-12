@@ -81,7 +81,15 @@ export async function POST(request: Request) {
       description: `${BRAND.name} assessment`,
       customer: { name: candidate.fullName, email: candidate.email, phone: '' },
       methodHint: method.data,
-      successUrl: `${origin}/${locale}/dashboard?paid=${receipt}&session_id={CHECKOUT_SESSION_ID}`,
+      /*
+        Through the return handler rather than straight to the dashboard, so the
+        payment is confirmed against the provider before the candidate sees the
+        page. `{CHECKOUT_SESSION_ID}` used to sit on this URL: that is Stripe's
+        placeholder, and every other rail passed it through to the browser
+        verbatim. Each provider appends its own identifiers, and the handler
+        reads whichever it recognises.
+      */
+      successUrl: `${origin}/api/payments/return?locale=${locale}&paid=${receipt}`,
       cancelUrl: `${origin}/${locale}/dashboard?status=cancelled`,
       metadata: {
         cohort: COHORT.id,

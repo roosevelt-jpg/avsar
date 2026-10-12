@@ -70,8 +70,22 @@ export interface PaymentProvider {
   readonly name: 'stripe' | 'razorpay' | 'cashfree' | 'eximpe' | 'viva';
   isConfigured(): boolean;
   createCheckout(request: CheckoutRequest): Promise<CheckoutSession>;
-  /** Confirms a session after the browser returns. Never trust the query string. */
-  confirmSession(sessionId: string): Promise<{ paid: boolean; paymentId: string | null }>;
+  /**
+   * Confirms a payment after the browser returns. Never trust the query string.
+   *
+   * `orderId` is the provider's own order id **as the provider reports it**,
+   * not as the browser presented it. The return URL carries both a transaction
+   * and an order, and a candidate can edit either: pairing somebody else's paid
+   * transaction with their own order id would otherwise mark their order paid.
+   * Reading the order back from the provider's answer closes that, so a caller
+   * that uses this field rather than the query string cannot be fooled.
+   *
+   * Null where a provider does not report one; such a rail simply has no
+   * browser-return path and relies on its webhook.
+   */
+  confirmSession(
+    sessionId: string,
+  ): Promise<{ paid: boolean; paymentId: string | null; orderId?: string | null }>;
   /**
    * Verifies and interprets a webhook. Returns null when the signature is bad.
    *

@@ -194,9 +194,11 @@ export const vivaProvider: PaymentProvider = {
   /**
    * Confirms from the browser's return.
    *
-   * Viva sends the transaction id back on the success URL as `t`. The caller
-   * passes it here; what is never done is believing the query string on its
-   * own, which anybody can type.
+   * Viva sends the transaction id back on the success URL as `t`, and the order
+   * code as `s`. Only `t` is used, and the order it belongs to is read back out
+   * of Viva's answer rather than taken from `s`: both are in a URL the candidate
+   * can edit, and trusting `s` would let somebody pair a stranger's paid
+   * transaction with their own order.
    */
   async confirmSession(sessionId: string) {
     const config = env();
@@ -208,6 +210,8 @@ export const vivaProvider: PaymentProvider = {
     return {
       paid: transaction.statusId === SUCCEEDED,
       paymentId: transaction.transactionId ?? sessionId,
+      /* Viva's own answer, so the caller never has to believe the query string. */
+      orderId: transaction.orderCode ? String(transaction.orderCode) : null,
     };
   },
 
