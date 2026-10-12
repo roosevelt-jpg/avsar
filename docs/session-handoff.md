@@ -42,6 +42,86 @@ nas duas versoes quando chamada sem sessao.
 
 ---
 
+## Bloco 46 - 12 Oct 2026, abilio.diz@smithandadams.com
+
+**Viva.com integrada e verificada em producao.**
+
+### Adaptador
+
+`lib/payments/viva.ts`. Smart Checkout com redireccionamento: cria ordem, manda
+o browser para a pagina alojada deles, volta. Nenhum dado de cartao toca neste
+servidor.
+
+**Os webhooks da Viva nao sao assinados.** A verificacao e um aperto de mao
+unico: eles fazem `GET` ao URL e esperam a chave da conta de volta. Isso prova
+que controlamos o endereco e **nao** autentica entrega nenhuma. Um POST que
+chegue e portanto uma afirmacao nao autenticada de que algo foi pago, e acreditar
+nela faria disto um endpoint aberto para marcar qualquer encomenda como paga.
+
+Por isso o `handleWebhook` usa do payload **uma coisa so**, o id da transaccao, e
+pergunta a API autenticada deles o que aconteceu. O `orderCode` tambem vem da
+resposta deles, para um corpo forjado nao poder apontar um pagamento verdadeiro
+para a encomenda de outra pessoa.
+
+`GET /api/payments/webhook` devolve a chave; 404 quando nao ha credenciais, para
+uma instalacao sem Viva nao fingir que e um endpoint da Viva.
+
+### Validado contra a API real
+
+- Token OAuth2 emitido com `scope urn:viva:payments:core:api:redirectcheckout`
+- `POST /checkout/v2/orders` -> `orderCode` de 16 digitos
+- **Unidades confirmadas**: `2500` foi aceite como EUR 25,00, logo `amountMinor`
+  vai direito sem conversao
+- Endpoint de verificacao a devolver os 40 caracteres hex, webhook verificado e
+  gravado no painel
+
+### Por provar
+
+O formato do payload do webhook e se o estado de sucesso e mesmo `statusId: 'F'`.
+So com um pagamento verdadeiro.
+
+### Armadilhas encontradas pelo caminho
+
+- A chave do webhook **nao vem com as credenciais do Smart Checkout**. O endpoint
+  `/api/messages/config/token` usa o par antigo Merchant ID + API Key, e devolve
+  401 com Client ID/Secret. Obtida com esse par, depois removido do `.env.local`.
+- O `.env.local` levou o bloco de variaveis **duas vezes** e ja tinha um
+  `PAYMENT_PROVIDER` anterior: tres linhas com o mesmo nome, e qual ganha depende
+  do dotenv. Desduplicado mantendo a ultima.
+- O `VIVA_CLIENT_SECRET` tinha **um espaco no meio**, o que rebentava o
+  `source` do ficheiro.
+- A `VIVA_WEBHOOK_KEY` tinha **o URL do webhook** em vez da chave, que era a
+  causa directa do "URL not verified".
+- O URL registado no painel tinha `www.` a mais e faltava-lhe o caminho.
+  `www.recruitment.smithandadams.com` nao resolve: o CNAME e de `recruitment`.
+- Depois de um `vercel deploy --prod`, o dominio personalizado serve a versao
+  nova com ~30s de atraso face ao dominio da Vercel. Um 404 imediatamente a
+  seguir ao deploy e corrida de alias, nao erro.
+
+### Tambem corrigido
+
+`availablePaymentMethods()` devolvia os tres metodos indianos para qualquer
+provedor que nao fosse Stripe. Com a Viva activa mostrava UPI e netbanking numa
+rail europeia que nao cobra nem um nem outro. Agora a Viva devolve `['card']` e a
+pagina alojada deles decide o resto.
+
+### Por decidir (bloqueia cobrar a alguem)
+
+1. **Moeda.** `CHARGE_CURRENCY` ainda em `INR`, resto da fase indiana. A conta
+   liquida em euros e o site anuncia AED 99. Recusada a ideia de cobrar na moeda
+   de cada pais pelo indicativo: o indicativo e o pais do telemovel, nao o do
+   cartao nem o da residencia, e seriam dez precos a derivar com o cambio.
+2. **Quem cobra.** A conta Viva e da **Benefit Discovery, LDA** (NIPC 517818817);
+   o site diz do rodape aos termos que e a SMTADM do Dubai. Pergunta factual por
+   responder: **a Benefit Discovery pertence ao grupo Smith & Adams?** O rodape
+   afirma "a Smith & Adams company" e a certidao nao mostra ligacao.
+3. **A taxa de colocacao continua escondida**, por isso o checkout devolve 503.
+   E tambem a peca que prende o resto: enquanto o candidato pagar os EUR 1.000,
+   Portugal (DL 260/2009), os Emirados (DL 33/2021 art. 6) e a India (Emigration
+   Act) proibem-no. Passa-la para o empregador resolve os tres de uma vez.
+
+---
+
 ## Bloco 44 - 08 Oct 2026, abilio.diz@smithandadams.com
 
 **Video de fundo no hero, por tras de uma cortina terracota.**
