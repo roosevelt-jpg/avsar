@@ -131,6 +131,57 @@ async function retrieveTransaction(
   return (await response.json()) as Transaction;
 }
 
+/**
+ * Finds the transaction id wherever this delivery happens to carry it.
+ *
+ * Their documented shape is `EventData.TransactionId`, and that is what this
+ * looked for alone. One spelling is a guess with no fallback: a delivery that
+ * nests it differently, or sends it camelCase, would have been dropped with a
+ * 401 and no trace. The search is deliberately shallow and value-checked rather
+ * than clever, because what it must never do is pick up some other GUID in the
+ * body and hand it to the API as a transaction.
+ *
+ * Nothing here is trusted. Whatever comes out is a question for Viva's
+ * authenticated API, which is what decides whether anything was paid.
+ */
+const GUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function findTransactionId(payload: unknown): string | null {
+  const seen = new Set<unknown>();
+
+  function walk(node: unknown, depth: number): string | null {
+    if (depth > 3 || node === null || typeof node !== 'object') return null;
+    if (seen.has(node)) return null;
+    seen.add(node);
+
+    const record = node as Record<string, unknown>;
+    for (const [key, value] of Object.entries(record)) {
+      if (typeof value === 'string' && /^transactionid$/i.test(key) && GUID.test(value)) {
+        return value;
+      }
+    }
+    for (const value of Object.values(record)) {
+      const found = walk(value, depth + 1);
+      if (found) return found;
+    }
+    return null;
+  }
+
+  return walk(payload, 0);
+}
+
+/** Key names only. The body carries the payer's name and email. */
+function describeShape(payload: unknown): string {
+  if (payload === null || typeof payload !== 'object') return typeof payload;
+  return Object.entries(payload as Record<string, unknown>)
+    .map(([key, value]) =>
+      value !== null && typeof value === 'object'
+        ? `${key}{${Object.keys(value as object).join(',')}}`
+        : key,
+    )
+    .join(',');
+}
+
 export const vivaProvider: PaymentProvider = {
   name: 'viva',
 
@@ -228,26 +279,35 @@ export const vivaProvider: PaymentProvider = {
     const config = env();
     if (!config) return null;
 
-    let payload: { EventData?: { TransactionId?: string; OrderCode?: number } };
+    let payload: unknown;
     try {
       payload = JSON.parse(rawBody);
     } catch {
+      console.error('[viva] webhook body was not JSON');
       return null;
     }
 
-    const transactionId = payload.EventData?.TransactionId;
-    const orderCode = payload.EventData?.OrderCode;
-    if (!transactionId || !orderCode) return null;
+    const transactionId = findTransactionId(payload);
+
+    if (!transactionId) {
+      /*
+        The shape was written from their documentation, and documentation is not
+        the same as a delivery. Printing the keys rather than failing mute is the
+        difference between finding this out from a log line and finding it out
+        from a candidate who paid and got nothing. Keys only: the body carries
+        the payer's name and email.
+      */
+      console.error('[viva] no transaction id in webhook; keys were', describeShape(payload));
+      return null;
+    }
 
     const transaction = await retrieveTransaction(config, transactionId);
-    if (!transaction) return null;
+    if (!transaction?.orderCode) return null;
 
-    /* The order code is read from Viva's answer, not from the payload, so a
-       forged body cannot point a real payment at somebody else's order. */
-    const confirmedOrder = transaction.orderCode ?? orderCode;
-
+    /* The order comes from Viva's answer and nowhere else, so a forged body
+       cannot point a real payment at somebody else's order. */
     return {
-      sessionId: String(confirmedOrder),
+      sessionId: String(transaction.orderCode),
       paymentId: transactionId,
       status: transaction.statusId === SUCCEEDED ? 'paid' : 'failed',
     };
