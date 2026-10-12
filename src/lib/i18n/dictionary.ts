@@ -406,7 +406,7 @@ const en: Dictionary = {
   noPlacementFee:
     'You never pay us for the job itself. The assessment fee is the only thing you pay. The employer pays our placement fee, not you.',
   placementFee:
-    'If you are placed, there is a placement fee of €{eur}. You pay it only once your job is confirmed and your contract is signed, never before. The {price} assessment fee is separate and is what you pay now.',
+    'If you are placed, there is a placement fee of €{eur}. You pay it only once your job is confirmed and your contract is signed, never before. The {price} assessment fee is separate and is what you pay now. The placement fee is invoiced separately and is never charged through this site.',
   placementFeeShort: 'Placement fee €{eur}, payable only after your job is confirmed.',
   rateLine:
     '{rate}% of the candidates we put in front of an employer are hired. Getting to that stage is the hard part, and this is what it looks like.',
@@ -852,7 +852,7 @@ const hi: Dictionary = {
   noPlacementFee:
     'नौकरी के लिए आप हमें कभी भुगतान नहीं करते। आप केवल मूल्यांकन शुल्क देते हैं। हमारी प्लेसमेंट फ़ीस नियोक्ता देता है, आप नहीं।',
   placementFee:
-    'यदि आपका चयन होता है, तो €{eur} की प्लेसमेंट फ़ीस है। यह आप तभी देते हैं जब आपकी नौकरी पक्की हो जाए और अनुबंध पर हस्ताक्षर हो जाएँ, उससे पहले कभी नहीं। {price} की आकलन फ़ीस अलग है और वही आप अभी दे रहे हैं।',
+    'यदि आपका चयन होता है, तो €{eur} की प्लेसमेंट फ़ीस है। यह आप तभी देते हैं जब आपकी नौकरी पक्की हो जाए और अनुबंध पर हस्ताक्षर हो जाएँ, उससे पहले कभी नहीं। {price} की आकलन फ़ीस अलग है और वही आप अभी दे रहे हैं। प्लेसमेंट फ़ीस का बिल अलग से भेजा जाता है और वह कभी इस साइट से नहीं ली जाती।',
   placementFeeShort: 'प्लेसमेंट फ़ीस €{eur}, नौकरी पक्की होने के बाद ही देय।',
   rateLine:
     'जिन उम्मीदवारों को हम नियोक्ता के सामने रखते हैं, उनमें से {rate}% को नौकरी मिलती है। मुश्किल हिस्सा उस चरण तक पहुँचना है, और वह ऐसा दिखता है।',

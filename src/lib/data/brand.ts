@@ -191,8 +191,11 @@ export function indicativeAmount(currency: IndicativeCurrency): number {
  *                  and the disclosure moved to the end of signup
  *  - `v4-2026-10`  the placement fee withheld from the site, so the sentence
  *                  about it left the consent somebody is asked to tick
+ *  - `v5-2026-10`  the placement fee disclosed again and stated to be invoiced
+ *                  separately; seller moved to the Portuguese entity and the
+ *                  price quoted in euros
  */
-export const CONSENT_VERSION = 'v4-2026-10';
+export const CONSENT_VERSION = 'v5-2026-10';
 
 /** Working days from a completed application to an answer. */
 export const RESPONSE_DAYS = 15;
@@ -233,23 +236,21 @@ export const PLACEMENT_FEE = {
    * in front of them at checkout before the assessment fee is taken.
    */
   /**
-   * Withheld from the site, on the owner's instruction, 7 October 2026.
+   * Disclosed again, on the owner's decision, 12 October 2026.
    *
-   * This is the only setting in the file that makes the product say less than
-   * it knows, so it is written down rather than achieved by deleting a
-   * paragraph somebody later cannot find.
+   * It was withheld from 7 October, which held the checkout shut: the
+   * assessment fee is what induces payment, and taking it from somebody who has
+   * not been told that €1,000 follows is a misleading omission, so
+   * `/api/payments/checkout` refused outright rather than let the hidden state
+   * quietly become one where money changes hands.
    *
-   * It is safe only while nobody can pay. The assessment fee is what induces
-   * payment, and taking it from a candidate who has not been told that €1,000
-   * follows is a misleading omission: `/api/payments/checkout` therefore
-   * refuses outright while `payer` is 'candidate' and this is false, so the
-   * hidden state cannot quietly become a state in which money changes hands.
-   *
-   * Two ways out, and both close it honestly. Set this back to true, or move
-   * `payer` to 'employer', which is the model the Portuguese market already
-   * uses and the one the note above recommends.
+   * The fee is now invoiced separately rather than taken through the site. That
+   * changes which rail carries it and nothing about who owes it, so it stays
+   * `payer: 'candidate'` and stays disclosed. Moving the charge off the site
+   * removes it from the payment provider's view; it does not remove it from the
+   * candidate's, and the candidate is the one the disclosure is for.
    */
-  disclosed: false,
+  disclosed: true,
 
   get visibleToCandidates(): boolean {
     return this.payer === 'candidate' && this.disclosed;
