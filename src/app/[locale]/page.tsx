@@ -260,6 +260,17 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
         </h2>
 
         {/*
+          The figure itself, which the footnote under it had been describing
+          without it ever being on the page: `money.price` was switched to
+          rupees, but no string on this page carries {price}, so the change
+          rendered nowhere. A number that is the answer to "what does this cost"
+          earns being a number rather than a clause inside a sentence.
+        */}
+        <p className="m-0 font-mono text-[clamp(30px,4cqi,44px)] font-semibold leading-none tracking-[-0.02em]">
+          {formatIndicative()}
+        </p>
+
+        {/*
           The rupee beside the euro, once, where the fee is being explained.
 
           Not on the button and not in the order summary: those state what is
@@ -294,7 +305,7 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
           <p className="mt-5 mb-0 max-w-[62ch] rounded-[16px] border border-accent bg-accent-tint px-5 py-4 text-[15px] leading-[1.6] text-ink">
             {fill(t.placementFee, {
               eur: PLACEMENT_FEE.eur.toLocaleString('en-GB'),
-              price: formatPrice(activePrice().totalMinor),
+              price: formatIndicative(),
             })}
           </p>
         )}

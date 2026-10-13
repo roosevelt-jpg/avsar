@@ -1,11 +1,11 @@
 'use client';
 
+import { formatIndicative } from '@/lib/data/brand';
 import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { Mono } from '@/components/ui/Mono';
 import { AREAS, POSITIONS, positionsInArea } from '@/lib/data/positions';
 import { fill, type Dictionary, type Locale } from '@/lib/i18n';
-import { activePrice, formatPrice } from '@/lib/data/cohort';
 
 /**
  * Position picker in the hero.
@@ -70,7 +70,7 @@ export function PositionSelector({
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-line-soft pt-[18px]">
         <Mono className="text-muted">
-          {fill(t.heroMeta, { price: formatPrice(activePrice().totalMinor) })}
+          {fill(t.heroMeta, { price: formatIndicative() })}
         </Mono>
         <button
           type="button"
