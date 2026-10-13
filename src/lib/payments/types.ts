@@ -19,6 +19,11 @@
  *  - **Razorpay**, as a domestic Indian rail. Cheapest of the three, and needs
  *    an Indian entity. Worth switching to if one exists anyway for the
  *    Emigration Act recruiting-agent registration.
+ *  - **Dodo Payments**, a merchant of record, and the rail that exists because
+ *    the others refused. It is the seller, not us: it collects rupees in India
+ *    under its own licences, carries the tax, and settles euros here. That is
+ *    what makes UPI available at all, and it holds only while the candidate is
+ *    buying a digital product rather than a job.
  *  - **Viva.com**, a European acquirer. Cheap card rates, and the only one here
  *    that cannot run on the Dubai company: it passports an EU licence and
  *    onboards merchants registered in the EEA or the UK. Using it means the
@@ -67,7 +72,7 @@ export type WebhookResult = {
 };
 
 export interface PaymentProvider {
-  readonly name: 'stripe' | 'razorpay' | 'cashfree' | 'eximpe' | 'viva';
+  readonly name: 'stripe' | 'razorpay' | 'cashfree' | 'eximpe' | 'viva' | 'dodo';
   isConfigured(): boolean;
   createCheckout(request: CheckoutRequest): Promise<CheckoutSession>;
   /**

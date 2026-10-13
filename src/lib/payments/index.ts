@@ -3,6 +3,7 @@ import { razorpayProvider } from './razorpay';
 import { cashfreeProvider } from './cashfree';
 import { eximpeProvider } from './eximpe';
 import { vivaProvider } from './viva';
+import { dodoProvider } from './dodo';
 import type { PaymentMethodHint, PaymentProvider } from './types';
 
 /**
@@ -15,6 +16,8 @@ import type { PaymentMethodHint, PaymentProvider } from './types';
  */
 export function getPaymentProvider(): PaymentProvider {
   switch (process.env.PAYMENT_PROVIDER) {
+    case 'dodo':
+      return dodoProvider;
     case 'viva':
       return vivaProvider;
     case 'eximpe':
@@ -69,6 +72,9 @@ export function availablePaymentMethods(): PaymentMethodHint[] {
     true while every other rail was Indian and stopped being true the moment a
     European one existed.
   */
+  /* The whole reason this rail exists. Their hosted page shows the rest. */
+  if (provider === 'dodo') return ['upi', 'card'];
+
   if (provider === 'viva') return ['card'];
 
   if (provider !== 'stripe') return ['upi', 'card', 'netbanking'];

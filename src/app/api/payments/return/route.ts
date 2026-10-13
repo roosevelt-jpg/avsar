@@ -31,7 +31,9 @@ export async function GET(request: Request) {
     back in their history, and they should simply land on their dashboard.
   */
   const transactionId =
-    url.searchParams.get('t') ?? url.searchParams.get('transaction_id');
+    url.searchParams.get('t') ??
+    url.searchParams.get('payment_id') ??
+    url.searchParams.get('transaction_id');
 
   if (!transactionId) return NextResponse.redirect(new URL(dashboard, url.origin));
 
