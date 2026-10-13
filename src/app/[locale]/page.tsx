@@ -5,7 +5,7 @@ import { Mono } from '@/components/ui/Mono';
 import { PhoneWalkthrough } from '@/components/candidate/PhoneWalkthrough';
 import { Reveal } from '@/components/motion/Reveal';
 import { PositionGrid } from '@/components/candidate/PositionGrid';
-import { HeroBackdrop } from '@/components/candidate/HeroBackdrop';
+import { IntroVideo } from '@/components/candidate/IntroVideo';
 import { positionCopy } from '@/lib/data/position-copy';
 import { SiteHeader } from '@/components/candidate/SiteHeader';
 import { SiteFooter } from '@/components/candidate/SiteFooter';
@@ -44,20 +44,19 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
       <SiteHeader locale={locale} />
 
       {/*
-        One centred column again, and no film.
+        The claim on the left, the film on the right.
 
-        The film was a minute of India and Portugal, and the product is now
-        worldwide to the UAE, so it says the wrong thing until it is reshot. It
-        comes back when there is a cut that matches.
+        It was one centred column with no film for five days, from when the
+        product pointed worldwide and a cut shot in India said the wrong thing.
+        It points at India again, so the film is the right film again and gets
+        its half back.
 
-        What is left is the claim, and the claim is what the page is for, so it
-        is centred and given the width: the slogan, the destination, who it is
-        for, and what the assessment is.
+        The slogan stays above the headline rather than becoming it. Promoting
+        it to the headline was the right move for a centred hero with nothing
+        beside it; next to a film it would compete with both.
       */}
-      <section className="relative isolate flex flex-col items-center gap-0 overflow-hidden bg-ink px-[clamp(20px,4cqi,56px)] pt-[clamp(56px,8cqi,104px)] pb-[clamp(56px,7cqi,96px)] text-center text-paper">
-        <HeroBackdrop />
-
-        <p className="relative m-0 inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-[14px] py-1.5 font-mono text-[12px] text-paper backdrop-blur-[2px]">
+      <section className="px-[clamp(20px,4cqi,56px)] pt-[clamp(32px,6cqi,72px)] pb-[clamp(32px,5cqi,64px)]">
+        <p className="m-0 inline-flex items-center gap-2 rounded-full border border-line-strong bg-surface px-[14px] py-1.5 font-mono text-[12px] text-ink-2">
           <span aria-hidden className="size-[7px] rounded-full bg-success" />
           {t.eyebrow}
         </p>
@@ -69,48 +68,63 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
           whether to trust an unknown recruitment site than it is to somebody
           already convinced, so it is read before the claim rather than after it.
 
-          The mark is the ink version. The one in the footer is white artwork
-          over transparency, drawn for a dark band, and it would be invisible
-          here; this is the same alpha channel with the colour swapped, so the
-          letterforms are identical rather than resampled.
+          The ink mark, because this band is paper again. The footer keeps the
+          white artwork, which is the same alpha channel with the colour
+          swapped rather than a resample.
 
           It opens in a new tab deliberately. Somebody halfway through deciding
           whether to apply should be able to go and look at the group without
           losing this page.
         */}
-        <a
-          href="https://www.smithandadams.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="t-colors relative mt-7 inline-block opacity-85 hover:opacity-100"
-        >
-          {/* The white artwork again. The ink version was made for the hero when
-              the hero was paper; the curtain made it the wrong one. */}
-          <Image
-            src="/smith-adams-group-light-640.png"
-            alt={`${BRAND.parent} Group`}
-            width={640}
-            height={136}
-            className="h-auto w-[164px]"
-          />
-        </a>
-        <p className="relative m-0 mt-3 text-[15px] leading-[1.5] text-white/70">{BRAND.tagline}</p>
+        <div className="mt-6 mb-[clamp(24px,4cqi,44px)]">
+          <a
+            href="https://www.smithandadams.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="t-colors inline-block opacity-80 hover:opacity-100"
+          >
+            <Image
+              src="/smith-adams-group-ink-640.png"
+              alt={`${BRAND.parent} Group`}
+              width={640}
+              height={136}
+              className="h-auto w-[164px]"
+            />
+          </a>
+          <p className="m-0 mt-3 text-[15px] leading-[1.5] text-muted">{BRAND.tagline}</p>
+        </div>
 
-        {/*
-          The slogan is the headline now.
+        <div className="grid items-center gap-[clamp(28px,5cqi,64px)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
+          <div>
+            {/*
+              English in all three locales, on purpose. A slogan is part of the
+              mark rather than part of the copy: translating it would give the
+              company three different claims about itself depending on which
+              button a reader pressed.
+            */}
+            <p className="m-0 mb-3 font-mono text-[13px] uppercase tracking-[0.14em] text-accent">
+              {BRAND.slogan}
+            </p>
 
-          It stays in English in all three locales, on purpose. A slogan is part
-          of the mark rather than part of the copy: translating it would give
-          the company three different claims about itself depending on which
-          button a reader pressed.
-        */}
-        <h1 className="relative m-0 mt-[clamp(32px,5cqi,56px)] max-w-[16ch] text-balance text-[clamp(38px,6.4cqi,76px)] font-semibold leading-[1.02] tracking-[-0.035em] [text-shadow:0_1px_24px_rgba(27,26,23,0.35)]">
-          {BRAND.slogan}
-        </h1>
+            <h1 className="m-0 max-w-[20ch] text-balance text-[clamp(32px,4.4cqi,54px)] font-semibold leading-[1.06] tracking-[-0.035em]">
+              {t.heroTitle}
+            </h1>
 
-        <p className="relative m-0 mt-5 max-w-[32ch] text-balance text-[clamp(19px,2.4cqi,28px)] font-medium leading-[1.3] tracking-[-0.02em] text-white/90">
-          {t.heroTitle}
-        </p>
+            <p className="mt-5 mb-0 max-w-[52ch] text-[clamp(16px,1.6cqi,18px)] leading-[1.6] text-ink-2">
+              {t.heroSubheadline}
+            </p>
+          </div>
+
+          {/*
+            Second in the markup, so a phone gets the claim before the film.
+
+            Directly a grid child rather than wrapped. A wrapper with
+            `justify-self-end` shrinks to fit its contents, which left the
+            figure's `w-full` resolving against nothing and the film rendering
+            at about a third of its column.
+          */}
+          <IntroVideo t={t} />
+        </div>
       </section>
 
       {/*
