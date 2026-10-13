@@ -42,6 +42,85 @@ nas duas versoes quando chamada sem sessao.
 
 ---
 
+## Bloco 48 - 13 Oct 2026, abilio.diz@smithandadams.com
+
+**De volta a India -> Portugal, com o preco em rupias e a cobranca em euros.**
+
+### Pagamentos: intactos
+
+Nada em `src/lib/payments` nem em `src/app/api/payments` mudou neste bloco.
+Provedor `viva`, moeda `EUR`, preco 25, entidade BENEFIT DISCOVERY. O pagamento
+real de 12 Out continua a ser a prova de que funciona.
+
+### Hero
+
+Texto a esquerda, filme a direita, como estava antes de `71ae297`. O slogan
+ficou **por cima** do titulo em vez de ser o titulo: promove-lo fazia sentido
+num hero centrado sem nada ao lado, ao lado de um filme competia com os dois.
+`HeroBackdrop` deixou de ser importado - ficou em disco, nada e enviado.
+
+### Destino: Emirados -> Portugal
+
+Revertido em todo o lado: copy nas tres linguas, metadados, cartao de partilha,
+paginas legais, pagina de empregadores, lista de cidades do parser, descricoes
+das posicoes.
+
+**Quatro que nao eram palavras:** a fotografia `lisbon-rooftops` recuperada de
+antes de ter sido apagada, com o blur dela e nao o de Dubai; a pergunta de
+electricidade volta a tensao portuguesa/europeia; a de conducao volta a perguntar
+o limite da UE em vez de para que serve um limite; a de perfil pergunta por
+portugues em vez de arabe.
+
+`DEFAULT_COUNTRY` do selector de indicativo passa a `'IN'`. **E o unico valor por
+omissao que nao segue o destino**, porque e o pais do candidato e nao o do
+trabalho.
+
+**Metodo:** reversao a partir dos proprios commits (`ceaa475`, `e095242`), para
+voltar a redaccao original e nao a parafrase dela. A primeira tentativa
+emparelhou linhas do diff por posicao e deixou cair uma chave de um objecto; o
+tsc apanhou. A versao boa casa blocos contiguos.
+
+### Precos: rupia a frente, euro onde sai do cartao
+
+Landing, seccao da taxa e tabela de precos lideram com **₹2.400**. Resumo do
+pedido, botao de pagar e consentimento ficam em **euros**, porque euros e o que
+a Viva tira.
+
+**A cobranca NAO e em rupias.** A conta Viva e portuguesa e liquida em euros.
+Para debitar rupias e preciso EximPe ou Cashfree (autorizacao RBI PA-CB, cobram
+por UPI e liquidam no estrangeiro, sem entidade indiana). Adaptador da EximPe
+escrito, credenciais por preencher. Nesse cenario inverte-se isto: a rupia passa
+a ser o preco e o euro a referencia.
+
+O euro e dito sob a taxa na landing e na nota do plano do candidato, em vez de
+ficar para o checkout.
+
+### Moeda pelo IP
+
+O selector arranca de `x-vercel-ip-country`, lido no servidor, por isso a
+primeira renderizacao ja vem certa. Ordem: escolha do candidato -> pais do edge
+-> idioma do browser -> rupia. O edge vem antes do idioma porque um telemovel
+indiano em `en-GB` e banal e um telemovel indiano a ligar-se de Kochi e o facto
+que queremos. **Escolhe uma linha numa lista, nunca o que e cobrado**: VPN,
+roaming e operadoras dao a resposta errada.
+
+### Por decidir
+
+- **UPI.** `getPaymentProvider()` devolve um provedor de cada vez. Correr Viva e
+  EximPe juntas exige encaminhar por metodo, e a parte que se esquece e a rota do
+  webhook: com duas rails activas uma entrega da Viva pode ir ao verificador da
+  EximPe. Se os candidatos sao quase todos indianos, **trocar** e mais simples e
+  mais fiavel do que acrescentar.
+- **O arabe ficou** como lingua de um produto que leva indianos para Portugal.
+  Tirar um idioma e decisao, nao arrumacao.
+- **Taxa de colocacao.** Com empresa portuguesa a colocar em Portugal e a cobrar
+  1.000 ao candidato, o DL 260/2009 proibe-o directamente. Deixou de haver
+  argumentos nas duas direccoes. Saida: `PLACEMENT_FEE.payer` -> `'employer'`.
+- Rodar as credenciais da Viva (passaram pelo chat).
+- IVA para residente na UE, com o contabilista.
+
+---
+
 ## Bloco 47 - 12 Oct 2026, abilio.diz@smithandadams.com
 
 **Vendedor, moeda e taxa de colocacao: as tres decisoes fechadas.**
