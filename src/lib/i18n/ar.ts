@@ -35,6 +35,8 @@ export const ar: Dictionary = {
   heroMeta: '{price} · 20–30 دقيقة · عبر الإنترنت',
 
   includesTitle: 'ما الذي تشمله الرسوم',
+  feeIndicative:
+    'تُحصَّل الرسوم باليورو. بسعر اليوم يعادل ذلك نحو {indicative}، ويقوم مصرفك بالتحويل بسعره لا بسعرنا.',
   howTitle: 'كيف تعمل المنصة',
   placeTitle: 'ما يحصل عليه المرشح المختار',
   sectorsTitle: 'الوظائف التي نوظّف لها',

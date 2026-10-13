@@ -14,6 +14,7 @@ import { fill, getDictionary, isLocale } from '@/lib/i18n';
 import { activePrice, formatPrice } from '@/lib/data/cohort';
 import {
   BRAND,
+  formatIndicative,
   CONTRACT_YEARS,
   RESPONSE_DAYS,
   SELECTION_FUNNEL,
@@ -246,9 +247,22 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
 
       {/* ------------------------------------------------- what the fee includes */}
       <section className="px-[clamp(20px,4cqi,56px)] py-[clamp(56px,8cqi,104px)]">
-        <h2 className="m-0 mb-8 max-w-[24ch] text-[clamp(28px,4cqi,48px)] font-semibold leading-[1.1] tracking-[-0.03em]">
+        <h2 className="m-0 mb-3 max-w-[24ch] text-[clamp(28px,4cqi,48px)] font-semibold leading-[1.1] tracking-[-0.03em]">
           {t.includesTitle}
         </h2>
+
+        {/*
+          The rupee beside the euro, once, where the fee is being explained.
+
+          Not on the button and not in the order summary: those state what is
+          taken, and a second number there invites the reader to wonder which of
+          the two is the real one. Here the question being answered is "what
+          does this cost me", and for an Indian candidate the euro alone does
+          not answer it.
+        */}
+        <p className="m-0 mb-8 max-w-[62ch] text-[14px] leading-[1.6] text-muted">
+          {fill(t.feeIndicative, { indicative: formatIndicative() })}
+        </p>
         <ul className="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4 p-0">
           {t.includes.map(([title, body], index) => (
             <li key={title} className="rounded-[20px] border border-line bg-surface p-[clamp(22px,2.6cqi,30px)]">

@@ -2,7 +2,9 @@
 
 import { useState, useSyncExternalStore } from 'react';
 import {
+  CURRENCY_SYMBOLS,
   INDICATIVE_RATES,
+  PRIMARY_INDICATIVE,
   indicativeAmount,
   type IndicativeCurrency,
 } from '@/lib/data/brand';
@@ -43,20 +45,6 @@ const REGION_CURRENCY: Record<string, IndicativeCurrency> = {
   GB: 'GBP',
 };
 
-const SYMBOLS: Record<IndicativeCurrency, string> = {
-  INR: '₹',
-  PHP: '₱',
-  NPR: 'Rs',
-  BDT: '৳',
-  PKR: 'Rs',
-  LKR: 'Rs',
-  AED: 'AED',
-  EGP: 'E£',
-  KES: 'KSh',
-  NGN: '₦',
-  USD: '$',
-  GBP: '£',
-};
 
 const CURRENCIES = Object.keys(INDICATIVE_RATES) as IndicativeCurrency[];
 
@@ -89,11 +77,13 @@ export function IndicativePrice({ t }: { t: Dictionary }) {
   const language = useSyncExternalStore(neverChanges, languageOnClient, languageOnServer);
   const [chosen, setChosen] = useState<IndicativeCurrency | null>(null);
 
-  /* What the candidate picked wins; otherwise whatever the browser suggests. */
-  const currency = chosen ?? detectCurrency(language);
-
-  /* Nothing on the server, and nothing for a region we do not have a rate for. */
-  if (!currency) return null;
+  /*
+    What the candidate picked wins, then whatever the browser suggests, then the
+    rupee. The last step is new: the candidates are Indian, so a browser that
+    reports a region we have no rate for is far likelier to be an Indian phone
+    set to en-GB than somebody who wants no conversion at all.
+  */
+  const currency = chosen ?? detectCurrency(language) ?? PRIMARY_INDICATIVE;
 
   const amount = indicativeAmount(currency);
 
@@ -101,7 +91,7 @@ export function IndicativePrice({ t }: { t: Dictionary }) {
     <p className="mt-2.5 mb-0 flex flex-wrap items-baseline gap-x-2 gap-y-1 text-[13px] leading-[1.6] text-muted">
       <span>
         {fill(s.indicative, {
-          amount: `${SYMBOLS[currency]} ${amount.toLocaleString('en-US')}`,
+          amount: `${CURRENCY_SYMBOLS[currency]}${amount.toLocaleString('en-US')}`,
         })}
       </span>
       <label className="inline-flex items-baseline gap-1.5">

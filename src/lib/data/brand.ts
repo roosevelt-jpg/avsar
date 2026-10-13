@@ -14,7 +14,7 @@ export const BRAND = {
   /**
    * What the company is, and whose it is. Not the slogan.
    *
-   * This line exists to establish that a candidate abroad is dealing with a
+   * This line exists to establish that a candidate in India is dealing with a
    * business that has a parent, a name and an address. It does a different job
    * from the slogan and the two are not interchangeable.
    */
@@ -29,7 +29,7 @@ export const BRAND = {
    * No full stop. A slogan under a logo is a name, not a sentence.
    */
   slogan: 'Connecting Talent, Spot On',
-  locations: 'Dubai, United Arab Emirates',
+  locations: 'Lisbon · New Delhi',
 } as const;
 
 /**
@@ -61,7 +61,7 @@ export const ENTITY = {
    * The name a candidate actually knows us by.
    *
    * It has to reach the card and UPI statement too. Someone who signed up at
-   * S&A Recruitment and then sees an unfamiliar company name debit 99 dirhams
+   * S&A Recruitment and then sees an unfamiliar company name debit the fee
    * files a dispute, and they are right to.
    */
   tradingAs: 'S&A Recruitment',
@@ -82,13 +82,15 @@ export const ENTITY = {
   /** The registered office on the certidão permanente. */
   registeredAddress: 'Avenida da Liberdade 69, 4.º A, 1250-140 Lisboa, Portugal',
   /**
-   * A UAE line, now that the work and the company are both in the UAE.
+   * The Portuguese line, answered in Lisbon by the people who place them.
    *
-   * It replaced a Portuguese number that was answered in Lisbon, from when the
-   * jobs were there. A support line somewhere other than the country of the job
-   * is a question a candidate should not have to ask.
+   * It went to a UAE number for the week the jobs were in Dubai, and comes back
+   * with them. A support line in the country of the job is the useful one, and
+   * it is a different fact from the registered address above: the company and
+   * the work happen to be in the same country again, which is convenient rather
+   * than required.
    */
-  phone: '+971 58 568 0441',
+  phone: '+351 938 227 348',
   supportEmail: 'candidates@smithandadams.com',
   employerEmail: 'employers@smithandadams.com',
   reportEmail: 'report@smithandadams.com',
@@ -126,9 +128,14 @@ export const ASSESSMENT_FEE = {
 /**
  * Indicative conversions. For display only. Never charged.
  *
- * A candidate in Kochi or Kathmandu reads "EUR 25" and has no feel for what it
- * costs them. Showing roughly what it is in their own money removes that, and
- * that is the only job these do.
+ * A candidate in Kochi reads "EUR 25" and has no feel for what it costs them.
+ * Showing roughly what it is in their own money removes that, and that is the
+ * only job these do.
+ *
+ * The rupee is the one that appears beside the price in the copy, because the
+ * candidates are Indian; the rest exist for the currency picker at checkout.
+ * It is a display conversion and not a second price: quoting two numbers that
+ * drift apart is how a candidate ends up paying more than the site said.
  *
  * Charging in the candidate's currency was considered and rejected. The dial
  * code in the signup form is the country of the phone, not of the card and not
@@ -320,3 +327,32 @@ export const PLACEMENT_INCLUDES = [
 
 /** Length of the employment contract offered, in years. */
 export const CONTRACT_YEARS = 5;
+
+/** The currency the copy quotes beside the euro, because that is the market. */
+export const PRIMARY_INDICATIVE: IndicativeCurrency = 'INR';
+
+/**
+ * "about ₹2,400". The hedge is part of the string and not optional.
+ *
+ * Without it the figure reads as a second price, and the first time the rupee
+ * drifts somebody arrives at their bank statement with a number the site did
+ * not show them.
+ */
+export const CURRENCY_SYMBOLS: Record<IndicativeCurrency, string> = {
+  INR: '₹',
+  PHP: '₱',
+  NPR: 'Rs',
+  BDT: '৳',
+  PKR: 'Rs',
+  LKR: 'Rs',
+  AED: 'AED',
+  EGP: 'E£',
+  KES: 'KSh',
+  NGN: '₦',
+  USD: '$',
+  GBP: '£',
+};
+
+export function formatIndicative(currency: IndicativeCurrency = PRIMARY_INDICATIVE): string {
+  return `${CURRENCY_SYMBOLS[currency]}${indicativeAmount(currency).toLocaleString('en-US')}`;
+}
