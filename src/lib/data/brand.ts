@@ -201,8 +201,10 @@ export function indicativeAmount(currency: IndicativeCurrency): number {
  *  - `v5-2026-10`  the placement fee disclosed again and stated to be invoiced
  *                  separately; seller moved to the Portuguese entity and the
  *                  price quoted in euros
+ *  - `v6-2026-10`  the placement fee moved to the employer, so the candidate is
+ *                  told plainly they never pay for the job itself
  */
-export const CONSENT_VERSION = 'v5-2026-10';
+export const CONSENT_VERSION = 'v6-2026-10';
 
 /** Working days from a completed application to an answer. */
 export const RESPONSE_DAYS = 15;
@@ -223,10 +225,24 @@ export const RESPONSE_DAYS = 15;
  *
  * The workable version is the employer paying it, which is what the Portuguese
  * market already does. See docs/commercial-terms.md.
+ *
+ * It moved there on 13 October 2026, and not for the legal reasons above, which
+ * had been raised and set aside three times. It moved because the product could
+ * not get paid: Cashfree's merchant review stalled on the licensed-activity
+ * mismatch, EximPe refused outright, and both are RBI-supervised aggregators
+ * reading the same category. A product where an Indian worker pays EUR 1,000
+ * for a job abroad is one those firms decline by policy rather than case by
+ * case, and a merchant of record will decline it too, because merchants of
+ * record sell digital products and exclude employment services in their terms.
+ *
+ * What the candidate pays for is an online assessment, a skills report, a
+ * rewritten CV and a talent-pool listing. That is a digital product and it is
+ * onboardable. The placement fee was the only thing making it look like
+ * something else.
  */
 export const PLACEMENT_FEE = {
   eur: 1000,
-  payer: 'candidate' as 'candidate' | 'employer',
+  payer: 'employer' as 'candidate' | 'employer',
   /**
    * Charged only once a job is confirmed, never up front.
    *
@@ -243,19 +259,13 @@ export const PLACEMENT_FEE = {
    * in front of them at checkout before the assessment fee is taken.
    */
   /**
-   * Disclosed again, on the owner's decision, 12 October 2026.
+   * Moot while the employer pays, and left true so that it stays moot.
    *
-   * It was withheld from 7 October, which held the checkout shut: the
-   * assessment fee is what induces payment, and taking it from somebody who has
-   * not been told that €1,000 follows is a misleading omission, so
-   * `/api/payments/checkout` refused outright rather than let the hidden state
-   * quietly become one where money changes hands.
-   *
-   * The fee is now invoiced separately rather than taken through the site. That
-   * changes which rail carries it and nothing about who owes it, so it stays
-   * `payer: 'candidate'` and stays disclosed. Moving the charge off the site
-   * removes it from the payment provider's view; it does not remove it from the
-   * candidate's, and the candidate is the one the disclosure is for.
+   * `visibleToCandidates` reads `payer` first, so nothing about the fee reaches
+   * a candidate's screen either way. This matters only if `payer` ever goes
+   * back to 'candidate', and then true is the setting that keeps the checkout
+   * open and the disclosure honest, rather than the one that quietly reopens
+   * the shut-checkout state.
    */
   disclosed: true,
 
