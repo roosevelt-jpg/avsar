@@ -72,18 +72,41 @@ function detectCurrency(language: string | null): IndicativeCurrency | null {
   }
 }
 
-export function IndicativePrice({ t }: { t: Dictionary }) {
+export function IndicativePrice({
+  t,
+  country,
+}: {
+  t: Dictionary;
+  /**
+   * The country the edge saw, from `x-vercel-ip-country`.
+   *
+   * Preferred over the browser's own locale because it is read on the server,
+   * so the first paint is already right and there is nothing to correct after
+   * hydration. It is still only a hint: a VPN, a carrier routing through
+   * another country, or a phone roaming all give the wrong answer, which is
+   * exactly why it picks a row in a dropdown and never picks what gets charged.
+   */
+  country?: string | null;
+}) {
   const s = t.status;
   const language = useSyncExternalStore(neverChanges, languageOnClient, languageOnServer);
   const [chosen, setChosen] = useState<IndicativeCurrency | null>(null);
 
   /*
-    What the candidate picked wins, then whatever the browser suggests, then the
-    rupee. The last step is new: the candidates are Indian, so a browser that
-    reports a region we have no rate for is far likelier to be an Indian phone
-    set to en-GB than somebody who wants no conversion at all.
+    What the candidate picked, then where the request came from, then what the
+    browser says, then the rupee.
+
+    The edge's country goes before the browser's locale because an Indian phone
+    set to en-GB is ordinary and an Indian phone connecting from Kochi is the
+    fact we actually want. The rupee last, because the candidates are Indian and
+    no signal at all is likelier to be a missing header than somebody who wants
+    no conversion.
   */
-  const currency = chosen ?? detectCurrency(language) ?? PRIMARY_INDICATIVE;
+  const currency =
+    chosen ??
+    (country ? REGION_CURRENCY[country.toUpperCase()] : undefined) ??
+    detectCurrency(language) ??
+    PRIMARY_INDICATIVE;
 
   const amount = indicativeAmount(currency);
 

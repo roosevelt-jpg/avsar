@@ -1,3 +1,4 @@
+import { headers } from 'next/headers';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Mono } from '@/components/ui/Mono';
@@ -186,6 +187,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
             price={formatPrice(activePrice().totalMinor)}
             methods={availablePaymentMethods()}
             provider={getPaymentProvider().name}
+            country={(await headers()).get('x-vercel-ip-country')}
             providerMode={
               getPaymentProvider().name === 'eximpe'
                 ? process.env.EXIMPE_ENV === 'production'

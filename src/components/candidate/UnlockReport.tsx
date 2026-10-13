@@ -35,6 +35,7 @@ export function UnlockReport({
   methods,
   provider,
   providerMode,
+  country,
 }: {
   t: Dictionary;
   /** Formatted, from the server, so it matches every other place it appears. */
@@ -44,6 +45,8 @@ export function UnlockReport({
      and went stale the moment a fifth rail was added. */
   provider: PaymentProvider['name'];
   providerMode: 'sandbox' | 'production';
+  /** From `x-vercel-ip-country`, read on the server. Display only. */
+  country?: string | null;
 }) {
   const s = t.status;
   const [method, setMethod] = useState<PaymentMethodHint>(methods[0] ?? 'card');
@@ -118,7 +121,7 @@ export function UnlockReport({
       <p className="m-0 max-w-[62ch] text-[15px] leading-[1.6] text-ink-2">
         {fill(s.unlockBody, { price })}
       </p>
-      <IndicativePrice t={t} />
+      <IndicativePrice t={t} country={country} />
 
       <div role="radiogroup" aria-label={s.unlockTitle} className="mt-5 flex flex-wrap gap-2.5">
         {methods.map((option) => {

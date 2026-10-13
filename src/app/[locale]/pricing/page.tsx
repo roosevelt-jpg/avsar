@@ -4,8 +4,9 @@ import { Mono } from '@/components/ui/Mono';
 import { SiteHeader } from '@/components/candidate/SiteHeader';
 import { SiteFooter } from '@/components/candidate/SiteFooter';
 import { FaqAccordion } from '@/components/candidate/FaqAccordion';
-import { getDictionary, isLocale } from '@/lib/i18n';
+import { fill, getDictionary, isLocale } from '@/lib/i18n';
 import { EMPLOYER_PRICE_EUR, activePrice, formatPrice } from '@/lib/data/cohort';
+import { formatIndicative } from '@/lib/data/brand';
 
 export const metadata = { title: 'Pricing' };
 
@@ -18,9 +19,15 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
   const plans = [
     {
       eyebrow: p.candidates,
-      price: formatPrice(activePrice().totalMinor),
+      price: formatIndicative(),
       period: p.candidatesPeriod,
-      note: p.candidatesNote,
+      /*
+        The rupee is the headline and the euro is the charge, so the euro is
+        said here rather than left to the checkout. A price page that quotes one
+        currency and a checkout that takes another is the complaint this line
+        exists to prevent.
+      */
+      note: `${p.candidatesNote} ${fill(t.feeIndicative, { charged: formatPrice(activePrice().totalMinor) })}`,
       features: p.candidatesFeatures,
       cta: { label: p.startCta, href: `/${locale}/signup` },
       dark: true,

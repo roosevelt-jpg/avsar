@@ -28,7 +28,15 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
   if (!isLocale(locale)) notFound();
   const t = getDictionary(locale);
 
-  const money = { days: RESPONSE_DAYS, years: CONTRACT_YEARS, price: formatPrice(activePrice().totalMinor) };
+  /*
+    The rupee is the headline here, because this is where somebody decides
+    whether the thing is worth it and the euro does not answer that for an
+    Indian reader. The euro is never out of sight: `feeIndicative` states it
+    directly under the fee, and every surface where money actually moves - the
+    order summary, the pay button, the consent - stays in euros, because that is
+    the amount that leaves the card.
+  */
+  const money = { days: RESPONSE_DAYS, years: CONTRACT_YEARS, price: formatIndicative() };
 
   const stages = SELECTION_FUNNEL.perHundredApplicants;
   const funnelValues = {
@@ -261,7 +269,7 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
           not answer it.
         */}
         <p className="m-0 mb-8 max-w-[62ch] text-[14px] leading-[1.6] text-muted">
-          {fill(t.feeIndicative, { indicative: formatIndicative() })}
+          {fill(t.feeIndicative, { charged: formatPrice(activePrice().totalMinor) })}
         </p>
         <ul className="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4 p-0">
           {t.includes.map(([title, body], index) => (

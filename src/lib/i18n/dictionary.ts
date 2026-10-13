@@ -396,7 +396,7 @@ const en: Dictionary = {
 
   includesTitle: 'What your fee includes',
   feeIndicative:
-    'The fee is charged in euros. At today\'s rate that is about {indicative}, and your own bank does the conversion at its rate rather than ours.',
+    'The rupee figure is a guide at today\'s rate. The charge itself is made in euros, {charged}, and your own bank does the conversion at its rate rather than ours.',
   howTitle: 'How it works',
   placeTitle: 'What a selected candidate receives',
   sectorsTitle: 'Positions we are hiring for',
@@ -844,7 +844,7 @@ const hi: Dictionary = {
 
   includesTitle: 'आपकी फ़ीस में क्या शामिल है',
   feeIndicative:
-    'शुल्क यूरो में लिया जाता है। आज की दर पर यह लगभग {indicative} है, और रूपांतरण आपका अपना बैंक अपनी दर पर करता है, हमारी दर पर नहीं।',
+    'रुपये का आँकड़ा आज की दर पर एक अनुमान है। शुल्क यूरो में लिया जाता है, {charged}, और रूपांतरण आपका अपना बैंक अपनी दर पर करता है, हमारी दर पर नहीं।',
   howTitle: 'यह कैसे काम करता है',
   placeTitle: 'चुने गए उम्मीदवार को क्या मिलता है',
   sectorsTitle: 'जिन पदों के लिए हम भर्ती कर रहे हैं',
