@@ -91,3 +91,45 @@ never be softened to save space.
 
 **When is it delivered and what is refundable?** Seven days, and the
 download-based refund rule, both stated before payment.
+
+---
+
+## Customer flow, brief
+
+Asked for alongside the description. The order is the point: the charge lands
+after the work has been done, not before.
+
+1. **Arrival.** The candidate lands on recruitment.smithandadams.com and picks
+   one of twelve roles. The page states the price, what is delivered, and that
+   employment is not guaranteed.
+
+2. **Account.** Name, country and mobile, email, password. Signed in
+   immediately; the verification email goes out in the background.
+
+3. **Profile.** Role, years of experience, self-rated English, city, and a
+   consent checkbox confirming they have read the terms, the refund policy and
+   the selection rules. Nothing has been charged.
+
+4. **Assessment.** Twenty to thirty minutes on a phone, free to sit. Four
+   sections: trade skills, work experience, English, profile questions. Answers
+   save as they are given, so a dropped connection resumes in place.
+
+5. **Score.** The answers are scored on submission and the candidate sees their
+   score **whether or not they ever pay**.
+
+6. **Payment.** With the assessment done, the dashboard offers the unlock: EUR
+   25, once. This is the only charge in the journey and the only time money is
+   requested.
+
+7. **Delivery.** On a confirmed payment the account releases the skills report
+   as a PDF, the rewritten CV in three formats, the interview preparation and
+   the development plan, and lists the profile in the talent pool for 12
+   months. Delivered within 7 days, to the account, with nothing shipped.
+
+8. **After.** Shortlisted candidates are telephoned by a recruiter. Every
+   applicant gets an answer within 15 working days either way. Where someone is
+   hired, the placement fee is invoiced to the employer; the candidate pays
+   nothing further.
+
+Support is reachable at every step by email and telephone, both published in
+the page header and footer.
