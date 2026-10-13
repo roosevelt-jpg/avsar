@@ -36,11 +36,15 @@ export const DIAL_CODES: readonly DialCode[] = getCountries()
 /**
  * What the selector starts on.
  *
- * The UAE, because that is where the work is and a sizeable share of applicants
- * are already in the Gulf. It is a default and not an assumption: the field is
- * the second thing on the form and changing it costs one tap.
+ * India, because that is where the candidates are. It is a default and not an
+ * assumption: the field is the second thing on the form and changing it costs
+ * one tap, which is what it costs the applicant already in Europe.
+ *
+ * It was the UAE for the week the jobs were there. Note that this is the
+ * country of the applicant, not of the work, which is why it does not follow
+ * the destination.
  */
-export const DEFAULT_COUNTRY = 'AE';
+export const DEFAULT_COUNTRY = 'IN';
 
 export function dialFor(country: string): string | undefined {
   return DIAL_CODES.find((entry) => entry.country === country)?.dial;

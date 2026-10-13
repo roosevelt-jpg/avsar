@@ -35,7 +35,7 @@ export default async function SelectionRulesPage({ params }: { params: Promise<{
 
       <h2>What the fee does not buy</h2>
       <p>
-        The fee does not buy a job, a visa, a placement in the UAE, or any promise of one. It does
+        The fee does not buy a job, a visa, a placement in Portugal, or any promise of one. It does
         not place a candidate ahead of anyone else. Paying it does not create any obligation on
         S&A Recruitment to offer work.
       </p>

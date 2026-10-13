@@ -7,8 +7,8 @@ import { SECTOR_SLUGS } from '@/lib/data/sectors';
  * A mobile number from anywhere, validated against the rules of its own country.
  *
  * It used to be ten digits starting 6 to 9, which is correct for India and
- * wrong for everywhere else, and the platform now takes candidates from
- * anywhere. A regex that covers two hundred and forty-five numbering plans does
+ * wrong for everywhere else, and an applicant may be anywhere even when the
+ * market is one country. A regex that covers two hundred and forty-five numbering plans does
  * not exist, so the country comes in beside the number and `libphonenumber-js`
  * answers whether the pair is a real mobile.
  *

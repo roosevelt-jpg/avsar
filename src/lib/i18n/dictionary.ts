@@ -382,11 +382,11 @@ const en: Dictionary = {
   navEmployers: 'For employers',
   signIn: 'Sign in',
 
-  eyebrow: 'Worldwide → UAE · Applications open',
-  heroTitle: 'Work in the UAE. We handle everything after you are selected.',
-  heroSubheadline: 'Hiring for the UAE, from anywhere in the world.',
+  eyebrow: 'India → Portugal · Applications open',
+  heroTitle: 'Work in Portugal. We handle everything after you are selected.',
+  heroSubheadline: 'Hiring for Portugal, from across India.',
   heroSub:
-    'A professional assessment of your skills, experience and English. Selected candidates receive a contract with a UAE employer, accommodation, meals and legal support through the whole visa process.',
+    'A professional assessment of your skills, experience and English. Selected candidates receive a contract with a Portuguese employer, accommodation, meals and legal support through the whole visa process.',
   videoLabel: 'Watch how it works · 53 seconds',
   videoPlay: 'Play the film',
   askWork: 'What position are you applying for?',
@@ -437,7 +437,7 @@ const en: Dictionary = {
     ['Selection', 'Shortlisted candidates are interviewed and presented to employers. Selection is not guaranteed.'],
   ],
   place: [
-    '{years}-year employment contract with a UAE employer',
+    '{years}-year employment contract with a Portuguese employer',
     'Monthly salary',
     'Accommodation',
     'Meals',
@@ -491,9 +491,9 @@ const en: Dictionary = {
     englishOptions: ['Basic', 'Conversational', 'Fluent'],
     cityState: 'City and state',
     consent:
-      'I understand the assessment is free to sit, and that the fee is payable afterwards if I want my skills report, my rewritten CV and my place in the talent pool. Selection for a UAE placement is not guaranteed. If I am placed, a placement fee of €1,000 is payable after my job is confirmed and my contract is signed. I have read the',
+      'I understand the assessment is free to sit, and that the fee is payable afterwards if I want my skills report, my rewritten CV and my place in the talent pool. Selection for a Portugal placement is not guaranteed. If I am placed, a placement fee of €1,000 is payable after my job is confirmed and my contract is signed. I have read the',
     consentNoPlacement:
-      'I understand the assessment is free to sit, and that the fee is payable afterwards if I want my skills report, my rewritten CV and my place in the talent pool. Selection for a UAE placement is not guaranteed. I have read the',
+      'I understand the assessment is free to sit, and that the fee is payable afterwards if I want my skills report, my rewritten CV and my place in the talent pool. Selection for a Portugal placement is not guaranteed. I have read the',
     consentRules: 'selection rules',
     consentRefund: 'refund policy',
     back: 'Back',
@@ -553,7 +553,7 @@ const en: Dictionary = {
     title: 'Record a short introduction',
     lead: 'Forty-five seconds of you speaking, attached to your profile. Employers listen to it alongside your report and your CV.',
     notMarked: 'This is not marked and it does not change your score. It is here because a minute of hearing someone speak tells an employer more than any grade, and because they should judge your English themselves rather than take our word for it.',
-    prompt: 'Say your name, the work you have done, and why you want to work in the UAE. Speak as you normally would. Nobody is listening for a perfect accent.',
+    prompt: 'Say your name, the work you have done, and why you want to work in Portugal. Speak as you normally would. Nobody is listening for a perfect accent.',
     record: 'Start recording',
     asking: 'Waiting for permission to use your microphone…',
     stop: 'Stop',
@@ -605,7 +605,7 @@ const en: Dictionary = {
       'Selection announced',
     ],
     visible: 'Visible to employers',
-    visibleNote: 'Vetted employers across the UAE can find your profile.',
+    visibleNote: 'Vetted employers in Portugal and Europe can find your profile.',
   },
 
   process: {
@@ -630,7 +630,7 @@ const en: Dictionary = {
     title: 'What a selected candidate receives',
     lead: 'Everything needed to arrive and start work, arranged before you travel.',
     items: [
-      ['Employment contract', 'A {years}-year contract with a UAE employer, signed before you leave.'],
+      ['Employment contract', 'A {years}-year contract with a Portuguese employer, signed before you leave.'],
       ['Accommodation', 'Housing arranged and ready on arrival.'],
       ['Meals', 'Provided as part of the placement.'],
       ['Legal support', 'The visa, the residence permit and the paperwork after arrival, handled with you throughout.'],
@@ -721,7 +721,7 @@ const en: Dictionary = {
     readyTitle: 'Availability',
     availability: 'How soon could you start abroad?',
     availabilityOptions: ['Within 1 month', '1 to 3 months', '3 to 6 months', 'More than 6 months'],
-    relocation: 'Are you ready to relocate to the UAE?',
+    relocation: 'Are you ready to relocate to Portugal?',
     relocationYes: 'Yes',
     relocationNo: 'Not yet',
     remove: 'Remove',
@@ -809,7 +809,7 @@ const en: Dictionary = {
       ],
       [
         'What does the placement include?',
-        'A {years}-year employment contract with a UAE employer, a monthly salary, accommodation, meals, and legal support through the visa process and the paperwork after you arrive.',
+        'A {years}-year employment contract with a Portuguese employer, a monthly salary, accommodation, meals, and legal support through the visa process and the paperwork after you arrive.',
       ],
       [
         'Can I get a refund?',
@@ -830,11 +830,11 @@ const hi: Dictionary = {
   navEmployers: 'नियोक्ताओं के लिए',
   signIn: 'साइन इन',
 
-  eyebrow: 'दुनिया भर से → यूएई · आवेदन खुले हैं',
-  heroTitle: 'यूएई में काम करें। चुने जाने के बाद सब कुछ हम संभालते हैं।',
-  heroSubheadline: 'दुनिया में कहीं से भी, यूएई के लिए भर्ती।',
+  eyebrow: 'भारत → पुर्तगाल · आवेदन खुले हैं',
+  heroTitle: 'पुर्तगाल में काम करें। चुने जाने के बाद सब कुछ हम संभालते हैं।',
+  heroSubheadline: 'दुनिया में कहीं से भी, पुर्तगाल के लिए भर्ती।',
   heroSub:
-    'आपके कौशल, अनुभव और अंग्रेज़ी का पेशेवर मूल्यांकन। चुने गए उम्मीदवारों को यूएई के नियोक्ता के साथ अनुबंध, आवास, भोजन और पूरी वीज़ा प्रक्रिया में क़ानूनी सहायता मिलती है।',
+    'आपके कौशल, अनुभव और अंग्रेज़ी का पेशेवर मूल्यांकन। चुने गए उम्मीदवारों को पुर्तगाली नियोक्ता के साथ अनुबंध, आवास, भोजन और पूरी वीज़ा प्रक्रिया में क़ानूनी सहायता मिलती है।',
   videoLabel: 'देखिए यह कैसे काम करता है · 53 सेकंड',
   videoPlay: 'वीडियो चलाएँ',
   askWork: 'आप किस पद के लिए आवेदन कर रहे हैं?',
@@ -882,10 +882,10 @@ const hi: Dictionary = {
     ['रजिस्टर करें', 'अपने नाम, मोबाइल और ईमेल से खाता बनाएँ। दो मिनट लगते हैं।'],
     ['मूल्यांकन दें', 'इसे अपने फ़ोन या कंप्यूटर से, अपनी सुविधा के समय ऑनलाइन पूरा करें।'],
     ['अपनी रिपोर्ट पाएँ', 'आपकी स्किल्स रिपोर्ट और प्रोफ़ाइल 7 दिनों के भीतर तैयार हो जाती है।'],
-    ['चयन', 'हर कोहॉर्ट के सर्वश्रेष्ठ उम्मीदवार को यूएई में पूरा प्लेसमेंट दिया जाता है।'],
+    ['चयन', 'हर कोहॉर्ट के सर्वश्रेष्ठ उम्मीदवार को पुर्तगाल में पूरा प्लेसमेंट दिया जाता है।'],
   ],
   place: [
-    'यूएई के नियोक्ता के साथ {years} साल का रोज़गार अनुबंध',
+    'पुर्तगाली नियोक्ता के साथ {years} साल का रोज़गार अनुबंध',
     'मासिक वेतन',
     'आवास',
     'भोजन',
@@ -939,9 +939,9 @@ const hi: Dictionary = {
     englishOptions: ['बुनियादी', 'बातचीत योग्य', 'प्रवाही'],
     cityState: 'शहर और राज्य',
     consent:
-      'मैं समझता/समझती हूँ कि आकलन देना मुफ़्त है, और शुल्क उसके बाद देना होता है यदि मुझे अपनी स्किल्स रिपोर्ट, नया सीवी और टैलेंट पूल में जगह चाहिए। यूएई प्लेसमेंट के लिए चयन की गारंटी नहीं है। यदि मुझे नौकरी मिलती है, तो नौकरी पक्की होने और अनुबंध पर हस्ताक्षर के बाद €1,000 की प्लेसमेंट फ़ीस देय होगी। मैंने',
+      'मैं समझता/समझती हूँ कि आकलन देना मुफ़्त है, और शुल्क उसके बाद देना होता है यदि मुझे अपनी स्किल्स रिपोर्ट, नया सीवी और टैलेंट पूल में जगह चाहिए। पुर्तगाल प्लेसमेंट के लिए चयन की गारंटी नहीं है। यदि मुझे नौकरी मिलती है, तो नौकरी पक्की होने और अनुबंध पर हस्ताक्षर के बाद €1,000 की प्लेसमेंट फ़ीस देय होगी। मैंने',
     consentNoPlacement:
-      'मैं समझता/समझती हूँ कि आकलन देना मुफ़्त है, और शुल्क उसके बाद देना होता है यदि मुझे अपनी स्किल्स रिपोर्ट, नया सीवी और टैलेंट पूल में जगह चाहिए। यूएई प्लेसमेंट के लिए चयन की गारंटी नहीं है। मैंने',
+      'मैं समझता/समझती हूँ कि आकलन देना मुफ़्त है, और शुल्क उसके बाद देना होता है यदि मुझे अपनी स्किल्स रिपोर्ट, नया सीवी और टैलेंट पूल में जगह चाहिए। पुर्तगाल प्लेसमेंट के लिए चयन की गारंटी नहीं है। मैंने',
     consentRules: 'चयन नियम',
     consentRefund: 'रिफ़ंड नीति',
     back: 'पीछे',
@@ -999,7 +999,7 @@ const hi: Dictionary = {
     title: 'एक छोटा परिचय रिकॉर्ड करें',
     lead: 'आपकी आवाज़ में पैंतालीस सेकंड, आपकी प्रोफ़ाइल के साथ। नियोक्ता इसे आपकी रिपोर्ट और सीवी के साथ सुनते हैं।',
     notMarked: 'इसका मूल्यांकन नहीं होता और इससे आपका स्कोर नहीं बदलता। यह इसलिए है क्योंकि किसी को बोलते सुनना किसी भी ग्रेड से ज़्यादा बताता है, और क्योंकि आपकी अंग्रेज़ी का फ़ैसला नियोक्ता ख़ुद करें, हमारे कहने पर नहीं।',
-    prompt: 'अपना नाम बताएं, आपने कौन-सा काम किया है, और आप यूएई में क्यों काम करना चाहते हैं। जैसे आप सामान्य रूप से बोलते हैं वैसे ही बोलें। किसी को सही उच्चारण नहीं चाहिए।',
+    prompt: 'अपना नाम बताएं, आपने कौन-सा काम किया है, और आप पुर्तगाल में क्यों काम करना चाहते हैं। जैसे आप सामान्य रूप से बोलते हैं वैसे ही बोलें। किसी को सही उच्चारण नहीं चाहिए।',
     record: 'रिकॉर्डिंग शुरू करें',
     asking: 'माइक्रोफ़ोन की अनुमति का इंतज़ार…',
     stop: 'रोकें',
@@ -1051,7 +1051,7 @@ const hi: Dictionary = {
       'चयन की घोषणा',
     ],
     visible: 'नियोक्ताओं को दिखाई दे',
-    visibleNote: 'यूएई के जाँचे-परखे नियोक्ता आपकी प्रोफ़ाइल देख सकते हैं।',
+    visibleNote: 'पुर्तगाल के जाँचे-परखे नियोक्ता आपकी प्रोफ़ाइल देख सकते हैं।',
   },
 
   process: {
@@ -1072,7 +1072,7 @@ const hi: Dictionary = {
     title: 'चुने गए उम्मीदवार को क्या मिलता है',
     lead: 'पहुँचने और काम शुरू करने के लिए सब कुछ, यात्रा से पहले ही तय।',
     items: [
-      ['रोज़गार अनुबंध', 'यूएई के नियोक्ता के साथ {years} साल का अनुबंध, आपके जाने से पहले हस्ताक्षरित।'],
+      ['रोज़गार अनुबंध', 'पुर्तगाली नियोक्ता के साथ {years} साल का अनुबंध, आपके जाने से पहले हस्ताक्षरित।'],
       ['आवास', 'पहुँचने पर तैयार आवास।'],
       ['भोजन', 'प्लेसमेंट का हिस्सा।'],
       ['क़ानूनी सहायता', 'वीज़ा, निवास परमिट और पहुँचने के बाद के काग़ज़ात, पूरे रास्ते आपके साथ।'],
@@ -1163,7 +1163,7 @@ const hi: Dictionary = {
     readyTitle: 'उपलब्धता',
     availability: 'आप विदेश में कितनी जल्दी शुरू कर सकते हैं?',
     availabilityOptions: ['1 महीने के भीतर', '1 से 3 महीने', '3 से 6 महीने', '6 महीने से ज़्यादा'],
-    relocation: 'क्या आप यूएई जाने के लिए तैयार हैं?',
+    relocation: 'क्या आप पुर्तगाल जाने के लिए तैयार हैं?',
     relocationYes: 'हाँ',
     relocationNo: 'अभी नहीं',
     remove: 'हटाएँ',
@@ -1251,7 +1251,7 @@ const hi: Dictionary = {
       ],
       [
         'प्लेसमेंट में क्या शामिल है?',
-        'यूएई के नियोक्ता के साथ {years} साल का रोज़गार अनुबंध, मासिक वेतन, आवास, भोजन, और वीज़ा प्रक्रिया तथा पहुँचने के बाद के काग़ज़ात में क़ानूनी सहायता।',
+        'पुर्तगाली नियोक्ता के साथ {years} साल का रोज़गार अनुबंध, मासिक वेतन, आवास, भोजन, और वीज़ा प्रक्रिया तथा पहुँचने के बाद के काग़ज़ात में क़ानूनी सहायता।',
       ],
       [
         'क्या मुझे रिफ़ंड मिल सकता है?',

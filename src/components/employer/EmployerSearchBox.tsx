@@ -32,7 +32,7 @@ export function EmployerSearchBox() {
           id="employer-q"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          placeholder="12 housekeepers for a Dubai hotel, English B1+, start in March"
+          placeholder="12 housekeepers for a Lisbon hotel, English B1+, start in March"
           className="min-w-[200px] flex-1 border-0 bg-transparent px-2.5 py-2.5 text-[15px] outline-none"
         />
         <button

@@ -74,11 +74,11 @@ const bDevanagari = Noto_Serif_Devanagari({
 
 export const metadata: Metadata = {
   title: {
-    default: 'S&A Recruitment · Work in the UAE',
+    default: 'S&A Recruitment · Work in Portugal',
     template: '%s · S&A Recruitment',
   },
   description:
-    'A recruitment agency under the Smith & Adams brand, hiring worldwide for jobs in the United Arab Emirates. Assessment, contract, accommodation, meals and legal support through the whole visa process.',
+    'A recruitment agency under the Smith & Adams brand, hiring across India for jobs in Portugal. Assessment, contract, accommodation, meals and legal support through the whole visa process.',
   /* The canonical home. Every relative URL in metadata, including the Open
      Graph image and the canonical tag, is resolved against it, so a stale
      value here puts the preview URL on every card the brand shares. */
@@ -107,15 +107,15 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     siteName: 'S&A Recruitment',
-    title: 'Work in the UAE. We handle everything after you are selected.',
+    title: 'Work in Portugal. We handle everything after you are selected.',
     description:
-      'A professional assessment of your skills, experience and English. Selected candidates receive a contract with a UAE employer, accommodation, meals and legal support through the whole visa process.',
+      'A professional assessment of your skills, experience and English. Selected candidates receive a contract with a Portuguese employer, accommodation, meals and legal support through the whole visa process.',
     url: './',
     images: [{ url: '/brand/og.png', width: 1200, height: 630, alt: 'S&A Recruitment' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Work in the UAE. We handle everything after you are selected.',
+    title: 'Work in Portugal. We handle everything after you are selected.',
     description:
       'A professional assessment of your skills, experience and English, and a contract, accommodation, meals and legal support for candidates who are selected.',
     images: ['/brand/og.png'],

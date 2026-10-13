@@ -123,7 +123,7 @@ export default async function CandidateLandingB({ params }: { params: Promise<{ 
         />
       </div>
 
-      {/* UAE placement */}
+      {/* Portugal placement */}
       <section
         className="mt-[clamp(56px,8cqi,104px)] px-[clamp(20px,4cqi,56px)] py-[clamp(48px,7cqi,88px)]"
         style={{ background: 'var(--b-tint)' }}

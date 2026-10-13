@@ -16,10 +16,10 @@ import type { Item } from '../items';
  * situational ones are built on decisions that are actually made on a line
  * rather than on manners.
  *
- * Temperatures and allergen rules follow international HACCP practice, which
- * is what Dubai Municipality and the other emirates enforce. Where a figure
- * differs between countries the item asks for the principle instead, so a good
- * cook is not marked down for having learned a different number.
+ * Temperatures and allergen rules follow EU practice, because the job is in
+ * Portugal. Where a figure differs between countries the item asks for the
+ * principle instead, so a good cook is not marked down for having learned a
+ * different number.
  *
  * Still uncalibrated. Difficulty and discrimination come from real responses.
  */

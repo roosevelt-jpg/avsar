@@ -14,9 +14,9 @@ import type { Item } from '../items';
  * safety. These are what sits on top: job knowledge for the trade, plus the
  * decisions that trade makes alone on a site with nobody to ask.
  *
- * UAE practice where it differs: 230 V single phase and 400 V three phase,
- * metric pipe, EN and BS process numbers, which is what the Gulf builds to.
- * Still uncalibrated.
+ * European practice where it differs, because the job is in Portugal: 230 V
+ * single phase and 400 V three phase, metric pipe, EN process numbers. Still
+ * uncalibrated.
  */
 
 export const ELECTRICIAN_ITEMS: Item[] = [
@@ -35,7 +35,7 @@ export const ELECTRICIAN_ITEMS: Item[] = [
   {
     id: 'elec-02', section: 'skills', sector: 'maintenance', positions: ['electrician'],
     axis: 'Electrical knowledge', label: 'SKILLS · SUPPLY',
-    prompt: 'What is the standard low-voltage supply in the UAE?',
+    prompt: 'What is the standard low-voltage supply in Portugal and most of Europe?',
     options: [
       '110 V single phase, 220 V three phase',
       '230 V single phase, 400 V three phase',
