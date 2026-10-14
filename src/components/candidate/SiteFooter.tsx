@@ -2,9 +2,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { BRAND, ENTITY } from '@/lib/data/brand';
 import { getDictionary, type Locale } from '@/lib/i18n';
+import { getSiteSettings } from '@/lib/cms/data';
+import { localHref, navLabel, whatsappHref } from '@/lib/cms/settings';
 
-export function SiteFooter({ locale }: { locale: Locale }) {
+export async function SiteFooter({ locale }: { locale: Locale }) {
   const t = getDictionary(locale);
+  const settings = await getSiteSettings();
+  const socials = Object.entries(settings.general.socials).filter(([, url]) => url);
   const links = [
     { href: `/${locale}/terms`, label: t.footerTerms },
     { href: `/${locale}/refund-policy`, label: t.footerRefund },
@@ -19,6 +23,45 @@ export function SiteFooter({ locale }: { locale: Locale }) {
       {/* One mark in the footer, and it is the parent's. The recruitment
           wordmark is already in the header of every page; repeating it here
           competed with the thing that actually lends credibility. */}
+      {/* Site map and contact, from Site settings. */}
+      <div className="mb-10 grid gap-8 border-b border-dark-line pb-10 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)]">
+        <div>
+          <p className="m-0 text-[20px] font-semibold text-paper">{settings.general.siteName}</p>
+          <p className="m-0 mt-3 max-w-[46ch] text-[15px] leading-[1.6]">{settings.footer.blurb}</p>
+          {socials.length > 0 && (
+            <ul className="m-0 mt-5 flex list-none flex-wrap gap-3 p-0">
+              {socials.map(([name, url]) => (
+                <li key={name}>
+                  <a href={url} target="_blank" rel="noopener noreferrer" className="t-colors rounded-full border border-dark-line px-3 py-1.5 text-[13px] capitalize text-dark-muted-2 no-underline hover:border-paper hover:text-paper">
+                    {name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+        <nav aria-label="Footer" className="flex flex-col gap-2.5 text-[15px]">
+          {settings.navigation.items.map((item) => (
+            <Link key={item.href} href={localHref(locale, item.href)} className="t-colors text-dark-muted-2 no-underline hover:text-paper">
+              {navLabel(item, locale)}
+            </Link>
+          ))}
+          <Link href={localHref(locale, '/about')} className="t-colors text-dark-muted-2 no-underline hover:text-paper">About us</Link>
+          <Link href={localHref(locale, '/stay-safe')} className="t-colors text-dark-muted-2 no-underline hover:text-paper">Stay safe from fraud</Link>
+        </nav>
+        <div className="flex flex-col gap-2.5 text-[15px]">
+          {settings.general.whatsapp && (
+            <a href={whatsappHref(settings.general.whatsapp)} target="_blank" rel="noopener noreferrer" dir="ltr" className="t-colors text-dark-muted-2 no-underline hover:text-paper">
+              WhatsApp {settings.general.whatsapp}
+            </a>
+          )}
+          <a href={`mailto:${settings.general.supportEmail}`} className="t-colors text-dark-muted-2 no-underline hover:text-paper">
+            {settings.general.supportEmail}
+          </a>
+          <p className="m-0 text-[14px] text-dark-muted">{settings.general.officeHours}</p>
+        </div>
+      </div>
+
       <div className="flex flex-wrap items-center justify-between gap-6">
         <nav className="flex flex-wrap gap-x-6 gap-y-2 text-[14px]">
           {links.map((link) => (

@@ -2,9 +2,10 @@ import { headers } from 'next/headers';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Mono } from '@/components/ui/Mono';
-import { Wordmark } from '@/components/ui/Wordmark';
 import { VisibilityToggle } from '@/components/candidate/VisibilityToggle';
-import { AccountMenu } from '@/components/auth/AccountMenu';
+import { DashboardNav } from '@/components/candidate/DashboardNav';
+import { listCandidateApplications } from '@/lib/applications/data';
+import { STATUS_META } from '@/lib/applications/status';
 import { JourneyStatus } from '@/components/candidate/JourneyStatus';
 import { VerifyEmailBanner } from '@/components/candidate/VerifyEmailBanner';
 import { UnlockReport } from '@/components/candidate/UnlockReport';
@@ -80,9 +81,11 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
   /* Shown only while the address is unproved, and it is the only thing on this
      page that asks for anything. The report is what the proof releases. */
   let unverifiedEmail: string | null = null;
+  let candidateId: string | null = null;
 
   if (isSupabaseConfigured()) {
     const candidate = await requireCandidate(locale, `/${locale}/dashboard`);
+    candidateId = candidate.id;
     visible = candidate.visibleToEmployers;
     status = await getCandidateStatus(candidate.id, candidate.paymentStatus);
     unverifiedEmail = candidate.emailConfirmed ? null : candidate.email;
@@ -146,6 +149,10 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
     }
   }
 
+  /* Applications sit at the top: for most candidates "where is my
+     application?" is the reason they signed in. */
+  const applications = await listCandidateApplications(candidateId);
+
   const stats = [
     { label: d.overall, value: String(r.overall), suffix: '/100', note: fill(d.overallNote, { percentile: r.percentile }), dark: true },
     /* The word under the number comes from the number. See lib/report/bands. */
@@ -161,19 +168,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
 
   return (
     <>
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-line px-[clamp(20px,4cqi,56px)] py-[18px]">
-        <Wordmark href={`/${locale}`} />
-        <nav className="flex flex-wrap gap-[clamp(12px,2.4cqi,28px)] text-[15px] text-ink-2">
-          <span aria-current="page" className="font-medium text-ink">
-            {d.navOverview}
-          </span>
-          <span>{d.navReport}</span>
-          <Link href={`/${locale}/profile`} className="no-underline text-ink-2 hover:text-accent t-colors">
-            {t.profile.navProfile}
-          </Link>
-        </nav>
-        <AccountMenu locale={locale} />
-      </header>
+      <DashboardNav locale={locale} current="overview" />
 
       <main className="px-[clamp(20px,4cqi,56px)] py-[clamp(32px,5cqi,64px)]">
         {unverifiedEmail && <VerifyEmailBanner email={unverifiedEmail} t={t} />}
@@ -199,6 +194,44 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
             }
           />
         )}
+        <section className="mb-10 rounded-[24px] border border-line bg-surface p-5 sm:p-6">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="m-0 text-[20px] font-semibold tracking-[-0.02em]">My applications</h2>
+            <div className="flex gap-2">
+              <Link href={`/${locale}/jobs`} className="t-colors rounded-full border border-line-strong px-4 py-2 text-[14px] text-ink no-underline hover:border-ink">
+                Find jobs
+              </Link>
+              {applications.length > 0 && (
+                <Link href={`/${locale}/dashboard/applications`} className="t-colors rounded-full bg-ink px-4 py-2 text-[14px] text-paper no-underline">
+                  Track all
+                </Link>
+              )}
+            </div>
+          </div>
+          {applications.length === 0 ? (
+            <p className="m-0 mt-3 text-[15px] text-ink-2">
+              You have not applied to a job yet. Applying is free:{' '}
+              <Link href={`/${locale}/jobs`} className="prose-link">see open jobs</Link>.
+            </p>
+          ) : (
+            <ul className="m-0 mt-4 flex list-none flex-col divide-y divide-line-soft p-0">
+              {applications.slice(0, 4).map((application) => (
+                <li key={application.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
+                  <div>
+                    <p className="m-0 text-[15px] font-medium">{application.job.title}</p>
+                    <p className="m-0 font-mono text-[12px] text-muted">
+                      {application.job.city} · {application.reference}
+                    </p>
+                  </div>
+                  <span className="rounded-full bg-accent-tint px-3 py-1 text-[13px] text-accent-deep">
+                    {STATUS_META[application.status].candidateTitle}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
         <Mono className="text-muted">{fill(d.greeting, { name: r.name.split(' ')[0] ?? r.name })}</Mono>
         <div className="mt-3 mb-9 flex flex-wrap items-end justify-between gap-4">
           <h1 className="m-0 text-[clamp(28px,4cqi,48px)] font-semibold leading-[1.1] tracking-[-0.03em]">

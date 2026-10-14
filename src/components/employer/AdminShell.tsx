@@ -1,28 +1,104 @@
 import Link from 'next/link';
 import { Wordmark } from '@/components/ui/Wordmark';
 import { AccountMenu } from '@/components/auth/AccountMenu';
+import { getStaffAccess } from '@/lib/rbac/server';
+import { grants, roleName, type Permission } from '@/lib/rbac/permissions';
 
 /**
  * The frame every staff and employer screen sits in.
  *
- * It exists because the navigation was written inline on the search page and
- * linked to three sections that had never been built, so a recruiter clicking
- * Shortlists got a 404. One definition means a link and the page behind it are
- * added together or not at all.
+ * The navigation is filtered by permission, so a content editor sees Pages
+ * and Media and nothing else, and a link is never shown to a page that would
+ * refuse the person clicking it. Employers get their own three items.
+ *
+ * One definition still means a link and the page behind it are added together
+ * or not at all; that is why this file exists.
  */
 
-type Item = { href: string; label: string; staffOnly?: boolean };
+type Item = { href: string; label: string; permission?: Permission };
+type Group = { label: string; items: Item[] };
 
-const ITEMS: Item[] = [
-  { href: '/admin', label: 'Search' },
-  { href: '/admin/shortlists', label: 'Shortlists' },
-  { href: '/admin/placements', label: 'Placements' },
-  { href: '/admin/cvs', label: 'CV queue', staffOnly: true },
-  { href: '/admin/employers', label: 'Employers', staffOnly: true },
-  { href: '/admin/cohorts', label: 'Cohorts', staffOnly: true },
+const STAFF_NAV: Group[] = [
+  { label: 'Overview', items: [{ href: '/admin/dashboard', label: 'Dashboard', permission: 'dashboard.view' }] },
+  {
+    label: 'Recruitment',
+    items: [
+      { href: '/admin/jobs', label: 'Jobs', permission: 'jobs.view' },
+      { href: '/admin/applications', label: 'Applications', permission: 'applications.view' },
+      { href: '/admin', label: 'Talent search', permission: 'candidates.view' },
+      { href: '/admin/shortlists', label: 'Shortlists', permission: 'candidates.view' },
+      { href: '/admin/cvs', label: 'CV queue', permission: 'cv.review' },
+      { href: '/admin/cohorts', label: 'Cohorts', permission: 'candidates.view' },
+    ],
+  },
+  {
+    label: 'Employers',
+    items: [
+      { href: '/admin/employers', label: 'Employers', permission: 'employers.manage' },
+      { href: '/admin/placements', label: 'Placements', permission: 'placements.manage' },
+    ],
+  },
+  {
+    label: 'Website',
+    items: [
+      { href: '/admin/cms', label: 'Pages', permission: 'cms.view' },
+      { href: '/admin/cms/media', label: 'Media library', permission: 'media.manage' },
+      { href: '/admin/settings', label: 'Site settings', permission: 'settings.manage' },
+    ],
+  },
+  { label: 'Finance', items: [{ href: '/admin/payments', label: 'Payments', permission: 'payments.view' }] },
+  {
+    label: 'Administration',
+    items: [
+      { href: '/admin/staff', label: 'Staff', permission: 'staff.manage' },
+      { href: '/admin/roles', label: 'Roles & permissions', permission: 'roles.manage' },
+      { href: '/admin/audit', label: 'Audit log', permission: 'audit.view' },
+    ],
+  },
 ];
 
-export function AdminShell({
+const EMPLOYER_NAV: Group[] = [
+  {
+    label: 'Hiring',
+    items: [
+      { href: '/admin', label: 'Search talent' },
+      { href: '/admin/shortlists', label: 'Shortlists' },
+      { href: '/admin/placements', label: 'Placements' },
+    ],
+  },
+];
+
+function NavList({ groups, current }: { groups: Group[]; current: string }) {
+  return (
+    <nav aria-label="Console" className="flex flex-col gap-6">
+      {groups.map((group) => (
+        <div key={group.label}>
+          <p className="m-0 mb-2 px-3 font-mono text-[11px] uppercase tracking-[0.12em] text-muted">{group.label}</p>
+          <ul className="m-0 flex list-none flex-col gap-0.5 p-0">
+            {group.items.map((item) => {
+              const active = item.href === current;
+              return (
+                <li key={item.href}>
+                  {active ? (
+                    <span aria-current="page" className="block rounded-[10px] bg-ink px-3 py-2 text-[14px] font-medium text-paper">
+                      {item.label}
+                    </span>
+                  ) : (
+                    <Link href={item.href} className="t-colors block rounded-[10px] px-3 py-2 text-[14px] text-ink-2 no-underline hover:bg-surface hover:text-ink">
+                      {item.label}
+                    </Link>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ))}
+    </nav>
+  );
+}
+
+export async function AdminShell({
   current,
   isStaff,
   suffix,
@@ -34,44 +110,75 @@ export function AdminShell({
   suffix?: string;
   children: React.ReactNode;
 }) {
-  return (
-    <div className="avsar-root">
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-line px-[clamp(20px,4cqi,56px)] py-[18px]">
-        <Wordmark href="/employers" suffix={suffix ?? 'talent pool'} accent="employer" />
-        <nav className="flex flex-wrap gap-[clamp(12px,2.4cqi,28px)] text-[15px] text-ink-2">
-          {ITEMS.filter((item) => isStaff || !item.staffOnly).map((item) =>
-            item.href === current ? (
-              <span key={item.href} aria-current="page" className="font-medium text-ink">
-                {item.label}
-              </span>
-            ) : (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="t-colors no-underline hover:text-employer"
-              >
-                {item.label}
-              </Link>
-            ),
-          )}
-        </nav>
-        <AccountMenu locale="en" tone="employer" />
-      </header>
+  const access = isStaff ? await getStaffAccess() : null;
+  const groups = isStaff
+    ? STAFF_NAV.map((group) => ({
+        ...group,
+        items: group.items.filter((item) => !item.permission || (access && grants(access.permissions, item.permission))),
+      })).filter((group) => group.items.length > 0)
+    : EMPLOYER_NAV;
 
-      <main className="px-[clamp(20px,4cqi,56px)] py-[clamp(28px,4cqi,48px)]">{children}</main>
+  return (
+    <div className="avsar-root min-h-screen lg:grid lg:grid-cols-[248px_minmax(0,1fr)]">
+      <aside className="hidden border-e border-line bg-paper lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col lg:overflow-y-auto">
+        <div className="px-5 pt-5 pb-6">
+          <Wordmark href={isStaff ? '/admin/dashboard' : '/admin'} suffix={suffix ?? (isStaff ? 'console' : 'talent pool')} accent="employer" size={22} />
+        </div>
+        <div className="flex-1 px-2 pb-6">
+          <NavList groups={groups} current={current} />
+        </div>
+        {access && (
+          <div className="border-t border-line px-5 py-4">
+            <p className="m-0 truncate text-[13px] text-ink">{access.email}</p>
+            <p className="m-0 font-mono text-[11px] text-muted">
+              {roleName(access.role)}
+              {access.demo ? ' · demo mode' : ''}
+            </p>
+          </div>
+        )}
+      </aside>
+
+      <div className="min-w-0">
+        <header className="sticky top-0 z-30 flex items-center justify-between gap-4 border-b border-line bg-paper/90 px-[clamp(20px,3cqi,40px)] py-3 backdrop-blur">
+          <div className="flex items-center gap-3 lg:hidden">
+            <details className="relative">
+              <summary className="grid size-10 cursor-pointer list-none place-items-center rounded-full border border-line-strong bg-surface [&::-webkit-details-marker]:hidden" aria-label="Menu">
+                <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
+                  <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
+                </svg>
+              </summary>
+              <div className="absolute start-0 top-12 z-40 max-h-[80vh] w-[280px] overflow-y-auto rounded-[18px] border border-line bg-paper p-3 shadow-[0_24px_60px_-24px_rgba(27,26,23,0.4)]">
+                <NavList groups={groups} current={current} />
+              </div>
+            </details>
+            <Wordmark href={isStaff ? '/admin/dashboard' : '/admin'} accent="employer" size={20} />
+          </div>
+          <div className="hidden lg:block">
+            {access?.demo && (
+              <span className="rounded-full bg-accent-tint px-3 py-1 font-mono text-[11px] text-accent-deep">
+                Demo mode: Supabase is not configured, so nothing is saved
+              </span>
+            )}
+          </div>
+          <AccountMenu locale="en" tone="employer" />
+        </header>
+
+        <main className="px-[clamp(20px,3cqi,40px)] py-[clamp(24px,3cqi,40px)]">{children}</main>
+      </div>
     </div>
   );
 }
 
 /** The heading block the inner pages share. */
-export function AdminHeading({ title, lead }: { title: string; lead?: string }) {
+export function AdminHeading({ title, lead, actions }: { title: string; lead?: string; actions?: React.ReactNode }) {
   return (
-    <>
-      <h1 className="m-0 text-[clamp(24px,3cqi,34px)] font-semibold leading-[1.1] tracking-[-0.03em]">
-        {title}
-      </h1>
-      {lead && <p className="mt-3 mb-0 max-w-[72ch] text-[15px] leading-[1.6] text-ink-2">{lead}</p>}
-    </>
+    <div className="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <h1 className="m-0 text-[clamp(24px,3cqi,32px)] font-semibold leading-[1.1] tracking-[-0.03em]">{title}</h1>
+        {lead && <p className="mt-2 mb-0 max-w-[72ch] text-[15px] leading-[1.6] text-ink-2">{lead}</p>}
+      </div>
+      {actions ? <div className="flex flex-wrap gap-2">{actions}</div> : null}
+    </div>
   );
 }
 
@@ -81,5 +188,31 @@ export function AdminEmpty({ children }: { children: React.ReactNode }) {
     <p className="mt-7 mb-0 rounded-[12px] border border-line bg-surface-subtle px-5 py-4 text-[14px] leading-[1.6] text-muted">
       {children}
     </p>
+  );
+}
+
+/** A small rounded label, used for statuses across the console. */
+export function Pill({ children, tone = 'neutral' }: { children: React.ReactNode; tone?: 'neutral' | 'accent' | 'success' | 'muted' | 'dark' }) {
+  const tones = {
+    neutral: 'bg-surface border border-line text-ink-2',
+    accent: 'bg-accent-tint text-accent-deep',
+    success: 'bg-success/15 text-[oklch(0.42_0.12_150)]',
+    muted: 'bg-canvas text-muted',
+    dark: 'bg-ink text-paper',
+  } as const;
+  return <span className={`inline-flex items-center whitespace-nowrap rounded-full px-2.5 py-0.5 text-[12px] font-medium ${tones[tone]}`}>{children}</span>;
+}
+
+/** Primary/secondary link buttons for headings. */
+export function AdminButton({ href, children, variant = 'dark' }: { href: string; children: React.ReactNode; variant?: 'dark' | 'light' }) {
+  return (
+    <Link
+      href={href}
+      className={`t-colors inline-flex items-center rounded-full px-4 py-2 text-[14px] font-medium no-underline ${
+        variant === 'dark' ? 'bg-ink text-paper hover:bg-employer-deep' : 'border border-line-strong bg-surface text-ink hover:border-ink'
+      }`}
+    >
+      {children}
+    </Link>
   );
 }

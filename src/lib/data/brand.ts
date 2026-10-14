@@ -123,6 +123,13 @@ export const DELIVERY = {
  */
 export const ASSESSMENT_FEE = {
   eur: 25,
+  /**
+   * The rupee price, charged as-is when the active rail settles in INR
+   * (EximPe, Cashfree or Razorpay: the UPI rails). A round, deliberate number
+   * rather than a conversion of the euro price, so the amount on the page and
+   * the amount on the UPI screen are the same figure.
+   */
+  inr: 2400,
 } as const;
 
 /**

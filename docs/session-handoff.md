@@ -4,6 +4,33 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Block 49 - 14 Oct 2026, prepared for cryvo25@gmail.com
+
+**Platform v2: jobs board, one-step apply, application tracking, CMS, RBAC.**
+
+Full description in `docs/v2-platform.md`; conventions in `AGENTS.md`; next
+work in `docs/ROADMAP.md`.
+
+- Migration `0014_rbac_jobs_cms.sql`: roles/permissions with `has_permission()`,
+  `job_postings`, `applications` + `application_events` (append-only),
+  `saved_jobs`, `cms_pages` (draft + published) + `cms_page_versions`,
+  `cms_media` + `cms-media` bucket, `site_settings`, view `cms_public_pages`.
+  **Not yet applied.**
+- Home page is now the CMS page "home"; the hand-built landing moved to
+  `/[locale]/classic` (noindex) for reference.
+- Staff home is `/admin/dashboard`. Existing admin screens now check permissions.
+- Charge currency follows `NEXT_PUBLIC_CHARGE_CURRENCY` (default EUR, so
+  production is unchanged until it is set). INR for EximPe.
+- Not run here: `npm install` / build (no registry access in that environment).
+  Type-checked with stubs and server-rendered all new pages in demo mode.
+
+### Open
+- Apply 0014, bootstrap the super admin, set the EximPe + INR env.
+- Decide the seller (`ENTITY`) for the UAE company, and the OIDAR/GST question.
+- Indian recruiting-agent registration (or partner) before taking applications.
+
+---
+
 ## Bloco 45 - 08 Oct 2026, abilio.diz@smithandadams.com
 
 **Fecho das pendencias do pivot.**

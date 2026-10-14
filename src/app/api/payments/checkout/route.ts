@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { ACTIVE_TIER, COHORT, activePrice, chargeAmountMinor, CHARGE_CURRENCY } from '@/lib/data/cohort';
+import { ACTIVE_TIER, COHORT, activePrice, chargeAmountMinor, CHARGE_CURRENCY, RAIL_CURRENCIES } from '@/lib/data/cohort';
 import { BRAND, PLACEMENT_FEE_UNDISCLOSED } from '@/lib/data/brand';
 import { getPaymentProvider, receiptNumber } from '@/lib/payments';
 import { paymentMethodSchema } from '@/lib/validation';
@@ -66,6 +66,14 @@ export async function POST(request: Request) {
 
   const supabase = getAdminSupabase();
   const provider = getPaymentProvider();
+
+  /* A rail that cannot charge the configured currency must not be asked to:
+     EximPe would reject euros, and Viva would reject rupees. Refusing here
+     turns a silent misconfiguration into one clear log line. */
+  if (!(RAIL_CURRENCIES[provider.name] ?? []).includes(CHARGE_CURRENCY)) {
+    console.error(`[checkout] ${provider.name} cannot charge ${CHARGE_CURRENCY}. Set NEXT_PUBLIC_CHARGE_CURRENCY to match PAYMENT_PROVIDER.`);
+    return NextResponse.json({ error: 'payment_misconfigured' }, { status: 503 });
+  }
   const price = activePrice();
   const locale = candidate.locale;
 

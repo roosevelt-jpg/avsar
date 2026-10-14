@@ -1,0 +1,15 @@
+---
+description: UI and design system conventions
+globs: src/components/**,src/app/**/*.tsx
+---
+
+- Design tokens are Tailwind v4 theme variables in `src/app/globals.css`: paper, canvas,
+  surface, ink, ink-2, muted, line, accent (terracotta, candidate side), employer (blue,
+  console), success. Use them; do not introduce raw hex colours.
+- Fonts: Schibsted Grotesk (sans), JetBrains Mono for small uppercase labels (`<Mono>`).
+- Fluid spacing uses `clamp(..., Ncqi, ...)` against the `.avsar-root` container.
+- Radius: cards 16–24px, images 24–28px, buttons fully rounded.
+- Candidate pages: generous, warm, photographic. Console: dense, calm, tables.
+- Accessibility: real labels, `aria-current` on active nav, `sr-only` where text is visual
+  only, focus states visible, `dir` respected (Arabic is RTL: use `start/end`, not left/right).
+- Mobile first. Test at 360px wide. No horizontal page scroll; wide tables use `.scroll-x`.

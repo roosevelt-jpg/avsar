@@ -1,0 +1,16 @@
+---
+description: Payment rails, currency and webhooks
+globs: src/lib/payments/**,src/app/api/payments/**,src/lib/data/cohort.ts,src/lib/data/brand.ts
+---
+
+- The company is in the UAE and candidates pay by UPI. Production rail: `PAYMENT_PROVIDER=eximpe`
+  with `NEXT_PUBLIC_CHARGE_CURRENCY=INR` (RBI PA-CB import authorisation, settles abroad, no
+  Indian entity). Cashfree is the alternative with the same model. Stripe/Viva cannot do UPI.
+- All rails implement `PaymentProvider` in `src/lib/payments/types.ts`. Code above that
+  interface must not know which rail is active.
+- Amount comes from `chargeAmountMinor()`, never the client. Minor units everywhere; the
+  adapter converts (EximPe and Cashfree take rupees, not paise).
+- Webhooks: verify signature AND timestamp freshness, then update `payments` and the
+  candidate. The browser return URL is a convenience, never proof.
+- Checkout refuses when `RAIL_CURRENCIES[provider]` does not include `CHARGE_CURRENCY`.
+- `ENTITY` in brand.ts must match the merchant account exactly (legal name, licence, address).

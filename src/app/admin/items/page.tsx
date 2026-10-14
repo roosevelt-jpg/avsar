@@ -2,8 +2,7 @@ import Link from 'next/link';
 import { Mono } from '@/components/ui/Mono';
 import { Wordmark } from '@/components/ui/Wordmark';
 import { AccountMenu } from '@/components/auth/AccountMenu';
-import { requireStaff } from '@/lib/auth';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
+import { requirePermission } from '@/lib/rbac/server';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { ITEM_BANK } from '@/lib/assessment/items';
 import {
@@ -24,7 +23,7 @@ export const metadata = { title: 'Item calibration' };
  * sat it. Nothing surfaces that except looking.
  */
 export default async function ItemCalibrationPage() {
-  if (isSupabaseConfigured()) await requireStaff('/admin/items');
+  await requirePermission('cv.review', '/admin/items');
 
   const supabase = getAdminSupabase();
   let stats: ItemStat[] = [];

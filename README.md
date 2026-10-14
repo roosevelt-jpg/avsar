@@ -1,13 +1,20 @@
-# Avsar
+# S&A Recruitment platform (Avsar)
 
-India → Portugal talent and mobility platform.
+India → Portugal recruitment platform for a UAE-based recruitment company:
+a CMS-driven candidate site with a jobs board and one-step apply, a candidate
+dashboard that tracks every application, UPI payments through a cross-border
+aggregator, and a staff console with role-based access.
+
+**Start here:** `AGENTS.md` (how the code is organised and the rules),
+`docs/v2-platform.md` (what v2 added, how to switch it on, launch checklist),
+`docs/ROADMAP.md` (next tasks with ready-to-paste Cursor prompts).
 
 Built from the design handoff in `~/Desktop/design_handoff_avsar_platform`
 (Direction A, hi-fi, 7 screens; Direction B as an alternative candidate landing).
 
 ## Stack
 
-Next.js 15 (App Router) · TypeScript strict · Tailwind v4 · Supabase (Postgres +
+Next.js 16 (App Router) · TypeScript strict · Tailwind v4 · Supabase (Postgres +
 RLS + Auth) · Stripe.
 
 ## Running it
@@ -30,16 +37,17 @@ npm run build
 
 ## Database
 
-Run `supabase/migrations/0001_init.sql` in the Supabase SQL editor, then set
+Run every file in `supabase/migrations/` in order (0001 → 0014) in the Supabase
+SQL editor, then `supabase/seed/bootstrap_super_admin.sql` with your email, then set
 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` and
 `SUPABASE_SERVICE_ROLE_KEY`.
 
 ## Payments
 
-Stripe by default. A domestic Indian rail (UPI) sits behind the same interface.
-Read `docs/payments.md` before wiring live keys: a Dubai-registered Stripe
-account cannot charge UPI, and that is the main conversion question for this
-product.
+For a UAE company taking UPI from Indian candidates: `PAYMENT_PROVIDER=eximpe`
+and `NEXT_PUBLIC_CHARGE_CURRENCY=INR` (RBI PA-CB import authorisation; no Indian
+entity needed). Read `docs/payments.md` before wiring live keys: a Dubai-registered
+Stripe account cannot charge UPI.
 
 ## Documentation
 

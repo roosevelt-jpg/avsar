@@ -27,7 +27,7 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: '*',
         allow: '/',
         /* Nothing behind a session, and nothing that is only a route. */
-        disallow: ['/api/', '/admin/', '/dev/', '/auth/', '/en/dashboard', '/hi/dashboard'],
+        disallow: ['/api/', '/admin/', '/dev/', '/auth/', '/en/dashboard', '/hi/dashboard', '/ar/dashboard', '/en/classic', '/hi/classic', '/ar/classic'],
       },
     ],
     sitemap: `${origin}/sitemap.xml`,

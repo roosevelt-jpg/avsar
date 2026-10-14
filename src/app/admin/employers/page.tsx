@@ -1,9 +1,8 @@
 import { Mono } from '@/components/ui/Mono';
 import { AdminShell, AdminHeading, AdminEmpty } from '@/components/employer/AdminShell';
 import { AddEmployer } from '@/components/employer/AddEmployer';
-import { requireStaff } from '@/lib/auth';
+import { requirePermission } from '@/lib/rbac/server';
 import { getAdminSupabase } from '@/lib/supabase/admin';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
 
 export const metadata = { title: 'Employers' };
 
@@ -15,7 +14,7 @@ export const metadata = { title: 'Employers' };
  * and means the employer side of the product is unreachable.
  */
 export default async function EmployersPage() {
-  if (isSupabaseConfigured()) await requireStaff('/admin/employers');
+  await requirePermission('employers.manage', '/admin/employers');
 
   const admin = getAdminSupabase();
   const { data } = (await admin

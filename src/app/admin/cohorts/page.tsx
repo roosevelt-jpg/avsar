@@ -1,8 +1,7 @@
 import { Mono } from '@/components/ui/Mono';
 import { AdminShell, AdminHeading } from '@/components/employer/AdminShell';
-import { requireStaff } from '@/lib/auth';
+import { requirePermission } from '@/lib/rbac/server';
 import { getAdminSupabase } from '@/lib/supabase/admin';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { COHORT } from '@/lib/data/cohort';
 import { SELECTION_FUNNEL } from '@/lib/data/brand';
 
@@ -18,7 +17,7 @@ export const metadata = { title: 'Cohorts' };
  * needs to see that rather than discover it in a complaint.
  */
 export default async function CohortsPage() {
-  if (isSupabaseConfigured()) await requireStaff('/admin/cohorts');
+  await requirePermission('candidates.view', '/admin/cohorts');
 
   const admin = getAdminSupabase();
 

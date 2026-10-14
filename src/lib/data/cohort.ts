@@ -78,8 +78,7 @@ export async function assessedCount(): Promise<number> {
  */
 export const VAT_RATE = 0;
 
-function priceFromEur(eur: number) {
-  const totalMinor = Math.round(eur * 100);
+function priceFromTotal(totalMinor: number) {
   const netMinor = Math.round(totalMinor / (1 + VAT_RATE));
   return { netMinor, vatMinor: totalMinor - netMinor, totalMinor };
 }
@@ -87,26 +86,42 @@ function priceFromEur(eur: number) {
 /**
  * The currency the candidate is charged in.
  *
- * Euros, and only euros. The company that takes the money is Portuguese and
- * the Viva account settles in euros; quoting anything else would mean the site
- * saying one number and the bank taking another.
+ * Follows the payment rail, and is set with NEXT_PUBLIC_CHARGE_CURRENCY so the
+ * server and the browser always agree on it:
  *
- * This was an environment variable with an AED branch, from when the seller was
- * the Dubai company. The branch is gone rather than left unreachable: a dead
- * path that silently produces the wrong currency is worse than no path.
- * Candidates who want a feel for the price in their own money get an indicative
- * figure at checkout, which is never what gets charged. See `INDICATIVE_RATES`.
+ *   INR  with PAYMENT_PROVIDER=eximpe (recommended for a UAE company), cashfree
+ *        or razorpay. These collect rupees by UPI, RuPay and Indian net
+ *        banking. EximPe and Cashfree hold RBI cross-border (PA-CB) licences, so
+ *        the money can settle to a company outside India.
+ *   EUR  with viva or stripe, which cannot take UPI.
+ *
+ * Defaults to EUR so an existing deployment keeps charging exactly what it
+ * charged before this setting existed. /api/payments/checkout refuses to start
+ * a payment when this and the rail disagree, rather than charging the wrong
+ * currency.
  */
-export const CHARGE_CURRENCY = 'EUR' as const;
+export const CHARGE_CURRENCY: 'INR' | 'EUR' = process.env.NEXT_PUBLIC_CHARGE_CURRENCY === 'INR' ? 'INR' : 'EUR';
+
+const FEE_MINOR = CHARGE_CURRENCY === 'INR' ? Math.round(ASSESSMENT_FEE.inr * 100) : Math.round(ASSESSMENT_FEE.eur * 100);
 
 export const PRICING = {
-  early: priceFromEur(ASSESSMENT_FEE.eur),
-  standard: priceFromEur(ASSESSMENT_FEE.eur),
+  early: priceFromTotal(FEE_MINOR),
+  standard: priceFromTotal(FEE_MINOR),
   vatRate: VAT_RATE,
   currency: CHARGE_CURRENCY,
 } as const;
 
-/** Minor units in the charge currency: euro cents. */
+/** Rails that can charge each currency. Used to refuse a mismatched configuration. */
+export const RAIL_CURRENCIES: Record<string, readonly ('INR' | 'EUR')[]> = {
+  eximpe: ['INR'],
+  cashfree: ['INR'],
+  razorpay: ['INR'],
+  viva: ['EUR'],
+  dodo: ['EUR', 'INR'],
+  stripe: ['EUR', 'INR'],
+};
+
+/** Minor units in the charge currency: paise or euro cents. */
 export function chargeAmountMinor(): number {
   return activePrice().totalMinor;
 }
@@ -130,11 +145,12 @@ export function formatPrice(minor: number): string {
   const units = Math.round(minor / 100);
   /*
     Wrapped in a Unicode isolate, because this string is dropped into Arabic
-    sentences. Without it the bidi algorithm can reorder "EUR 25" against the
-    surrounding right-to-left text and show the number on the wrong side of the
-    currency. The two characters are invisible and cost nothing elsewhere.
+    sentences. Without it the bidi algorithm can reorder the figure against the
+    surrounding right-to-left text. The two characters are invisible elsewhere.
   */
-  return `\u2066EUR ${units.toLocaleString('en-US')}\u2069`;
+  return CHARGE_CURRENCY === 'INR'
+    ? `\u2066₹${units.toLocaleString('en-IN')}\u2069`
+    : `\u2066EUR ${units.toLocaleString('en-US')}\u2069`;
 }
 
 /**

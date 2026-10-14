@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { getSessionStaff } from '@/lib/auth';
+import { apiPermission } from '@/lib/rbac/server';
 import { getServerSupabase } from '@/lib/supabase/server';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { isPlacementState } from '@/lib/data/placements';
@@ -20,8 +20,8 @@ const schema = z.object({
  * Of the two, an unexplained state is the one nobody can reconstruct later.
  */
 export async function PATCH(request: Request) {
-  const staff = await getSessionStaff();
-  if (!staff) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+  const staff = await apiPermission('placements.manage');
+  if (staff instanceof NextResponse) return staff;
 
   const parsed = schema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: 'invalid_payload' }, { status: 400 });

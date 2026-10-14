@@ -1,5 +1,27 @@
 # Payments
 
+## October 2026: UAE company, UPI, one setting
+
+The recruitment company is in the UAE and candidates pay from India. The
+configuration for that is:
+
+```
+PAYMENT_PROVIDER=eximpe
+NEXT_PUBLIC_CHARGE_CURRENCY=INR
+```
+
+The fee is then charged in rupees (`ASSESSMENT_FEE.inr`, ₹2,400) by UPI, RuPay
+or Indian net banking, and settles to the UAE company under EximPe's RBI PA-CB
+import authorisation. `NEXT_PUBLIC_CHARGE_CURRENCY` is public so the server and
+the browser format the same price; checkout refuses to start if it does not
+match what the rail can charge (`RAIL_CURRENCIES` in `src/lib/data/cohort.ts`).
+Leaving it unset keeps the previous behaviour, euros on Viva.
+
+When the seller changes, `ENTITY` in `src/lib/data/brand.ts` changes with it.
+See `docs/v2-platform.md`, "Before launch".
+
+---
+
 ## The decision
 
 Stripe is the default rail (`PAYMENT_PROVIDER=stripe`). A domestic Indian rail

@@ -3,8 +3,7 @@ import { Mono } from '@/components/ui/Mono';
 import { Wordmark } from '@/components/ui/Wordmark';
 import { AccountMenu } from '@/components/auth/AccountMenu';
 import { RunCvAssessment } from '@/components/employer/RunCvAssessment';
-import { requireStaff } from '@/lib/auth';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
+import { requirePermission } from '@/lib/rbac/server';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { isAiConfigured } from '@/lib/cv/client';
 
@@ -25,7 +24,7 @@ type Row = {
 
 /** Every uploaded CV and where it is in the pipeline. Staff only. */
 export default async function CvQueuePage() {
-  if (isSupabaseConfigured()) await requireStaff('/admin/cvs');
+  await requirePermission('cv.review', '/admin/cvs');
 
   const supabase = getAdminSupabase();
   let rows: Row[] = [];

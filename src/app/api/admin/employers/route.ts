@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { getSessionStaff } from '@/lib/auth';
+import { apiPermission, demoWriteRefusal } from '@/lib/rbac/server';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 
 export const runtime = 'nodejs';
@@ -26,8 +26,10 @@ const schema = z.object({
  * the link at all.
  */
 export async function POST(request: Request) {
-  const staff = await getSessionStaff();
-  if (!staff) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+  const guard = await apiPermission('employers.manage');
+  if (guard instanceof NextResponse) return guard;
+  const refusal = demoWriteRefusal(guard);
+  if (refusal) return refusal;
 
   const parsed = schema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) {

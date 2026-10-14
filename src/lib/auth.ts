@@ -139,11 +139,14 @@ export async function getSessionStaff(): Promise<StaffUser | null> {
 
   const { data } = await supabase
     .from('staff_users')
-    .select('role')
+    .select('role, active')
     .eq('auth_user_id', auth.user.id)
     .maybeSingle();
 
-  if (!data) return null;
+  /* Deactivated staff are not staff. `active` arrives with RBAC in migration
+     0014, which must be applied before this code is deployed: without the
+     column the select fails and nobody is recognised as staff. */
+  if (!data || data.active === false) return null;
 
   return { userId: auth.user.id, email: auth.user.email ?? '', role: data.role as string };
 }
@@ -277,6 +280,7 @@ export function resolveDestination(viewer: Viewer, next: string | undefined, loc
 export function homeFor(viewer: Viewer, locale: Locale): string {
   switch (viewer.role) {
     case 'staff':
+      return '/admin/dashboard';
     case 'employer':
       return '/admin';
     case 'candidate':
