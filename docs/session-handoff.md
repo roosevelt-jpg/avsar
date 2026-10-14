@@ -1518,12 +1518,14 @@ Liberdade 69 4.º A, Lisboa), nao a SMTADM do Dubai. Motivo no
 uma empresa portuguesa. Enquanto estiver vazio as paginas legais mostram o
 banner de falta em vez de um numero errado. Falta o Abilio dar um numero PT.
 
-Gerente unica e (desde 23.05.2024) socia unica: Teresa Claudia Viegas Gama,
-NIF 310597501. E ela que tem de fazer o onboarding da Stripe ou ser o account
-representative; a Stripe retem payouts ate o representante estar verificado.
+Gerente unica e (desde 23.05.2024) socia unica: Teresa Claudia Viegas Gama. E
+ela que tem de fazer o onboarding da Stripe ou ser o account representative; a
+Stripe retem payouts ate o representante estar verificado.
 
-Nada de dados pessoais no repo: nem numero de CC, nem IBAN, nem codigo da
-certidao permanente.
+Nada de dados pessoais no repo: nem NIF, nem numero de CC, nem IBAN, nem codigo
+da certidao permanente. O NIF esteve aqui ate 14 Out 2026, duas linhas acima
+desta frase que dizia que nao estava. O nome e publico pelo registo comercial;
+o numero fiscal nao e, e os dois juntos sao material de fraude de identidade.
 
 Por resolver: objecto social e CAE (43350 construcao, nao 78100 colocacao de
 pessoal) e a licenca IEFP do DL 260/2009 para agencia privada de colocacao.

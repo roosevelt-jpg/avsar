@@ -87,8 +87,11 @@ every policy page, the contact page and the footer print it.
 
 ### Director and owner
 
-Teresa Cláudia Viegas Gama, NIF 310597501, is the sole gerente since the other
-gerente resigned on 23 May 2024, and acquired the second quota the same day.
+Teresa Cláudia Viegas Gama is the sole gerente since the other gerente resigned
+on 23 May 2024, and acquired the second quota the same day. Their NIF is not
+written down here: a tax number beside a full name is identity-fraud material,
+it is on the citizen card the person doing the onboarding is holding anyway, and
+nothing in this repository needs it.
 Treat them as holding 100% unless the accountant says otherwise.
 
 That has a practical consequence: **they have to do the Stripe onboarding**, or
