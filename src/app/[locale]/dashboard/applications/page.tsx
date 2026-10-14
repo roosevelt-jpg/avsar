@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { DashboardNav } from '@/components/candidate/DashboardNav';
 import { ApplicationTracker } from '@/components/candidate/ApplicationTracker';
+import { ApplicationStats } from '@/components/candidate/ApplicationStats';
 import { JobCard } from '@/components/jobs/JobCard';
 import { listCandidateApplications } from '@/lib/applications/data';
 import { STATUS_META } from '@/lib/applications/status';
@@ -45,6 +46,12 @@ export default async function ApplicationsPage({ params }: { params: Promise<{ l
               Find more jobs
             </Link>
           </div>
+
+          {applications.length > 0 && (
+            <div className="mt-8">
+              <ApplicationStats applications={applications} />
+            </div>
+          )}
 
           {applications.length === 0 ? (
             <div className="mt-8 rounded-[24px] border border-dashed border-line-strong bg-surface px-6 py-14 text-center">

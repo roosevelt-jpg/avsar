@@ -70,9 +70,13 @@ AGENTS.md and `.cursor/rules/` give it the conventions.
 
 ## 9. Analytics
 
-> Add privacy-friendly analytics (Plausible or Vercel Analytics) and server-side
-> events for: job viewed, apply started, apply completed, payment started, payment
-> completed. Show a 30-day funnel on /admin/dashboard.
+> The console dashboard already shows applications, funnel and payments live.
+> Add the top of the funnel: privacy-friendly page analytics (Plausible or Vercel
+> Analytics) and server-side events for job viewed, apply started, apply completed,
+> payment started. Store events in a `site_events` table (migration) and add
+> "Job page views" and "Apply conversion" cards to src/lib/console/analytics.ts.
+> When applications exceed ~50k per quarter, move the aggregation in
+> getAnalytics() into a Postgres function returning the same shape.
 
 ## 10. Rate limiting and abuse
 

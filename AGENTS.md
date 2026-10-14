@@ -54,10 +54,11 @@ src/lib/cms/                           blocks.ts (registry), sanitize.ts, data.t
                                        tokens.ts, defaults/* (pre-filled content for every page)
 src/lib/jobs/                          types, zod schema, data access, sample jobs
 src/lib/applications/                  status vocabulary, data access
+src/lib/console/analytics.ts           dashboard KPIs, series, funnel, breakdowns (one range, one place)
 src/lib/payments/                      rail adapters (EximPe, Cashfree, Razorpay, Stripe, Viva, Dodo)
 src/components/cms/                    BlockRenderer + one component per block type
 src/components/admin/                  console client components (editors, forms, pickers)
-supabase/migrations/                   schema, in order. 0014 = RBAC, jobs, applications, CMS
+supabase/migrations/                   schema, in order. 0014 = RBAC, jobs, applications, CMS; 0015 = realtime
 supabase/seed/                         optional: sample job drafts, first super admin
 ```
 

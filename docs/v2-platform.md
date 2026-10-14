@@ -23,7 +23,7 @@ Site settings (off by default; see the legal notes below).
 
 | Screen | Permission |
 |---|---|
-| Dashboard (what needs attention) | `dashboard.view` |
+| Dashboard: live analytics (see below) | `dashboard.view`; each card also needs the permission for its data |
 | Jobs: list, create, edit, publish, close, archive | `jobs.view` / `jobs.edit` / `jobs.publish` |
 | Applications: filter by stage, job, name; detail with answers, history; move stage, message candidate, rate | `applications.view` / `applications.manage` |
 | Pages (CMS): block editor, per-language versions, preview, publish, version history, reset to default | `cms.view` / `cms.edit` / `cms.publish` |
@@ -34,6 +34,21 @@ Site settings (off by default; see the legal notes below).
 | Roles and permissions matrix, custom roles | `roles.manage` |
 | Audit log | `audit.view` |
 | Existing: talent search, shortlists, CV queue, cohorts, employers, placements | unchanged screens, now permission-guarded |
+
+### The live dashboard
+
+`/admin/dashboard`, with a 7 / 30 / 90-day range that scopes every card:
+
+- **Right now:** applications waiting for review (highlighted when above zero), in interview, offers out, live jobs.
+- **KPI cards with change vs the previous period and a daily sparkline:** applications, new candidates, assessments paid, revenue, shortlist rate, median time to first response (a fall shows green).
+- **Daily activity chart:** applications, sign-ups or payments per day, with a hover/keyboard crosshair and a table view.
+- **Hiring funnel:** how far this period's applications got, with step conversion.
+- **Breakdowns:** most applied-for jobs, applications by role, applicants by Indian state, payment method split (UPI vs card vs net banking).
+- **Live updates:** Supabase Realtime pushes changes to applications, candidates, payments and jobs; the page refreshes itself within a couple of seconds. It falls back to refreshing every minute if Realtime is unavailable. Needs migration `0015_console_realtime.sql`.
+
+Candidates get their own stats strip on the dashboard and tracker: applied, in progress, interviews, offers, and the date of the last update.
+
+Data is aggregated in `src/lib/console/analytics.ts`. It is comfortable to tens of thousands of applications per period; beyond that, move the sums into a Postgres function.
 
 ### Roles shipped
 
@@ -66,8 +81,8 @@ code (fee, response time, published odds) are typed as placeholders such as
 
 ## Switching it on
 
-1. **Migrations.** Run `supabase/migrations/0014_rbac_jobs_cms.sql` in the
-   Supabase SQL editor (0001–0013 are already applied in production). It creates
+1. **Migrations.** Run `supabase/migrations/0014_rbac_jobs_cms.sql`, then
+   `0015_console_realtime.sql`, in the Supabase SQL editor (0001–0013 are already applied in production). It creates
    the `cms-media` storage bucket too.
 2. **First super admin.** Edit and run `supabase/seed/bootstrap_super_admin.sql`.
    Existing `admin` staff are promoted to `super_admin` automatically if no super
@@ -117,6 +132,6 @@ These are flagged, not solved. Each one can stop the business, not just a page.
 The build environment that produced this had no access to the npm registry, so
 `npm install`, `next build` and the lint run were not executed. All new modules
 were type-checked against stubbed library types, the CMS defaults were run
-through the sanitiser (every block round-trips unchanged), and all 28 new pages
+through the sanitiser (every block round-trips unchanged), and all 31 new pages and dashboard variants
 were server-rendered successfully in demo mode. Run
 `npm install && npm run typecheck && npm run lint && npm run build` first.

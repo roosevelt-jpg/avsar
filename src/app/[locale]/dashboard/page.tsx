@@ -6,6 +6,7 @@ import { VisibilityToggle } from '@/components/candidate/VisibilityToggle';
 import { DashboardNav } from '@/components/candidate/DashboardNav';
 import { listCandidateApplications } from '@/lib/applications/data';
 import { STATUS_META } from '@/lib/applications/status';
+import { ApplicationStats } from '@/components/candidate/ApplicationStats';
 import { JourneyStatus } from '@/components/candidate/JourneyStatus';
 import { VerifyEmailBanner } from '@/components/candidate/VerifyEmailBanner';
 import { UnlockReport } from '@/components/candidate/UnlockReport';
@@ -208,6 +209,11 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
               )}
             </div>
           </div>
+          {applications.length > 0 && (
+            <div className="mt-4">
+              <ApplicationStats applications={applications} />
+            </div>
+          )}
           {applications.length === 0 ? (
             <p className="m-0 mt-3 text-[15px] text-ink-2">
               You have not applied to a job yet. Applying is free:{' '}

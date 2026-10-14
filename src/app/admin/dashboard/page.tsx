@@ -1,54 +1,71 @@
 import Link from 'next/link';
 import { AdminButton, AdminHeading, AdminShell, Pill } from '@/components/employer/AdminShell';
-import { Mono } from '@/components/ui/Mono';
-import { applicationCounts, listApplicationsForConsole, type AdminApplicationRow } from '@/lib/applications/data';
-import { STATUS_META, type ApplicationStatus } from '@/lib/applications/status';
-import { listAllJobs, type AdminJobRow } from '@/lib/jobs/data';
+import { StatCard } from '@/components/admin/analytics/StatCard';
+import { TrendChart } from '@/components/admin/analytics/TrendChart';
+import { Funnel } from '@/components/admin/analytics/Funnel';
+import { BarList } from '@/components/admin/analytics/BarList';
+import { LiveUpdates } from '@/components/admin/analytics/LiveUpdates';
+import { listApplicationsForConsole, type AdminApplicationRow } from '@/lib/applications/data';
+import { STATUS_META } from '@/lib/applications/status';
+import { getAnalytics, parseRange, RANGES } from '@/lib/console/analytics';
 import { can, requirePermission } from '@/lib/rbac/server';
-import { consoleMetrics } from '@/lib/console/metrics';
 
 export const metadata = { title: 'Console' };
+export const dynamic = 'force-dynamic';
+
+function Panel({ title, note, children }: { title: string; note?: string; children: React.ReactNode }) {
+  return (
+    <section className="rounded-[20px] border border-line bg-surface p-5">
+      <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
+        <h2 className="m-0 text-[16px] font-semibold">{title}</h2>
+        {note ? <span className="text-[12px] text-muted">{note}</span> : null}
+      </div>
+      {children}
+    </section>
+  );
+}
 
 /**
- * The console's front page: what needs attention today.
+ * The console's front page: live counts of what needs attention now, KPIs
+ * with change vs the previous period, daily trends, the hiring funnel, and
+ * where applications come from. One date range scopes everything below it,
+ * and the page refreshes itself as candidates apply and pay.
  *
- * Every tile links to the screen where the work is done, and only shows if
- * the viewer can act on it.
+ * Each card shows only if the viewer's role can see the data behind it.
  */
-export default async function ConsoleDashboard() {
+export default async function ConsoleDashboard({ searchParams }: { searchParams: Promise<{ range?: string }> }) {
   const access = await requirePermission('dashboard.view', '/admin/dashboard');
+  const range = parseRange((await searchParams).range);
 
   const showApps = can(access, 'applications.view');
-  const showJobs = can(access, 'jobs.view');
   const showMoney = can(access, 'payments.view');
+  const showJobs = can(access, 'jobs.view');
 
-  const [counts, recent, jobs, metrics] = await Promise.all([
-    showApps ? applicationCounts() : Promise.resolve<Record<string, number>>({}),
+  const [analytics, recent] = await Promise.all([
+    getAnalytics(range),
     showApps ? listApplicationsForConsole({}) : Promise.resolve({ rows: [] as AdminApplicationRow[], total: 0, pageSize: 0 }),
-    showJobs ? listAllJobs('all') : Promise.resolve([] as AdminJobRow[]),
-    consoleMetrics(),
   ]);
 
-  const published = jobs.filter((job) => job.status === 'published');
-  const drafts = jobs.filter((job) => job.status === 'draft');
-  const newApps = counts.submitted ?? 0;
-  const inPipeline = (counts.screening ?? 0) + (counts.shortlisted ?? 0) + (counts.interview ?? 0);
-  const offers = (counts.offer ?? 0) + (counts.hired ?? 0) + (counts.visa_processing ?? 0);
+  const kpis = analytics.kpis.filter((kpi) => {
+    if (kpi.key === 'paid' || kpi.key === 'revenue') return showMoney;
+    if (kpi.key === 'applications' || kpi.key === 'shortlist' || kpi.key === 'response') return showApps;
+    return can(access, 'candidates.view');
+  });
 
-  const tiles = [
-    showApps && { label: 'New applications', value: newApps, note: 'waiting for a first look', href: '/admin/applications?status=submitted', tone: newApps ? 'accent' : 'plain' },
-    showApps && { label: 'In the pipeline', value: inPipeline, note: 'screening, shortlist, interview', href: '/admin/applications', tone: 'plain' },
-    showApps && { label: 'Offers and visas', value: offers, note: 'offer, hired, visa processing', href: '/admin/applications?status=offer', tone: 'plain' },
-    showJobs && { label: 'Live jobs', value: published.length, note: `${drafts.length} drafts`, href: '/admin/jobs', tone: 'plain' },
-    { label: 'Candidates', value: metrics.candidates, note: `${metrics.candidatesWeek} joined this week`, href: '/admin/cohorts', tone: 'plain' },
-    showMoney && { label: 'Assessments paid', value: metrics.paid, note: 'all time', href: '/admin/payments', tone: 'plain' },
-  ].filter(Boolean) as { label: string; value: number; note: string; href: string; tone: string }[];
+  const now = [
+    showApps && { label: 'Waiting for review', value: analytics.live.awaitingReview, href: '/admin/applications?status=submitted', urgent: analytics.live.awaitingReview > 0 },
+    showApps && { label: 'In interview', value: analytics.live.interviewsActive, href: '/admin/applications?status=interview', urgent: false },
+    showApps && { label: 'Offers out', value: analytics.live.offersOpen, href: '/admin/applications?status=offer', urgent: false },
+    showJobs && { label: 'Live jobs', value: analytics.live.openJobs, href: '/admin/jobs?status=published', urgent: false },
+  ].filter(Boolean) as { label: string; value: number; href: string; urgent: boolean }[];
+
+  const totalPaid = analytics.paymentMethods.reduce((a, r) => a + r.value, 0);
 
   return (
     <AdminShell current="/admin/dashboard" isStaff>
       <AdminHeading
-        title="Good to see you"
-        lead="What needs attention today. Every number opens the list behind it."
+        title="Dashboard"
+        lead="What needs attention now, and how recruitment is going. Every number opens the list behind it."
         actions={
           <>
             {can(access, 'jobs.edit') && <AdminButton href="/admin/jobs/new">Post a job</AdminButton>}
@@ -57,81 +74,111 @@ export default async function ConsoleDashboard() {
         }
       />
 
-      <ul className="m-0 mt-8 grid list-none grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3 p-0">
-        {tiles.map((tile) => (
-          <li key={tile.label}>
-            <Link
-              href={tile.href}
-              className={`t-colors block h-full rounded-[18px] border p-5 no-underline ${
-                tile.tone === 'accent' ? 'border-accent bg-accent-tint' : 'border-line bg-surface hover:border-line-strong'
-              }`}
-            >
-              <Mono className="text-muted">{tile.label}</Mono>
-              <p className="m-0 mt-2 text-[34px] font-semibold leading-none tracking-[-0.03em] text-ink">{tile.value.toLocaleString('en-IN')}</p>
-              <p className="m-0 mt-2 text-[13px] text-muted">{tile.note}</p>
-            </Link>
-          </li>
-        ))}
-      </ul>
+      {/* One row of filters, above everything it scopes. */}
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+        <nav aria-label="Date range" className="flex rounded-full border border-line bg-surface p-1 text-[13px]">
+          {RANGES.map((r) =>
+            r === range ? (
+              <span key={r} aria-current="true" className="rounded-full bg-ink px-3 py-1 text-paper">Last {r} days</span>
+            ) : (
+              <Link key={r} href={`/admin/dashboard?range=${r}`} className="rounded-full px-3 py-1 text-ink-2 no-underline hover:text-ink">
+                Last {r} days
+              </Link>
+            ),
+          )}
+        </nav>
+        <LiveUpdates generatedAt={analytics.generatedAt} />
+      </div>
 
-      <div className="mt-10 grid gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+      {now.length > 0 && (
+        <section aria-label="Right now" className="mt-5">
+          <ul className="m-0 grid list-none grid-cols-2 gap-3 p-0 lg:grid-cols-4">
+            {now.map((item) => (
+              <li key={item.label}>
+                <Link
+                  href={item.href}
+                  className={`t-colors flex h-full items-center justify-between gap-3 rounded-[16px] border px-4 py-3 no-underline ${
+                    item.urgent ? 'border-accent bg-accent-tint' : 'border-line bg-surface hover:border-line-strong'
+                  }`}
+                >
+                  <span className="text-[13px] text-ink-2">{item.label}</span>
+                  <span className="text-[24px] font-semibold tabular-nums tracking-[-0.02em] text-ink">{item.value.toLocaleString('en-IN')}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {kpis.length > 0 && (
+        <ul className="m-0 mt-3 grid list-none grid-cols-1 gap-3 p-0 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+          {kpis.map((kpi) => (
+            <li key={kpi.key}>
+              <StatCard kpi={kpi} range={range} />
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <div className="mt-6 grid gap-4 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+        <Panel title="Daily activity" note={`Last ${range} days`}>
+          <TrendChart daily={analytics.daily} />
+        </Panel>
         {showApps && (
-          <section className="rounded-[20px] border border-line bg-surface p-5">
-            <div className="mb-3 flex items-center justify-between">
-              <h2 className="m-0 text-[18px] font-semibold">Latest activity</h2>
-              <Link href="/admin/applications" className="prose-link text-[14px]">All applications</Link>
-            </div>
+          <Panel title="Hiring funnel" note="This period's applications, by furthest stage">
+            <Funnel stages={analytics.funnel} />
+          </Panel>
+        )}
+      </div>
+
+      {showApps && (
+        <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <Panel title="Most applied-for jobs">
+            <BarList rows={analytics.topJobs.map((j) => ({ label: j.label, value: j.value, href: `/admin/applications?job=${j.id}` }))} />
+          </Panel>
+          <Panel title="Applications by role">
+            <BarList rows={analytics.topRoles} />
+          </Panel>
+          <Panel title="Where applicants are from" note="Indian state">
+            <BarList rows={analytics.origins} />
+          </Panel>
+        </div>
+      )}
+
+      <div className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
+        {showMoney && (
+          <Panel title="How candidates pay" note={totalPaid ? `${totalPaid.toLocaleString('en-IN')} payments` : undefined}>
+            <BarList
+              rows={analytics.paymentMethods.map((m) => ({ label: m.label === 'NETBANKING' ? 'Net banking' : m.label === 'CARD' ? 'Card' : m.label, value: m.value }))}
+              suffix={(row) => (totalPaid ? `${Math.round((row.value / totalPaid) * 100)}%` : '')}
+              empty="No payments in this period yet."
+            />
+          </Panel>
+        )}
+        {showApps && (
+          <Panel title="Latest activity">
             {recent.rows.length === 0 ? (
               <p className="m-0 text-[14px] text-muted">No applications yet. They appear here as soon as candidates apply.</p>
             ) : (
               <ul className="m-0 flex list-none flex-col divide-y divide-line-soft p-0">
-                {recent.rows.slice(0, 8).map((row) => (
+                {recent.rows.slice(0, 7).map((row) => (
                   <li key={row.id}>
-                    <Link href={`/admin/applications/${row.id}`} className="flex flex-wrap items-center justify-between gap-3 py-3 text-ink no-underline hover:text-employer">
+                    <Link href={`/admin/applications/${row.id}`} className="flex flex-wrap items-center justify-between gap-3 py-2.5 text-ink no-underline hover:text-employer">
                       <span>
-                        <span className="block text-[15px] font-medium">{row.candidate.fullName}</span>
-                        <span className="block text-[13px] text-muted">
-                          {row.job.title} · {row.job.city}
+                        <span className="block text-[14px] font-medium">{row.candidate.fullName}</span>
+                        <span className="block text-[12px] text-muted">
+                          {row.job.title} · {row.job.city} · {new Date(row.statusChangedAt).toLocaleDateString('en-GB')}
                         </span>
                       </span>
-                      <Pill tone={STATUS_META[row.status as ApplicationStatus].tone === 'success' ? 'success' : row.status === 'submitted' ? 'accent' : 'neutral'}>
-                        {STATUS_META[row.status as ApplicationStatus].label}
+                      <Pill tone={STATUS_META[row.status].tone === 'success' ? 'success' : row.status === 'submitted' ? 'accent' : 'neutral'}>
+                        {STATUS_META[row.status].label}
                       </Pill>
                     </Link>
                   </li>
                 ))}
               </ul>
             )}
-          </section>
-        )}
-
-        {showJobs && (
-          <section className="rounded-[20px] border border-line bg-surface p-5">
-            <div className="mb-3 flex items-center justify-between">
-              <h2 className="m-0 text-[18px] font-semibold">Jobs by applications</h2>
-              <Link href="/admin/jobs" className="prose-link text-[14px]">All jobs</Link>
-            </div>
-            <ul className="m-0 flex list-none flex-col gap-3 p-0">
-              {[...published]
-                .sort((a, b) => b.pipeline.total - a.pipeline.total)
-                .slice(0, 6)
-                .map((job) => {
-                  const max = Math.max(1, ...published.map((j) => j.pipeline.total));
-                  return (
-                    <li key={job.id}>
-                      <div className="mb-1 flex justify-between gap-3 text-[14px]">
-                        <Link href={`/admin/jobs/${job.id}`} className="truncate text-ink no-underline hover:text-employer">{job.title}, {job.city}</Link>
-                        <Mono className="text-muted">{job.pipeline.total}</Mono>
-                      </div>
-                      <div className="h-1.5 overflow-hidden rounded-full bg-line-soft">
-                        <div className="h-full rounded-full bg-employer" style={{ width: `${(job.pipeline.total / max) * 100}%` }} />
-                      </div>
-                    </li>
-                  );
-                })}
-              {published.length === 0 && <li className="text-[14px] text-muted">No live jobs. Publish one from the Jobs screen.</li>}
-            </ul>
-          </section>
+          </Panel>
         )}
       </div>
     </AdminShell>
