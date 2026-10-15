@@ -52,10 +52,9 @@ test('job page shows the one-step apply form to a visitor', async ({ page }) => 
   await expect(page.locator('script[type="application/ld+json"]').first()).toBeAttached();
 });
 
-test('application tracker renders', async ({ page }) => {
-  const response = await page.goto('/dashboard/applications');
-  expect(response?.status()).toBeLessThan(400);
-  await expect(page.locator('h1').first()).toBeVisible();
+test('application tracker sends a visitor to sign in', async ({ page }) => {
+  await page.goto('/dashboard/applications');
+  await expect(page).toHaveURL(/\/signin\?next=/);
 });
 
 test('Arabic pages are right-to-left', async ({ page }) => {

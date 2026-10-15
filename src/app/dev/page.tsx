@@ -40,10 +40,9 @@ const GROUPS: { title: string; note: string; rows: [string, string, string][] }[
     title: 'Employer and internal',
     note: 'Blue accent.',
     rows: [
-      ['/employers', '02 Employer landing', 'plain-language search, sample results'],
+      ['/employers', '02 Employer landing', 'plain-language pitch, live assessed count'],
       ['/admin', '06 Talent search', 'parsed query, filters in the URL, pagination'],
-      ['/admin/cvs', 'CV queue', 'trigger the AI read, see state and score'],
-      ['/admin/review/sample', 'CV review (AI-assisted)', 'scores with evidence, then a human decision'],
+      ['/admin/cvs', 'CV queue', 'trigger the AI read, then open a review'],
     ],
   },
   {

@@ -15,7 +15,7 @@ import {
 } from '@/lib/leads/data';
 import { requirePermission } from '@/lib/rbac/server';
 
-export const metadata = { title: 'Inbox' };
+export const metadata = { title: 'CRM' };
 
 type Search = { status?: string; topic?: string; q?: string };
 
@@ -47,8 +47,8 @@ export default async function AdminInbox({ searchParams }: { searchParams: Promi
   return (
     <AdminShell current="/admin/inbox" isStaff>
       <AdminHeading
-        title="Inbox"
-        lead="Messages from the contact form and the employers page, privacy requests, and people imported from a partner's list. Closed conversations are hidden unless you ask for them."
+        title="CRM: leads and messages"
+        lead="Everyone who has written to us or been handed to us before applying: the contact form, the employers page, privacy requests and people imported from a partner's list. Open one to reply, add notes and move it from new to contacted, invited and registered. Closed conversations are hidden unless you ask for them."
       />
 
       <nav aria-label="Status" className="mt-6 flex flex-wrap gap-2">

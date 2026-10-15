@@ -28,7 +28,7 @@ const LABEL = { erase: 'Erase my data', correct: 'Correct my data' } as const;
  */
 export async function POST(request: Request) {
   if (!isSupabaseConfigured()) {
-    return NextResponse.json({ error: 'demo_mode', message: 'Supabase is not configured, so nothing can be saved.' }, { status: 503 });
+    return NextResponse.json({ error: 'not_configured', message: 'Supabase is not configured, so nothing can be saved.' }, { status: 503 });
   }
   const limited = await rateLimit(RATE_LIMITS.contact, clientIp(request));
   if (!limited.ok) return rateLimitedResponse(limited);

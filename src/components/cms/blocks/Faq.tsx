@@ -56,7 +56,7 @@ export function ContactCardsBlock({ data, settings }: { data: BlockData; locale:
                 <Icon name={card.icon} className="size-5" />
               </span>
               <span className="mt-4 block font-mono text-[12px] uppercase tracking-[0.1em] text-muted">{card.label}</span>
-              <span dir={card.ltr ? 'ltr' : undefined} className="mt-1 block text-[16px] font-medium leading-[1.45] text-ink">
+              <span dir={card.ltr ? 'ltr' : undefined} className="mt-1 block whitespace-pre-line text-[16px] font-medium leading-[1.45] text-ink">
                 {card.value}
               </span>
             </>

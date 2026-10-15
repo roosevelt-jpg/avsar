@@ -65,7 +65,7 @@ export function CareerPack({
           type="button"
           onClick={generate}
           disabled={!canGenerate || state === 'working'}
-          className="t-colors cursor-pointer rounded-[12px] border-0 bg-ink px-5 py-3 text-[15px] font-medium text-white hover:bg-accent disabled:cursor-not-allowed disabled:opacity-40"
+          className="t-colors cursor-pointer rounded-[12px] border-0 bg-ink px-5 py-3 text-[15px] font-medium text-paper hover:bg-ink-hover disabled:cursor-not-allowed disabled:opacity-40"
         >
           {state === 'working' ? 'Building it…' : 'Build my career pack'}
         </button>
@@ -185,7 +185,7 @@ export function CareerPack({
       </div>
 
       {/* ------------------------------------------------------ improved CV */}
-      <div className="rounded-[20px] border border-ink bg-ink p-[clamp(20px,2.6cqi,28px)] text-paper">
+      <div className="rounded-[20px] border border-night bg-night p-[clamp(20px,2.6cqi,28px)] text-on-night">
         <h3 className="m-0 mb-3 text-[19px] font-semibold">Your rewritten CV</h3>
 
         <p className="m-0 mb-6 max-w-[60ch] text-[14px] leading-[1.6] text-dark-muted-2">
@@ -217,7 +217,7 @@ export function CareerPack({
                   style={{ border: active ? '5px solid #f7f5f0' : '1.5px solid #6b675f' }}
                 />
                 <span>
-                  <span className="block text-[15px] font-medium text-paper">{option.name}</span>
+                  <span className="block text-[15px] font-medium text-on-night">{option.name}</span>
                   <span className="block text-[13px] leading-[1.5] text-dark-muted-2">
                     {option.note}
                   </span>
@@ -229,7 +229,7 @@ export function CareerPack({
 
         <a
           href={localePath(locale, `/dashboard/cv.pdf?template=${template}`)}
-          className="t-colors mb-6 inline-block rounded-[12px] bg-paper px-5 py-3 text-[15px] font-medium text-ink no-underline hover:bg-white"
+          className="t-colors mb-6 inline-block rounded-[12px] bg-on-night px-5 py-3 text-[15px] font-medium text-night no-underline hover:bg-white"
         >
           Download as PDF
         </a>

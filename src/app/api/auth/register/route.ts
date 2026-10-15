@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { registerSchema, toE164 } from '@/lib/validation';
-import { COHORT } from '@/lib/data/cohort';
+import { getSiteSettings } from '@/lib/cms/data';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { getServerSupabase } from '@/lib/supabase/server';
 import { identityHash } from '@/lib/hash';
@@ -102,6 +102,7 @@ export async function POST(request: Request) {
    * overwrote the first person's row, email included. If the first had paid,
    * they lost what they paid for. Refuse instead.
    */
+  const { cohort: COHORT } = await getSiteSettings();
   const { data: phoneOwner } = await admin
     .from('candidates')
     .select('id, email')
@@ -123,7 +124,8 @@ export async function POST(request: Request) {
    *
    *  1. "Confirm email" off: `signUp` returns a session. Done.
    *  2. "Confirm email" on: `signUp` succeeds and withholds the session, so we
-   *     sign in with the password we just set.
+   *     confirm the account with the service role and sign in with the
+   *     password we just set.
    *  3. The mailer is down or rate limited: `signUp` fails outright with
    *     "Error sending confirmation email" and no account exists at all. The
    *     account is then created with the service role, already confirmed, and
@@ -174,10 +176,22 @@ export async function POST(request: Request) {
   /* Whatever happened above, finish holding a session. */
   const { data: current } = await supabase.auth.getUser();
   if (!current.user) {
-    const { error: signInError } = await supabase.auth.signInWithPassword({
+    let { error: signInError } = await supabase.auth.signInWithPassword({
       email,
       password: input.password,
     });
+    /* Supabase refuses a password sign-in while "Confirm email" is on and the
+       address is unconfirmed, which would strand case 2. Proof of the address
+       is tracked by `email_verified_at`, not by Supabase, so the account is
+       confirmed here and the sign-in retried. */
+    if (signInError?.code === 'email_not_confirmed') {
+      const { error: confirmError } = await admin.auth.admin.updateUserById(userId, { email_confirm: true });
+      if (confirmError) {
+        console.error('[register] confirm after signUp failed', confirmError.message);
+      } else {
+        ({ error: signInError } = await supabase.auth.signInWithPassword({ email, password: input.password }));
+      }
+    }
     if (signInError) {
       console.error('[register] post-signup sign-in failed', signInError.message);
       return NextResponse.json({ error: 'signup_failed' }, { status: 502 });

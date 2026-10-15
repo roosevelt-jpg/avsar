@@ -46,7 +46,7 @@ export function VerifyEmailBanner({ email, t }: { email: string; t: Dictionary }
           type="button"
           onClick={resend}
           disabled={state === 'busy'}
-          className="t-colors mt-3.5 cursor-pointer rounded-[10px] border-0 bg-ink px-4 py-2.5 text-[14px] font-medium text-white hover:bg-accent disabled:opacity-40"
+          className="t-colors mt-3.5 cursor-pointer rounded-[10px] border-0 bg-ink px-4 py-2.5 text-[14px] font-medium text-paper hover:bg-ink-hover disabled:opacity-40"
         >
           {d.verifyCta}
         </button>

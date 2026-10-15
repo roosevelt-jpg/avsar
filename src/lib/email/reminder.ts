@@ -1,6 +1,7 @@
 import { localePath } from '@/lib/i18n';
 import { renderEmail } from '@/lib/email/template';
-import { BRAND } from '@/lib/data/brand';
+import { getSiteSettings } from '@/lib/cms/data';
+import { composeEmail, emailBrand } from '@/lib/email/compose';
 
 /** Only what the message needs, so the preview can build one by hand. */
 export type ReminderRow = {
@@ -21,52 +22,30 @@ export type ReminderRow = {
 type Stage = 'profile' | 'assessment';
 
 type Reminder = {
-  subject: (firstName: string) => string;
+  subject: (firstName: string, brand: string) => string;
   preheader: string;
   heading: string;
-  paragraphs: (firstName: string) => string[];
+  paragraphs: (firstName: string, brand: string) => string[];
   actionLabel: string;
 };
 
+/* English comes from Settings › Emails. Hindi is a translation kept in code
+   with the rest of the interface wording. */
 const COPY: Record<string, Record<Stage, Reminder> & { unsubscribe: string }> = {
-  en: {
-    unsubscribe: 'Stop these reminders',
-    profile: {
-      subject: (first) => `${first}, your ${BRAND.name} application is waiting`,
-      preheader: 'Nothing is lost. Sign in and carry on from where you stopped.',
-      heading: 'Your application is waiting',
-      paragraphs: (first) => [
-        `Hello ${first},`,
-        `You opened an account with ${BRAND.name} and did not finish your application. Nothing is lost: sign in and carry on from where you stopped.`,
-      ],
-      actionLabel: 'Continue my application',
-    },
-    assessment: {
-      subject: (first) => `${first}, one step left on your ${BRAND.name} application`,
-      preheader: 'Your profile is saved. The assessment takes 20 to 30 minutes.',
-      heading: 'One step left',
-      paragraphs: (first) => [
-        `Hello ${first},`,
-        'Your profile is saved. The assessment is the only thing left, and it takes 20 to 30 minutes on your phone.',
-        'You pay nothing until you have completed it and seen what it found.',
-      ],
-      actionLabel: 'Take the assessment',
-    },
-  },
   hi: {
     unsubscribe: 'ये अनुस्मारक बंद करें',
     profile: {
-      subject: (first) => `${first}, आपका ${BRAND.name} आवेदन अधूरा है`,
+      subject: (first, brand) => `${first}, आपका ${brand} आवेदन अधूरा है`,
       preheader: 'कुछ भी खोया नहीं है। साइन इन करें और वहीं से आगे बढ़ें।',
       heading: 'आपका आवेदन आपका इंतज़ार कर रहा है',
-      paragraphs: (first) => [
+      paragraphs: (first, brand) => [
         `नमस्ते ${first},`,
-        `आपने ${BRAND.name} पर खाता खोला था लेकिन आवेदन पूरा नहीं किया। कुछ भी खोया नहीं है: साइन इन करें और वहीं से आगे बढ़ें जहाँ रुके थे।`,
+        `आपने ${brand} पर खाता खोला था लेकिन आवेदन पूरा नहीं किया। कुछ भी खोया नहीं है: साइन इन करें और वहीं से आगे बढ़ें जहाँ रुके थे।`,
       ],
       actionLabel: 'आवेदन जारी रखें',
     },
     assessment: {
-      subject: (first) => `${first}, आपके ${BRAND.name} आवेदन में एक ही चरण बाकी है`,
+      subject: (first, brand) => `${first}, आपके ${brand} आवेदन में एक ही चरण बाकी है`,
       preheader: 'आपकी प्रोफ़ाइल सुरक्षित है। मूल्यांकन में 20 से 30 मिनट लगते हैं।',
       heading: 'बस एक चरण बाकी है',
       paragraphs: (first) => [
@@ -79,32 +58,33 @@ const COPY: Record<string, Record<Stage, Reminder> & { unsubscribe: string }> = 
   },
 };
 
-export function renderReminder(
+export async function renderReminder(
   row: ReminderRow,
   origin: string,
   unsubscribe: string,
-): { subject: string; text: string; html: string } {
+): Promise<{ subject: string; text: string; html: string }> {
   const stage: Stage = row.profile_completed_at ? 'assessment' : 'profile';
   const firstName = row.full_name.split(' ')[0] ?? '';
-  const locale = row.locale === 'hi' ? 'hi' : 'en';
-  const pack = COPY[locale]!;
-  const copy = pack[stage];
-
   const url = `${origin}${localePath(row.locale, `/${stage === 'assessment' ? 'assessment' : 'signup'}`)}`;
-  const paragraphs = copy.paragraphs(firstName);
 
-  const text = [
-    ...paragraphs,
-    '',
-    url,
-    '',
-    `${pack.unsubscribe}: ${unsubscribe}`,
-    '',
-    BRAND.name,
-  ].join('\n');
+  if (row.locale !== 'hi') {
+    return composeEmail(stage === 'assessment' ? 'reminder_assessment' : 'reminder_profile', { first_name: firstName }, {
+      origin,
+      actionUrl: url,
+      unsubscribe: { label: 'Stop these reminders', url: unsubscribe },
+    });
+  }
+
+  const settings = await getSiteSettings();
+  const brand = settings.general.siteName;
+  const pack = COPY.hi!;
+  const copy = pack[stage];
+  const paragraphs = copy.paragraphs(firstName, brand);
+
+  const text = [...paragraphs, '', url, '', `${pack.unsubscribe}: ${unsubscribe}`, '', brand].join('\n');
 
   return {
-    subject: copy.subject(firstName),
+    subject: copy.subject(firstName, brand),
     text,
     html: renderEmail({
       preheader: copy.preheader,
@@ -113,7 +93,7 @@ export function renderReminder(
       action: { label: copy.actionLabel, url },
       origin,
       unsubscribe: { label: pack.unsubscribe, url: unsubscribe },
+      brand: emailBrand(settings),
     }),
   };
 }
-

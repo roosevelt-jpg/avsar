@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server';
 import { searchSchema } from '@/lib/validation';
 import { searchTalent } from '@/lib/talent-search';
-import { getSessionStaff } from '@/lib/auth';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
-
+import { getSessionEmployer, getSessionStaff } from '@/lib/auth';
 export const runtime = 'nodejs';
 
 /** Server-side talent search, for the employer portal and any future API client. */
@@ -21,8 +19,14 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'invalid_query', issues: parsed.error.flatten() }, { status: 400 });
   }
 
-  /* Full names for staff only; everyone else gets the shortened form unless released. */
-  const isStaff = isSupabaseConfigured() ? Boolean(await getSessionStaff()) : true;
+  /* Staff and vetted employers only. Row security would already return nothing
+     to anyone else; this says so plainly instead of answering with an empty list. */
+  const isStaff = Boolean(await getSessionStaff());
+  if (!isStaff && !(await getSessionEmployer())) {
+    return NextResponse.json({ error: 'unauthenticated' }, { status: 401 });
+  }
+
+  /* Full names for staff only; employers get the shortened form unless released. */
   const result = await searchTalent({
     query: parsed.data.query,
     sector: parsed.data.sector,

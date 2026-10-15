@@ -1,4 +1,5 @@
 import { getAdminSupabase } from '@/lib/supabase/admin';
+import { emailStaff, notifyStaff } from '@/lib/notifications/staff';
 import type { PaymentStatus } from './types';
 
 /**
@@ -38,10 +39,11 @@ export async function recordPayment(input: {
   */
   if (paid) update.paid_at = new Date().toISOString();
 
-  const { error } = await supabase
-    .from('payments')
-    .update(update)
-    .eq('provider_order_id', input.orderId);
+  /* A late "pending" or "failed" event for an order that has already been
+     paid must leave the paid status alone, not just the timestamp. */
+  let query = supabase.from('payments').update(update).eq('provider_order_id', input.orderId);
+  if (!paid) query = query.neq('status', 'paid');
+  const { error } = await query;
 
   if (error) console.error('[payments] row update failed', error);
 
@@ -59,10 +61,32 @@ export async function recordPayment(input: {
     return;
   }
 
-  const { error: unlockError } = await supabase
+  /* Filtered on "not yet paid" so only the first of the two callers gets a row
+     back, and staff hear about each payment once rather than twice. */
+  const { data: unlocked, error: unlockError } = await supabase
     .from('candidates')
     .update({ payment_status: 'paid' })
-    .eq('id', payment.candidate_id);
+    .eq('id', payment.candidate_id)
+    .neq('payment_status', 'paid')
+    .select('id, full_name');
 
   if (unlockError) console.error('[payments] candidate unlock failed', unlockError);
+
+  const first = unlocked?.[0];
+  if (first) {
+    const name = String(first.full_name ?? 'A candidate');
+    await notifyStaff({
+      permission: 'relocation.manage',
+      kind: 'payment.received',
+      title: `Package bought: ${name}`,
+      body: 'A preliminary legal review is now owed.',
+      href: '/admin/legal-reviews',
+    });
+    await emailStaff({
+      subject: `Payment received: ${name}`,
+      line: `${name} bought the Professional Assessment and Career Preparation Package. Their preliminary legal review is now owed.`,
+      href: '/admin/legal-reviews',
+      actionLabel: 'Open legal reviews',
+    });
+  }
 }

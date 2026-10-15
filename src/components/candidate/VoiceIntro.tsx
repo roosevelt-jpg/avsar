@@ -154,7 +154,7 @@ export function VoiceIntro({
 
   const button =
     't-colors cursor-pointer rounded-[10px] border-0 px-4 py-2.5 text-[14px] font-medium disabled:opacity-40';
-  const primary = `${button} bg-ink text-white hover:bg-accent`;
+  const primary = `${button} bg-ink text-paper hover:bg-ink-hover`;
   const quiet = `${button} border border-line-strong bg-surface text-ink hover:border-ink`;
 
   return (

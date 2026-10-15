@@ -1,20 +1,17 @@
 import { getServerSupabase } from '@/lib/supabase/server';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
-import { SAMPLE_JOBS } from '@/lib/jobs/sample';
 import { jobFromRow, type Job } from '@/lib/jobs/types';
 
 /** Ids of the jobs this candidate saved. Read through the session client, so RLS scopes it. */
 export async function savedJobIds(candidateId: string | null): Promise<Set<string>> {
-  if (!candidateId || !isSupabaseConfigured()) return new Set();
+  if (!candidateId) return new Set();
   const supabase = await getServerSupabase();
   if (!supabase) return new Set();
   const { data } = await supabase.from('saved_jobs').select('job_id').eq('candidate_id', candidateId);
   return new Set((data ?? []).map((row) => String(row.job_id)));
 }
 
-/** Saved jobs that are still published, newest save first. Demo mode shows one sample. */
+/** Saved jobs that are still published, newest save first. */
 export async function listSavedJobs(candidateId: string | null): Promise<Job[]> {
-  if (!isSupabaseConfigured()) return SAMPLE_JOBS.slice(2, 3);
   if (!candidateId) return [];
   const supabase = await getServerSupabase();
   if (!supabase) return [];

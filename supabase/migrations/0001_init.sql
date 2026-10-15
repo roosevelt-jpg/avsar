@@ -420,8 +420,8 @@ begin
 end;
 $$;
 
-alter table shortlist_entries alter column employer_id drop not null;
-
+-- employer_id stays not null: it is part of the primary key, and before-insert
+-- triggers run ahead of the not-null check, so the trigger fills it in time.
 create trigger shortlist_set_employer
   before insert on shortlist_entries
   for each row execute function set_shortlist_employer();

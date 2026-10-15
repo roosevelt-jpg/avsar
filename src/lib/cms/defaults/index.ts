@@ -7,6 +7,7 @@ import { FAQ } from './faq';
 import { STAY_SAFE } from './stay-safe';
 import { ABOUT } from './about';
 import { JOBS_INTRO } from './jobs';
+import { LEGAL_PAGES } from './legal';
 
 /**
  * Every CMS page, with the content it ships with.
@@ -21,7 +22,7 @@ import { JOBS_INTRO } from './jobs';
 export type { DefaultPage } from './make';
 export { makeBlocks } from './make';
 
-export const DEFAULT_PAGES: DefaultPage[] = [HOME, JOBS_INTRO, HOW_IT_WORKS, WHY_PORTUGAL, VISA, FAQ, STAY_SAFE, ABOUT];
+export const DEFAULT_PAGES: DefaultPage[] = [HOME, JOBS_INTRO, HOW_IT_WORKS, WHY_PORTUGAL, VISA, FAQ, STAY_SAFE, ABOUT, ...LEGAL_PAGES];
 
 export function defaultPage(slug: string): DefaultPage | undefined {
   return DEFAULT_PAGES.find((page) => page.slug === slug);

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { signupSchema } from '@/lib/validation';
-import { CONSENT_VERSION } from '@/lib/data/brand';
+import { getSiteSettings } from '@/lib/cms/data';
 import { itemSectorFor } from '@/lib/data/positions';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { getSessionCandidate } from '@/lib/auth';
@@ -56,6 +56,7 @@ export async function POST(request: Request) {
   const candidateId: string = candidate.id;
 
   if (supabase) {
+    const CONSENT_VERSION = (await getSiteSettings()).hiring.consentVersion;
     const { error } = await supabase
       .from('candidates')
       .update({
@@ -66,7 +67,7 @@ export async function POST(request: Request) {
            browser must not be able to pick which questions it gets. */
         sector: itemSectorFor(input.position),
         years_experience_band: input.yearsExperience,
-        english_self_rating: input.englishSelf,
+        english_self_rating: input.englishSelf ?? null,
         city_state: input.cityState,
         profile_completed_at: new Date().toISOString(),
         /* Stored, not just validated: this is the odds-disclosure consent, and

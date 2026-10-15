@@ -93,7 +93,7 @@ export function MediaLibrary({ items, canManage }: { items: Item[]; canManage: b
                 ) : (
                   <span className="grid size-full place-items-center font-mono text-[12px] text-muted">PDF</span>
                 )}
-                {builtIn && <span className="absolute start-2 top-2 rounded-full bg-white/90 px-2 py-0.5 font-mono text-[10px]">built in</span>}
+                {builtIn && <span className="absolute start-2 top-2 rounded-full bg-surface/90 px-2 py-0.5 font-mono text-[10px]">built in</span>}
               </div>
               <div className="flex flex-col gap-2 p-3">
                 <p className="m-0 truncate text-[13px] font-medium" title={item.fileName}>{item.fileName}</p>

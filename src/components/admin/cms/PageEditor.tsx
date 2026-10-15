@@ -5,9 +5,11 @@ import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { BLOCKS, BLOCK_TYPES, emptyBlock, type Block, type BlockType } from '@/lib/cms/blocks';
 import { TOKEN_HELP } from '@/lib/cms/tokens';
+import type { PageSeo } from '@/lib/cms/sanitize';
+import { MediaField } from '../MediaPicker';
 import { FieldInput } from './FieldInput';
 
-type Seo = { title: string; description: string; ogImage: string; noindex: boolean };
+type Seo = PageSeo;
 type Version = { id: number; kind: string; note: string | null; createdAt: string; createdBy: string | null };
 
 const INPUT = 'w-full rounded-[10px] border border-line bg-surface px-3 py-2 text-[14px] outline-none focus:border-ink';
@@ -80,7 +82,7 @@ export function PageEditor(props: {
       const data = (await response.json().catch(() => null)) as { error?: string; message?: string } | null;
       if (!response.ok) {
         const reasons: Record<string, string> = {
-          demo_mode: 'Demo mode: Supabase is not configured, so nothing can be saved.',
+          not_configured: 'The database is not connected, so nothing was saved.',
           forbidden: 'Your role does not allow this action.',
         };
         setMessage({ tone: 'error', text: reasons[data?.error ?? ''] ?? data?.message ?? 'That did not work. Try again.' });
@@ -214,7 +216,7 @@ export function PageEditor(props: {
               </button>
             )}
             {props.canPublish && (
-              <button type="button" disabled={Boolean(busy)} onClick={() => call('publish')} className="cursor-pointer rounded-full border-0 bg-ink px-4 py-2.5 text-[14px] font-medium text-paper hover:bg-employer-deep disabled:opacity-60">
+              <button type="button" disabled={Boolean(busy)} onClick={() => call('publish')} className="cursor-pointer rounded-full border-0 bg-ink px-4 py-2.5 text-[14px] font-medium text-paper hover:bg-ink-hover disabled:opacity-60">
                 {busy === 'publish' ? 'Publishing…' : 'Save and publish'}
               </button>
             )}
@@ -239,9 +241,16 @@ export function PageEditor(props: {
               <textarea className={INPUT} rows={3} value={seo.description} maxLength={200} onChange={(e) => setSeo({ ...seo, description: e.target.value })} />
             </label>
             <label className="flex flex-col gap-1">
-              <span className="text-[13px] text-ink-2">Share image URL</span>
-              <input className={INPUT} value={seo.ogImage} onChange={(e) => setSeo({ ...seo, ogImage: e.target.value })} placeholder="Defaults to the site share image" />
+              <span className="text-[13px] text-ink-2">Share title ({seo.ogTitle.length}/90)</span>
+              <input className={INPUT} value={seo.ogTitle} maxLength={90} placeholder="Defaults to the search title" onChange={(e) => setSeo({ ...seo, ogTitle: e.target.value })} />
+              <span className="text-[12px] text-muted">What WhatsApp, Facebook and LinkedIn show when the page is shared.</span>
             </label>
+            <label className="flex flex-col gap-1">
+              <span className="text-[13px] text-ink-2">Share description ({seo.ogDescription.length}/200)</span>
+              <textarea className={INPUT} rows={2} value={seo.ogDescription} maxLength={200} placeholder="Defaults to the search description" onChange={(e) => setSeo({ ...seo, ogDescription: e.target.value })} />
+            </label>
+            <MediaField label="Share image (1200 × 630)" accept="image" value={seo.ogImage} onChange={(value) => setSeo({ ...seo, ogImage: typeof value === 'string' ? value : '' })} />
+            <span className="-mt-2 text-[12px] text-muted">Empty uses the site share image from Settings › Search &amp; sharing.</span>
             <label className="flex items-center gap-2 text-[13px]">
               <input type="checkbox" checked={seo.noindex} onChange={(e) => setSeo({ ...seo, noindex: e.target.checked })} />
               Hide from search engines

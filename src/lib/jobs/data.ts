@@ -1,7 +1,5 @@
 import { getAnonSupabase } from '@/lib/supabase/anon';
 import { getAdminSupabase } from '@/lib/supabase/admin';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
-import { SAMPLE_JOBS } from './sample';
 import { jobFromRow, type Job, type JobStatus } from './types';
 
 /**
@@ -26,23 +24,9 @@ export type JobPage = { jobs: Job[]; total: number; page: number; pageSize: numb
 
 const LIST_COLUMNS = '*';
 
-function matchesSample(job: Job, filters: JobFilters): boolean {
-  const q = filters.q?.trim().toLowerCase();
-  if (q && !`${job.title} ${job.city} ${job.summary} ${job.employerDisplay}`.toLowerCase().includes(q)) return false;
-  if (filters.area && job.area !== filters.area) return false;
-  if (filters.city && job.city.toLowerCase() !== filters.city.toLowerCase()) return false;
-  if (filters.position && job.positionSlug !== filters.position) return false;
-  return true;
-}
-
 export async function listPublishedJobs(filters: JobFilters = {}): Promise<JobPage> {
   const page = Math.max(1, filters.page ?? 1);
   const pageSize = Math.min(50, Math.max(1, filters.pageSize ?? 12));
-
-  if (!isSupabaseConfigured()) {
-    const all = SAMPLE_JOBS.filter((job) => matchesSample(job, filters));
-    return { jobs: all.slice((page - 1) * pageSize, page * pageSize), total: all.length, page, pageSize };
-  }
 
   const supabase = getAnonSupabase();
   if (!supabase) return { jobs: [], total: 0, page, pageSize };
@@ -78,7 +62,6 @@ export async function listPublishedJobs(filters: JobFilters = {}): Promise<JobPa
  * search engines exactly when there are most of them.
  */
 export async function listPublishedJobSlugs(): Promise<{ slug: string; updatedAt: string }[]> {
-  if (!isSupabaseConfigured()) return SAMPLE_JOBS.map((job) => ({ slug: job.slug, updatedAt: job.updatedAt }));
   const supabase = getAnonSupabase();
   if (!supabase) return [];
 
@@ -102,7 +85,6 @@ export async function listPublishedJobSlugs(): Promise<{ slug: string; updatedAt
 }
 
 export async function getPublishedJob(slug: string): Promise<Job | null> {
-  if (!isSupabaseConfigured()) return SAMPLE_JOBS.find((job) => job.slug === slug) ?? null;
   const supabase = getAnonSupabase();
   const { data, error } = (await supabase?.from('job_postings').select('*').eq('slug', slug).maybeSingle()) ?? {
     data: null,
@@ -134,7 +116,6 @@ export async function recommendedJobs(position: string | null, excludeIds: strin
 
 /** Distinct cities with an open posting, for the filter. */
 export async function openCities(): Promise<string[]> {
-  if (!isSupabaseConfigured()) return [...new Set(SAMPLE_JOBS.map((job) => job.city))].sort();
   const supabase = getAnonSupabase();
   const { data } = (await supabase?.from('job_postings').select('city').eq('status', 'published').limit(500)) ?? {
     data: null,
@@ -153,16 +134,6 @@ export type AdminJobRow = Job & {
 /** `requests` lists postings that began as an employer's vacancy request, in any status. */
 export async function listAllJobs(status?: JobStatus | 'all' | 'requests'): Promise<AdminJobRow[]> {
   const empty = { total: 0, submitted: 0, inProgress: 0, offers: 0 };
-  if (!isSupabaseConfigured()) {
-    /* The first sample stands in for a request, so the label and the filter
-       can be seen without a database. */
-    const rows = SAMPLE_JOBS.map((job, index) => ({
-      ...job,
-      pipeline: { ...empty, total: 12 - index * 2, submitted: 4 - (index % 3) },
-      requestedAt: index === 0 ? '2026-09-22T10:40:00.000Z' : null,
-    }));
-    return status === 'requests' ? rows.filter((row) => row.requestedAt) : rows;
-  }
   const admin = getAdminSupabase();
   if (!admin) return [];
 
@@ -198,7 +169,6 @@ export async function listAllJobs(status?: JobStatus | 'all' | 'requests'): Prom
 }
 
 export async function getJobById(id: string): Promise<Job | null> {
-  if (!isSupabaseConfigured()) return SAMPLE_JOBS.find((job) => job.id === id) ?? null;
   const admin = getAdminSupabase();
   const { data } = (await admin?.from('job_postings').select('*').eq('id', id).maybeSingle()) ?? { data: null };
   return data ? jobFromRow(data as Record<string, unknown>) : null;

@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { audit } from '@/lib/audit';
-import { ENTITY } from '@/lib/data/brand';
 import { getMailer } from '@/lib/email';
-import { renderEmail } from '@/lib/email/template';
-import { apiPermission, demoWriteRefusal } from '@/lib/rbac/server';
+import { composeEmail } from '@/lib/email/compose';
+import { apiPermission } from '@/lib/rbac/server';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { isWhatsAppConfigured, sendWhatsAppToNumber } from '@/lib/whatsapp';
 
@@ -30,8 +29,6 @@ const schema = z
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const guard = await apiPermission('leads.manage');
   if (guard instanceof NextResponse) return guard;
-  const refusal = demoWriteRefusal(guard);
-  if (refusal) return refusal;
 
   const { id } = await params;
   const parsed = schema.safeParse(await request.json().catch(() => null));
@@ -52,19 +49,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
   if (kind === 'email') {
     if (!lead.email) return NextResponse.json({ error: 'no_email' }, { status: 409 });
-    const paragraphs = [`Hello ${firstName},`, ...body.split(/\n{2,}/).map((p) => p.trim()).filter(Boolean)];
-    const result = await getMailer().send({
-      to: String(lead.email),
-      subject: 'Your message to us',
-      text: `${paragraphs.join('\n\n')}\n\nYou can reply to this email.\n${ENTITY.supportEmail}`,
-      html: renderEmail({
-        preheader: body.slice(0, 90),
-        heading: 'About your message',
-        paragraphs,
-        closing: ['You can reply to this email; it reaches the same team.'],
-        origin: new URL(request.url).origin,
-      }),
-    });
+    const email = await composeEmail('lead_reply', { first_name: firstName, message: body }, { origin: new URL(request.url).origin });
+    const result = await getMailer().send({ to: String(lead.email), ...email });
     if (!result.sent) return NextResponse.json({ error: 'send_failed' }, { status: 502 });
   }
 

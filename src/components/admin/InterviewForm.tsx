@@ -54,7 +54,7 @@ export function InterviewForm({ applicationId }: { applicationId: string }) {
       return;
     }
     const messages: Record<string, string> = {
-      demo_mode: 'Demo mode: nothing is saved.',
+      not_configured: 'The database is not connected, so nothing was saved.',
       in_the_past: 'That time has already passed.',
       invalid_payload: 'Check the time, and that the link starts with https://.',
       forbidden: 'Your role cannot book interviews.',

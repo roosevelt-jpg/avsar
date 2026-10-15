@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import { privateMetadata } from '@/lib/seo';
 import { DashboardNav } from '@/components/candidate/DashboardNav';
 import { DocumentVault } from '@/components/relocation/DocumentVault';
 import { FamilyLinks } from '@/components/relocation/FamilyLinks';
@@ -6,12 +7,11 @@ import { MilestoneList } from '@/components/relocation/MilestoneList';
 import { StoryForm } from '@/components/relocation/StoryForm';
 import { requireCandidate } from '@/lib/auth';
 import { isLocale, localePath } from '@/lib/i18n';
-import { getCandidateRelocation, SAMPLE_RELOCATION } from '@/lib/relocation/data';
+import { getCandidateRelocation } from '@/lib/relocation/data';
 import { computeReadiness, DOCUMENT_LABELS } from '@/lib/relocation/documents';
 import { MILESTONE_TEMPLATE, progress } from '@/lib/relocation/milestones';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
 
-export const metadata = { title: 'Your move', robots: { index: false } };
+export const metadata = privateMetadata('Your move');
 
 /**
  * Everything between "you have the job" and "you are at work in Portugal",
@@ -26,10 +26,8 @@ export default async function RelocationPage({ params }: { params: Promise<{ loc
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
 
-  const demo = !isSupabaseConfigured();
-  const data = demo
-    ? SAMPLE_RELOCATION
-    : await getCandidateRelocation((await requireCandidate(locale, localePath(locale, '/dashboard/relocation'))).id);
+  const candidate = await requireCandidate(locale, localePath(locale, '/dashboard/relocation'));
+  const data = await getCandidateRelocation(candidate.id);
 
   const readiness = computeReadiness(data.documents);
   const steps = data.plan ? progress(data.plan.milestones) : null;
@@ -76,13 +74,13 @@ export default async function RelocationPage({ params }: { params: Promise<{ loc
                 Expiring soon: {readiness.expiringSoon.map((k) => DOCUMENT_LABELS[k].toLowerCase()).join(', ')}. Upload a new one before it runs out.
               </p>
             )}
-            <DocumentVault documents={data.documents} demo={demo} />
+            <DocumentVault documents={data.documents} />
           </section>
 
           {data.plan ? (
             <section aria-labelledby="steps">
               <h2 id="steps" className="m-0 text-[22px] font-semibold tracking-[-0.02em]">Your steps</h2>
-              <MilestoneList milestones={data.plan.milestones} demo={demo} />
+              <MilestoneList milestones={data.plan.milestones} />
             </section>
           ) : (
             <section aria-labelledby="path">
@@ -110,8 +108,8 @@ export default async function RelocationPage({ params }: { params: Promise<{ loc
             </section>
           )}
 
-          {data.plan && <FamilyLinks links={data.familyLinks} demo={demo} />}
-          {data.placed && <StoryForm story={data.story} demo={demo} />}
+          {data.plan && <FamilyLinks links={data.familyLinks} />}
+          {data.placed && <StoryForm story={data.story} />}
         </div>
       </main>
     </>

@@ -60,7 +60,7 @@ export function SearchControls({
         <button
           type="submit"
           disabled={pending}
-          className="t-colors cursor-pointer rounded-[12px] border-0 bg-employer px-5 py-3 text-[15px] font-medium text-white hover:bg-employer-deep disabled:opacity-60"
+          className="t-colors cursor-pointer rounded-[12px] border-0 bg-ink px-5 py-3 text-[15px] font-medium text-paper hover:bg-ink-hover disabled:opacity-60"
         >
           Search
         </button>
@@ -100,9 +100,9 @@ function Chip({ label, active, onClick }: { label: string; active: boolean; onCl
       onClick={onClick}
       className="t-colors cursor-pointer rounded-full border px-3.5 py-2 text-[13px]"
       style={{
-        borderColor: active ? 'oklch(0.56 0.14 250)' : '#d9d4c8',
-        background: active ? 'oklch(0.56 0.14 250)' : '#fff',
-        color: active ? '#fff' : '#1b1a17',
+        borderColor: active ? 'var(--color-ink)' : 'var(--color-line-strong)',
+        background: active ? 'var(--color-ink)' : 'var(--color-surface)',
+        color: active ? 'var(--color-paper)' : 'var(--color-ink)',
       }}
     >
       {label}

@@ -14,8 +14,8 @@ export const metadata = { title: 'Ready to travel' };
  * lapses after three days.
  */
 export default async function EmployerBench() {
-  const portal = await requireEmployerPortal('/admin/bench', '/admin/relocation');
-  const bench = await listBench(portal);
+  await requireEmployerPortal('/admin/bench', '/admin/relocation');
+  const bench = await listBench();
 
   return (
     <AdminShell current="/admin/bench" isStaff={false} suffix="employer">
@@ -54,11 +54,7 @@ export default async function EmployerBench() {
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    {portal.demo ? (
-                      <span className="text-[13px] text-muted">{c.heldByMe ? 'Held by you' : 'Preview'}</span>
-                    ) : (
-                      <BenchHold candidateId={c.candidateId} heldByMe={c.heldByMe} heldByOther={Boolean(c.heldUntil) && !c.heldByMe} />
-                    )}
+                    <BenchHold candidateId={c.candidateId} heldByMe={c.heldByMe} heldByOther={Boolean(c.heldUntil) && !c.heldByMe} />
                     {c.heldByMe && c.heldUntil && (
                       <Mono className="mt-1 block text-[11px] text-muted">until {new Date(c.heldUntil).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })}</Mono>
                     )}

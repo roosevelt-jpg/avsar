@@ -17,7 +17,7 @@ const day = (iso: string) => new Date(iso).toLocaleDateString('en-GB', { dateSty
  * oldest first, because the oldest is the one a candidate is waiting on.
  */
 export default async function AdminRelocation() {
-  const access = await requirePermission('relocation.manage', '/admin/relocation');
+  await requirePermission('relocation.manage', '/admin/relocation');
   const queue = await relocationQueue();
 
   return (
@@ -39,11 +39,9 @@ export default async function AdminRelocation() {
                   <span className="font-medium">{doc.candidateName}</span>
                   <Pill tone="neutral">{DOCUMENT_LABELS[doc.kind]}</Pill>
                   <Mono className="text-muted">{day(doc.createdAt)}</Mono>
-                  {!access.demo && (
-                    <a href={`/api/admin/relocation/documents/${doc.id}`} target="_blank" rel="noreferrer" className="ms-auto text-[14px]">
-                      Open {doc.fileName}
-                    </a>
-                  )}
+                  <a href={`/api/admin/relocation/documents/${doc.id}`} target="_blank" rel="noreferrer" className="ms-auto text-[14px]">
+                    Open {doc.fileName}
+                  </a>
                 </div>
                 <DocumentReview id={doc.id} kind={doc.kind} />
               </li>

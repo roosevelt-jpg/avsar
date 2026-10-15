@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { SiteHeader } from '@/components/candidate/SiteHeader';
-import { SiteFooter } from '@/components/candidate/SiteFooter';
 import { BlockRenderer } from '@/components/cms/BlockRenderer';
 import { cmsMetadata } from '@/components/cms/CmsPageView';
 import { JobCard } from '@/components/jobs/JobCard';
@@ -106,7 +105,7 @@ export default async function JobsPage({
                   <option key={city} value={city}>{city}</option>
                 ))}
               </select>
-              <button type="submit" className="t-colors cursor-pointer rounded-[14px] border-0 bg-ink px-6 py-3 text-[16px] font-medium text-paper hover:bg-accent">
+              <button type="submit" className="t-colors cursor-pointer rounded-[14px] border-0 bg-ink px-6 py-3 text-[16px] font-medium text-paper hover:bg-ink-hover">
                 {siteText(locale, 'Search')}
               </button>
             </form>
@@ -129,7 +128,7 @@ export default async function JobsPage({
                 <p className="m-0 mt-2 text-[15px] text-ink-2">{siteText(locale, 'Try another role or city, or create your profile and we will tell you when one opens.')}</p>
                 <div className="mt-6 flex flex-wrap justify-center gap-3">
                   <Link href={localePath(locale, '/jobs')} className="rounded-full border border-line-strong bg-paper px-5 py-2.5 text-[15px] text-ink no-underline">{siteText(locale, 'See all jobs')}</Link>
-                  <Link href={localePath(locale, '/signup')} className="rounded-full bg-accent px-5 py-2.5 text-[15px] text-white no-underline">{siteText(locale, 'Create my profile')}</Link>
+                  <Link href={localePath(locale, '/signup')} className="rounded-full bg-ink px-5 py-2.5 text-[15px] text-paper no-underline">{siteText(locale, 'Create my profile')}</Link>
                 </div>
               </div>
             ) : (
@@ -160,7 +159,6 @@ export default async function JobsPage({
 
         <BlockRenderer blocks={after} locale={locale} settings={settings} />
       </main>
-      <SiteFooter locale={locale} />
     </>
   );
 }

@@ -1,5 +1,34 @@
 # Payments
 
+## 15 October 2026: owner's choice, Network International on the UAE company
+
+The owner questionnaire names Magnati and Network International as the
+acquirers, with the merchant account held by the UAE company and payouts in
+AED. Network International is built as `src/lib/payments/ngenius.ts`:
+
+```
+PAYMENT_PROVIDER=ngenius
+NEXT_PUBLIC_CHARGE_CURRENCY=AED
+NGENIUS_API_KEY=...          # from the N-Genius portal, already base64
+NGENIUS_OUTLET_REF=...
+NGENIUS_ENV=production       # sandbox until then
+NGENIUS_WEBHOOK_HEADER=x-webhook-secret
+NGENIUS_WEBHOOK_SECRET=...   # the same header and value set on the webhook in the portal
+```
+
+- Hosted payment page (redirect). The return lands on `/api/payments/return?ref=...`
+  and the order is read back from the API; the browser's `ref` is only a question.
+- Webhook URL: `https://<domain>/api/payments/webhook`. The custom header is checked,
+  then the order is fetched from the API, so a forged body cannot mark anything paid.
+- Price: `ASSESSMENT_FEE.aed` (AED 105, about ₹2,400). Confirm with finance.
+- **Cards only. No UPI.** An Indian card pays this as an international transaction,
+  and many Indian debit cards have that switched off. The unlock box says so. If
+  conversion suffers, keep EximPe or Cashfree as the UPI rail for India.
+- **Licence check.** The UAE legal name on the questionnaire is SMTADM REAL ESTATE.
+  An acquirer reviews whether the licensed activity covers what is sold (an online
+  assessment and career-preparation package). Cashfree stalled on exactly this.
+- Magnati has no adapter yet: no API documentation or credentials were supplied.
+
 ## October 2026: UAE company, UPI, one setting
 
 The recruitment company is in the UAE and candidates pay from India. The
@@ -10,14 +39,14 @@ PAYMENT_PROVIDER=eximpe
 NEXT_PUBLIC_CHARGE_CURRENCY=INR
 ```
 
-The fee is then charged in rupees (`ASSESSMENT_FEE.inr`, ₹2,400) by UPI, RuPay
-or Indian net banking, and settles to the UAE company under EximPe's RBI PA-CB
-import authorisation. `NEXT_PUBLIC_CHARGE_CURRENCY` is public so the server and
-the browser format the same price; checkout refuses to start if it does not
-match what the rail can charge (`RAIL_CURRENCIES` in `src/lib/data/cohort.ts`).
-Leaving it unset keeps the previous behaviour, euros on Viva.
+The fee is then charged in rupees by UPI, RuPay or Indian net banking, and
+settles to the UAE company under EximPe's RBI PA-CB import authorisation. The
+charge currency, the fee in each currency and VAT are set in Settings › Company
+& pricing; checkout refuses to start (`payment_misconfigured`) if the currency
+does not match what the rail can charge (`RAIL_CURRENCIES` in
+`src/lib/company/config.ts`) or the fee is zero.
 
-When the seller changes, `ENTITY` in `src/lib/data/brand.ts` changes with it.
+When the seller changes, update it in Settings › Company & pricing.
 See `docs/v2-platform.md`, "Before launch".
 
 ---

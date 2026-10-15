@@ -4,7 +4,9 @@ import { applyTokensDeep, tokenValues } from '@/lib/cms/tokens';
 import type { Locale } from '@/lib/i18n';
 import { HeroBlock } from './blocks/Hero';
 import {
+  ContactFormBlock,
   CtaBlock,
+  DocumentBlock,
   FeaturesBlock,
   NoticeBlock,
   RichTextBlock,
@@ -14,6 +16,7 @@ import {
   TrustBarBlock,
 } from './blocks/Content';
 import { FeaturedJobsBlock, JobCategoriesBlock } from './blocks/Jobs';
+import { LiveFunnelBlock } from './blocks/LiveFunnel';
 import { CandidateStoriesBlock, GalleryBlock, TestimonialsBlock, VideoBlock } from './blocks/Media';
 import { ContactCardsBlock, FaqBlock } from './blocks/Faq';
 
@@ -41,6 +44,8 @@ export function BlockRenderer({ blocks, locale, settings }: { blocks: Block[]; l
             return <TrustBarBlock key={block.id} {...props} />;
           case 'stats':
             return <StatsBlock key={block.id} {...props} />;
+          case 'live_funnel':
+            return <LiveFunnelBlock key={block.id} {...props} />;
           case 'steps':
             return <StepsBlock key={block.id} {...props} />;
           case 'features':
@@ -67,6 +72,10 @@ export function BlockRenderer({ blocks, locale, settings }: { blocks: Block[]; l
             return <RichTextBlock key={block.id} {...props} />;
           case 'notice':
             return <NoticeBlock key={block.id} {...props} />;
+          case 'document':
+            return <DocumentBlock key={block.id} {...props} />;
+          case 'contact_form':
+            return <ContactFormBlock key={block.id} {...props} />;
           case 'contact_cards':
             return <ContactCardsBlock key={block.id} {...props} settings={settings} />;
           default:

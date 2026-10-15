@@ -22,23 +22,12 @@ export type StaffAccess = {
   email: string;
   role: string;
   permissions: ReadonlySet<string>;
-  /** True only when Supabase is not configured and the console is a demo. */
-  demo: boolean;
   /**
    * Two-factor sign-in is enforced and this session has not passed it yet.
    * Such a session can reach `/admin/security` to set up or enter a code,
    * and nothing else.
    */
   needsSecondFactor: boolean;
-};
-
-const DEMO_ACCESS: StaffAccess = {
-  userId: '00000000-0000-0000-0000-000000000000',
-  email: 'demo@localhost',
-  role: 'super_admin',
-  permissions: new Set(['*']),
-  demo: true,
-  needsSecondFactor: false,
 };
 
 /**
@@ -53,9 +42,8 @@ export function staffMfaRequired(): boolean {
 }
 
 export async function getStaffAccess(): Promise<StaffAccess | null> {
-  /* A bare checkout with no database: the console is browsable with sample
-     data, and every write route answers 503 because there is nowhere to write. */
-  if (!isSupabaseConfigured()) return DEMO_ACCESS;
+  /* With no database there is no session to check, so nobody is staff. */
+  if (!isSupabaseConfigured()) return null;
 
   const staff = await getSessionStaff();
   if (!staff) return null;
@@ -74,7 +62,7 @@ export async function getStaffAccess(): Promise<StaffAccess | null> {
     needsSecondFactor = level?.currentLevel !== 'aal2';
   }
 
-  return { userId: staff.userId, email: staff.email, role: staff.role, permissions, demo: false, needsSecondFactor };
+  return { userId: staff.userId, email: staff.email, role: staff.role, permissions, needsSecondFactor };
 }
 
 export function can(access: StaffAccess | null, permission: Permission): boolean {
@@ -136,11 +124,4 @@ export async function apiStaff(): Promise<StaffAccess | NextResponse> {
   const access = await getStaffAccess();
   if (!access) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   return access.needsSecondFactor ? SECOND_FACTOR_NEEDED() : access;
-}
-
-/** Writes need a database. In demo mode, answer clearly instead of pretending to save. */
-export function demoWriteRefusal(access: StaffAccess): NextResponse | null {
-  return access.demo
-    ? NextResponse.json({ error: 'demo_mode', message: 'Supabase is not configured, so nothing can be saved.' }, { status: 503 })
-    : null;
 }

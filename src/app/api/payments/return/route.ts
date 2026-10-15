@@ -1,3 +1,4 @@
+import { refreshIntegrations } from '@/lib/integrations/runtime';
 import { NextResponse } from 'next/server';
 import { getPaymentProvider } from '@/lib/payments';
 import { recordPayment } from '@/lib/payments/record';
@@ -21,6 +22,7 @@ export const runtime = 'nodejs';
  * URL changes which transaction gets looked up and nothing else.
  */
 export async function GET(request: Request) {
+  await refreshIntegrations();
   const url = new URL(request.url);
   const requested = url.searchParams.get('locale') ?? '';
   const dashboard = localePath(isLocale(requested) ? requested : defaultLocale, '/dashboard');
@@ -32,6 +34,8 @@ export async function GET(request: Request) {
   */
   const transactionId =
     url.searchParams.get('t') ??
+    /* Network International appends the order reference as `ref`. */
+    url.searchParams.get('ref') ??
     url.searchParams.get('payment_id') ??
     url.searchParams.get('transaction_id');
 

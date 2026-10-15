@@ -4,10 +4,13 @@ import type { ReactNode } from 'react';
 import type { IconName } from '@/lib/cms/blocks';
 import { localHref } from '@/lib/cms/settings';
 import type { Locale } from '@/lib/i18n';
+import { youtubeId } from '@/lib/cms/video';
+import { VideoPlayer } from './VideoPlayer';
 
 /**
  * Shared pieces for CMS blocks: the section frame, headings, buttons, icons
- * and media. Server components; no client JavaScript.
+ * and media. Server components; the only client JavaScript is the film
+ * player, which a page loads only if it shows a film.
  */
 
 export function Section({
@@ -24,7 +27,7 @@ export function Section({
   const tones = {
     paper: 'bg-paper text-ink',
     surface: 'bg-surface text-ink',
-    ink: 'bg-ink text-paper',
+    ink: 'bg-night text-on-night',
     accent: 'bg-accent text-white',
   } as const;
   return (
@@ -69,11 +72,13 @@ export function SectionHeading({
 }
 
 const BUTTON = {
-  primary: 'bg-accent text-white hover:bg-accent-deep border-transparent',
-  dark: 'bg-ink text-paper hover:bg-[#2c2a26] border-transparent',
+  /* Every filled button is black with white text (inverted in dark mode).
+     "white" is the one exception, for dark bands, where black would vanish. */
+  primary: 'bg-ink text-paper hover:bg-ink-hover border-transparent',
+  dark: 'bg-ink text-paper hover:bg-ink-hover border-transparent',
   light: 'bg-surface text-ink border-line-strong hover:border-ink',
-  ghostDark: 'bg-transparent text-paper border-dark-line hover:border-paper',
-  white: 'bg-white text-ink border-transparent hover:bg-paper',
+  ghostDark: 'bg-transparent text-on-night border-dark-line hover:border-on-night',
+  white: 'bg-on-night text-night border-transparent hover:bg-white',
 } as const;
 
 export function CmsButton({
@@ -137,11 +142,11 @@ export function CmsImage({
   );
 }
 
-export function youtubeId(url: string): string | null {
-  const match = /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/.exec(url);
-  return match?.[1] ?? null;
-}
-
+/**
+ * An uploaded film or a YouTube link. YouTube always gets the click-to-load
+ * player, even as a hero background: a muted autoplaying YouTube frame would
+ * load its whole player before the visitor has read the headline.
+ */
 export function CmsVideo({
   src,
   poster,
@@ -151,26 +156,44 @@ export function CmsVideo({
   src: string;
   poster?: string;
   title: string;
-  /** Muted autoplay loop with no controls, for hero backgrounds. */
+  /** Muted autoplay loop with no controls, for hero backgrounds (uploaded films only). */
   ambient?: boolean;
 }) {
-  const yt = youtubeId(src);
-  if (yt) {
+  if (ambient && !youtubeId(src)) {
+    return <video src={src} poster={poster || undefined} autoPlay muted loop playsInline preload="metadata" aria-label={title} className="absolute inset-0 size-full object-cover" />;
+  }
+  return <VideoPlayer src={src} poster={poster} title={title} />;
+}
+
+/**
+ * A secondary action. Deliberately a link and not a second button: every
+ * section has one obvious thing to press, and the alternatives sit beside it
+ * quietly.
+ */
+export function CmsTextLink({ href, label, locale, dark = false }: { href: string; label: string; locale: Locale; dark?: boolean }) {
+  if (!href || !label) return null;
+  const resolved = localHref(locale, href);
+  const external = /^https?:/i.test(resolved);
+  const className = `t-colors inline-flex items-center gap-1.5 text-[15px] font-medium underline decoration-1 underline-offset-[5px] ${
+    dark ? 'text-on-night decoration-on-night/40 hover:decoration-on-night' : 'text-ink decoration-line-strong hover:text-accent hover:decoration-accent'
+  }`;
+  const content = (
+    <>
+      {label}
+      <span aria-hidden className="rtl:-scale-x-100">→</span>
+    </>
+  );
+  if (external || resolved.startsWith('mailto:') || resolved.startsWith('tel:')) {
     return (
-      <iframe
-        src={`https://www.youtube-nocookie.com/embed/${yt}${ambient ? `?autoplay=1&mute=1&loop=1&playlist=${yt}&controls=0` : ''}`}
-        title={title}
-        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-        loading="lazy"
-        className="absolute inset-0 size-full border-0"
-      />
+      <a href={resolved} className={className} target={external ? '_blank' : undefined} rel={external ? 'noopener noreferrer' : undefined}>
+        {content}
+      </a>
     );
   }
-  return ambient ? (
-    <video src={src} poster={poster || undefined} autoPlay muted loop playsInline preload="metadata" aria-label={title} className="absolute inset-0 size-full object-cover" />
-  ) : (
-    <video src={src} poster={poster || undefined} controls playsInline preload="metadata" aria-label={title} className="absolute inset-0 size-full bg-ink object-cover" />
+  return (
+    <Link href={resolved} className={className}>
+      {content}
+    </Link>
   );
 }
 

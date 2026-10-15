@@ -1,4 +1,5 @@
 import type { getAdminSupabase } from '@/lib/supabase/admin';
+import { BACKGROUND_COLUMNS } from '@/lib/candidate/background';
 
 type Admin = NonNullable<ReturnType<typeof getAdminSupabase>>;
 
@@ -27,7 +28,7 @@ export async function collectCandidateData(admin: Admin, candidateId: string): P
 
   const byCandidate = (table: string, columns = '*') => admin.from(table).select(columns).eq('candidate_id', candidateId);
 
-  const [profile, experiences, education, applications, saved, payments, report, attempts, cvs, cvAssessments, voice, pack, consents, messages, leads, documents, milestones, familyLinks, stories] =
+  const [profile, experiences, education, applications, saved, payments, report, attempts, cvs, cvAssessments, voice, pack, consents, messages, leads, documents, milestones, familyLinks, stories, legalReview, background] =
     await Promise.all([
       byCandidate('candidate_profiles'),
       byCandidate('candidate_experiences'),
@@ -48,6 +49,8 @@ export async function collectCandidateData(admin: Admin, candidateId: string): P
       byCandidate('relocation_milestones', 'key, status, due_on, blocker, done_at'),
       byCandidate('family_links', 'label, created_at, revoked_at, last_viewed_at, view_count'),
       byCandidate('success_stories', 'display_name, role_label, city_label, quote, status, published_at, created_at'),
+      byCandidate('legal_reviews', 'status, summary, requirements, missing_documents, issues, delivered_at'),
+      byCandidate('candidate_backgrounds', BACKGROUND_COLUMNS),
     ]);
 
   const applicationIds = ((applications.data ?? []) as unknown as { id: string }[]).map((a) => String(a.id));
@@ -93,5 +96,7 @@ export async function collectCandidateData(admin: Admin, candidateId: string): P
     relocationPlan: clean(milestones.data),
     familyLinks: clean(familyLinks.data),
     stories: clean(stories.data),
+    legalReview: clean(legalReview.data),
+    background: clean(background.data),
   };
 }

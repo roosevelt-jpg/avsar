@@ -43,7 +43,7 @@ export function RoleMatrix({ roles }: { roles: Role[] }) {
       });
       setMessage(`Saved ${role}. Staff with this role get the change on their next page load.`);
     } else {
-      setMessage(data?.error === 'demo_mode' ? 'Demo mode: nothing can be saved.' : 'Could not save.');
+      setMessage(data?.error === 'not_configured' ? 'The database is not connected, so nothing was saved.' : 'Could not save.');
     }
   }
 
@@ -54,7 +54,7 @@ export function RoleMatrix({ roles }: { roles: Role[] }) {
       setNewRole({ key: '', name: '', description: '' });
       router.refresh();
       window.location.reload();
-    } else setMessage(data?.error === 'role_exists' ? 'A role with that key exists.' : data?.error === 'demo_mode' ? 'Demo mode: nothing can be saved.' : 'Use a lower-case key like "regional_recruiter".');
+    } else setMessage(data?.error === 'role_exists' ? 'A role with that key exists.' : data?.error === 'not_configured' ? 'The database is not connected, so nothing was saved.' : 'Use a lower-case key like "regional_recruiter".');
   }
 
   async function remove(role: string) {

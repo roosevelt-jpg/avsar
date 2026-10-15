@@ -1,4 +1,14 @@
-import { BRAND, ENTITY } from '@/lib/data/brand';
+import {
+  DEFAULT_COHORT,
+  DEFAULT_COMPANY,
+  DEFAULT_HIRING,
+  DEFAULT_PRICING,
+  type CohortSettings,
+  type CompanySettings,
+  type HiringSettings,
+  type PricingSettings,
+} from '@/lib/company/config';
+import { DEFAULT_EMAILS, type EmailSettings } from '@/lib/email/templates';
 import { isLocale, localePath, type Locale } from '@/lib/i18n/path';
 
 /**
@@ -11,10 +21,9 @@ import { isLocale, localePath, type Locale } from '@/lib/i18n/path';
  *
  * NEVER put a secret in settings. The table is readable by anyone.
  *
- * The legal entity (the company that takes payment, its registration number and
- * registered address) is deliberately NOT here. It lives in src/lib/data/brand.ts
- * because it has to match the payment provider's merchant record exactly, and a
- * content editor should not be able to change it.
+ * The company, pricing, hiring and cohort sections hold the legal entity and
+ * the price, which have to match the payment provider's merchant record, so
+ * the API lets only `company.manage` (super admins) change them.
  */
 
 export type NavItem = {
@@ -26,6 +35,20 @@ export type NavItem = {
   labels?: Partial<Record<Locale, string>>;
   href: string;
 };
+
+/**
+ * Pages built in code rather than from blocks, so their search and share text
+ * is edited here. CMS pages have the same fields in the page editor.
+ */
+export const STATIC_SEO_PAGES = [
+  { key: 'employers', label: 'Employers', path: '/employers' },
+  { key: 'pricing', label: 'Pricing', path: '/pricing' },
+  { key: 'signup', label: 'Register', path: '/signup' },
+  { key: 'signin', label: 'Sign in', path: '/signin' },
+  { key: 'assessment', label: 'Assessment', path: '/assessment' },
+] as const;
+export type StaticSeoPage = (typeof STATIC_SEO_PAGES)[number]['key'];
+export type PageSeoSettings = { title: string; description: string; ogTitle: string; ogImage: string };
 
 export type SiteSettings = {
   general: {
@@ -46,23 +69,38 @@ export type SiteSettings = {
     requirePaidAssessment: boolean;
     /** Show the one-step "create account and apply" form on job pages. */
     allowQuickApply: boolean;
+    /**
+     * The explainer film offered beside the apply form and on the sign-up
+     * page, where people decide. A YouTube link or an uploaded film; empty
+     * hides the button.
+     */
+    filmUrl: string;
+    filmLabel: string;
   };
-  seo: { defaultTitle: string; defaultDescription: string; ogImage: string };
+  seo: { defaultTitle: string; defaultDescription: string; ogImage: string; pages: Record<StaticSeoPage, PageSeoSettings> };
+  company: CompanySettings;
+  pricing: PricingSettings;
+  hiring: HiringSettings;
+  cohort: CohortSettings;
+  emails: EmailSettings;
 };
 
-export const SETTINGS_KEYS = ['general', 'announcement', 'navigation', 'footer', 'applications', 'seo'] as const;
+export const SETTINGS_KEYS = ['general', 'announcement', 'navigation', 'footer', 'applications', 'seo', 'company', 'pricing', 'hiring', 'cohort', 'emails'] as const;
+
+/** Sections that change the legal entity, the price or the selection rule. */
+export const COMPANY_KEYS = ['company', 'pricing', 'hiring', 'cohort'] as const;
 export type SettingsKey = (typeof SETTINGS_KEYS)[number];
 
 export const DEFAULT_SETTINGS: SiteSettings = {
   general: {
-    siteName: BRAND.name,
-    tagline: BRAND.slogan,
-    supportPhone: ENTITY.phone,
-    whatsapp: ENTITY.phone,
-    supportEmail: ENTITY.supportEmail,
-    officeAddress: ENTITY.registeredAddress,
-    officeHours: 'Monday to Friday, 10:00 to 19:00 IST',
-    socials: { instagram: '', facebook: '', linkedin: '', youtube: '' },
+    siteName: DEFAULT_COMPANY.tradingAs,
+    tagline: 'Connecting Talent, Spot On',
+    supportPhone: DEFAULT_COMPANY.phone,
+    whatsapp: DEFAULT_COMPANY.phone,
+    supportEmail: DEFAULT_COMPANY.supportEmail,
+    officeAddress: DEFAULT_COMPANY.offices.map((office) => `${office.city}: ${office.address}`).join('\n'),
+    officeHours: 'Monday to Friday, 10:00 to 17:00 Lisbon time and 10:00 to 17:00 Dubai time',
+    socials: { instagram: 'https://www.instagram.com/smithandadamsgroup/', facebook: '', linkedin: 'https://www.linkedin.com/company/91010816/', youtube: '' },
   },
   announcement: {
     enabled: true,
@@ -116,24 +154,76 @@ export const DEFAULT_SETTINGS: SiteSettings = {
       },
     ],
     headerCta: {
-      label: 'Apply now',
-      href: '/jobs',
-      labels: { hi: 'अभी आवेदन करें', bn: 'এখনই আবেদন করুন', mr: 'आत्ता अर्ज करा', te: 'ఇప్పుడే దరఖాస్తు చేయండి', ta: 'இப்போது விண்ணப்பிக்கவும்', ur: 'اب درخواست دیں', gu: 'હમણાં અરજી કરો', kn: 'ಈಗ ಅರ್ಜಿ ಸಲ್ಲಿಸಿ', or: 'ଏବେ ଆବେଦନ କରନ୍ତୁ', ml: 'ഇപ്പോൾ അപേക്ഷിക്കുക', pa: 'ਹੁਣੇ ਅਰਜ਼ੀ ਦਿਓ', as: 'এতিয়াই আবেদন কৰক', ar: 'قدّم الآن' },
+      /* The same action as the hero's button, so the header and the page
+         never ask for two different first steps. */
+      label: 'Create my free profile',
+      href: '/signup',
+      labels: {
+        hi: 'मेरी मुफ़्त प्रोफ़ाइल बनाएँ',
+        bn: 'আমার বিনামূল্যে প্রোফাইল তৈরি করুন',
+        mr: 'माझी मोफत प्रोफाइल तयार करा',
+        te: 'నా ఉచిత ప్రొఫైల్ సృష్టించండి',
+        ta: 'என் இலவச சுயவிவரத்தை உருவாக்கு',
+        ur: 'میری مفت پروفائل بنائیں',
+        gu: 'મારી મફત પ્રોફાઇલ બનાવો',
+        kn: 'ನನ್ನ ಉಚಿತ ಪ್ರೊಫೈಲ್ ರಚಿಸಿ',
+        or: 'ମୋର ମାଗଣା ପ୍ରୋଫାଇଲ୍ ତିଆରି କରନ୍ତୁ',
+        ml: 'എന്റെ സൗജന്യ പ്രൊഫൈൽ ഉണ്ടാക്കുക',
+        pa: 'ਮੇਰੀ ਮੁਫ਼ਤ ਪ੍ਰੋਫਾਈਲ ਬਣਾਓ',
+        as: 'মোৰ বিনামূলীয়া প্ৰফাইল তৈয়াৰ কৰক',
+        ar: 'أنشئ ملفي المجاني',
+      },
     },
   },
   footer: {
     blurb: 'Recruitment from India to Portugal, with real employers, legal contracts and support from your first application to your first month at work.',
   },
-  applications: { requirePaidAssessment: false, allowQuickApply: true },
+  applications: { requirePaidAssessment: false, allowQuickApply: true, filmUrl: '/video/intro.mp4', filmLabel: 'Watch how it works · under a minute' },
   seo: {
-    defaultTitle: `${BRAND.name} · Jobs in Portugal for Indian talent`,
+    defaultTitle: `${DEFAULT_COMPANY.tradingAs} · Jobs in Portugal for Indian talent`,
     defaultDescription:
       'Apply for real jobs in Portugal from India. Free to apply, no placement fees for candidates, UPI accepted, visa and relocation support included.',
     ogImage: '/brand/og.png',
+    pages: {
+      employers: {
+        title: 'Hire skilled workers from India',
+        description: 'Assessed candidates from India for hospitality, construction, cleaning and logistics roles in Portugal. Candidates never pay for a job; the employer pays the placement fee.',
+        ogTitle: '',
+        ogImage: '',
+      },
+      pricing: {
+        title: 'Pricing',
+        description: 'Joining our candidate database is free. The career preparation package is optional. Employers pay the placement fee.',
+        ogTitle: '',
+        ogImage: '',
+      },
+      signup: {
+        title: 'Register for jobs in Portugal',
+        description: 'Create your free profile and take the assessment. It puts you in our candidate database for jobs in Portugal.',
+        ogTitle: '',
+        ogImage: '',
+      },
+      signin: { title: 'Sign in', description: 'Sign in to see your applications, your report and your next steps.', ogTitle: '', ogImage: '' },
+      assessment: {
+        title: 'Skills and English assessment',
+        description: 'The free skills and English assessment that puts you in our candidate database. You can take it on your phone.',
+        ogTitle: '',
+        ogImage: '',
+      },
+    },
   },
+  company: DEFAULT_COMPANY,
+  pricing: DEFAULT_PRICING,
+  hiring: DEFAULT_HIRING,
+  cohort: DEFAULT_COHORT,
+  emails: DEFAULT_EMAILS,
 };
 
-/** Merge stored rows over defaults, one level deep per key. */
+/**
+ * Merge stored rows over defaults, one level deep per key, and one level more
+ * for the objects inside company, pricing and emails, so a currency or a
+ * template added in code is filled in for a database saved before it existed.
+ */
 export function mergeSettings(rows: { key: string; value: unknown }[]): SiteSettings {
   const out = structuredClone(DEFAULT_SETTINGS) as SiteSettings;
   for (const row of rows) {
@@ -142,6 +232,18 @@ export function mergeSettings(rows: { key: string; value: unknown }[]): SiteSett
     if (row.value && typeof row.value === 'object') {
       (out as Record<string, unknown>)[key] = { ...(out[key] as object), ...(row.value as object) };
     }
+  }
+  const stored = Object.fromEntries(rows.map((row) => [row.key, row.value])) as Partial<Record<string, Record<string, unknown>>>;
+  const nested = (key: string, field: string) => (stored[key]?.[field] as object | undefined) ?? {};
+  out.pricing.feeMinor = { ...DEFAULT_PRICING.feeMinor, ...nested('pricing', 'feeMinor') };
+  out.pricing.indicativeRates = { ...DEFAULT_PRICING.indicativeRates, ...nested('pricing', 'indicativeRates') };
+  out.company.partner = { ...DEFAULT_COMPANY.partner, ...nested('company', 'partner') };
+  const storedPages = nested('seo', 'pages') as Partial<Record<StaticSeoPage, Partial<PageSeoSettings>>>;
+  for (const { key } of STATIC_SEO_PAGES) {
+    out.seo.pages[key] = { ...DEFAULT_SETTINGS.seo.pages[key], ...(storedPages[key] ?? {}) };
+  }
+  for (const id of Object.keys(DEFAULT_EMAILS) as (keyof EmailSettings)[]) {
+    out.emails[id] = { ...DEFAULT_EMAILS[id], ...nested('emails', id) };
   }
   return out;
 }

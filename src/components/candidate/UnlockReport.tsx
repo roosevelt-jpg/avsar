@@ -6,7 +6,7 @@ import { IDEMPOTENCY_HEADER, useIdempotencyKey } from '@/components/security/use
 import { IndicativePrice } from '@/components/candidate/IndicativePrice';
 import { loadEximpe } from '@/lib/payments/eximpe-client';
 import { loadCashfree } from '@/lib/payments/cashfree-client';
-import { PLACEMENT_FEE } from '@/lib/data/brand';
+import type { PricingSettings } from '@/lib/company/config';
 import { fill, type Dictionary } from '@/lib/i18n';
 import type { PaymentMethodHint, PaymentProvider } from '@/lib/payments/types';
 
@@ -15,13 +15,9 @@ import type { PaymentMethodHint, PaymentProvider } from '@/lib/payments/types';
  *
  * The fee moved to the end of the flow, so this is where it is collected. The
  * candidate has already answered everything and their score is on the screen
- * above this panel: what is being bought is the documents they take away and
- * the place in the talent pool, and the copy says exactly that rather than
- * implying the score itself is behind the wall.
- *
- * The placement fee is repeated here too. It was disclosed at the end of
- * signup, before the assessment, but this is the moment money actually moves
- * and nobody should be reminded of a second fee only after paying the first.
+ * above this panel, and they are already in the recruitment database for free:
+ * what is being bought is the package deliverables, and the copy says exactly
+ * that rather than implying the score or the database is behind the wall.
  */
 
 const METHOD_LABELS: Record<PaymentMethodHint, string> = {
@@ -37,10 +33,12 @@ export function UnlockReport({
   provider,
   providerMode,
   country,
+  pricing,
 }: {
   t: Dictionary;
   /** Formatted, from the server, so it matches every other place it appears. */
   price: string;
+  pricing: PricingSettings;
   methods: PaymentMethodHint[];
   /* Taken from the interface rather than copied. The list was duplicated here
      and went stale the moment a fifth rail was added. */
@@ -100,8 +98,8 @@ export function UnlockReport({
         return;
       }
 
-      /* Simulated, in a demo environment. The webhook will not arrive, so the
-         page is reloaded to pick up the status the server already set. */
+      /* A rail's sandbox mode with no hosted page. The webhook will not arrive,
+         so the page is reloaded to pick up the status the server already set. */
       if (data.simulated) {
         window.location.reload();
         return;
@@ -125,7 +123,7 @@ export function UnlockReport({
       <p className="m-0 max-w-[62ch] text-[15px] leading-[1.6] text-ink-2">
         {fill(s.unlockBody, { price })}
       </p>
-      <IndicativePrice t={t} country={country} />
+      <IndicativePrice t={t} country={country} pricing={pricing} />
 
       <div role="radiogroup" aria-label={s.unlockTitle} className="mt-5 flex flex-wrap gap-2.5">
         {methods.map((option) => {
@@ -138,7 +136,7 @@ export function UnlockReport({
               aria-checked={active}
               onClick={() => setMethod(option)}
               className="t-colors cursor-pointer rounded-[10px] bg-surface px-4 py-2.5 text-[14px]"
-              style={{ border: active ? '2px solid #1b1a17' : '1px solid #d9d4c8' }}
+              style={{ border: active ? '2px solid var(--color-ink)' : '1px solid var(--color-line-strong)' }}
             >
               {METHOD_LABELS[option]}
             </button>
@@ -150,16 +148,20 @@ export function UnlockReport({
         type="button"
         onClick={() => void pay()}
         disabled={busy}
-        className="t-colors mt-5 cursor-pointer rounded-[12px] border-0 bg-ink px-5 py-3 text-[15px] font-medium text-white hover:bg-accent disabled:opacity-40"
+        className="t-colors mt-5 cursor-pointer rounded-[12px] border-0 bg-ink px-5 py-3 text-[15px] font-medium text-paper hover:bg-ink-hover disabled:opacity-40"
       >
         {fill(s.unlockCta, { price })}
       </button>
 
       <p className="mt-4 mb-0 max-w-[62ch] text-[13px] leading-[1.6] text-muted">{s.unlockFine}</p>
 
-      {PLACEMENT_FEE.visibleToCandidates && (
+      {/* A card-only rail abroad is an international payment for an Indian card,
+          and many banks switch that off by default. Saying so first saves a
+          declined payment the candidate would read as a problem with us. */}
+      {!methods.includes('upi') && (
         <p className="mt-2.5 mb-0 max-w-[62ch] text-[13px] leading-[1.6] text-muted">
-          {fill(t.placementFeeShort, { eur: PLACEMENT_FEE.eur.toLocaleString('en-GB') })}
+          This is an international card payment to our UAE company, so your bank converts it to rupees. If your
+          card is declined, turn on international online payments in your bank app and try again.
         </p>
       )}
 

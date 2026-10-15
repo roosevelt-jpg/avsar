@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { audit } from '@/lib/audit';
-import { apiPermission, demoWriteRefusal } from '@/lib/rbac/server';
+import { apiPermission } from '@/lib/rbac/server';
 import { planFrom } from '@/lib/relocation/milestones';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 
@@ -26,8 +26,6 @@ const PLANNABLE = ['offer', 'hired', 'visa_processing'];
 export async function POST(request: Request) {
   const guard = await apiPermission('relocation.manage');
   if (guard instanceof NextResponse) return guard;
-  const refusal = demoWriteRefusal(guard);
-  if (refusal) return refusal;
 
   const parsed = schema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: 'invalid_payload' }, { status: 400 });

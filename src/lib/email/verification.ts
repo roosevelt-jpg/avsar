@@ -1,6 +1,7 @@
 import { getMailer } from '@/lib/email';
 import { getAdminSupabase } from '@/lib/supabase/admin';
-import { BRAND } from '@/lib/data/brand';
+import { getSiteSettings } from '@/lib/cms/data';
+import { composeEmail, emailBrand } from '@/lib/email/compose';
 import { renderEmail } from '@/lib/email/template';
 
 /**
@@ -28,25 +29,12 @@ type Copy = {
   paragraphs: (name: string) => string[];
   actionLabel: string;
   fallbackNote: string;
-  closing: string[];
+  closing: (brand: string) => string[];
 };
 
+/* English comes from Settings › Emails. Hindi is a translation kept in code
+   with the rest of the interface wording. */
 const COPY = {
-  en: {
-    subject: 'Confirm your email address',
-    preheader: 'One click, and your application carries on where you left it.',
-    heading: 'Confirm your email address',
-    paragraphs: (name: string) => [
-      `Hi ${name},`,
-      'Please confirm this is your address. Your assessment report is sent here, and your application cannot be completed without it.',
-    ],
-    actionLabel: 'Confirm my email address',
-    fallbackNote: 'If the button does not work, copy this link into your browser:',
-    closing: [
-      'The link works once. If it has expired, you can ask for a new one from your dashboard.',
-      `If you did not start an application with ${BRAND.name}, you can ignore this message.`,
-    ],
-  },
   hi: {
     subject: 'अपना ईमेल पता सत्यापित करें',
     preheader: 'एक क्लिक, और आपका आवेदन वहीं से आगे बढ़ेगा।',
@@ -57,15 +45,15 @@ const COPY = {
     ],
     actionLabel: 'मेरा ईमेल पता सत्यापित करें',
     fallbackNote: 'अगर बटन काम न करे, तो यह लिंक अपने ब्राउज़र में खोलें:',
-    closing: [
+    closing: (brand) => [
       'यह लिंक एक बार काम करता है। समय समाप्त हो जाने पर आप अपने डैशबोर्ड से नया लिंक मँगा सकते हैं।',
-      `अगर आपने ${BRAND.name} पर कोई आवेदन शुरू नहीं किया है, तो इस संदेश को अनदेखा करें।`,
+      `अगर आपने ${brand} पर कोई आवेदन शुरू नहीं किया है, तो इस संदेश को अनदेखा करें।`,
     ],
   },
 } satisfies Record<string, Copy>;
 
 /** Subject, plain part and branded part, built once and used by both callers. */
-function compose({
+async function compose({
   name,
   locale,
   link,
@@ -76,34 +64,40 @@ function compose({
   link: string;
   origin: string;
 }) {
-  const copy = locale === 'hi' ? COPY.hi : COPY.en;
+  if (locale !== 'hi') {
+    return composeEmail('verification', { first_name: name }, { origin, actionUrl: link, fallbackNote: 'If the button does not work, copy this link into your browser:' });
+  }
+  const settings = await getSiteSettings();
+  const copy = COPY.hi;
   const paragraphs = copy.paragraphs(name);
+  const closing = copy.closing(settings.general.siteName);
 
   return {
     subject: copy.subject,
     /* The plain part is not a stub. It is what a text-only client, a screen
        reader set to plain, and every spam filter actually read. */
-    text: [...paragraphs, '', link, '', ...copy.closing, '', BRAND.name].join('\n'),
+    text: [...paragraphs, '', link, '', ...closing, '', settings.general.siteName].join('\n'),
     html: renderEmail({
       preheader: copy.preheader,
       heading: copy.heading,
       paragraphs,
       action: { label: copy.actionLabel, url: link },
       fallbackNote: copy.fallbackNote,
-      closing: copy.closing,
+      closing,
       origin,
+      brand: emailBrand(settings),
     }),
   };
 }
 
 /** The same message, for the development preview. Sends nothing. */
-export function verificationPreview(input: {
+export async function verificationPreview(input: {
   name: string;
   locale: string;
   link: string;
   origin: string;
-}): string {
-  return compose(input).html;
+}): Promise<string> {
+  return (await compose(input)).html;
 }
 
 export type VerificationResult =
@@ -160,7 +154,7 @@ export async function sendVerificationLink({
   callback.searchParams.set('locale', locale);
   const link = callback.toString();
 
-  const { subject, text, html } = compose({ name, locale, link, origin });
+  const { subject, text, html } = await compose({ name, locale, link, origin });
   const { sent } = await mailer.send({ to: email, subject, text, html });
 
   return sent ? { sent: true } : { sent: false, reason: 'send_failed' };

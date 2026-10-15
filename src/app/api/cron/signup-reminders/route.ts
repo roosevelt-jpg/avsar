@@ -1,3 +1,4 @@
+import { refreshIntegrations } from '@/lib/integrations/runtime';
 import { NextResponse } from 'next/server';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { getMailer, unsubscribeToken } from '@/lib/email';
@@ -44,6 +45,7 @@ async function run(request: Request) {
    * endpoint is a button anyone can press to make us send mail, which is both
    * a bill and a way to burn a sending reputation.
    */
+  await refreshIntegrations();
   const secret = process.env.CRON_SECRET;
   if (!secret || request.headers.get('authorization') !== `Bearer ${secret}`) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
@@ -85,7 +87,7 @@ async function run(request: Request) {
     }
 
     const unsubscribe = `${origin}/api/unsubscribe?c=${row.id}&t=${unsubscribeToken(row.id)}`;
-    const { subject, text, html } = renderReminder(row, origin, unsubscribe);
+    const { subject, text, html } = await renderReminder(row, origin, unsubscribe);
 
     const result = await mailer.send({
       to: row.email,

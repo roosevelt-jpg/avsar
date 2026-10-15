@@ -3,11 +3,11 @@
 import { useState, useSyncExternalStore } from 'react';
 import {
   CURRENCY_SYMBOLS,
-  INDICATIVE_RATES,
-  PRIMARY_INDICATIVE,
+  INDICATIVE_CURRENCIES,
   indicativeAmount,
   type IndicativeCurrency,
-} from '@/lib/data/brand';
+  type PricingSettings,
+} from '@/lib/company/config';
 import { fill, type Dictionary } from '@/lib/i18n';
 
 /**
@@ -19,7 +19,7 @@ import { fill, type Dictionary } from '@/lib/i18n';
  * bank converts it, at their bank's rate, which is theirs and is better than
  * what a dynamic-conversion checkout would give them.
  *
- * The figures are deliberately coarse. See `INDICATIVE_RATES`.
+ * The figures are deliberately coarse. The rates are set on Settings › Company & pricing.
  */
 
 /*
@@ -45,8 +45,6 @@ const REGION_CURRENCY: Record<string, IndicativeCurrency> = {
   GB: 'GBP',
 };
 
-
-const CURRENCIES = Object.keys(INDICATIVE_RATES) as IndicativeCurrency[];
 
 /*
   The browser language, or null on the server.
@@ -75,8 +73,10 @@ function detectCurrency(language: string | null): IndicativeCurrency | null {
 export function IndicativePrice({
   t,
   country,
+  pricing,
 }: {
   t: Dictionary;
+  pricing: PricingSettings;
   /**
    * The country the edge saw, from `x-vercel-ip-country`.
    *
@@ -106,9 +106,9 @@ export function IndicativePrice({
     chosen ??
     (country ? REGION_CURRENCY[country.toUpperCase()] : undefined) ??
     detectCurrency(language) ??
-    PRIMARY_INDICATIVE;
+    'INR';
 
-  const amount = indicativeAmount(currency);
+  const amount = indicativeAmount(pricing, currency);
 
   return (
     <p className="mt-2.5 mb-0 flex flex-wrap items-baseline gap-x-2 gap-y-1 text-[13px] leading-[1.6] text-muted">
@@ -124,7 +124,7 @@ export function IndicativePrice({
           onChange={(event) => setChosen(event.target.value as IndicativeCurrency)}
           className="cursor-pointer rounded-[8px] border border-line-soft bg-surface px-2 py-1 text-[13px] text-ink-2"
         >
-          {CURRENCIES.map((code) => (
+          {INDICATIVE_CURRENCIES.map((code) => (
             <option key={code} value={code}>
               {code}
             </option>

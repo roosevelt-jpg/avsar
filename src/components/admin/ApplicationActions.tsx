@@ -39,7 +39,7 @@ export function ApplicationActions({ id, status, rating }: { id: string; status:
       setMessage('Saved.');
       router.refresh();
     } else {
-      setMessage(data?.error === 'demo_mode' ? 'Demo mode: nothing is saved.' : data?.error === 'forbidden' ? 'Your role cannot change applications.' : 'Could not save.');
+      setMessage(data?.error === 'not_configured' ? 'The database is not connected, so nothing was saved.' : data?.error === 'forbidden' ? 'Your role cannot change applications.' : 'Could not save.');
     }
   }
 
@@ -86,7 +86,7 @@ export function ApplicationActions({ id, status, rating }: { id: string; status:
               type="button"
               aria-label={`${value} of 5`}
               onClick={() => submit({ rating: value === rating ? null : value })}
-              className={`cursor-pointer rounded-[8px] border px-2.5 py-1 text-[16px] ${rating && value <= rating ? 'border-employer bg-employer text-white' : 'border-line bg-paper text-muted'}`}
+              className={`cursor-pointer rounded-[8px] border px-2.5 py-1 text-[16px] ${rating && value <= rating ? 'border-ink bg-ink text-paper' : 'border-line bg-paper text-muted'}`}
             >
               ★
             </button>

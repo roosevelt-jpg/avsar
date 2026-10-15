@@ -1,16 +1,12 @@
 import { NextResponse } from 'next/server';
 import { getSessionCandidate } from '@/lib/auth';
 import { getServerSupabase } from '@/lib/supabase/server';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
-
 export const runtime = 'nodejs';
 
 /** A candidate withdraws their own application. The database decides whether it still can be. */
 export async function POST(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   if (!/^[0-9a-f-]{36}$/i.test(id)) return NextResponse.json({ error: 'not_found' }, { status: 404 });
-  if (!isSupabaseConfigured()) return NextResponse.json({ withdrawn: true, simulated: true });
-
   const candidate = await getSessionCandidate();
   if (!candidate) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
 

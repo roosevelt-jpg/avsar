@@ -1,10 +1,12 @@
 import Link from 'next/link';
 import { Wordmark } from '@/components/ui/Wordmark';
 import { LocaleToggle } from './LocaleToggle';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import type { Locale } from '@/lib/i18n';
 import { localePath } from '@/lib/i18n/path';
 import { AccountMenu } from '@/components/auth/AccountMenu';
 import { getSiteSettings } from '@/lib/cms/data';
+import { getViewer } from '@/lib/auth';
 import { ctaLabel, localHref, navLabel } from '@/lib/cms/settings';
 
 /**
@@ -18,16 +20,25 @@ import { ctaLabel, localHref, navLabel } from '@/lib/cms/settings';
 export async function SiteHeader({ locale }: { locale: Locale }) {
   const settings = await getSiteSettings();
   const { announcement, navigation, general } = settings;
+  /* The sign-up button is for visitors. Anyone signed in already has an
+     account, and their name and links take its place in the bar. */
+  /* English menu labels fit on one line from xl. Tamil, Malayalam and the
+     other scripts run two to three times longer and ran into the buttons on
+     the right, so they keep the menu button until 2xl. Literal class names,
+     so Tailwind sees them. */
+  const wide = locale === 'en' ? 'xl:flex' : '2xl:flex';
+  const narrow = locale === 'en' ? 'xl:hidden' : '2xl:hidden';
+  const showCta = Boolean(navigation.headerCta.label && navigation.headerCta.href) && (await getViewer()).role === 'anonymous';
 
   return (
     <>
       {announcement.enabled && announcement.text ? (
-        <div className="bg-ink px-[clamp(20px,4cqi,56px)] py-2.5 text-center text-[13px] leading-[1.45] text-dark-muted-2">
+        <div className="bg-night px-[clamp(20px,4cqi,56px)] py-2.5 text-center text-[13px] leading-[1.45] text-dark-muted-2">
           <span>{announcement.text}</span>
           {announcement.href && announcement.linkLabel ? (
             <>
               {' '}
-              <Link href={localHref(locale, announcement.href)} className="font-medium text-paper underline underline-offset-[3px] hover:text-accent-on-dark">
+              <Link href={localHref(locale, announcement.href)} className="font-medium text-on-night underline underline-offset-[3px] hover:text-accent-on-dark">
                 {announcement.linkLabel}
               </Link>
             </>
@@ -36,10 +47,14 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
       ) : null}
 
       <header className="sticky top-0 z-40 border-b border-line bg-paper/85 px-[clamp(20px,4cqi,56px)] py-[14px] backdrop-blur-md">
-        <div className="mx-auto flex w-full max-w-[1200px] items-center justify-between gap-4">
+        {/* Nothing in the bar may wrap: a two-line "Visa & relocation" doubles
+            the header height. The full menu appears only from xl, where six
+            links, the toggles and the button fit on one line; below that the
+            menu button carries them. */}
+        <div className="mx-auto flex w-full max-w-[1280px] items-center justify-between gap-6 whitespace-nowrap">
           <Wordmark href={localePath(locale, '/')} size={26} />
 
-          <nav aria-label="Main" className="hidden items-center gap-[clamp(14px,2cqi,26px)] text-[15px] text-ink-2 lg:flex">
+          <nav aria-label="Main" className={`hidden min-w-0 items-center gap-[clamp(12px,1.3vw,20px)] text-[14.5px] text-ink-2 ${wide}`}>
             {navigation.items.map((item) => (
               <Link key={item.href} href={localHref(locale, item.href)} className="t-colors no-underline hover:text-accent">
                 {navLabel(item, locale)}
@@ -47,26 +62,27 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
             ))}
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex shrink-0 items-center gap-3 [&>*]:shrink-0">
             <a
               href={`tel:${general.supportPhone.replace(/\s/g, '')}`}
               dir="ltr"
-              className="t-colors hidden whitespace-nowrap font-mono text-[13px] tabular-nums text-ink-2 no-underline hover:text-accent xl:inline"
+              className="t-colors hidden whitespace-nowrap font-mono text-[13px] tabular-nums text-ink-2 no-underline hover:text-accent 2xl:inline"
             >
               {general.supportPhone}
             </a>
             <LocaleToggle locale={locale} />
+            <ThemeToggle className="hidden sm:grid" />
             <AccountMenu locale={locale} />
-            {navigation.headerCta.label && navigation.headerCta.href ? (
+            {showCta ? (
               <Link
                 href={localHref(locale, navigation.headerCta.href)}
-                className="t-colors hidden rounded-full bg-accent px-4 py-2 text-[14px] font-medium text-white no-underline hover:bg-accent-deep md:inline-flex"
+                className="t-colors hidden rounded-full bg-ink px-4 py-2 text-[14px] font-medium text-paper no-underline hover:bg-ink-hover md:inline-flex"
               >
                 {ctaLabel(navigation.headerCta, locale)}
               </Link>
             ) : null}
 
-            <details className="group relative lg:hidden">
+            <details className={`group relative ${narrow}`}>
               <summary
                 aria-label="Menu"
                 className="grid size-10 cursor-pointer list-none place-items-center rounded-full border border-line-strong bg-surface [&::-webkit-details-marker]:hidden"
@@ -90,15 +106,16 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
                     </Link>
                   ))}
                 </nav>
-                <div className="mt-2 flex items-center justify-end gap-3 border-t border-line px-3 pt-3">
+                <div className="mt-2 flex items-center justify-between gap-3 border-t border-line px-3 pt-3">
+                  <ThemeToggle className="sm:hidden" />
                   <a href={`tel:${general.supportPhone.replace(/\s/g, '')}`} dir="ltr" className="font-mono text-[13px] text-ink-2 no-underline">
                     {general.supportPhone}
                   </a>
                 </div>
-                {navigation.headerCta.label && navigation.headerCta.href ? (
+                {showCta ? (
                   <Link
                     href={localHref(locale, navigation.headerCta.href)}
-                    className="mt-3 flex justify-center rounded-full bg-accent px-4 py-3 text-[15px] font-medium text-white no-underline"
+                    className="mt-3 flex justify-center rounded-full bg-ink px-4 py-3 text-[15px] font-medium text-paper no-underline"
                   >
                     {ctaLabel(navigation.headerCta, locale)}
                   </Link>

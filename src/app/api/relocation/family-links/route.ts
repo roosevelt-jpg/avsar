@@ -26,7 +26,7 @@ const MAX_ACTIVE = 5;
  */
 export async function POST(request: Request) {
   if (!isSupabaseConfigured()) {
-    return NextResponse.json({ error: 'demo_mode', message: 'Supabase is not configured, so nothing can be saved.' }, { status: 503 });
+    return NextResponse.json({ error: 'not_configured', message: 'Supabase is not configured, so nothing can be saved.' }, { status: 503 });
   }
   const candidate = await getSessionCandidate();
   if (!candidate) return NextResponse.json({ error: 'unauthenticated' }, { status: 401 });
@@ -59,7 +59,7 @@ export async function DELETE(request: Request) {
   const parsed = z.object({ id: z.string().uuid() }).safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: 'invalid_payload' }, { status: 400 });
   const admin = getAdminSupabase();
-  if (!admin) return NextResponse.json({ error: 'demo_mode' }, { status: 503 });
+  if (!admin) return NextResponse.json({ error: 'not_configured' }, { status: 503 });
 
   const { data } = await admin
     .from('family_links')

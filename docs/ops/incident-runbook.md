@@ -32,7 +32,7 @@ be told. Start the clock when you first suspect it, not when you are sure.
 4. **Stop the harm** with the smallest lever:
    - Bad deploy: Vercel → Deployments → previous good one → *Promote to Production*. Takes seconds and is the right first move for anything that started with a deploy.
    - Payments misbehaving: remove the provider's keys in Vercel and redeploy. Checkout then refuses with `payment_misconfigured`; nobody can be charged.
-   - Data exposure: put the site in demo mode (remove the Supabase env vars and redeploy). Public pages still render; nothing personal is served.
+   - Data exposure: take the site offline (remove the Supabase env vars and redeploy). Every page shows "Setup required"; nothing personal is served.
    - Abuse or a flood of sign-ups: set the Turnstile keys if not set, tighten `RATE_LIMITS` in `src/lib/security/rate-limit.ts`.
 
 ## Common situations

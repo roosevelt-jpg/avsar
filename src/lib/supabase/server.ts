@@ -4,7 +4,8 @@ import { SUPABASE_ANON_KEY, SUPABASE_URL, isSupabaseConfigured } from './config'
 
 /**
  * Request-scoped client that respects RLS. Returns null when Supabase is not
- * configured; callers fall back to sample data.
+ * configured, which only happens before setup: the root layout shows a setup
+ * notice instead of the site in that case.
  */
 export async function getServerSupabase() {
   if (!isSupabaseConfigured()) return null;

@@ -4,6 +4,7 @@ import { cashfreeProvider } from './cashfree';
 import { eximpeProvider } from './eximpe';
 import { vivaProvider } from './viva';
 import { dodoProvider } from './dodo';
+import { ngeniusProvider } from './ngenius';
 import type { PaymentMethodHint, PaymentProvider } from './types';
 
 /**
@@ -16,6 +17,8 @@ import type { PaymentMethodHint, PaymentProvider } from './types';
  */
 export function getPaymentProvider(): PaymentProvider {
   switch (process.env.PAYMENT_PROVIDER) {
+    case 'ngenius':
+      return ngeniusProvider;
     case 'dodo':
       return dodoProvider;
     case 'viva':
@@ -75,7 +78,7 @@ export function availablePaymentMethods(): PaymentMethodHint[] {
   /* The whole reason this rail exists. Their hosted page shows the rest. */
   if (provider === 'dodo') return ['upi', 'card'];
 
-  if (provider === 'viva') return ['card'];
+  if (provider === 'viva' || provider === 'ngenius') return ['card'];
 
   if (provider !== 'stripe') return ['upi', 'card', 'netbanking'];
 

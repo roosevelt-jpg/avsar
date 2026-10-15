@@ -64,3 +64,37 @@ insert into job_postings (
   '/positions/driver-840.jpg', 'draft', false
 )
 on conflict (slug) do nothing;
+
+-- Two more drafts, so every position area has an example.
+insert into job_postings (
+  slug, title, position_slug, area, employer_display, city, region, country,
+  employment_type, contract_months, openings, salary_min_eur, salary_max_eur, salary_period,
+  housing, meals_included, visa_sponsored, relocation_support, min_experience_years, min_english,
+  languages, summary, description, responsibilities, requirements, benefits, screening_questions,
+  hero_image_url, status, featured
+) values
+(
+  'restaurant-server-lisbon', 'Restaurant server', 'fb-service', 'food-beverage', 'Restaurant group', 'Lisbon', 'Lisboa', 'PT',
+  'full_time', 12, 5, 950, 1100, 'month', 'assisted', true, true, true, 1, 'B1',
+  array['English'],
+  'Front-of-house service in busy restaurants near the river.',
+  'Serve guests in a group of three restaurants on the Lisbon riverfront. Most guests are international, so English is the working language on the floor.',
+  array['Take orders and serve food and drinks', 'Explain the menu, including allergens', 'Handle payments on the POS'],
+  array['One year in restaurant or hotel service', 'Conversational English (B1)', 'Friendly and calm under pressure'],
+  array['Shared tips', 'Staff meal every shift', 'Help with housing search'],
+  '[]'::jsonb,
+  '/positions/fb-service-840.jpg', 'draft', true
+),
+(
+  'welder-setubal', 'MIG/MAG welder', 'welder', 'trades-logistics', 'Metal fabrication plant', 'Setúbal', 'Setúbal', 'PT',
+  'full_time', 24, 3, 1250, 1500, 'month', 'provided', false, true, true, 3, 'A2',
+  array['English'],
+  'Structural steel welding in a fabrication workshop.',
+  'Weld structural steel components in a workshop that supplies the construction and shipbuilding sectors. A practical welding test is part of the interview.',
+  array['MIG/MAG welding of structural steel', 'Read welding symbols on drawings', 'Inspect your own welds'],
+  array['Three years welding', 'Welding certificate (ITI or equivalent)', 'Able to pass a practical test'],
+  array['Shared housing provided for the first year', 'Overtime paid at premium', 'Safety equipment provided'],
+  '[{"id":"process","label":"Which welding processes are you certified in?","type":"text","required":true}]'::jsonb,
+  '/positions/welder-840.jpg', 'draft', false
+)
+on conflict (slug) do nothing;

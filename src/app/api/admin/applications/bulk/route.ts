@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { apiPermission, demoWriteRefusal } from '@/lib/rbac/server';
+import { apiPermission } from '@/lib/rbac/server';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { APPLICATION_STATUSES, becomesVisibleToEmployer, type ApplicationStatus } from '@/lib/applications/status';
 import { notifyStageChange } from '@/lib/applications/notify';
@@ -35,8 +35,6 @@ type Row = {
 export async function POST(request: Request) {
   const guard = await apiPermission('applications.manage');
   if (guard instanceof NextResponse) return guard;
-  const refusal = demoWriteRefusal(guard);
-  if (refusal) return refusal;
 
   const parsed = schema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: 'invalid_payload' }, { status: 400 });

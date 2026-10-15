@@ -30,7 +30,7 @@ export default async function SecurityPage({ searchParams }: { searchParams: Pro
         }
       />
       <div className="mt-6 max-w-[560px]">
-        <TwoFactorSetup demo={access.demo} enforced={staffMfaRequired()} returnTo={returnTo} />
+        <TwoFactorSetup enforced={staffMfaRequired()} returnTo={returnTo} />
       </div>
     </AdminShell>
   );

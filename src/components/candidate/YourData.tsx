@@ -8,7 +8,7 @@ import { useState } from 'react';
  * because erasing someone in the middle of a visa file would break it, and
  * that deserves an explanation rather than a refusal from a button.
  */
-export function YourData({ demo = false }: { demo?: boolean }) {
+export function YourData() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [asking, setAsking] = useState(false);
@@ -29,7 +29,7 @@ export function YourData({ demo = false }: { demo?: boolean }) {
           ? 'Received. We will reply by email within one month, usually much sooner.'
           : data?.status === 'already_requested'
             ? 'You already have an open request. We will reply by email.'
-            : data?.error === 'demo_mode'
+            : data?.error === 'not_configured'
               ? 'This is a preview: nothing is saved.'
               : 'The request could not be sent. Please try again, or write to us from the contact page.',
       );
@@ -50,15 +50,11 @@ export function YourData({ demo = false }: { demo?: boolean }) {
         account, CV and applications; payment records stay because tax law requires it.
       </p>
       <div className="flex flex-wrap gap-2">
-        {demo ? (
-          <span className="rounded-full border border-line-strong px-4 py-2 text-[14px] text-muted">Download my data (not in preview)</span>
-        ) : (
-          /* A file from a route handler, not a page: client-side navigation
-             would try to render it, so this stays a plain link. */
-          <a href="/api/candidate/export" download className="rounded-full border border-line-strong bg-paper px-4 py-2 text-[14px] text-ink no-underline hover:border-ink">
-            Download my data
-          </a>
-        )}
+        {/* A file from a route handler, not a page: client-side navigation
+            would try to render it, so this stays a plain link. */}
+        <a href="/api/candidate/export" download className="rounded-full border border-line-strong bg-paper px-4 py-2 text-[14px] text-ink no-underline hover:border-ink">
+          Download my data
+        </a>
         <button type="button" onClick={() => setAsking((v) => !v)} className="cursor-pointer rounded-full border border-line-strong bg-paper px-4 py-2 text-[14px]">
           Correct or delete my data
         </button>

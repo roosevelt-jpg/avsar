@@ -18,7 +18,7 @@ export const runtime = 'nodejs';
  */
 export async function GET(request: Request) {
   if (!isSupabaseConfigured()) {
-    return NextResponse.json({ error: 'demo_mode', message: 'Supabase is not configured, so there is no data to export.' }, { status: 503 });
+    return NextResponse.json({ error: 'not_configured', message: 'Supabase is not configured, so there is no data to export.' }, { status: 503 });
   }
   const limited = await rateLimit(RATE_LIMITS.selfExport, clientIp(request));
   if (!limited.ok) return rateLimitedResponse(limited);

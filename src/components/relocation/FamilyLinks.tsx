@@ -9,7 +9,7 @@ import type { FamilyLink } from '@/lib/relocation/data';
  * because only its fingerprint is kept; if it is lost, make another and switch
  * the old one off.
  */
-export function FamilyLinks({ links, demo }: { links: FamilyLink[]; demo: boolean }) {
+export function FamilyLinks({ links }: { links: FamilyLink[] }) {
   const router = useRouter();
   const [label, setLabel] = useState('');
   const [consent, setConsent] = useState(false);
@@ -34,7 +34,7 @@ export function FamilyLinks({ links, demo }: { links: FamilyLink[]; demo: boolea
         setConsent(false);
         router.refresh();
       } else {
-        setMessage(data?.error === 'demo_mode' ? 'This is a preview: no link is created.' : data?.error === 'too_many_links' ? 'You have five links already. Switch one off first.' : 'The link could not be created.');
+        setMessage(data?.error === 'not_configured' ? 'The database is not connected, so nothing was saved.' : data?.error === 'too_many_links' ? 'You have five links already. Switch one off first.' : 'The link could not be created.');
       }
     } finally {
       setBusy(false);
@@ -84,10 +84,9 @@ export function FamilyLinks({ links, demo }: { links: FamilyLink[]; demo: boolea
           <span className="text-[14px] leading-[1.5]">I agree that anyone with this link can see my first name, job, city and the progress of my move.</span>
         </label>
         <div>
-          <button type="button" disabled={busy || demo || !label.trim() || !consent} onClick={() => void create()} className="cursor-pointer rounded-full border-0 bg-ink px-4 py-2 text-[14px] text-paper disabled:opacity-40">
+          <button type="button" disabled={busy || !label.trim() || !consent} onClick={() => void create()} className="cursor-pointer rounded-full border-0 bg-ink px-4 py-2 text-[14px] text-paper disabled:opacity-40">
             Create link
           </button>
-          {demo && <span className="ms-3 text-[13px] text-muted">Not available in the preview.</span>}
         </div>
       </div>
       {message && <p role="status" className="mt-3 mb-0 text-[14px] text-accent-deep">{message}</p>}

@@ -98,7 +98,7 @@ export function AddEmployer() {
         type="button"
         onClick={() => void submit()}
         disabled={busy || name.trim().length < 2 || !contactEmail.includes('@')}
-        className="t-colors mt-4 cursor-pointer rounded-[10px] border-0 bg-ink px-4 py-2.5 text-[14px] font-medium text-white hover:bg-accent disabled:opacity-40"
+        className="t-colors mt-4 cursor-pointer rounded-[10px] border-0 bg-ink px-4 py-2.5 text-[14px] font-medium text-paper hover:bg-ink-hover disabled:opacity-40"
       >
         Add employer
       </button>

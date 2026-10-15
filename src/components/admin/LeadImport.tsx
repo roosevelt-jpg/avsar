@@ -62,7 +62,7 @@ export function LeadImport() {
 
   const errorText: Record<string, string> = {
     too_large: 'That file is over 1 MB. Split it into smaller files.',
-    demo_mode: 'Demo mode: the file was checked but nothing is saved.',
+    not_configured: 'The database is not connected, so nothing was saved.',
     forbidden: 'Your role cannot import leads.',
     connection: 'The connection dropped. Press Import again: rows are never imported twice.',
   };

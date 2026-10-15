@@ -20,8 +20,8 @@ export const metadata = { title: 'Applicants' };
  * its reasons shown, never a ranking the employer has to accept.
  */
 export default async function EmployerApplicants() {
-  const portal = await requireEmployerPortal('/admin/applicants', '/admin/applications?status=shortlisted');
-  const applicants = (await listEmployerApplicants(portal)).sort((a, b) => b.match.score - a.match.score);
+  await requireEmployerPortal('/admin/applicants', '/admin/applications?status=shortlisted');
+  const applicants = (await listEmployerApplicants()).sort((a, b) => b.match.score - a.match.score);
   const metrics = applicantMetrics(applicants);
 
   return (
@@ -30,7 +30,7 @@ export default async function EmployerApplicants() {
         title="Applicants"
         lead="Candidates our recruiters have put forward for your vacancies, best fit first. To arrange an interview or ask a question, reply to your recruiter and quote the reference."
         actions={
-          applicants.length > 0 && !portal.demo ? (
+          applicants.length > 0 ? (
             <a href="/api/employer/export" download className="rounded-full border border-line-strong bg-surface px-4 py-2 text-[14px] text-ink no-underline">Download CSV</a>
           ) : undefined
         }
@@ -74,7 +74,7 @@ export default async function EmployerApplicants() {
                         {[applicant.candidatePosition, applicant.candidateCity, applicant.experience].filter(Boolean).join(' · ')}
                       </span>
                       <Mono className="text-[11px] text-muted">{applicant.reference}</Mono>
-                      {!applicant.identityReleased && !portal.demo && (
+                      {!applicant.identityReleased && (
                         <div className="mt-1">
                           <UnlockRequestButton applicationId={applicant.applicationId} pending={applicant.unlockPending} />
                         </div>

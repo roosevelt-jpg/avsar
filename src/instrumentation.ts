@@ -1,5 +1,13 @@
 import type { Instrumentation } from 'next';
 
+/* API keys saved in the console are applied once at start-up, so even code
+   paths that never refresh them see the saved values. */
+export async function register() {
+  if (process.env.NEXT_RUNTIME !== 'nodejs') return;
+  const { refreshIntegrations } = await import('@/lib/integrations/runtime');
+  await refreshIntegrations(true);
+}
+
 /* Imported lazily so the Edge build never pulls in node:crypto, and so the
    Node runtime only loads the reporter when there is an error to report. */
 export const onRequestError: Instrumentation.onRequestError = async (error, request, context) => {

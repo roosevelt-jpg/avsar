@@ -9,7 +9,7 @@ type Role = { key: string; name: string };
 const INPUT = 'rounded-[10px] border border-line bg-surface px-3 py-2 text-[14px] outline-none focus:border-ink';
 
 const ERRORS: Record<string, string> = {
-  demo_mode: 'Demo mode: nothing can be saved without Supabase.',
+  not_configured: 'The database is not connected, so nothing was saved.',
   forbidden: 'Only a super admin can grant or change the super admin role.',
   email_is_candidate: 'This email belongs to a candidate account. Use a work email.',
   cannot_change_self: 'You cannot change your own role or deactivate yourself.',

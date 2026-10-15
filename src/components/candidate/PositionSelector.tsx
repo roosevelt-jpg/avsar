@@ -1,6 +1,5 @@
 'use client';
 
-import { formatIndicative } from '@/lib/data/brand';
 import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { Mono } from '@/components/ui/Mono';
@@ -18,10 +17,13 @@ export function PositionSelector({
   locale,
   t,
   initial,
+  price,
 }: {
   locale: Locale;
   t: Dictionary;
   initial?: string;
+  /** The package price in rupees, formatted on the server from Settings › Company & pricing. */
+  price: string;
 }) {
   const [selected, setSelected] = useState(initial ?? POSITIONS[0].slug);
   const router = useRouter();
@@ -31,7 +33,7 @@ export function PositionSelector({
     startTransition(() => router.push(localePath(locale, `/signup?position=${selected}`)));
 
   return (
-    <div className="w-full max-w-[760px] rounded-[20px] border border-line bg-surface p-[clamp(18px,2.4cqi,26px)] text-left shadow-[0_1px_0_#e4e0d6,0_24px_48px_-28px_rgba(27,26,23,.25)]">
+    <div className="w-full max-w-[760px] rounded-[20px] border border-line bg-surface p-[clamp(18px,2.4cqi,26px)] text-left shadow-[0_1px_0_#e4e4e7,0_24px_48px_-28px_rgba(27,26,23,.25)]">
       <p className="m-0 mb-4 text-[15px] text-ink-2">{t.askWork}</p>
 
       <div className="flex flex-col gap-4" role="radiogroup" aria-label={t.askWork}>
@@ -54,7 +56,7 @@ export function PositionSelector({
                       onClick={() => setSelected(position.slug)}
                       className={`t-colors cursor-pointer rounded-full border px-[14px] py-2 text-[14px] ${
                         active
-                          ? 'border-ink bg-ink text-white'
+                          ? 'border-ink bg-ink text-paper'
                           : 'border-line-strong bg-surface text-ink hover:border-ink'
                       }`}
                     >
@@ -70,13 +72,13 @@ export function PositionSelector({
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-line-soft pt-[18px]">
         <Mono className="text-muted">
-          {fill(t.heroMeta, { price: formatIndicative() })}
+          {fill(t.heroMeta, { price })}
         </Mono>
         <button
           type="button"
           onClick={start}
           disabled={pending}
-          className="t-colors cursor-pointer rounded-[12px] border-0 bg-ink px-5 py-3 text-[15px] font-medium text-white hover:bg-accent disabled:opacity-60"
+          className="t-colors cursor-pointer rounded-[12px] border-0 bg-ink px-5 py-3 text-[15px] font-medium text-paper hover:bg-ink-hover disabled:opacity-60"
         >
           {t.cta} →
         </button>

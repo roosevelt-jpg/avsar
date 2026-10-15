@@ -8,20 +8,10 @@ import { PositionGrid } from '@/components/candidate/PositionGrid';
 import { IntroVideo } from '@/components/candidate/IntroVideo';
 import { positionCopy } from '@/lib/data/position-copy';
 import { SiteHeader } from '@/components/candidate/SiteHeader';
-import { SiteFooter } from '@/components/candidate/SiteFooter';
 import { PositionSelector } from '@/components/candidate/PositionSelector';
 import { fill, getDictionary, isLocale, localePath } from '@/lib/i18n';
-import { activePrice, formatPrice } from '@/lib/data/cohort';
-import {
-  BRAND,
-  formatIndicative,
-  CONTRACT_YEARS,
-  RESPONSE_DAYS,
-  SELECTION_FUNNEL,
-  applicantHireRate,
-  CANDIDATE_PAYS_NO_PLACEMENT_FEE,
-  PLACEMENT_FEE,
-} from '@/lib/data/brand';
+import { getSiteSettings } from '@/lib/cms/data';
+import { formatFee, formatIndicative } from '@/lib/company/config';
 
 /**
  * The hand-built landing page from before the CMS.
@@ -36,6 +26,9 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const t = getDictionary(locale);
+  const settings = await getSiteSettings();
+  const { pricing, hiring, company } = settings;
+  const indicative = formatIndicative(pricing);
 
   /*
     The rupee is the headline here, because this is where somebody decides
@@ -45,17 +38,8 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
     order summary, the pay button, the consent - stays in euros, because that is
     the amount that leaves the card.
   */
-  const money = { days: RESPONSE_DAYS, years: CONTRACT_YEARS, price: formatIndicative() };
+  const money = { days: hiring.responseDays, years: hiring.contractYears, price: indicative };
 
-  const stages = SELECTION_FUNNEL.perHundredApplicants;
-  const funnelValues = {
-    complete: stages.completeAssessment,
-    call: stages.reachAssessmentCall,
-    presented: stages.presentedToEmployer,
-    hired: stages.hired,
-    applicantRate: applicantHireRate(),
-    fee: formatPrice(activePrice().totalMinor),
-  };
 
   return (
     <>
@@ -103,13 +87,13 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
           >
             <Image
               src="/smith-adams-group-ink-640.png"
-              alt={`${BRAND.parent} Group`}
+              alt={`${company.parentBrand} Group`}
               width={640}
               height={136}
               className="h-auto w-[164px]"
             />
           </a>
-          <p className="m-0 mt-3 text-[15px] leading-[1.5] text-muted">{BRAND.tagline}</p>
+          <p className="m-0 mt-3 text-[15px] leading-[1.5] text-muted">{company.descriptor}</p>
         </div>
 
         <div className="grid items-center gap-[clamp(28px,5cqi,64px)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
@@ -121,7 +105,7 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
               button a reader pressed.
             */}
             <p className="m-0 mb-3 font-mono text-[13px] uppercase tracking-[0.14em] text-accent">
-              {BRAND.slogan}
+              {settings.general.tagline}
             </p>
 
             <h1 className="m-0 max-w-[20ch] text-balance text-[clamp(32px,4.4cqi,54px)] font-semibold leading-[1.06] tracking-[-0.035em]">
@@ -165,7 +149,7 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
           </div>
           <Link
             href={localePath(locale, '/signup')}
-            className="t-colors shrink-0 rounded-[12px] bg-white px-5 py-3 text-[15px] font-medium text-ink no-underline hover:bg-paper"
+            className="t-colors shrink-0 rounded-[12px] bg-ink px-5 py-3 text-[15px] font-medium text-paper no-underline hover:bg-ink-hover"
           >
             {t.cta} →
           </Link>
@@ -198,7 +182,7 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
 
       {/* ------------------------------------------------------------- apply */}
       <section className="flex flex-col items-center gap-6 px-[clamp(20px,4cqi,56px)] pb-[clamp(40px,6cqi,80px)] text-center">
-        <PositionSelector locale={locale} t={t} />
+        <PositionSelector locale={locale} t={t} price={indicative} />
         <p className="m-0 max-w-[70ch] text-[13px] leading-[1.55] text-muted">{fill(t.fine, money)}</p>
       </section>
 
@@ -236,7 +220,7 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
       </div>
 
       {/* ------------------------------------------------------- the six steps */}
-      <section className="bg-ink px-[clamp(20px,4cqi,56px)] py-[clamp(56px,8cqi,104px)] text-paper">
+      <section className="bg-night px-[clamp(20px,4cqi,56px)] py-[clamp(56px,8cqi,104px)] text-on-night">
         {/* One measure for the whole section. The heading used to start at the
             page gutter while the walkthrough was centred under it, so the block
             had two different left edges. */}
@@ -255,7 +239,7 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
           <PhoneWalkthrough t={t} />
 
           <div className="mt-[clamp(40px,6cqi,64px)] border-t border-dark-line pt-6">
-            <p className="m-0 max-w-[60ch] text-[16px] leading-[1.6] text-paper">
+            <p className="m-0 max-w-[60ch] text-[16px] leading-[1.6] text-on-night">
               {fill(t.process.responseNote, money)}
             </p>
           </div>
@@ -276,7 +260,7 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
           earns being a number rather than a clause inside a sentence.
         */}
         <p className="m-0 font-mono text-[clamp(30px,4cqi,44px)] font-semibold leading-none tracking-[-0.02em]">
-          {formatIndicative()}
+          {indicative}
         </p>
 
         {/*
@@ -289,7 +273,7 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
           not answer it.
         */}
         <p className="m-0 mb-8 max-w-[62ch] text-[14px] leading-[1.6] text-muted">
-          {fill(t.feeIndicative, { charged: formatPrice(activePrice().totalMinor) })}
+          {fill(t.feeIndicative, { charged: formatFee(pricing) })}
         </p>
         <ul className="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4 p-0">
           {t.includes.map(([title, body], index) => (
@@ -304,20 +288,9 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
             outlive the setting that makes it true. The placement fee is shown
             to candidates precisely because they are the ones who pay it: the
             worst version of this is the one nobody mentions until the end. */}
-        {CANDIDATE_PAYS_NO_PLACEMENT_FEE && (
-          <p className="mt-5 mb-0 max-w-[62ch] rounded-[16px] border border-accent bg-accent-tint px-5 py-4 text-[15px] leading-[1.6] text-ink">
-            {t.noPlacementFee}
-          </p>
-        )}
-
-        {PLACEMENT_FEE.visibleToCandidates && (
-          <p className="mt-5 mb-0 max-w-[62ch] rounded-[16px] border border-accent bg-accent-tint px-5 py-4 text-[15px] leading-[1.6] text-ink">
-            {fill(t.placementFee, {
-              eur: PLACEMENT_FEE.eur.toLocaleString('en-GB'),
-              price: formatIndicative(),
-            })}
-          </p>
-        )}
+        <p className="mt-5 mb-0 max-w-[62ch] rounded-[16px] border border-accent bg-accent-tint px-5 py-4 text-[15px] leading-[1.6] text-ink">
+          {t.noPlacementFee}
+        </p>
       </section>
 
       {/* ------------------------------------------------------ what you receive */}
@@ -371,56 +344,11 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
         </div>
       </section>
 
-      {/* -------------------------------------------------------------- funnel */}
-      {SELECTION_FUNNEL.visible && (
+      {hiring.outcomeVisible && (
         <section className="px-[clamp(20px,4cqi,56px)] pb-[clamp(56px,8cqi,104px)]">
-          <div className="rounded-[28px] border border-line bg-surface p-[clamp(24px,4cqi,56px)]">
-            <h2 className="m-0 max-w-[22ch] text-[clamp(26px,3.6cqi,44px)] font-semibold leading-[1.1] tracking-[-0.03em]">
-              {t.funnelTitle}
-            </h2>
-            <p className="mt-4 mb-8 max-w-[58ch] text-[17px] leading-[1.55] text-ink-2">
-              {fill(t.rateLine, { rate: SELECTION_FUNNEL.presentedToHirePercent })}
-            </p>
-
-            <Mono className="mb-4 block text-muted">{t.funnelLead}</Mono>
-
-            <ol className="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(210px,1fr))] gap-4 p-0">
-              {t.funnelStages.map(([title, body], index) => {
-                const stage = [
-                  SELECTION_FUNNEL.perHundredApplicants.completeAssessment,
-                  SELECTION_FUNNEL.perHundredApplicants.reachAssessmentCall,
-                  SELECTION_FUNNEL.perHundredApplicants.presentedToEmployer,
-                  SELECTION_FUNNEL.perHundredApplicants.hired,
-                ][index] ?? 0;
-                const last = index === t.funnelStages.length - 1;
-                return (
-                  <li
-                    key={title}
-                    className={`rounded-[16px] p-5 ${last ? 'bg-ink text-paper' : 'bg-surface-subtle'}`}
-                  >
-                    {/* Bar width is the stage share, so the drop is visible
-                        rather than something the reader has to infer. */}
-                    <div className={`mb-4 h-1.5 overflow-hidden rounded-full ${last ? 'bg-dark-line' : 'bg-line-soft'}`}>
-                      <div
-                        className={`h-full rounded-full ${last ? 'bg-success' : 'bg-accent'}`}
-                        style={{ width: `${Math.max(3, stage)}%` }}
-                      />
-                    </div>
-                    <p className="m-0 mb-1.5 text-[17px] font-semibold leading-[1.3]">
-                      {fill(title, funnelValues)}
-                    </p>
-                    <p className={`m-0 text-[14px] leading-[1.55] ${last ? 'text-dark-muted-2' : 'text-ink-2'}`}>
-                      {fill(body, funnelValues)}
-                    </p>
-                  </li>
-                );
-              })}
-            </ol>
-
-            <p className="mt-8 mb-0 max-w-[66ch] border-t border-line pt-6 text-[14px] leading-[1.6] text-muted">
-              {fill(t.funnelNote, funnelValues)}
-            </p>
-          </div>
+          <p className="m-0 max-w-[66ch] text-[17px] leading-[1.55] text-ink-2">
+            Historically, about {hiring.outcomeHired} of every {hiring.outcomeShortlisted} shortlisted candidates have been hired. Most applicants are not shortlisted, and past results are not a promise.
+          </p>
         </section>
       )}
 
@@ -447,8 +375,6 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
           {t.documents.optionalNote}
         </p>
       </section>
-
-      <SiteFooter locale={locale} />
     </>
   );
 }

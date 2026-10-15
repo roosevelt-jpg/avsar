@@ -15,7 +15,7 @@ export default async function MediaPage() {
         lead="Images, films and documents used across the website and job postings. Describe each image: the description is read aloud to blind visitors and helps search engines."
       />
       <div className="mt-8">
-        <MediaLibrary items={items} canManage={can(access, 'media.manage') && !access.demo} />
+        <MediaLibrary items={items} canManage={can(access, 'media.manage')} />
       </div>
     </AdminShell>
   );

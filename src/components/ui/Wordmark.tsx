@@ -1,8 +1,8 @@
 import Link from 'next/link';
-import { BRAND } from '@/lib/data/brand';
+import { getSiteSettings } from '@/lib/cms/data';
 
 /**
- * The S&A Recruitment logo.
+ * The site logo: the mark, then the site name from Settings › General.
  *
  * Two points joined by a dotted route: a filled terracotta dot for India, where
  * the candidate is, and an open ink ring for Europe, where the job is. It
@@ -14,21 +14,21 @@ import { BRAND } from '@/lib/data/brand';
  * making every header change at once.
  */
 
-const INK = { light: '#1B1A17', dark: '#F7F5F0' } as const;
-
 function BrandMark({
   size,
   tone,
-  accent,
 }: {
   size: number;
   tone: 'light' | 'dark';
   accent: 'candidate' | 'employer';
 }) {
-  const ink = INK[tone];
-  /* The employer side is blue, and the candidate side is terracotta, lifted on
-     dark so it does not go muddy against the ink background. */
-  const origin = accent === 'employer' ? '#3C6FB0' : tone === 'dark' ? '#C96A4B' : '#B9583A';
+  /* The ring and route follow the text colour, so the mark switches with the
+     theme and with dark bands without a second set of colours. */
+  const ink = 'currentColor';
+  /* Terracotta everywhere, the employer side included: the logo is one mark,
+     not a colour code. Lifted on dark so it does not go muddy against the
+     ink background. `accent` is still accepted, and no longer recolours it. */
+  const origin = tone === 'dark' ? '#C96A4B' : '#B9583A';
 
   return (
     <svg
@@ -53,7 +53,7 @@ function BrandMark({
   );
 }
 
-export function Wordmark({
+export async function Wordmark({
   href,
   suffix,
   tone = 'light',
@@ -67,6 +67,12 @@ export function Wordmark({
   accent?: 'candidate' | 'employer';
   size?: number;
 }) {
+  const settings = await getSiteSettings();
+  const name = settings.general.siteName;
+  /* The short name is set in bold and the rest of the name follows it in a
+     lighter weight, when the site name starts with it. */
+  const short = settings.company.shortName && name.startsWith(settings.company.shortName) ? settings.company.shortName : name;
+  const rest = name.slice(short.length).trim();
   const inner = (
     /*
       Pinned to `ltr`, inside an Arabic page that is `rtl`.
@@ -78,27 +84,28 @@ export function Wordmark({
     */
     <span
       dir="ltr"
-      aria-label={BRAND.name}
+      aria-label={name}
       className={`flex flex-wrap items-center gap-x-2.5 gap-y-0.5 ${
-        tone === 'dark' ? 'text-paper' : 'text-ink'
+        tone === 'dark' ? 'text-on-night' : 'text-ink'
       }`}
     >
       <BrandMark size={size} tone={tone} accent={accent} />
 
-      {/* "S&A" bold, "Recruitment" lighter and quieter. Baseline-aligned rather
-          than centred, so the two words sit on one line of type. */}
+      {/* Baseline-aligned rather than centred, so the two words sit on one line of type. */}
       <span
         className="flex items-baseline gap-1.5 font-semibold tracking-[-0.02em]"
         style={{ fontSize: size * 0.72 }}
       >
-        {BRAND.shortName}
-        <span
-          className={`font-medium tracking-normal ${
-            tone === 'dark' ? 'text-dark-muted' : 'text-muted'
-          }`}
-        >
-          Recruitment
-        </span>
+        {short}
+        {rest ? (
+          <span
+            className={`font-medium tracking-normal ${
+              tone === 'dark' ? 'text-dark-muted' : 'text-muted'
+            }`}
+          >
+            {rest}
+          </span>
+        ) : null}
       </span>
 
       {suffix ? (

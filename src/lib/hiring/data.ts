@@ -1,9 +1,8 @@
 import { CEFR, type Cefr } from '@/lib/data/candidates';
 import { positionBySlug } from '@/lib/data/positions';
-import { matchScore, type MatchCandidate, type MatchResult } from '@/lib/hiring/match';
+import { matchScore, type MatchResult } from '@/lib/hiring/match';
 import type { Recommendation } from '@/lib/hiring/scorecard';
 import { getAdminSupabase } from '@/lib/supabase/admin';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
 
 /**
  * Hiring reads for the console's application page: the match score, the
@@ -91,11 +90,6 @@ export type UnlockRequest = {
 
 /** For `/admin/unlocks`, after `requirePermission('relocation.manage')`. Pending first. */
 export async function listUnlockRequests(): Promise<UnlockRequest[]> {
-  if (!isSupabaseConfigured()) {
-    return [
-      { id: 'sample-unlock', employerName: 'Sample hotel group', candidateId: 'sample', candidateName: 'Sample: Priya Sharma', applicationId: 'sample-1', reference: 'APP-2M8X4C1R', reason: 'We would like to invite her to a second interview with the head chef.', status: 'pending', createdAt: '2026-10-15T08:30:00Z' },
-    ];
-  }
   const admin = getAdminSupabase();
   if (!admin) return [];
   const { data } = await admin
@@ -123,11 +117,6 @@ export type FeeRow = EmployerFee & { employerName: string; candidateName: string
 
 /** For `/admin/fees`, after `requirePermission('payments.view')`. */
 export async function listEmployerFees(status?: FeeStatus): Promise<FeeRow[]> {
-  if (!isSupabaseConfigured()) {
-    return [
-      { id: 'sample-fee', applicationId: 'sample-4', amountMinor: 100_000, currency: 'EUR', status: 'pending', invoiceRef: null, note: null, createdAt: '2026-10-14T16:00:00Z', employerName: 'Sample hotel group', candidateName: 'Sample: Anjali Menon', reference: 'APP-SAMPLE4', jobTitle: 'Waiter' },
-    ].filter((f) => !status || f.status === status) as FeeRow[];
-  }
   const admin = getAdminSupabase();
   if (!admin) return [];
   let query = admin
@@ -150,22 +139,11 @@ export async function listEmployerFees(status?: FeeStatus): Promise<FeeRow[]> {
   });
 }
 
-export type ApplicationHiring = { match: MatchResult; scorecards: Scorecard[]; fee: EmployerFee | null };
-
-const SAMPLE_CANDIDATE: MatchCandidate = { position: 'chef', sector: 'food-beverage', english: 'B1', yearsExperience: 4, overallScore: 74, verifiedDocuments: ['passport'] };
+export type ApplicationHiring = { match: MatchResult; assessmentScore: number | null; scorecards: Scorecard[]; fee: EmployerFee | null };
 
 export async function applicationHiring(applicationId: string): Promise<ApplicationHiring> {
-  if (!isSupabaseConfigured()) {
-    return {
-      match: matchScore({ position: 'chef', sector: 'food-beverage', minEnglish: 'A2', minYears: 2 }, SAMPLE_CANDIDATE),
-      scorecards: [
-        { id: 'sample-card', interviewId: 'sample-interview', criteria: [{ label: 'Kitchen hygiene', score: 4 }, { label: 'English', score: 3 }, { label: 'Team fit', score: 4 }], recommendation: 'advance', summary: 'Clear answers on HACCP. English is workable for the kitchen.', authorKind: 'staff', createdAt: '2026-10-14T12:00:00Z' },
-      ],
-      fee: null,
-    };
-  }
   const admin = getAdminSupabase();
-  const empty: ApplicationHiring = { match: { score: 0, parts: [] }, scorecards: [], fee: null };
+  const empty: ApplicationHiring = { match: { score: 0, parts: [] }, assessmentScore: null, scorecards: [], fee: null };
   if (!admin) return empty;
 
   const { data: app } = await admin
@@ -211,6 +189,7 @@ export async function applicationHiring(applicationId: string): Promise<Applicat
 
   return {
     match,
+    assessmentScore: report.data?.overall_score == null ? null : Number(report.data.overall_score),
     scorecards: (cards.data ?? []).map((r) => scorecardFrom(r as Record<string, unknown>)),
     fee: fee.data ? feeFrom(fee.data as Record<string, unknown>) : null,
   };

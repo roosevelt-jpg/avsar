@@ -27,17 +27,19 @@ export async function GET(request: Request) {
 
   const html =
     url.searchParams.get('template') === 'reminder'
-      ? renderReminder(
-          {
-            full_name: 'Rohit Sharma',
-            locale,
-            profile_completed_at:
-              url.searchParams.get('stage') === 'assessment' ? new Date().toISOString() : null,
-          },
-          origin,
-          `${origin}/api/unsubscribe?c=preview&t=preview`,
+      ? (
+          await renderReminder(
+            {
+              full_name: 'Rohit Sharma',
+              locale,
+              profile_completed_at:
+                url.searchParams.get('stage') === 'assessment' ? new Date().toISOString() : null,
+            },
+            origin,
+            `${origin}/api/unsubscribe?c=preview&t=preview`,
+          )
         ).html
-      : verificationPreview({
+      : await verificationPreview({
           name: 'Rohit Sharma',
           locale,
           origin,

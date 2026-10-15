@@ -5,11 +5,9 @@ import { useRouter } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
 import { Mono } from '@/components/ui/Mono';
 import { Turnstile, TURNSTILE_HEADER } from '@/components/security/Turnstile';
-import { ENTITY, PLACEMENT_FEE, PLACEMENT_FEE_UNDISCLOSED } from '@/lib/data/brand';
 import { DIAL_CODES, DEFAULT_COUNTRY } from '@/lib/data/dial-codes';
 import { phoneFields } from '@/lib/validation';
 import { AREAS, POSITIONS, positionsInArea, type PositionSlug } from '@/lib/data/positions';
-import { formatPrice, activePrice } from '@/lib/data/cohort';
 import { fill, type Dictionary, type Locale, localePath } from '@/lib/i18n';
 
 type Errors = Partial<
@@ -22,15 +20,17 @@ export function SignupFlow({
   initialPosition,
   /** Set when the browser has come back from Checkout with a confirmed payment. */
   confirmedReceipt,
+  entity,
 }: {
   locale: Locale;
   t: Dictionary;
   initialPosition: PositionSlug;
   confirmedReceipt?: string;
+  /** From Settings › Company & pricing: the names a candidate sees on their statement. */
+  entity: { statementDescriptor: string; tradingAs: string; legalName: string };
 }) {
   const router = useRouter();
   const s = t.signup;
-  const price = activePrice();
 
   const [step, setStep] = useState(confirmedReceipt ? 3 : 0);
   const [errors, setErrors] = useState<Errors>({});
@@ -51,7 +51,6 @@ export function SignupFlow({
 
   const [position, setPosition] = useState<PositionSlug>(initialPosition);
   const [years, setYears] = useState(0);
-  const [englishSelf, setEnglishSelf] = useState(0);
   const [cityState, setCityState] = useState('');
 
   const [consent, setConsent] = useState(false);
@@ -96,7 +95,6 @@ export function SignupFlow({
           hasPassport: hasPassport ?? false,
           position,
           yearsExperience: years,
-          englishSelf,
           cityState: cityState.trim(),
           consent: true,
         }),
@@ -222,7 +220,7 @@ export function SignupFlow({
         </p>
         <Link
           href={localePath(locale, '/assessment')}
-          className="t-colors inline-block rounded-[12px] bg-ink px-5 py-3 text-[15px] font-medium text-white no-underline hover:bg-accent"
+          className="t-colors inline-block rounded-[12px] bg-ink px-5 py-3 text-[15px] font-medium text-paper no-underline hover:bg-ink-hover"
         >
           {s.successCta} →
         </Link>
@@ -339,7 +337,7 @@ export function SignupFlow({
                   onClick={() => setHasPassport(option.value)}
                   className={`t-colors cursor-pointer rounded-full border px-[18px] py-2.5 text-[14px] ${
                     hasPassport === option.value
-                      ? 'border-ink bg-ink text-white'
+                      ? 'border-ink bg-ink text-paper'
                       : 'border-line-strong bg-surface text-ink hover:border-ink'
                   }`}
                 >
@@ -378,7 +376,7 @@ export function SignupFlow({
                             onClick={() => setPosition(option.slug)}
                             className={`t-colors cursor-pointer rounded-full border px-[14px] py-2 text-[14px] ${
                               active
-                                ? 'border-ink bg-ink text-white'
+                                ? 'border-ink bg-ink text-paper'
                                 : 'border-line-strong bg-surface text-ink hover:border-ink'
                             }`}
                           >
@@ -407,20 +405,6 @@ export function SignupFlow({
             </select>
           </Field>
 
-          <Field label={s.englishSelf}>
-            <select
-              value={englishSelf}
-              onChange={(event) => setEnglishSelf(Number(event.target.value))}
-              className={inputClass(false)}
-            >
-              {s.englishOptions.map((label, index) => (
-                <option key={label} value={index}>
-                  {label}
-                </option>
-              ))}
-            </select>
-          </Field>
-
           <Field label={s.cityState} error={errors.cityState}>
             <input
               value={cityState}
@@ -440,23 +424,6 @@ export function SignupFlow({
             to learn what you are in for.
           */}
           {/*
-            The placement fee, before the assessment fee is taken rather than
-            after it. They are two different amounts with two different
-            conditions, and a candidate who learns about the second one later
-            has been treated badly whatever the paperwork says. It sits above
-            the consent box deliberately: the box is the record that it was
-            shown.
-          */}
-          {PLACEMENT_FEE.visibleToCandidates && (
-            <p className="m-0 rounded-[12px] border border-accent bg-accent-tint px-4 py-3.5 text-[14px] leading-[1.6] text-ink">
-              {fill(t.placementFee, {
-                eur: PLACEMENT_FEE.eur.toLocaleString('en-GB'),
-                price: formatPrice(price.totalMinor),
-              })}
-            </p>
-          )}
-
-          {/*
             The registered company is not the name on the door. Someone who
             pays S&A Recruitment and then sees an unfamiliar company debit
             their account reports it as fraud, and a UPI dispute cannot be
@@ -464,8 +431,8 @@ export function SignupFlow({
           */}
           <p className="m-0 text-[13px] leading-[1.55] text-muted">
             The charge appears as{' '}
-            <span className="font-mono text-[12px] text-ink-2">{ENTITY.statementDescriptor}</span>{' '}
-            on your statement. {ENTITY.tradingAs} is a trading name of {ENTITY.legalName}.
+            <span className="font-mono text-[12px] text-ink-2">{entity.statementDescriptor}</span>{' '}
+            on your statement. {entity.tradingAs} is a trading name of {entity.legalName}.
           </p>
 
           {/* Mandatory odds disclosure. The button stays disabled until it is checked. */}
@@ -479,15 +446,13 @@ export function SignupFlow({
             />
             <span
               aria-hidden
-              className="mt-px flex size-[20px] shrink-0 items-center justify-center rounded-[6px] border border-line-strong text-[13px] font-semibold text-white peer-checked:border-ink peer-checked:bg-ink"
-              style={consent ? { background: '#1b1a17', borderColor: '#1b1a17' } : undefined}
+              className="mt-px flex size-[20px] shrink-0 items-center justify-center rounded-[6px] border border-line-strong text-[13px] font-semibold text-paper peer-checked:border-ink peer-checked:bg-ink"
+              style={consent ? { background: 'var(--color-ink)', borderColor: 'var(--color-ink)' } : undefined}
             >
               {consent ? '✓' : ''}
             </span>
             <span id="consent-text" className="text-[13px] leading-[1.55] text-ink-2">
-              {/* The box is a record of what somebody agreed to, so it cannot
-                  name an amount the site is not showing them. */}
-              {PLACEMENT_FEE_UNDISCLOSED ? s.consentNoPlacement : s.consent}{' '}
+              {s.consentNoPlacement}{' '}
               <Link href={localePath(locale, '/selection-rules')} className="prose-link">
                 {s.consentRules}
               </Link>{' '}
@@ -521,7 +486,7 @@ export function SignupFlow({
           type="button"
           onClick={next}
           disabled={busy || (step === 1 && !consent)}
-          className="t-colors cursor-pointer rounded-[12px] border-0 bg-ink px-5 py-3 text-[15px] font-medium text-white hover:bg-accent disabled:cursor-not-allowed"
+          className="t-colors cursor-pointer rounded-[12px] border-0 bg-ink px-5 py-3 text-[15px] font-medium text-paper hover:bg-ink-hover disabled:cursor-not-allowed"
           style={{ opacity: step === 1 && !consent ? 0.35 : 1 }}
         >
           {step === 1 ? s.startAssessment : s.continue}

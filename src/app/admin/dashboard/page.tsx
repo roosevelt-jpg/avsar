@@ -10,13 +10,14 @@ import { interviewTimes } from '@/lib/interviews/time';
 import { STATUS_META } from '@/lib/applications/status';
 import { getAnalytics, parseRange, RANGES } from '@/lib/console/analytics';
 import { can, requirePermission } from '@/lib/rbac/server';
+import { getServerSupabase } from '@/lib/supabase/server';
 
 export const metadata = { title: 'Console' };
 export const dynamic = 'force-dynamic';
 
 function Panel({ title, note, children }: { title: string; note?: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-[20px] border border-line bg-surface p-5">
+    <section className="rounded-[20px] border border-line/70 bg-surface p-5 shadow-[0_1px_2px_rgba(27,26,23,0.05)]">
       <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
         <h2 className="m-0 text-[16px] font-semibold">{title}</h2>
         {note ? <span className="text-[12px] text-muted">{note}</span> : null}
@@ -63,18 +64,55 @@ export default async function ConsoleDashboard({ searchParams }: { searchParams:
 
   const totalPaid = analytics.paymentMethods.reduce((a, r) => a + r.value, 0);
 
+  /* Shortcuts to the jobs people come here to do, each shown only to a role
+     that can do it. */
+  const shortcuts = [
+    can(access, 'jobs.edit') && { href: '/admin/jobs/new', label: 'Post a job', note: 'Draft, then publish', icon: 'M12 5v14M5 12h14' },
+    showApps && { href: '/admin/applications?status=submitted', label: 'Review applications', note: `${analytics.live.awaitingReview.toLocaleString('en-IN')} waiting`, icon: 'M9 12l2 2 4-4M5 4h14v16H5z' },
+    can(access, 'candidates.view') && { href: '/admin', label: 'Search talent', note: 'Everyone with a finished test', icon: 'M11 4.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zM16 16l4.5 4.5' },
+    can(access, 'leads.manage') && { href: '/admin/inbox', label: 'CRM', note: 'Leads and messages', icon: 'M4 5h16v11H9l-5 4V5Zm4 5h8M8 13h5' },
+    can(access, 'relocation.manage') && { href: '/admin/legal-reviews', label: 'Legal reviews', note: 'Owed to package buyers', icon: 'M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z' },
+    showMoney && { href: '/admin/payments', label: 'Payments', note: 'Receipts and refunds', icon: 'M3 7h18v10H3zM3 10h18' },
+    can(access, 'cms.edit') && { href: '/admin/cms', label: 'Edit website', note: 'Pages and media', icon: 'M4 20h4L19 9l-4-4L4 16v4z' },
+  ].filter(Boolean) as { href: string; label: string; note: string; icon: string }[];
+
+  const supabase = await getServerSupabase();
+  const { data: auth } = (await supabase?.auth.getUser()) ?? { data: { user: null } };
+  const fullName = typeof auth.user?.user_metadata?.full_name === 'string' ? (auth.user.user_metadata.full_name as string) : '';
+  const firstName = fullName.trim().split(/\s+/)[0] ?? '';
+
   return (
     <AdminShell current="/admin/dashboard" isStaff>
       <AdminHeading
-        title="Dashboard"
+        title={firstName ? `Welcome back, ${firstName}` : 'Dashboard'}
         lead="What needs attention now, and how recruitment is going. Every number opens the list behind it."
-        actions={
-          <>
-            {can(access, 'jobs.edit') && <AdminButton href="/admin/jobs/new">Post a job</AdminButton>}
-            {can(access, 'cms.edit') && <AdminButton href="/admin/cms" variant="light">Edit website</AdminButton>}
-          </>
-        }
+        actions={can(access, 'jobs.edit') ? <AdminButton href="/admin/jobs/new">Post a job</AdminButton> : undefined}
       />
+
+      {shortcuts.length > 0 && (
+        <nav aria-label="Shortcuts" className="mt-6">
+          <ul className="m-0 grid list-none grid-cols-2 gap-3 p-0 md:grid-cols-3 2xl:grid-cols-6">
+            {shortcuts.map((item) => (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  className="t-colors group flex h-full items-center gap-3 rounded-[16px] border border-line/70 bg-surface px-4 py-3.5 text-ink no-underline shadow-[0_1px_2px_rgba(27,26,23,0.05)] hover:border-ink"
+                >
+                  <span className="grid size-9 shrink-0 place-items-center rounded-[10px] bg-console text-ink group-hover:bg-ink group-hover:text-paper">
+                    <svg viewBox="0 0 24 24" className="size-[18px]" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
+                      <path d={item.icon} strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block truncate text-[14px] font-semibold">{item.label}</span>
+                    <span className="block truncate text-[12px] text-muted">{item.note}</span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
 
       {/* One row of filters, above everything it scopes. */}
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3">

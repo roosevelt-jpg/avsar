@@ -19,7 +19,7 @@ export function DuplicateJobButton({ jobId }: { jobId: string }) {
       router.push(`/admin/jobs/${data.id}`);
       return;
     }
-    setError(data?.error === 'demo_mode' ? 'Demo mode' : 'Failed');
+    setError(data?.error === 'not_configured' ? 'The database is not connected, so nothing was saved.' : 'Failed');
   }
 
   return (

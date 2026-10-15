@@ -35,6 +35,8 @@ const SKIP_KEYS = new Set([
   'tone',
   'columns',
   'width',
+  'layout',
+  'style',
 ]);
 
 const SKIP_VALUES = new Set(['video', 'image', 'none', 'left', 'right', 'dark', 'light', 'accent', 'info', 'warning', 'narrow', 'wide']);
@@ -49,6 +51,8 @@ function translatable(key: string | null, value: string): boolean {
   if (key && SKIP_KEYS.has(key)) return false;
   if (SKIP_VALUES.has(value)) return false;
   if (value.startsWith('/') || value.startsWith('http') || value.startsWith('mailto:')) return false;
+  /* Numbers and bare tokens ("0", "{{shortlist_score}}/10") read the same in every language. */
+  if (!/\p{L}/u.test(value.replace(/\{\{\w+\}\}/g, ''))) return false;
   return true;
 }
 
@@ -61,6 +65,18 @@ function walk(value: unknown, locale: Locale, key: string | null): unknown {
     return out;
   }
   return value;
+}
+
+/** Every string in a value that localizePage would look up, for the coverage test. */
+export function translatableStrings(value: unknown, key: string | null = null, out = new Set<string>()): Set<string> {
+  if (typeof value === 'string') {
+    if (translatable(key, value)) out.add(value);
+  } else if (Array.isArray(value)) {
+    for (const item of value) translatableStrings(item, null, out);
+  } else if (value && typeof value === 'object') {
+    for (const [childKey, child] of Object.entries(value)) translatableStrings(child, childKey, out);
+  }
+  return out;
 }
 
 /** Page content for this language. English is the source and is returned as-is. */

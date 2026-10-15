@@ -1,7 +1,5 @@
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { getServerSupabase } from '@/lib/supabase/server';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
-import { SAMPLE_JOBS } from '@/lib/jobs/sample';
 import { jobFromRow, type Job } from '@/lib/jobs/types';
 import { INTERVIEW_COLUMNS, interviewFromRow, type Interview } from '@/lib/interviews/time';
 import type { ApplicationStatus } from './status';
@@ -37,14 +35,6 @@ function upcoming(raw: unknown): Interview[] {
     .sort((a, b) => a.startsAt.localeCompare(b.startsAt));
 }
 
-/* Two days ahead at 08:30 UTC (14:00 in India), so the demo always shows an interview still to come. */
-function sampleInterviewTime(): string {
-  const date = new Date();
-  date.setUTCDate(date.getUTCDate() + 2);
-  date.setUTCHours(8, 30, 0, 0);
-  return date.toISOString();
-}
-
 function eventFromRow(row: Record<string, unknown>): ApplicationEvent {
   return {
     id: Number(row.id),
@@ -56,63 +46,13 @@ function eventFromRow(row: Record<string, unknown>): ApplicationEvent {
   };
 }
 
-const SAMPLE_APPLICATIONS: CandidateApplication[] = (() => {
-  const [cook, electrician] = SAMPLE_JOBS;
-  if (!cook || !electrician) return [];
-  return [
-    {
-      id: 'sample-app-1',
-      reference: 'APP-7K3Q9D2F',
-      status: 'interview',
-      createdAt: '2026-10-02T10:00:00Z',
-      statusChangedAt: '2026-10-11T10:00:00Z',
-      coverNote: null,
-      job: cook,
-      events: [
-        { id: 1, fromStatus: null, toStatus: 'submitted', note: 'Application received', visibleToCandidate: true, createdAt: '2026-10-02T10:00:00Z' },
-        { id: 2, fromStatus: 'submitted', toStatus: 'screening', note: null, visibleToCandidate: true, createdAt: '2026-10-04T10:00:00Z' },
-        { id: 3, fromStatus: 'screening', toStatus: 'shortlisted', note: 'Strong kitchen experience.', visibleToCandidate: true, createdAt: '2026-10-08T10:00:00Z' },
-        { id: 4, fromStatus: 'shortlisted', toStatus: 'interview', note: 'Video interview booked. Details below and by email.', visibleToCandidate: true, createdAt: '2026-10-11T10:00:00Z' },
-      ],
-      interviews: [
-        {
-          id: 'sample-interview-1',
-          applicationId: 'sample-app-1',
-          startsAt: sampleInterviewTime(),
-          durationMinutes: 30,
-          timezone: 'Asia/Kolkata',
-          mode: 'video',
-          link: null,
-          location: null,
-          candidateMessage: 'With the head chef. Please have your passport and certificates nearby.',
-          status: 'scheduled',
-        },
-      ],
-    },
-    {
-      id: 'sample-app-2',
-      reference: 'APP-2M8T4X1B',
-      status: 'submitted',
-      createdAt: '2026-10-12T10:00:00Z',
-      statusChangedAt: '2026-10-12T10:00:00Z',
-      coverNote: null,
-      job: electrician,
-      events: [
-        { id: 5, fromStatus: null, toStatus: 'submitted', note: 'Application received', visibleToCandidate: true, createdAt: '2026-10-12T10:00:00Z' },
-      ],
-      interviews: [],
-    },
-  ];
-})();
-
 /**
  * The signed-in candidate's applications, newest first, with the events they
  * are allowed to see. Read through the session client, so RLS hides internal
  * notes even if this query forgot to.
  */
 export async function listCandidateApplications(candidateId: string | null): Promise<CandidateApplication[]> {
-  if (!isSupabaseConfigured() || !candidateId) return SAMPLE_APPLICATIONS;
-
+  if (!candidateId) return [];
   const supabase = await getServerSupabase();
   if (!supabase) return [];
 
@@ -166,35 +106,6 @@ export type AdminApplicationRow = {
 
 export type AdminApplicationFilters = { status?: string; jobId?: string; q?: string; page?: number };
 
-const SAMPLE_ADMIN_ROWS: AdminApplicationRow[] = [
-  ['Arjun Nair', 'Kochi, Kerala', 'chef', 'interview', 0],
-  ['Priya Sharma', 'Jaipur, Rajasthan', 'cleaner', 'screening', 1],
-  ['Mohammed Rafi', 'Kozhikode, Kerala', 'electrician', 'submitted', 2],
-  ['Gurpreet Singh', 'Ludhiana, Punjab', 'driver', 'shortlisted', 3],
-  ['Anjali Menon', 'Thrissur, Kerala', 'fb-service', 'offer', 4],
-  ['Ravi Kumar', 'Chennai, Tamil Nadu', 'welder', 'submitted', 5],
-].map(([name, city, position, status, jobIndex], index) => {
-  const job = SAMPLE_JOBS[Number(jobIndex)] ?? SAMPLE_JOBS[0]!;
-  return {
-    id: `sample-${index}`,
-    reference: `APP-SAMPLE${index}`,
-    status: status as ApplicationStatus,
-    createdAt: `2026-10-${String(10 - index).padStart(2, '0')}T09:00:00Z`,
-    statusChangedAt: `2026-10-${String(12 - index).padStart(2, '0')}T09:00:00Z`,
-    rating: index % 2 ? 4 : null,
-    candidate: {
-      id: `sample-candidate-${index}`,
-      fullName: String(name),
-      email: `${String(name).split(' ')[0]!.toLowerCase()}@example.com`,
-      phone: '+91 98765 43210',
-      cityState: String(city),
-      position: String(position),
-      paymentStatus: index % 2 ? 'paid' : 'pending',
-    },
-    job: { id: job.id, title: job.title, city: job.city, slug: job.slug },
-  };
-});
-
 function adminRowFrom(raw: Record<string, unknown>): AdminApplicationRow {
   const one = (value: unknown) => (Array.isArray(value) ? value[0] : value) as Record<string, unknown> | undefined;
   const c = one(raw.candidates) ?? {};
@@ -227,11 +138,6 @@ export async function listApplicationsForConsole(
 ): Promise<{ rows: AdminApplicationRow[]; total: number; pageSize: number }> {
   const pageSize = 50;
   const page = Math.max(1, filters.page ?? 1);
-
-  if (!isSupabaseConfigured()) {
-    const rows = SAMPLE_ADMIN_ROWS.filter((row) => !filters.status || row.status === filters.status);
-    return { rows, total: rows.length, pageSize };
-  }
 
   const admin = getAdminSupabase();
   if (!admin) return { rows: [], total: 0, pageSize };
@@ -277,22 +183,6 @@ const DETAIL_SELECT =
   `application_interviews (${INTERVIEW_COLUMNS})`;
 
 export async function getApplicationForConsole(id: string): Promise<AdminApplicationDetail | null> {
-  if (!isSupabaseConfigured()) {
-    const row = SAMPLE_ADMIN_ROWS.find((r) => r.id === id) ?? SAMPLE_ADMIN_ROWS[0];
-    if (!row) return null;
-    const job = SAMPLE_JOBS.find((j) => j.id === row.job.id);
-    return {
-      ...row,
-      coverNote: 'I have six years of kitchen experience in Kerala and two in Dubai. I would like to grow as a chef in Europe.',
-      answers: { haccp: 'yes', cuisine: 'South Indian, continental, buffet' },
-      screeningQuestions: job?.screeningQuestions ?? [],
-      events: SAMPLE_APPLICATIONS[0]?.events ?? [],
-      candidateExtra: { yearsBand: 2, hasPassport: true, createdAt: '2026-10-01T09:00:00Z', visible: true, whatsappOptIn: true },
-      cvDocumentId: null,
-      interviews: row.status === 'interview' ? (SAMPLE_APPLICATIONS[0]?.interviews ?? []) : [],
-    };
-  }
-
   const admin = getAdminSupabase();
   if (!admin) return null;
 
@@ -344,15 +234,6 @@ export type UpcomingInterview = Interview & { candidateName: string; jobTitle: s
  * dashboard. Service role: callers check applications.view first.
  */
 export async function listUpcomingInterviews(limit = 6): Promise<UpcomingInterview[]> {
-  if (!isSupabaseConfigured()) {
-    const sample = SAMPLE_APPLICATIONS[0];
-    return (sample?.interviews ?? []).map((interview) => ({
-      ...interview,
-      applicationId: 'sample-0',
-      candidateName: 'Arjun Nair',
-      jobTitle: sample?.job.title ?? '',
-    }));
-  }
   const admin = getAdminSupabase();
   if (!admin) return [];
   const { data, error } = await admin
@@ -380,12 +261,6 @@ export async function listUpcomingInterviews(limit = 6): Promise<UpcomingIntervi
 
 /** Counts per status, for the console overview and the filter chips. */
 export async function applicationCounts(): Promise<Record<string, number>> {
-  if (!isSupabaseConfigured()) {
-    return SAMPLE_ADMIN_ROWS.reduce<Record<string, number>>((acc, row) => {
-      acc[row.status] = (acc[row.status] ?? 0) + 1;
-      return acc;
-    }, {});
-  }
   const admin = getAdminSupabase();
   if (!admin) return {};
   const statuses = ['submitted', 'screening', 'shortlisted', 'interview', 'offer', 'hired', 'visa_processing', 'relocated', 'rejected', 'withdrawn'];

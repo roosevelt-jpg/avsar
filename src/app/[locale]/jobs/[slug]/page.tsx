@@ -3,9 +3,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { SiteHeader } from '@/components/candidate/SiteHeader';
-import { SiteFooter } from '@/components/candidate/SiteFooter';
 import { Markdown } from '@/components/cms/Markdown';
 import { Icon } from '@/components/cms/primitives';
+import { FilmButton } from '@/components/cms/VideoPlayer';
 import { ApplyPanel, type ApplyViewer } from '@/components/jobs/ApplyPanel';
 import { JobCard, jobImage } from '@/components/jobs/JobCard';
 import { SaveJobButton } from '@/components/jobs/SaveJobButton';
@@ -15,8 +15,8 @@ import { getSiteSettings } from '@/lib/cms/data';
 import { localizeJob, siteText } from '@/lib/cms/localize';
 import { getPublishedJob, recommendedJobs } from '@/lib/jobs/data';
 import { EMPLOYMENT_LABELS, formatSalary, HOUSING_LABELS, isOpen, jobLocation } from '@/lib/jobs/types';
-import { BRAND } from '@/lib/data/brand';
-import { isLocale, languageAlternates, localePath } from '@/lib/i18n';
+import { isLocale, localePath } from '@/lib/i18n';
+import { pageMetadata } from '@/lib/seo';
 import { getServerSupabase } from '@/lib/supabase/server';
 import { STATUS_META, type ApplicationStatus } from '@/lib/applications/status';
 
@@ -30,13 +30,15 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const job = localizeJob(stored, locale);
   const title = job.seoTitle || `${job.title} · ${job.city}`;
   const description = job.seoDescription || job.summary;
-  const image = jobImage(job);
-  return {
+  return pageMetadata({
     title,
     description,
-    alternates: languageAlternates(localePath(locale, `/jobs/${job.slug}`)),
-    openGraph: { title, description, images: image ? [{ url: image }] : undefined, type: 'website' },
-  };
+    image: jobImage(job) ?? undefined,
+    imageAlt: `${job.title}, ${job.city}`,
+    path: localePath(locale, `/jobs/${job.slug}`),
+    locale,
+    type: 'article',
+  });
 }
 
 export default async function JobPage({ params }: Params) {
@@ -104,7 +106,7 @@ export default async function JobPage({ params }: Params) {
     datePosted: job.publishedAt ?? job.createdAt,
     validThrough: job.closesAt ?? undefined,
     employmentType: job.employmentType === 'full_time' ? 'FULL_TIME' : job.employmentType === 'part_time' ? 'PART_TIME' : 'TEMPORARY',
-    hiringOrganization: { '@type': 'Organization', name: job.employerDisplay || BRAND.name },
+    hiringOrganization: { '@type': 'Organization', name: job.employerDisplay || settings.general.siteName },
     jobLocation: {
       '@type': 'Place',
       address: { '@type': 'PostalAddress', addressLocality: job.city, addressRegion: job.region ?? undefined, addressCountry: job.country },
@@ -222,8 +224,14 @@ export default async function JobPage({ params }: Params) {
                 viewer={applyViewer}
                 allowQuickApply={settings.applications.allowQuickApply}
                 requirePaidAssessment={settings.applications.requirePaidAssessment}
+                shortlistMinScore={settings.hiring.shortlistMinScore}
                 salary={salary}
               />
+              {settings.applications.filmUrl && settings.applications.filmLabel ? (
+                <div className="mt-4 flex justify-center">
+                  <FilmButton src={settings.applications.filmUrl} label={t(settings.applications.filmLabel)} />
+                </div>
+              ) : null}
             </aside>
           </div>
 
@@ -241,7 +249,6 @@ export default async function JobPage({ params }: Params) {
           )}
         </div>
       </main>
-      <SiteFooter locale={locale} />
     </>
   );
 }

@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import { privateMetadata } from '@/lib/seo';
 import { Wordmark } from '@/components/ui/Wordmark';
 import { AccountMenu } from '@/components/auth/AccountMenu';
 import { CvUpload } from '@/components/candidate/CvUpload';
@@ -8,19 +9,10 @@ import { YourData } from '@/components/candidate/YourData';
 import { getDictionary, isLocale, localePath } from '@/lib/i18n';
 import { requireCandidate } from '@/lib/auth';
 import { getServerSupabase } from '@/lib/supabase/server';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { getCandidateStatus } from '@/lib/candidate/status';
 import type { ProfileInput } from '@/lib/validation-profile';
 
-export const metadata = { title: 'Your profile' };
-
-const EMPTY: ProfileInput = {
-  skills: [],
-  languages: [],
-  relocationReady: true,
-  experiences: [],
-  education: [],
-};
+export const metadata = privateMetadata('Your profile');
 
 /** Turns a stored `YYYY-MM-DD` back into the `YYYY-MM` the month input wants. */
 function toMonth(value: string | null): string {
@@ -31,20 +23,6 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const t = getDictionary(locale);
-
-  if (!isSupabaseConfigured()) {
-    return (
-      <>
-        <header className="flex flex-wrap items-center justify-between gap-4 border-b border-line px-[clamp(20px,4cqi,56px)] py-[18px]">
-          <Wordmark href={localePath(locale, '/')} />
-        </header>
-        <main className="px-[clamp(20px,4cqi,56px)] py-[clamp(36px,6cqi,72px)]">
-          <ProfileForm t={t} initial={EMPTY} />
-          <YourData demo />
-        </main>
-      </>
-    );
-  }
 
   const candidate = await requireCandidate(locale, localePath(locale, '/profile'));
   const supabase = await getServerSupabase();

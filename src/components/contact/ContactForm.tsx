@@ -101,7 +101,7 @@ export function ContactForm({ variant = 'general', locale }: { variant?: 'genera
       setStatus({
         ok: false,
         text:
-          data?.error === 'demo_mode'
+          data?.error === 'not_configured'
             ? 'This is a preview: nothing is saved until the platform is connected to its database.'
             : data?.error === 'rate_limited'
               ? 'Too many messages from this connection. Please wait a few minutes and try again.'
@@ -193,7 +193,7 @@ export function ContactForm({ variant = 'general', locale }: { variant?: 'genera
         <button
           type="submit"
           disabled={busy || !ready}
-          className="t-colors cursor-pointer rounded-[12px] border-0 bg-ink px-5 py-3 text-[15px] font-medium text-paper hover:bg-accent disabled:opacity-40"
+          className="t-colors cursor-pointer rounded-[12px] border-0 bg-ink px-5 py-3 text-[15px] font-medium text-paper hover:bg-ink-hover disabled:opacity-40"
         >
           {busy ? 'Sending…' : 'Send'}
         </button>

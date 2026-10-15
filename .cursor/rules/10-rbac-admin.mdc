@@ -14,8 +14,8 @@ globs: src/app/admin/**,src/app/api/admin/**,src/lib/rbac/**,src/components/admi
   ```ts
   const guard = await apiPermission('jobs.edit');
   if (guard instanceof NextResponse) return guard;
-  const refusal = demoWriteRefusal(guard);
-  if (refusal) return refusal;
+  const admin = getAdminSupabase();
+  if (!admin) return NextResponse.json({ error: 'not_configured' }, { status: 503 });
   ```
 - Validate every body with zod; return `{ error: 'snake_case_code' }` with a proper status.
 - Every write calls `audit(guard.userId, 'area.verb', 'subject:id', detail)`.

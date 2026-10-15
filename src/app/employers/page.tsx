@@ -2,16 +2,22 @@ import Link from 'next/link';
 import { Mono } from '@/components/ui/Mono';
 import { Wordmark } from '@/components/ui/Wordmark';
 import { EmployerSearchBox } from '@/components/employer/EmployerSearchBox';
-import { SAMPLE_TALENT, initials } from '@/lib/data/candidates';
-import { EMPLOYER_PRICE_EUR } from '@/lib/data/cohort';
 import { AccountMenu } from '@/components/auth/AccountMenu';
 import { ContactForm } from '@/components/contact/ContactForm';
+import { SiteFooter } from '@/components/candidate/SiteFooter';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { getSiteSettings } from '@/lib/cms/data';
+import { formatMoney } from '@/lib/company/config';
+import { assessedCount } from '@/lib/company/data';
+import { staticPageMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Hire pre-assessed workers from India',
-  description:
-    'Search a pool of candidates scored on skills, experience and English. Visas, relocation, housing and onboarding handled.',
-};
+/* Settings saves revalidate this page; the assessed count has no save to hang
+   off, so it is refreshed hourly instead of frozen at build time. */
+export const revalidate = 3600;
+
+export async function generateMetadata() {
+  return staticPageMetadata('employers', 'en');
+}
 
 const STEPS = [
   ['Search and shortlist', 'Describe the role in plain words. Filter by sector, English level and experience.'],
@@ -20,9 +26,8 @@ const STEPS = [
 ] as const;
 
 export default async function EmployerLanding() {
-  /* Three hospitality rows with English at B1 or better, as in the prototype. */
-  const sample = SAMPLE_TALENT.filter((row) => row.sector === 'hospitality').slice(0, 3);
-
+  const [settings, assessed] = await Promise.all([getSiteSettings(), assessedCount()]);
+  const { company, pricing } = settings;
   return (
     <div className="avsar-root">
       <header className="flex flex-wrap items-center justify-between gap-4 border-b border-line px-[clamp(20px,4cqi,56px)] py-[18px]">
@@ -42,10 +47,11 @@ export default async function EmployerLanding() {
           </Link>
         </nav>
         <div className="flex flex-wrap items-center gap-3">
+          <ThemeToggle />
           <AccountMenu locale="en" tone="employer" />
           <Link
             href="/employers#contact"
-            className="t-colors rounded-[10px] bg-employer px-4 py-2.5 text-[14px] font-medium text-white no-underline hover:bg-employer-deep"
+            className="t-colors rounded-[10px] bg-ink px-4 py-2.5 text-[14px] font-medium text-paper no-underline hover:bg-ink-hover"
           >
             Book a call
           </Link>
@@ -60,35 +66,13 @@ export default async function EmployerLanding() {
           Search a pool of candidates scored on skills, experience and English. We handle visas,
           relocation, housing and onboarding.
         </p>
+        {assessed > 0 ? (
+          <Mono className="text-muted">{assessed.toLocaleString('en-GB')} candidates assessed so far</Mono>
+        ) : null}
         <EmployerSearchBox />
       </section>
 
-      <section className="px-[clamp(20px,4cqi,56px)] pb-[clamp(48px,7cqi,88px)]">
-        <div className="max-w-[720px] rounded-[20px] border border-line bg-surface p-[clamp(18px,2.4cqi,26px)]">
-          <Mono className="text-muted">Sample results · Hospitality · English ≥ B1</Mono>
-          <ul className="m-0 mt-4 list-none divide-y divide-line-soft p-0">
-            {sample.map((row) => (
-              <li key={row.id} className="flex flex-wrap items-center gap-4 py-3.5">
-                <span
-                  aria-hidden
-                  className="flex size-[36px] shrink-0 items-center justify-center rounded-full bg-surface-subtle font-mono text-[12px] text-ink-2"
-                >
-                  {initials(row.name)}
-                </span>
-                <span className="min-w-[140px] flex-1">
-                  <span className="block text-[15px] font-medium">{row.name}</span>
-                  <span className="block text-[13px] text-muted">{row.city}</span>
-                </span>
-                <Mono className="text-muted">{row.yearsExperience}y</Mono>
-                <Mono className="text-muted">English {row.english}</Mono>
-                <Mono className="font-medium text-employer-deep">Score {row.score}</Mono>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      <section id="how" className="bg-ink px-[clamp(20px,4cqi,56px)] py-[clamp(56px,8cqi,104px)] text-paper">
+      <section id="how" className="bg-night px-[clamp(20px,4cqi,56px)] py-[clamp(56px,8cqi,104px)] text-on-night">
         <h2 className="m-0 mb-10 max-w-[20ch] text-[clamp(28px,4cqi,48px)] font-semibold leading-[1.1] tracking-[-0.03em]">
           From search to first shift
         </h2>
@@ -104,30 +88,29 @@ export default async function EmployerLanding() {
       </section>
 
       <section id="contact" className="px-[clamp(20px,4cqi,56px)] py-[clamp(56px,8cqi,104px)]">
-        <div className="grid gap-8 rounded-[28px] bg-employer px-[clamp(24px,4cqi,56px)] py-[clamp(32px,5cqi,56px)] lg:grid-cols-[minmax(0,1fr)_minmax(0,640px)]">
+        {/* The same light grey panel as the call-to-action bands on the
+            candidate pages, so the two sides of the site look like one. */}
+        <div className="grid gap-8 rounded-[28px] border border-line bg-tint-sand px-[clamp(24px,4cqi,56px)] py-[clamp(32px,5cqi,56px)] lg:grid-cols-[minmax(0,1fr)_minmax(0,640px)]">
           <div>
-            <h2 className="m-0 max-w-[24ch] text-[clamp(24px,3.2cqi,40px)] font-semibold leading-[1.15] tracking-[-0.03em] text-white">
+            <h2 className="m-0 max-w-[24ch] text-[clamp(24px,3.2cqi,40px)] font-semibold leading-[1.15] tracking-[-0.03em] text-ink">
               Tell us what roles you need to fill.
             </h2>
-            <p className="m-0 mt-3 text-[15px] text-white/80">
-              €{EMPLOYER_PRICE_EUR.toLocaleString('en-GB')} per placement. Search is free.
+            <p className="m-0 mt-3 text-[15px] text-ink-2">
+              {formatMoney(pricing.employerPlacementFeeMinor, 'EUR')} per placement. Search is free.
             </p>
-            <p className="m-0 mt-3 text-[15px] text-white/80">
-              Or write to <span className="font-mono">employers@smithandadams.com</span>.
-            </p>
+            {company.employerEmail ? (
+              <p className="m-0 mt-3 text-[15px] text-ink-2">
+                Or write to <span className="font-mono">{company.employerEmail}</span>.
+              </p>
+            ) : null}
           </div>
-          <div className="rounded-[20px] bg-paper px-5 pt-1 pb-6 sm:px-7">
+          <div className="rounded-[20px] border border-line bg-surface px-5 pt-1 pb-6 sm:px-7">
             <ContactForm variant="employer" />
           </div>
         </div>
       </section>
 
-      <footer className="bg-ink px-[clamp(20px,4cqi,56px)] py-[clamp(40px,6cqi,64px)] text-dark-muted-2">
-        <Wordmark tone="dark" accent="employer" />
-        <p className="mt-8 border-t border-dark-line pt-6 font-mono text-[12px] text-dark-muted">
-          © 2026 S&A Recruitment, a Smith & Adams company · Benefit Discovery, Lda, Lisbon, Portugal
-        </p>
-      </footer>
+      <SiteFooter locale="en" />
     </div>
   );
 }

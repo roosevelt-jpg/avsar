@@ -46,6 +46,7 @@ export function ApplyPanel({
   viewer,
   allowQuickApply,
   requirePaidAssessment,
+  shortlistMinScore,
   salary,
 }: {
   locale: Locale;
@@ -53,6 +54,8 @@ export function ApplyPanel({
   viewer: ApplyViewer;
   allowQuickApply: boolean;
   requirePaidAssessment: boolean;
+  /** Out of 100, from Settings › Company & pricing. */
+  shortlistMinScore: number;
   salary: string | null;
 }) {
   const router = useRouter();
@@ -85,7 +88,7 @@ export function ApplyPanel({
     const response = await fetch('/api/cv/upload', { method: 'POST', body: form });
     const data = (await response.json().catch(() => null)) as { documentId?: string } | null;
     if (response.ok && data?.documentId) return data.documentId;
-    setError(response.status === 503 ? 'CV upload is not available on this demo deployment.' : 'Your CV could not be uploaded. Try a PDF under 5 MB, or apply without it and add it later.');
+    setError(response.status === 503 ? 'CV upload is not available right now. Apply without it and add it later.' : 'Your CV could not be uploaded. Try a PDF under 5 MB, or apply without it and add it later.');
     return false;
   }
 
@@ -193,7 +196,7 @@ export function ApplyPanel({
           return;
         }
         if (!response.ok || data?.status !== 'created') {
-          setError(response.status === 503 ? 'Applications are not available on this demo deployment.' : 'We could not create your account. Please try again.');
+          setError(response.status === 503 ? 'Applications are not available right now. Please try again later.' : 'We could not create your account. Please try again.');
           return;
         }
       }
@@ -224,11 +227,19 @@ export function ApplyPanel({
         <Link href={localePath(locale, '/dashboard/applications')} className="mt-5 flex justify-center rounded-full bg-ink px-5 py-3 text-[15px] font-medium text-paper no-underline">
           Track my application
         </Link>
-        {done && (
-          <p className="m-0 mt-4 text-[14px] leading-[1.55] text-muted">
-            Stand out: a completed skills assessment is shown to the employer with your application.{' '}
-            <Link href={localePath(locale, '/assessment')} className="prose-link">Take it now</Link>.
-          </p>
+        {/* The moment of highest intent: they have just asked for a job. The
+            test result travels with the application and decides the shortlist,
+            so this is the next step. */}
+        {!(viewer.kind === 'candidate' && viewer.paid) && (
+          <div className="mt-5 rounded-[18px] border border-accent/40 bg-accent-tint p-4">
+            <p className="m-0 text-[16px] font-semibold">Next: take the skills test</p>
+            <p className="m-0 mt-1 text-[14px] leading-[1.55] text-ink-2">
+              Free, up to 90 minutes on your phone. Your result goes to the employer with this application, and a score above {shortlistMinScore / 10} out of 10 qualifies you for the shortlist.
+            </p>
+            <Link href={localePath(locale, '/assessment')} className="mt-3 flex justify-center rounded-full bg-ink px-5 py-3 text-[15px] font-medium text-paper no-underline hover:bg-ink-hover">
+              Start the skills test
+            </Link>
+          </div>
         )}
       </div>
     );
@@ -259,7 +270,7 @@ export function ApplyPanel({
       <div className={card}>
         <h2 className="m-0 text-[20px] font-semibold">Finish your profile to apply</h2>
         <p className="m-0 mt-2 text-[15px] text-ink-2">Your account needs a candidate profile first. It takes a minute.</p>
-        <Link href={localePath(locale, '/signup')} className="mt-5 flex justify-center rounded-full bg-accent px-5 py-3 text-[15px] text-white no-underline">Complete my profile</Link>
+        <Link href={localePath(locale, '/signup')} className="mt-5 flex justify-center rounded-full bg-ink px-5 py-3 text-[15px] text-paper no-underline">Complete my profile</Link>
       </div>
     );
   }
@@ -271,7 +282,7 @@ export function ApplyPanel({
       <div className={card}>
         <h2 className="m-0 text-[22px] font-semibold tracking-[-0.02em]">Apply for this job</h2>
         <p className="m-0 mt-2 text-[15px] text-ink-2">Create a free profile or sign in to apply.</p>
-        <Link href={localePath(locale, '/signup')} className="mt-5 flex justify-center rounded-full bg-accent px-5 py-3 text-[15px] font-medium text-white no-underline">Create my profile</Link>
+        <Link href={localePath(locale, '/signup')} className="mt-5 flex justify-center rounded-full bg-ink px-5 py-3 text-[15px] font-medium text-paper no-underline">Create my profile</Link>
         <Link href={signInHref} className="mt-3 flex justify-center rounded-full border border-line-strong px-5 py-3 text-[15px] text-ink no-underline">Sign in</Link>
       </div>
     );
@@ -418,7 +429,7 @@ export function ApplyPanel({
       <button
         type="submit"
         disabled={busy}
-        className="t-colors mt-5 w-full cursor-pointer rounded-full border-0 bg-accent px-5 py-3.5 text-[16px] font-semibold text-white hover:bg-accent-deep disabled:cursor-wait disabled:opacity-60"
+        className="t-colors mt-5 w-full cursor-pointer rounded-full border-0 bg-ink px-5 py-3.5 text-[16px] font-semibold text-paper hover:bg-ink-hover disabled:cursor-wait disabled:opacity-60"
       >
         {busy ? 'Sending…' : anonymous ? 'Create account and apply' : 'Apply now'}
       </button>

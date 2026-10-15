@@ -1,25 +1,29 @@
 import Link from 'next/link';
+import { staticPageMetadata } from '@/lib/seo';
 import { notFound } from 'next/navigation';
 import { Mono } from '@/components/ui/Mono';
 import { SiteHeader } from '@/components/candidate/SiteHeader';
-import { SiteFooter } from '@/components/candidate/SiteFooter';
 import { FaqAccordion } from '@/components/candidate/FaqAccordion';
 import { fill, getDictionary, isLocale, localePath } from '@/lib/i18n';
-import { EMPLOYER_PRICE_EUR, activePrice, formatPrice } from '@/lib/data/cohort';
-import { formatIndicative } from '@/lib/data/brand';
+import { getSiteSettings } from '@/lib/cms/data';
+import { formatFee, formatIndicative, formatMoney } from '@/lib/company/config';
 
-export const metadata = { title: 'Pricing' };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  return staticPageMetadata('pricing', locale);
+}
 
 export default async function PricingPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const t = getDictionary(locale);
   const p = t.pricing;
+  const { pricing } = await getSiteSettings();
 
   const plans = [
     {
       eyebrow: p.candidates,
-      price: formatIndicative(),
+      price: formatIndicative(pricing),
       period: p.candidatesPeriod,
       /*
         The rupee is the headline and the euro is the charge, so the euro is
@@ -27,14 +31,14 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
         currency and a checkout that takes another is the complaint this line
         exists to prevent.
       */
-      note: `${p.candidatesNote} ${fill(t.feeIndicative, { charged: formatPrice(activePrice().totalMinor) })}`,
+      note: `${p.candidatesNote} ${fill(t.feeIndicative, { charged: formatFee(pricing) })}`,
       features: p.candidatesFeatures,
       cta: { label: p.startCta, href: localePath(locale, '/signup') },
       dark: true,
     },
     {
       eyebrow: p.employers,
-      price: `€${EMPLOYER_PRICE_EUR.toLocaleString('en-GB')}`,
+      price: formatMoney(pricing.employerPlacementFeeMinor, 'EUR'),
       period: p.employersPeriod,
       note: p.employersNote,
       features: p.employersFeatures,
@@ -102,7 +106,7 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
                 href={plan.cta.href}
                 className={`t-colors rounded-[10px] px-4 py-2.5 text-center text-[14px] font-medium no-underline ${
                   plan.dark
-                    ? 'bg-paper text-ink hover:bg-white'
+                    ? 'bg-paper text-ink hover:bg-surface'
                     : 'border border-line-strong bg-surface text-ink hover:border-ink'
                 }`}
               >
@@ -119,8 +123,6 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
           <FaqAccordion items={p.faq} />
         </section>
       </main>
-
-      <SiteFooter locale={locale} />
     </>
   );
 }

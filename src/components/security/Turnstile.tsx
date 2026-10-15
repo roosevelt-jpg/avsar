@@ -40,8 +40,8 @@ function loadScript(): Promise<void> {
 
 /**
  * Cloudflare's "are you a person" check, in managed mode: most visitors never
- * see a puzzle. Renders nothing when no site key is configured, so demo and
- * local builds are unchanged. A token is single use, so the parent remounts
+ * see a puzzle. Renders nothing when no site key is configured, so local
+ * builds are unchanged. A token is single use, so the parent remounts
  * this (change its `key`) after every failed submit to get a fresh one.
  */
 export function Turnstile({ onToken }: { onToken: (token: string | null) => void }) {

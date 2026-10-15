@@ -2,8 +2,8 @@ import Link from 'next/link';
 import { Mono } from '@/components/ui/Mono';
 import { AdminShell, AdminHeading, AdminEmpty } from '@/components/employer/AdminShell';
 import { requireStaffOrEmployer } from '@/lib/auth';
+import { requirePermission } from '@/lib/rbac/server';
 import { getServerSupabase } from '@/lib/supabase/server';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { sectorLabel, SECTOR_SLUGS, type SectorSlug } from '@/lib/data/sectors';
 import { maskName } from '@/lib/hiring/redact';
 
@@ -26,9 +26,8 @@ function labelFor(sector: string | null | undefined): string {
 }
 
 export default async function ShortlistsPage() {
-  const access = isSupabaseConfigured()
-    ? await requireStaffOrEmployer('/admin/shortlists')
-    : { isStaff: true, label: 'Preview' };
+  const access = await requireStaffOrEmployer('/admin/shortlists');
+  if (access.isStaff) await requirePermission('candidates.view', '/admin/shortlists');
 
   const supabase = await getServerSupabase();
   const { data } = (await supabase

@@ -1,5 +1,5 @@
 import { getMailer } from '@/lib/email';
-import { renderEmail } from '@/lib/email/template';
+import { composeEmail } from '@/lib/email/compose';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 
 type Row = {
@@ -54,20 +54,14 @@ export async function notifyEmployersOfShortlist(applicationIds: string[], origi
       if (emails.length === 0) continue;
 
       const count = lines.length;
-      const heading = count === 1 ? 'A candidate has been shortlisted for you' : `${count} candidates have been shortlisted for you`;
-      const paragraphs = [
-        'Our recruiters have put forward new candidates for your vacancies:',
-        ...lines,
-        'Their profiles are on your Applicants page. To arrange an interview, reply to your recruiter and quote the reference.',
-      ];
-
+      const headline = count === 1 ? 'A candidate has been shortlisted for you' : `${count} candidates have been shortlisted for you`;
+      const email = await composeEmail(
+        'employer_shortlist',
+        { count: String(count), headline, vacancies: lines.join('\n\n') },
+        { origin, actionUrl: url },
+      );
       for (const to of emails) {
-        await getMailer().send({
-          to,
-          subject: heading,
-          text: `${paragraphs.join('\n\n')}\n\nSee your applicants: ${url}`,
-          html: renderEmail({ preheader: heading, heading, paragraphs, action: { label: 'See applicants', url }, origin }),
-        });
+        await getMailer().send({ to, ...email });
       }
     }
   } catch (error) {

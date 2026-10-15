@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { apiAnyPermission, apiPermission, demoWriteRefusal } from '@/lib/rbac/server';
+import { apiAnyPermission, apiPermission } from '@/lib/rbac/server';
 import { listMedia } from '@/lib/cms/data';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { audit } from '@/lib/audit';
@@ -35,8 +35,6 @@ const confirmSchema = z.object({
 export async function POST(request: Request) {
   const guard = await apiPermission('media.manage');
   if (guard instanceof NextResponse) return guard;
-  const refusal = demoWriteRefusal(guard);
-  if (refusal) return refusal;
 
   const parsed = confirmSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: 'invalid_payload' }, { status: 400 });

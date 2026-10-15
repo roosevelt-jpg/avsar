@@ -23,7 +23,7 @@ export async function uploadMedia(file: File, alt = ''): Promise<{ url: string; 
     const reasons: Record<string, string> = {
       unsupported_type: 'This file type is not supported. Use JPG, PNG, WebP, GIF, MP4, WebM or PDF.',
       too_large: 'This file is too large.',
-      demo_mode: 'Uploads need Supabase to be configured.',
+      not_configured: 'The database is not connected, so nothing was saved.',
       forbidden: 'Your role cannot upload media.',
     };
     throw new Error(reasons[signed?.error ?? ''] ?? 'Upload could not start.');

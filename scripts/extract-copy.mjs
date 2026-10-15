@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-const roots = ['src/lib/cms/defaults', 'src/lib/jobs/sample.ts', 'src/lib/data/position-copy.ts'];
+const roots = ['src/lib/cms/defaults', 'src/lib/data/position-copy.ts'];
 const files = [];
 for (const root of roots) {
   if (root.endsWith('.ts')) files.push(root);

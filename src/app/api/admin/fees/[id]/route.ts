@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { audit } from '@/lib/audit';
 import { FEE_STATUSES } from '@/lib/hiring/data';
-import { apiPermission, demoWriteRefusal } from '@/lib/rbac/server';
+import { apiPermission } from '@/lib/rbac/server';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 
 export const runtime = 'nodejs';
@@ -20,8 +20,6 @@ const schema = z
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const guard = await apiPermission('fees.manage');
   if (guard instanceof NextResponse) return guard;
-  const refusal = demoWriteRefusal(guard);
-  if (refusal) return refusal;
 
   const { id } = await params;
   const parsed = schema.safeParse(await request.json().catch(() => null));

@@ -16,7 +16,7 @@ const STATUS: Record<RelocationDocument['status'], { label: string; tone: string
  * button. Uploading again replaces the previous file. A rejected document
  * says why, in the recruiter's words, so the next upload is the right one.
  */
-export function DocumentVault({ documents, demo }: { documents: RelocationDocument[]; demo: boolean }) {
+export function DocumentVault({ documents }: { documents: RelocationDocument[] }) {
   const router = useRouter();
   const [busy, setBusy] = useState<DocumentKind | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -37,7 +37,7 @@ export function DocumentVault({ documents, demo }: { documents: RelocationDocume
       const data = (await response.json().catch(() => null)) as { error?: string } | null;
       if (response.ok) return router.refresh();
       setError(
-        data?.error === 'demo_mode'
+        data?.error === 'not_configured'
           ? 'This is a preview: nothing is uploaded.'
           : data?.error === 'unsupported_type'
             ? 'Please upload a PDF, JPG, PNG or WebP file.'
@@ -64,7 +64,7 @@ export function DocumentVault({ documents, demo }: { documents: RelocationDocume
                 {doc?.status === 'verified' && doc.expiresOn && <p className="mt-1 mb-0 text-[13px] text-muted">Valid until {new Date(doc.expiresOn).toLocaleDateString('en-GB')}</p>}
               </div>
               {doc && <span className={`rounded-full px-2.5 py-0.5 text-[12px] font-medium ${STATUS[doc.status].tone}`}>{STATUS[doc.status].label}</span>}
-              {doc && !demo && (
+              {doc && (
                 <a href={`/api/relocation/documents/${doc.id}`} target="_blank" rel="noreferrer" className="text-[13px]">View</a>
               )}
               <label className={`cursor-pointer rounded-full border border-line-strong bg-paper px-3.5 py-1.5 text-[13px] ${busy ? 'opacity-50' : 'hover:border-ink'}`}>

@@ -29,6 +29,8 @@
  *    onboards merchants registered in the EEA or the UK. Using it means the
  *    European entity is the one charging, and therefore the one the site has to
  *    name. It does not do UPI, so India still needs a rail of its own.
+ *  - **Network International (N-Genius)**, a UAE acquirer, on the Dubai
+ *    company, settling in AED. The owner's chosen rail. Cards only, no UPI.
  *
  * Everything above this interface is rail-agnostic, so which one is active is a
  * commercial decision rather than a rewrite.
@@ -72,7 +74,7 @@ export type WebhookResult = {
 };
 
 export interface PaymentProvider {
-  readonly name: 'stripe' | 'razorpay' | 'cashfree' | 'eximpe' | 'viva' | 'dodo';
+  readonly name: 'stripe' | 'razorpay' | 'cashfree' | 'eximpe' | 'viva' | 'dodo' | 'ngenius';
   isConfigured(): boolean;
   createCheckout(request: CheckoutRequest): Promise<CheckoutSession>;
   /**

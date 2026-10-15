@@ -22,7 +22,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const candidate = await getSessionCandidate();
   if (!candidate) return NextResponse.json({ error: 'unauthenticated' }, { status: 401 });
   const admin = getAdminSupabase();
-  if (!admin) return NextResponse.json({ error: 'demo_mode' }, { status: 503 });
+  if (!admin) return NextResponse.json({ error: 'not_configured' }, { status: 503 });
 
   const { data: milestone } = await admin
     .from('relocation_milestones')

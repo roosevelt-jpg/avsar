@@ -13,7 +13,7 @@ async function send(url: string, method: string, body: unknown): Promise<string 
     const response = await fetch(url, { method, headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
     if (response.ok) return null;
     const data = (await response.json().catch(() => null)) as { error?: string } | null;
-    return data?.error === 'demo_mode' ? 'Demo mode: nothing is saved.' : `Not saved (${data?.error ?? response.status}).`;
+    return data?.error === 'not_configured' ? 'The database is not connected, so nothing was saved.' : `Not saved (${data?.error ?? response.status}).`;
   } catch {
     return 'The connection dropped. Try again.';
   }

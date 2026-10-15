@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server';
+import { refreshIntegrations } from '@/lib/integrations/runtime';
 
 /**
  * Fixed-window rate limiting on Upstash Redis, over its REST API.
  *
  * Plain fetch rather than an SDK: three commands do not justify a dependency,
- * and it runs unchanged on any runtime. Without Upstash configured every call
- * is allowed, which keeps demo mode and local development unthrottled.
+ * and it needs nothing installed. Without Upstash configured every call is
+ * allowed, which keeps local development unthrottled.
  *
  * It fails open. If Redis is down, candidates can still register and apply;
  * losing the throttle for a few minutes is a smaller harm than a dead funnel.
@@ -25,6 +26,10 @@ export type RateLimitResult = { ok: boolean; remaining: number; retryAfter: numb
    so per-IP limits are set well above what one honest person needs. */
 export const RATE_LIMITS = {
   register: { name: 'register', limit: 10, windowSeconds: 600 },
+  avatar: { name: 'avatar', limit: 10, windowSeconds: 600 },
+  /* The header search fires as staff type; generous, but a script harvesting
+     the database through it is stopped. */
+  consoleSearch: { name: 'console-search', limit: 120, windowSeconds: 60 },
   apply: { name: 'apply', limit: 10, windowSeconds: 60 },
   requestCodeIp: { name: 'code-ip', limit: 10, windowSeconds: 600 },
   requestCodeEmail: { name: 'code-email', limit: 3, windowSeconds: 600 },
@@ -54,6 +59,7 @@ export function clientIp(request: Request): string {
 }
 
 export async function rateLimit(rule: RateLimitRule, subject: string): Promise<RateLimitResult> {
+  await refreshIntegrations();
   const config = upstash();
   if (!config) return { ok: true, remaining: rule.limit, retryAfter: 0 };
 

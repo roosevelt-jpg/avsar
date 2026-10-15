@@ -55,7 +55,7 @@ export function VisibilityToggle({
         onClick={toggle}
         disabled={pending}
         className="t-colors flex h-[26px] w-[46px] shrink-0 cursor-pointer items-center rounded-full border-0 p-[3px]"
-        style={{ background: on ? 'oklch(0.62 0.14 150)' : '#d9d4c8', justifyContent: on ? 'flex-end' : 'flex-start' }}
+        style={{ background: on ? 'oklch(0.62 0.14 150)' : 'var(--color-line-strong)', justifyContent: on ? 'flex-end' : 'flex-start' }}
       >
         <span aria-hidden className="size-[20px] rounded-full bg-white" />
       </button>

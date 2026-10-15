@@ -24,8 +24,8 @@ for (const path of ['/', '/jobs', '/jobs/line-cook-algarve', '/ar', '/admin/cms/
   });
 }
 
-test('health endpoint reports demo mode', async ({ request }) => {
+test('health endpoint reports the live database', async ({ request }) => {
   const response = await request.get('/api/health');
   expect(response.status()).toBe(200);
-  expect(await response.json()).toMatchObject({ ok: true, mode: 'demo' });
+  expect(await response.json()).toMatchObject({ ok: true, mode: 'live' });
 });

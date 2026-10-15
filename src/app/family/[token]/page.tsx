@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Wordmark } from '@/components/ui/Wordmark';
+import { SiteFooter } from '@/components/candidate/SiteFooter';
 import { familyView } from '@/lib/relocation/data';
 import { milestoneTemplate, nextMilestone, progress } from '@/lib/relocation/milestones';
 
@@ -33,6 +34,7 @@ export default async function FamilyPage({ params }: { params: Promise<{ token: 
           <FamilyProgress view={view} />
         )}
       </main>
+      <SiteFooter locale="en" />
     </div>
   );
 }

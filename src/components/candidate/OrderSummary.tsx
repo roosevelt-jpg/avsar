@@ -1,9 +1,10 @@
 import { Mono } from '@/components/ui/Mono';
-import { activePrice, formatPrice, PRICING } from '@/lib/data/cohort';
+import { formatMoney, priceBreakdown, type PricingSettings } from '@/lib/company/config';
 import { fill, type Dictionary } from '@/lib/i18n';
 
-export function OrderSummary({ t }: { t: Dictionary }) {
-  const price = activePrice();
+export function OrderSummary({ t, pricing }: { t: Dictionary; pricing: PricingSettings }) {
+  const price = priceBreakdown(pricing);
+  const formatPrice = (minor: number) => formatMoney(minor, price.currency);
   const s = t.signup;
 
   return (
@@ -40,7 +41,7 @@ export function OrderSummary({ t }: { t: Dictionary }) {
               <dd className="m-0 font-mono">{formatPrice(price.netMinor)}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-ink-2">{fill(s.summaryVat, { rate: PRICING.vatRate * 100 })}</dt>
+              <dt className="text-ink-2">{fill(s.summaryVat, { rate: pricing.vatBasisPoints / 100 })}</dt>
               <dd className="m-0 font-mono">{formatPrice(price.vatMinor)}</dd>
             </div>
           </>

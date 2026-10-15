@@ -17,9 +17,9 @@ type State =
  * lives in the browser's cookies; the server only reads the resulting
  * assurance level.
  */
-export function TwoFactorSetup({ demo, enforced, returnTo }: { demo: boolean; enforced: boolean; returnTo: string }) {
+export function TwoFactorSetup({ enforced, returnTo }: { enforced: boolean; returnTo: string }) {
   const router = useRouter();
-  const [state, setState] = useState<State>(demo ? { step: 'none' } : { step: 'loading' });
+  const [state, setState] = useState<State>({ step: 'loading' });
   const [code, setCode] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -94,8 +94,7 @@ export function TwoFactorSetup({ demo, enforced, returnTo }: { demo: boolean; en
       {state.step === 'none' && (
         <>
           <p className="m-0">No authenticator app is set up for this account.</p>
-          <button type="button" disabled={busy || demo} onClick={() => void enroll()} className={`${button} mt-4`}>Set up an authenticator app</button>
-          {demo && <p className="mt-2 mb-0 text-[13px] text-muted">Not available in the preview.</p>}
+          <button type="button" disabled={busy} onClick={() => void enroll()} className={`${button} mt-4`}>Set up an authenticator app</button>
         </>
       )}
 

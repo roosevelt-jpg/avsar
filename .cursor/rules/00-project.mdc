@@ -9,8 +9,12 @@ Auth, Storage), zod. Read AGENTS.md for the full map.
 
 Always:
 - Run `npm run typecheck && npm run lint && npm run build` before saying a task is done.
-- Keep demo mode working: with no Supabase env vars every page must render with sample or
-  default data, and writes return 503 `demo_mode`.
+- There is no demo mode. Pages read live data; sample content lives in `supabase/seed/`.
+ With no Supabase env vars the root layout shows a setup notice and writes return 503
+ `not_configured`.
+- Nothing business-specific is hardcoded: company details, prices, hiring rules, cohort,
+ email wording, SEO and API keys are edited in the console (Settings) and read through
+ `getSiteSettings()` or `src/lib/integrations/runtime.ts`.
 - Server components by default; `'use client'` only where there is interaction.
 - Identity, roles and prices come from the server, never from the request body.
 - Money in integer minor units. Never floats for money.

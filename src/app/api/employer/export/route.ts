@@ -16,11 +16,11 @@ export const runtime = 'nodejs';
  * screen did: no contact details, and shortened names unless released.
  */
 export async function GET() {
-  if (!isSupabaseConfigured()) return NextResponse.json({ error: 'demo_mode' }, { status: 503 });
+  if (!isSupabaseConfigured()) return NextResponse.json({ error: 'not_configured' }, { status: 503 });
   const employer = await getSessionEmployer();
   if (!employer) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
 
-  const applicants = await listEmployerApplicants({ employerId: employer.employerId, name: employer.name, demo: false });
+  const applicants = await listEmployerApplicants();
   const csv = toCsv(
     ['Reference', 'Candidate', 'Role', 'From', 'Experience', 'English', 'Visa file', 'Fit score', 'Vacancy', 'City', 'Stage', 'Since', 'Next interview (UTC)'],
     applicants.map((a) => [

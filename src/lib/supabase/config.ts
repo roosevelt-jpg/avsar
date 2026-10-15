@@ -1,7 +1,7 @@
 /**
- * Supabase is optional at build and dev time. Every data path falls back to the
- * sample talent pool and in-memory state when it is not configured, so the whole
- * UI stays reviewable before any infrastructure exists.
+ * The database is required. Without these variables the root layout renders a
+ * setup page naming what is missing, and data functions return empty values
+ * rather than crash, so a build can still run on a machine with no secrets.
  */
 export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
 export const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '';

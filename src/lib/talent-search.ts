@@ -1,4 +1,4 @@
-import { SAMPLE_TALENT, cefrRank, type Cefr, type TalentRow } from '@/lib/data/candidates';
+import { cefrRank, type Cefr, type TalentRow } from '@/lib/data/candidates';
 import type { SectorSlug } from '@/lib/data/sectors';
 import { parseQuery } from '@/lib/assessment/query-parser';
 import { getServerSupabase } from '@/lib/supabase/server';
@@ -24,8 +24,6 @@ export type SearchResult = {
   total: number;
   page: number;
   pageSize: number;
-  /** True when the sample pool was used because Supabase is not configured. */
-  sample: boolean;
 };
 
 /**
@@ -33,8 +31,7 @@ export type SearchResult = {
  *
  * Filtering, sorting and pagination happen in Postgres when it is available, so
  * a pool of 20,000 candidates is not pulled into the request to be sorted in
- * JavaScript. The sample fallback exists so the screen is reviewable without
- * infrastructure.
+ * JavaScript.
  *
  * `visible_to_employers` is enforced here as well as in RLS: a candidate who
  * hid their profile must not appear, and that promise is in the FAQ.
@@ -46,24 +43,7 @@ export async function searchTalent(filters: SearchFilters): Promise<SearchResult
   const minYears = parsed?.minYears;
 
   const supabase = await getServerSupabase();
-
-  if (!supabase) {
-    const rows = SAMPLE_TALENT.filter(
-      (row) =>
-        (!sector || row.sector === sector) &&
-        cefrRank(row.english) >= cefrRank(minEnglish) &&
-        (minYears === undefined || row.yearsExperience >= minYears),
-    ).sort((a, b) => b.score - a.score);
-
-    const start = (filters.page - 1) * filters.pageSize;
-    return {
-      rows: rows.slice(start, start + filters.pageSize).map((row) => (filters.maskNames ? { ...row, name: maskName(row.name) } : row)),
-      total: rows.length,
-      page: filters.page,
-      pageSize: filters.pageSize,
-      sample: true,
-    };
-  }
+  if (!supabase) return { rows: [], total: 0, page: filters.page, pageSize: filters.pageSize };
 
   let request = supabase
     .from('talent_pool')
@@ -82,7 +62,7 @@ export async function searchTalent(filters: SearchFilters): Promise<SearchResult
 
   if (error) {
     console.error('[search] query failed', error);
-    return { rows: [], total: 0, page: filters.page, pageSize: filters.pageSize, sample: false };
+    return { rows: [], total: 0, page: filters.page, pageSize: filters.pageSize };
   }
 
   /* Released identities, read through RLS: an employer sees only its own approvals. */
@@ -107,5 +87,5 @@ export async function searchTalent(filters: SearchFilters): Promise<SearchResult
     hasVoiceIntro: Boolean(row.has_voice_intro),
   }));
 
-  return { rows, total: count ?? rows.length, page: filters.page, pageSize: filters.pageSize, sample: false };
+  return { rows, total: count ?? rows.length, page: filters.page, pageSize: filters.pageSize };
 }

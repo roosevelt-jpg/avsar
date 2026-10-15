@@ -40,7 +40,7 @@ function fromDefault(slug: string, locale: string): ResolvedPage | null {
     locale,
     title: localized.title,
     blocks: localized.blocks,
-    seo: { title: localized.seo.title, description: localized.seo.description, ogImage: '', noindex: false },
+    seo: { title: localized.seo.title, description: localized.seo.description, ogTitle: '', ogDescription: '', ogImage: '', noindex: false },
     source: 'default',
   };
 }

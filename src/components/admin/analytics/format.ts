@@ -1,5 +1,4 @@
 import type { Kpi } from '@/lib/console/analytics';
-import { CHARGE_CURRENCY } from '@/lib/data/cohort';
 
 /** 1,284 · 12.9K · 3.4M. Proportional digits; compact from ten thousand up. */
 export function compact(n: number): string {
@@ -8,12 +7,13 @@ export function compact(n: number): string {
   return `${(n / 1_000_000).toFixed(1)}M`;
 }
 
-export function formatKpi(kpi: Pick<Kpi, 'format'>, value: number): string {
+export function formatKpi(kpi: Pick<Kpi, 'format' | 'currency'>, value: number): string {
   switch (kpi.format) {
     case 'money': {
       const units = value / 100;
-      const symbol = CHARGE_CURRENCY === 'INR' ? '₹' : '€';
-      if (CHARGE_CURRENCY === 'INR' && units >= 100_000) return `₹${(units / 100_000).toFixed(units >= 1_000_000 ? 1 : 2)}L`;
+      const currency = kpi.currency ?? 'EUR';
+      const symbol = currency === 'INR' ? '₹' : currency === 'AED' ? 'AED ' : '€';
+      if (currency === 'INR' && units >= 100_000) return `₹${(units / 100_000).toFixed(units >= 1_000_000 ? 1 : 2)}L`;
       return `${symbol}${compact(units)}`;
     }
     case 'percent':

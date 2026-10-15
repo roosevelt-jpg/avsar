@@ -2,7 +2,6 @@ import { createHash } from 'node:crypto';
 import { getServerSupabase } from '@/lib/supabase/server';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { getAnonSupabase } from '@/lib/supabase/anon';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
 import type { DocumentKind } from '@/lib/relocation/documents';
 import type { Milestone, MilestoneStatus } from '@/lib/relocation/milestones';
 
@@ -12,8 +11,7 @@ import type { Milestone, MilestoneStatus } from '@/lib/relocation/milestones';
  * The candidate's own view goes through the session client, so RLS limits it
  * to their rows. The console's views use the service role and are called only
  * from pages that have already checked `relocation.manage` or
- * `applications.view`. Demo mode returns a plausible file part-way through, so
- * every screen can be reviewed without a database.
+ * `applications.view`. Without a database every read is empty.
  */
 
 export type RelocationDocument = {
@@ -42,31 +40,7 @@ export type CandidateRelocation = {
 const today = () => new Date().toISOString().slice(0, 10);
 const plusDays = (n: number) => new Date(Date.now() + n * 86_400_000).toISOString().slice(0, 10);
 
-export const SAMPLE_RELOCATION: CandidateRelocation = {
-  documents: [
-    { id: 'sample-doc-1', kind: 'passport', fileName: 'passport.pdf', status: 'verified', expiresOn: '2033-04-01', rejectReason: null, createdAt: '2026-10-02T10:00:00Z' },
-    { id: 'sample-doc-2', kind: 'police_clearance', fileName: 'pcc.pdf', status: 'uploaded', expiresOn: null, rejectReason: null, createdAt: '2026-10-10T10:00:00Z' },
-    { id: 'sample-doc-3', kind: 'photo', fileName: 'photo.jpg', status: 'rejected', expiresOn: null, rejectReason: 'The background must be white. Please take a new one.', createdAt: '2026-10-10T10:05:00Z' },
-  ],
-  plan: {
-    applicationId: 'sample-0',
-    jobTitle: 'Line cook',
-    city: 'Albufeira',
-    milestones: [
-      { id: 'm1', key: 'contract_signed', position: 1, status: 'done', dueOn: plusDays(-20), blocker: null, doneAt: '2026-10-01T10:00:00Z' },
-      { id: 'm2', key: 'documents_ready', position: 2, status: 'in_progress', dueOn: plusDays(5), blocker: null, doneAt: null },
-      { id: 'm3', key: 'visa_appointment', position: 3, status: 'pending', dueOn: plusDays(19), blocker: null, doneAt: null },
-      { id: 'm4', key: 'visa_issued', position: 4, status: 'pending', dueOn: plusDays(77), blocker: null, doneAt: null },
-      { id: 'm5', key: 'flight_booked', position: 5, status: 'pending', dueOn: plusDays(87), blocker: null, doneAt: null },
-      { id: 'm6', key: 'arrived', position: 6, status: 'pending', dueOn: plusDays(97), blocker: null, doneAt: null },
-      { id: 'm7', key: 'accommodation_checkin', position: 7, status: 'pending', dueOn: plusDays(97), blocker: null, doneAt: null },
-      { id: 'm8', key: 'first_day', position: 8, status: 'pending', dueOn: plusDays(99), blocker: null, doneAt: null },
-    ],
-  },
-  familyLinks: [],
-  story: null,
-  placed: false,
-};
+const EMPTY_RELOCATION: CandidateRelocation = { documents: [], plan: null, familyLinks: [], story: null, placed: false };
 
 function documentFrom(row: Record<string, unknown>): RelocationDocument {
   return {
@@ -96,9 +70,8 @@ const DOC_COLUMNS = 'id, kind, file_name, status, expires_on, reject_reason, cre
 const MILESTONE_COLUMNS = 'id, application_id, key, position, status, due_on, blocker, done_at';
 
 export async function getCandidateRelocation(candidateId: string): Promise<CandidateRelocation> {
-  if (!isSupabaseConfigured()) return SAMPLE_RELOCATION;
   const supabase = await getServerSupabase();
-  if (!supabase) return SAMPLE_RELOCATION;
+  if (!supabase) return EMPTY_RELOCATION;
 
   const [docs, milestones, links, stories, placed] = await Promise.all([
     supabase.from('relocation_documents').select(DOC_COLUMNS).eq('candidate_id', candidateId).is('superseded_at', null).order('created_at', { ascending: false }),
@@ -149,14 +122,6 @@ export type OverdueMilestone = Milestone & { applicationId: string; candidateNam
 export type PendingStory = Story & { candidateName: string; createdAt: string };
 
 export async function relocationQueue(): Promise<{ documents: QueueDocument[]; expiring: QueueDocument[]; overdue: OverdueMilestone[]; stories: PendingStory[] }> {
-  if (!isSupabaseConfigured()) {
-    return {
-      documents: SAMPLE_RELOCATION.documents.filter((d) => d.status === 'uploaded').map((d) => ({ ...d, candidateId: 'sample', candidateName: 'Sample: Arjun Nair' })),
-      expiring: [{ id: 'sample-doc-x', kind: 'police_clearance', fileName: 'pcc.pdf', status: 'verified', expiresOn: plusDays(18), rejectReason: null, createdAt: '2026-07-01T10:00:00Z', candidateId: 'sample', candidateName: 'Sample: Ravi Kumar' }],
-      overdue: [{ ...SAMPLE_RELOCATION.plan!.milestones[1]!, status: 'blocked', blocker: 'Waiting for police clearance appointment', dueOn: plusDays(-2), applicationId: 'sample-0', candidateName: 'Sample: Arjun Nair', reference: 'APP-SAMPLE0' }],
-      stories: [{ id: 'sample-story', displayName: 'Anjali, Thrissur', roleLabel: 'Waitress', cityLabel: 'Lisbon', quote: 'The team checked every paper before my visa appointment. When I landed, someone from the hotel was waiting.', status: 'submitted', candidateName: 'Sample: Anjali Menon', createdAt: '2026-10-12T09:00:00Z' }],
-    };
-  }
   const admin = getAdminSupabase();
   if (!admin) return { documents: [], expiring: [], overdue: [], stories: [] };
 
@@ -206,7 +171,6 @@ export async function relocationQueue(): Promise<{ documents: QueueDocument[]; e
 
 /** For the application page: the plan and the candidate's file. */
 export async function applicationRelocation(applicationId: string, candidateId: string): Promise<{ milestones: Milestone[]; documents: RelocationDocument[] }> {
-  if (!isSupabaseConfigured()) return { milestones: applicationId === 'sample-0' ? SAMPLE_RELOCATION.plan!.milestones : [], documents: SAMPLE_RELOCATION.documents };
   const admin = getAdminSupabase();
   if (!admin) return { milestones: [], documents: [] };
   const [m, d] = await Promise.all([
@@ -230,11 +194,6 @@ export type FamilyView = { firstName: string; jobTitle: string; city: string; mi
  */
 export async function familyView(token: string): Promise<FamilyView | null> {
   if (!/^[A-Za-z0-9_-]{20,64}$/.test(token)) return null;
-  if (!isSupabaseConfigured()) {
-    return token === 'sample-family-link-0000'
-      ? { firstName: 'Arjun', jobTitle: SAMPLE_RELOCATION.plan!.jobTitle, city: SAMPLE_RELOCATION.plan!.city, milestones: SAMPLE_RELOCATION.plan!.milestones }
-      : null;
-  }
   const admin = getAdminSupabase();
   if (!admin) return null;
 

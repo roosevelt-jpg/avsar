@@ -69,7 +69,7 @@ export function ApplicationsTable({
       setSelected(new Set());
       router.refresh();
     } else {
-      setMessage(data?.error === 'demo_mode' ? 'Demo mode: nothing is saved.' : data?.error === 'forbidden' ? 'Your role cannot move applications.' : 'Could not move the selection.');
+      setMessage(data?.error === 'not_configured' ? 'The database is not connected, so nothing was saved.' : data?.error === 'forbidden' ? 'Your role cannot move applications.' : 'Could not move the selection.');
     }
   }
 
@@ -120,7 +120,7 @@ export function ApplicationsTable({
                   />
                 </th>
               )}
-              {['Candidate', 'Job', 'Stage', 'Assessment', 'Rating', 'Applied', 'Last move'].map((h) => (
+              {['Candidate', 'Job', 'Stage', 'Package', 'Rating', 'Applied', 'Last move'].map((h) => (
                 <th key={h} className="px-4 py-3 text-start font-normal"><Mono className="text-muted">{h.toUpperCase()}</Mono></th>
               ))}
             </tr>
@@ -143,7 +143,7 @@ export function ApplicationsTable({
                     {STATUS_META[row.status].label}
                   </Pill>
                 </td>
-                <td className="px-4 py-3">{row.candidate.paymentStatus === 'paid' ? <Pill tone="dark">Assessed</Pill> : <span className="text-[12px] text-muted">not yet</span>}</td>
+                <td className="px-4 py-3">{row.candidate.paymentStatus === 'paid' ? <Pill tone="dark">Bought</Pill> : <span className="text-[12px] text-muted">no</span>}</td>
                 <td className="px-4 py-3 text-employer">{row.rating ? '★'.repeat(row.rating) : <span className="text-muted">-</span>}</td>
                 <td className="px-4 py-3"><Mono className="text-muted">{new Date(row.createdAt).toLocaleDateString('en-GB')}</Mono></td>
                 <td className="px-4 py-3"><Mono className="text-muted">{new Date(row.statusChangedAt).toLocaleDateString('en-GB')}</Mono></td>

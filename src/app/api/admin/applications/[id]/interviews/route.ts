@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { apiPermission, demoWriteRefusal } from '@/lib/rbac/server';
+import { apiPermission } from '@/lib/rbac/server';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { getMailer } from '@/lib/email';
-import { renderEmail } from '@/lib/email/template';
+import { composeEmail } from '@/lib/email/compose';
 import { localePath } from '@/lib/i18n';
 import { sendWhatsApp } from '@/lib/whatsapp';
 import { INTERVIEW_MODE_LABELS, INTERVIEW_ZONES, interviewTimes, zonedLocalToUtc } from '@/lib/interviews/time';
@@ -43,8 +43,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
   const guard = await apiPermission('applications.manage');
   if (guard instanceof NextResponse) return guard;
-  const refusal = demoWriteRefusal(guard);
-  if (refusal) return refusal;
 
   const parsed = schema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: 'invalid_payload', issues: parsed.error.flatten().fieldErrors }, { status: 400 });
@@ -110,21 +108,21 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     const origin = new URL(request.url).origin;
     const first = candidate.full_name.split(' ')[0] || candidate.full_name;
     const url = `${origin}${localePath(candidate.locale ?? 'en', '/dashboard/applications')}`;
-    const paragraphs = [
-      `Hello ${first},`,
-      `Your interview for ${job.title} (${current.reference}) is booked.`,
-      `When: ${times.india}. That is ${times.lisbon}.`,
-      `How: ${INTERVIEW_MODE_LABELS[body.mode]}, about ${body.durationMinutes} minutes.${body.location ? ` Where: ${body.location}.` : ''}`,
-      ...(body.candidateMessage ? [`From your recruiter: ${body.candidateMessage}`] : []),
-      ...(body.link ? [`Join here: ${body.link}`] : []),
-    ];
     try {
-      await getMailer().send({
-        to: candidate.email,
-        subject: `Interview booked: ${job.title}`,
-        text: `${paragraphs.join('\n\n')}\n\nSee it in your tracker: ${url}`,
-        html: renderEmail({ preheader: times.india, heading: 'Your interview is booked', paragraphs, action: { label: 'See my interview', url }, origin }),
-      });
+      const email = await composeEmail(
+        'interview_booked',
+        {
+          first_name: first,
+          job_title: job.title,
+          reference: String(current.reference),
+          when: `${times.india}. That is ${times.lisbon}.`,
+          how: `${INTERVIEW_MODE_LABELS[body.mode]}, about ${body.durationMinutes} minutes.${body.location ? ` Where: ${body.location}.` : ''}`,
+          recruiter_note: body.candidateMessage ? `From your recruiter: ${body.candidateMessage}` : '',
+          join_link: body.link ? `Join here: ${body.link}` : '',
+        },
+        { origin, actionUrl: url },
+      );
+      await getMailer().send({ to: candidate.email, ...email });
     } catch (error) {
       console.error('[interviews] email failed', error);
     }

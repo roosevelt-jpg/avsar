@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { redirect } from 'next/navigation';
 import { getServerSupabase } from '@/lib/supabase/server';
 import { defaultLocale, type Locale, localePath } from '@/lib/i18n';
@@ -218,9 +219,10 @@ export type Viewer =
  *
  * Checked most-privileged first, so someone who is both staff and a candidate
  * in a test environment lands consistently rather than by whichever query
- * happened to run first.
+ * happened to run first. Cached per request, because the header and the page
+ * both ask.
  */
-export async function getViewer(): Promise<Viewer> {
+export const getViewer = cache(async (): Promise<Viewer> => {
   const staff = await getSessionStaff();
   if (staff) return { role: 'staff', staff };
 
@@ -239,7 +241,7 @@ export async function getViewer(): Promise<Viewer> {
   }
 
   return { role: 'anonymous' };
-}
+});
 
 /** Whether a role is allowed on a given path at all. */
 export function canReach(viewer: Viewer, path: string): boolean {

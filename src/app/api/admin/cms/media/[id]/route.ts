@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { apiPermission, demoWriteRefusal } from '@/lib/rbac/server';
+import { apiPermission } from '@/lib/rbac/server';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { MEDIA_BUCKET } from '@/lib/cms/media';
 import { audit } from '@/lib/audit';
@@ -16,8 +16,6 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const { id } = await params;
   const guard = await apiPermission('media.manage');
   if (guard instanceof NextResponse) return guard;
-  const refusal = demoWriteRefusal(guard);
-  if (refusal) return refusal;
 
   const parsed = patchSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success || !z.string().uuid().safeParse(id).success) {
@@ -38,8 +36,6 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
   const { id } = await params;
   const guard = await apiPermission('media.manage');
   if (guard instanceof NextResponse) return guard;
-  const refusal = demoWriteRefusal(guard);
-  if (refusal) return refusal;
   if (!z.string().uuid().safeParse(id).success) return NextResponse.json({ error: 'not_found' }, { status: 404 });
 
   const admin = getAdminSupabase();

@@ -11,7 +11,7 @@ export const JOBS_INTRO: DefaultPage = {
   purpose: 'Text above and below the live jobs listing.',
   seo: {
     title: 'Open jobs in Portugal for Indian candidates',
-    description: 'Chef, cleaner, driver, electrician, welder and more. Salary, city and housing shown on every job. Free to apply.',
+    description: 'Chef, cleaner, driver, electrician, welder and more. Salary and city shown on every job, housing and meals included. Free to apply.',
   },
   blocks: makeBlocks('jobs', [
     [
@@ -19,7 +19,7 @@ export const JOBS_INTRO: DefaultPage = {
       {
         eyebrow: 'Open jobs',
         title: 'Find your job in Portugal',
-        subtitle: 'Every job shows the salary, the city and whether housing is included. Applying is free and takes a minute.',
+        subtitle: 'Every job shows the salary and the city, and includes housing and meals. Applying is free and takes a minute.',
         primaryCta: { label: '', href: '' },
         secondaryCta: { label: '', href: '' },
         highlights: ['Free to apply', 'No placement fee', 'Visa support'],
@@ -37,7 +37,6 @@ export const JOBS_INTRO: DefaultPage = {
         body: 'Create your profile anyway. When a job that fits you opens, we will tell you first.',
         primary: { label: 'Create my profile', href: '/signup' },
         secondary: { label: 'Ask us on WhatsApp', href: 'https://wa.me/{{whatsapp_digits}}' },
-        tone: 'light',
       },
     ],
   ]),

@@ -11,6 +11,7 @@
 
 export const DOCUMENT_KINDS = [
   'passport',
+  'national_id',
   'police_clearance',
   'contract',
   'medical',
@@ -26,6 +27,7 @@ export type DocumentKind = (typeof DOCUMENT_KINDS)[number];
 
 export const DOCUMENT_LABELS: Record<DocumentKind, string> = {
   passport: 'Passport',
+  national_id: 'National ID card',
   police_clearance: 'Police clearance certificate',
   contract: 'Signed contract or job offer',
   medical: 'Medical certificate',
@@ -40,6 +42,7 @@ export const DOCUMENT_LABELS: Record<DocumentKind, string> = {
 /** What a candidate needs to know about each, in one line. */
 export const DOCUMENT_HINTS: Record<DocumentKind, string> = {
   passport: 'Photo page and last page. Valid well beyond your contract.',
+  national_id: 'If you have no passport yet. For Aadhaar, upload the masked version from the UIDAI website, with only the last four digits showing.',
   police_clearance: 'From Passport Seva. Apply early: it can take a few weeks, and it expires.',
   contract: 'Your employer sends this after the offer. We upload it if you prefer.',
   medical: 'Only if your recruiter asks for it.',
@@ -51,6 +54,8 @@ export const DOCUMENT_HINTS: Record<DocumentKind, string> = {
   other: 'Anything else your recruiter has asked for.',
 };
 
+/* A national ID proves identity for the legal review but carries no weight
+   here: a visa needs the passport, whatever else is on file. */
 const WEIGHTS: Partial<Record<DocumentKind, number>> = {
   passport: 25,
   police_clearance: 20,

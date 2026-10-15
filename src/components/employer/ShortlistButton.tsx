@@ -33,9 +33,9 @@ export function ShortlistButton({ candidateId, initial = false }: { candidateId:
       disabled={pending}
       className="t-colors cursor-pointer rounded-[8px] border px-3 py-1.5 text-[13px] disabled:opacity-60"
       style={{
-        borderColor: on ? 'oklch(0.56 0.14 250)' : '#d9d4c8',
-        background: on ? 'oklch(0.56 0.14 250)' : '#fff',
-        color: on ? '#fff' : '#1b1a17',
+        borderColor: on ? 'var(--color-ink)' : 'var(--color-line-strong)',
+        background: on ? 'var(--color-ink)' : 'var(--color-surface)',
+        color: on ? 'var(--color-paper)' : 'var(--color-ink)',
       }}
     >
       {on ? 'Shortlisted' : 'Shortlist'}

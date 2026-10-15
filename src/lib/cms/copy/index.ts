@@ -12,22 +12,17 @@ import { pa } from './pa';
 import { ta } from './ta';
 import { te } from './te';
 import { ur } from './ur';
+import { additions } from './additions';
+import { updates } from './updates';
 
 /** English source string → translation. English itself is the key, so it is not listed. */
 export type ContentCopy = Record<string, string>;
 
-export const contentCopy: Record<Exclude<Locale, 'en'>, ContentCopy> = {
-  hi,
-  bn,
-  mr,
-  te,
-  ta,
-  ur,
-  gu,
-  kn,
-  or,
-  ml,
-  pa,
-  as,
-  ar,
-};
+const generated: Record<Exclude<Locale, 'en'>, ContentCopy> = { hi, bn, mr, te, ta, ur, gu, kn, or, ml, pa, as, ar };
+
+export const contentCopy = Object.fromEntries(
+  Object.entries(generated).map(([locale, copy]) => [
+    locale,
+    { ...copy, ...additions[locale as Exclude<Locale, 'en'>], ...updates[locale as Exclude<Locale, 'en'>] },
+  ]),
+) as Record<Exclude<Locale, 'en'>, ContentCopy>;

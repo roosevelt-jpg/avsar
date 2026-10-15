@@ -202,19 +202,6 @@ export default async function CandidateLandingB({ params }: { params: Promise<{ 
           {t.cta} →
         </Link>
       </section>
-
-      <footer
-        className="px-[clamp(20px,4cqi,56px)] py-9 text-[13px]"
-        style={{ color: 'var(--b-muted)', borderTop: '1px solid var(--b-line)' }}
-      >
-        <p className="m-0 mb-2 text-[16px]" style={{ color: 'var(--b-ink)' }}>
-          S&A Recruitment
-        </p>
-        <p className="m-0">
-          {t.selectionRules} · {t.footerRefund} · {t.footerPrivacy}
-        </p>
-        <p className="m-0 mt-2">© 2026 S&A Recruitment</p>
-      </footer>
     </div>
   );
 }

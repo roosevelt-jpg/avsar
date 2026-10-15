@@ -1,7 +1,8 @@
+import { refreshIntegrations } from '@/lib/integrations/runtime';
 import { NextResponse } from 'next/server';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { getMailer, unsubscribeToken } from '@/lib/email';
-import { renderEmail } from '@/lib/email/template';
+import { composeEmail } from '@/lib/email/compose';
 import { localePath } from '@/lib/i18n';
 import { positionLabel } from '@/lib/data/positions';
 import { formatSalary, jobFromRow, type Job } from '@/lib/jobs/types';
@@ -34,6 +35,7 @@ type CandidateRow = {
 };
 
 async function run(request: Request) {
+  await refreshIntegrations();
   const secret = process.env.CRON_SECRET;
   if (!secret || request.headers.get('authorization') !== `Bearer ${secret}`) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
@@ -96,20 +98,12 @@ async function run(request: Request) {
     const allJobs = `${origin}${localePath(locale, `/jobs?position=${candidate.position}`)}`;
     const heading = jobs.length === 1 ? `A new ${role} job in Portugal` : `${jobs.length} new ${role} jobs in Portugal`;
 
-    const result = await mailer.send({
-      to: candidate.email,
-      subject: heading,
-      text: [`Hello ${first},`, 'New this week, for the role you chose:', ...lines, `All ${role} jobs: ${allJobs}`, `Stop these emails: ${unsubscribe}`].join('\n\n'),
-      html: renderEmail({
-        preheader: heading,
-        heading,
-        paragraphs: [`Hello ${first},`, 'New this week, for the role you chose. Applying is free.', ...lines],
-        action: { label: `See all ${role} jobs`, url: allJobs },
-        unsubscribe: { label: 'Stop job alerts', url: unsubscribe },
-        origin,
-      }),
-      unsubscribeUrl: unsubscribe,
-    });
+    const email = await composeEmail(
+      'job_alerts',
+      { first_name: first, role, count: String(jobs.length), jobs_heading: heading, jobs: lines.join('\n\n') },
+      { origin, actionUrl: allJobs, unsubscribe: { label: 'Stop job alerts', url: unsubscribe } },
+    );
+    const result = await mailer.send({ to: candidate.email, ...email, unsubscribeUrl: unsubscribe });
     if (!result.sent) continue;
 
     const { error } = await admin.from('candidates').update({ job_alert_sent_at: new Date().toISOString() }).eq('id', candidate.id);

@@ -12,7 +12,7 @@ export function VideoBlock({ data }: Props) {
     <Section>
       <SectionHeading eyebrow={str(data, 'eyebrow')} title={str(data, 'title')} intro={str(data, 'intro')} align="center" />
       <figure className="m-0 mx-auto max-w-[960px]">
-        <div className="relative aspect-video overflow-hidden rounded-[28px] bg-ink shadow-[0_30px_80px_-30px_rgba(27,26,23,0.45)]">
+        <div className="relative aspect-video overflow-hidden rounded-[28px] bg-night shadow-[0_30px_80px_-30px_rgba(27,26,23,0.45)]">
           <CmsVideo src={src} poster={str(data, 'poster')} title={str(data, 'title') || 'Video'} />
         </div>
         {str(data, 'caption') ? (

@@ -93,7 +93,9 @@ export type RegisterInput = z.infer<typeof registerSchema>;
 export const signupProfileSchema = z.object({
   position: z.string().min(1).max(40),
   yearsExperience: z.number().int().min(0).max(3),
-  englishSelf: z.number().int().min(0).max(2),
+  /* No longer asked at signup: the test measures English, and every question
+     before it costs candidates. Still accepted from older clients. */
+  englishSelf: z.number().int().min(0).max(2).optional(),
   cityState: z.string().trim().min(2).max(120),
 });
 

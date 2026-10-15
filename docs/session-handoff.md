@@ -4,6 +4,99 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Block 56 - 15 Oct 2026
+
+**One main action, live odds, films where people decide.** Run
+`0025_public_funnel.sql` (new, unapplied).
+
+- Header, hero and closing call to action all say "Create my free profile" and
+  go to /signup. Every other action on CMS pages is now a text link, so each
+  screen has one button. The header default only applies if no navigation row
+  is saved; check Settings › Navigation.
+- New `live_funnel` block: out of every 100 who finish the test, how many
+  score above the shortlist threshold, are put forward, are hired. Counts come
+  from `public_funnel_stats()` (aggregates only, anon-callable) and refresh
+  every 60 seconds while the tab is visible. Below the minimum sample (50 by
+  default) it shows the historical "about 10 of 15 shortlisted" text instead.
+- Hero has "Film to play" (YouTube link or upload) shown as a quiet watch
+  button; the Film block accepts YouTube links too. Settings › Applications
+  has a film link and label shown beside the apply form and on sign-up. YouTube
+  is loaded only when pressed (no-cookie domain).
+- The default film path is `/video/intro.mp4`; upload the real 53-second film
+  or paste its YouTube link.
+- Home pages already saved in the database keep their old blocks: open the
+  editor and reset to default, or add the live odds block and film by hand.
+- New long sentences fall back to English until translated in the editor.
+
+---
+
+## Block 55 - 15 Oct 2026
+
+**Everything editable, no demo mode.** Run `0024_admin_config.sql` after 0023
+(new, unapplied), then set `INTEGRATIONS_MASTER_KEY` (at least 32 random
+characters) in Vercel and add it to `.env.example` by hand.
+
+- **No demo mode.** Sample data is gone from the code; sample jobs are drafts
+  in `supabase/seed/jobs_sample.sql`. Without Supabase variables every page
+  shows "Setup required" and writes answer `503 not_configured` (was
+  `demo_mode`). `/api/health` answers 503 in that state.
+- **Settings.** Company & pricing (seller, partner, offices, fee per currency,
+  VAT, indicative rates, employer placement fee, hiring rules, cohort), Emails
+  (plain-text templates with `{{placeholders}}`), Search & sharing (title,
+  description and Open Graph image per page) and Integrations (every
+  third-party key, encrypted in the database, environment as fallback).
+  `src/lib/data/brand.ts` and `cohort.ts` are deleted.
+- **Navigation.** Settings sub-pages are in the console sidebar, filtered by
+  permission; Assessment items added.
+- **E2E.** Needs a Supabase test project (`E2E_SUPABASE_URL`,
+  `E2E_SUPABASE_ANON_KEY`, `E2E_SUPABASE_SERVICE_ROLE_KEY`) with sample jobs
+  published. Without one only `setup.spec.ts` runs. The console, employer,
+  growth and operations specs are excluded until they have signed-in fixtures.
+- Typecheck, lint, 123 unit tests, build and the setup e2e spec pass.
+
+---
+
+## Block 54 - 15 Oct 2026
+
+**Owner questionnaire applied.** Decisions, and everything still open for the
+owner, finance and the lawyer, are in `docs/owner-answers.md`. Run
+`0021_free_database.sql`, `0022_legal_review.sql` and
+`0023_candidate_background.sql` after 0020; all three are new and unapplied.
+
+- **Free database (0021).** The talent pool, employer bench and employer
+  candidate reads no longer require payment; a finished assessment is enough.
+  Shortlist rule: score above 70 (`SHORTLIST_MIN_SCORE`), shown on every
+  application; payment plays no part.
+- **Package.** Renamed to the Professional Assessment and Career Preparation
+  Package across dictionary, terms, refund policy, FAQ, home, how it works,
+  stay safe and contact. Changed sentences fall back to English in other
+  languages until re-translated (`withPendingTranslations`).
+- **Legal review (0022).** `/admin/legal-reviews` (relocation.manage): every
+  buyer is owed one; save a draft, deliver (emails the candidate), shown on the
+  dashboard. National ID accepted as a document.
+- **Background questions (0023).** Dashboard form; staff see it on the
+  application page and the legal review queue. Never shown to employers.
+  Included in export and erase.
+- **Network International.** `PAYMENT_PROVIDER=ngenius`,
+  `NEXT_PUBLIC_CHARGE_CURRENCY=AED`. Card only. `{{fee_inr}}` now shows the
+  charged price with rupees as a guide when the charge is not in INR.
+- **Odds.** Only the historical "10 of 15 shortlisted hired" is published
+  (`SHORTLIST_OUTCOME`; tokens `{{shortlist_hired}}`, `{{shortlist_size}}`,
+  `{{shortlist_score}}`). `{{hire_rate}}` and `{{funnel_*}}` are gone: CMS pages
+  saved in the database before this need "Reset to default content".
+- **Copy.** Housing and meals included; flight, visa fee, police certificate,
+  immigration fees and taxes paid once selected; Zoom interviews; independent
+  immigration lawyers; test is free and up to 90 minutes.
+- **Ops.** `STAFF_ALERT_EMAILS` emailed on new applications, first payment and
+  vacancy requests (`emailStaff`). Daily retention cron (1 year). Vercel region
+  `fra1`; **create the Supabase project in an EU region.** Seed names the two
+  super admins.
+- **Docs.** `docs/owner-answers.md`, `docs/testimonials-script.md`, AGENTS.md map.
+
+Checks: typecheck, lint, 101 unit tests, build and 104 e2e tests pass.
+
+---
+
 ## Block 53 - 15 Oct 2026
 
 **Operations, privacy, relocation and hiring, done in code.** Run

@@ -1,10 +1,14 @@
 import { notFound, redirect } from 'next/navigation';
+import { staticPageMetadata } from '@/lib/seo';
 import { Wordmark } from '@/components/ui/Wordmark';
 import { SignInForm } from '@/components/auth/SignInForm';
 import { getDictionary, isLocale, localePath } from '@/lib/i18n';
 import { getViewer, resolveDestination } from '@/lib/auth';
 
-export const metadata = { title: 'Sign in' };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  return staticPageMetadata('signin', locale);
+}
 
 /** The single entry point, for candidates, employers and staff alike. */
 export default async function SignInPage({

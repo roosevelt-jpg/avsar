@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { apiPermission, demoWriteRefusal } from '@/lib/rbac/server';
+import { apiPermission } from '@/lib/rbac/server';
 import { PERMISSIONS } from '@/lib/rbac/permissions';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { audit } from '@/lib/audit';
@@ -16,8 +16,6 @@ const postSchema = z.object({ key, name: z.string().trim().min(2).max(60), descr
 export async function PUT(request: Request) {
   const guard = await apiPermission('roles.manage');
   if (guard instanceof NextResponse) return guard;
-  const refusal = demoWriteRefusal(guard);
-  if (refusal) return refusal;
 
   const parsed = putSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: 'invalid_payload' }, { status: 400 });
@@ -51,8 +49,6 @@ export async function PUT(request: Request) {
 export async function POST(request: Request) {
   const guard = await apiPermission('roles.manage');
   if (guard instanceof NextResponse) return guard;
-  const refusal = demoWriteRefusal(guard);
-  if (refusal) return refusal;
 
   const parsed = postSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: 'invalid_payload' }, { status: 400 });
@@ -73,8 +69,6 @@ export async function POST(request: Request) {
 export async function DELETE(request: Request) {
   const guard = await apiPermission('roles.manage');
   if (guard instanceof NextResponse) return guard;
-  const refusal = demoWriteRefusal(guard);
-  if (refusal) return refusal;
 
   const parsed = z.object({ role: key }).safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: 'invalid_payload' }, { status: 400 });

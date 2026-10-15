@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { apiPermission, can, demoWriteRefusal } from '@/lib/rbac/server';
+import { apiPermission, can } from '@/lib/rbac/server';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { audit } from '@/lib/audit';
 
@@ -35,8 +35,6 @@ async function roleExists(admin: NonNullable<ReturnType<typeof getAdminSupabase>
 export async function POST(request: Request) {
   const guard = await apiPermission('staff.manage');
   if (guard instanceof NextResponse) return guard;
-  const refusal = demoWriteRefusal(guard);
-  if (refusal) return refusal;
 
   const parsed = inviteSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: 'validation_failed', issues: parsed.error.flatten().fieldErrors }, { status: 422 });
@@ -87,8 +85,6 @@ export async function POST(request: Request) {
 export async function PATCH(request: Request) {
   const guard = await apiPermission('staff.manage');
   if (guard instanceof NextResponse) return guard;
-  const refusal = demoWriteRefusal(guard);
-  if (refusal) return refusal;
 
   const parsed = updateSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: 'invalid_payload' }, { status: 400 });

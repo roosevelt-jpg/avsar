@@ -1,7 +1,7 @@
 import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { apiPermission, can, demoWriteRefusal } from '@/lib/rbac/server';
+import { apiPermission, can } from '@/lib/rbac/server';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { jobInputSchema, jobStatusSchema } from '@/lib/jobs/schema';
 import { jobToRow, type JobInput } from '@/lib/jobs/types';
@@ -24,8 +24,6 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
   const guard = await apiPermission(body.data.job ? 'jobs.edit' : 'jobs.publish');
   if (guard instanceof NextResponse) return guard;
-  const refusal = demoWriteRefusal(guard);
-  if (refusal) return refusal;
   if (body.data.status && !can(guard, 'jobs.publish')) {
     return NextResponse.json({ error: 'forbidden', need: 'jobs.publish' }, { status: 403 });
   }
@@ -59,8 +57,6 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
   if (!z.string().uuid().safeParse(id).success) return NextResponse.json({ error: 'not_found' }, { status: 404 });
   const guard = await apiPermission('jobs.publish');
   if (guard instanceof NextResponse) return guard;
-  const refusal = demoWriteRefusal(guard);
-  if (refusal) return refusal;
 
   const admin = getAdminSupabase();
   if (!admin) return NextResponse.json({ error: 'storage_unconfigured' }, { status: 503 });

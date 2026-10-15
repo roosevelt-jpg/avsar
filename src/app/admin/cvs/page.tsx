@@ -138,7 +138,7 @@ export default async function CvQueuePage() {
                       {row.assessmentId && (
                         <Link
                           href={`/admin/review/${row.assessmentId}`}
-                          className="t-colors rounded-[8px] border border-line-strong bg-surface px-3 py-1.5 text-[13px] no-underline text-ink hover:border-employer"
+                          className="t-colors rounded-[8px] border border-line-strong bg-surface px-3 py-1.5 text-[13px] no-underline text-ink hover:border-ink"
                         >
                           Review
                         </Link>

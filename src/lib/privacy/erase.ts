@@ -67,6 +67,8 @@ export async function eraseCandidate(admin: Admin, candidateId: string): Promise
     'success_stories',
     'profile_unlock_requests',
     'bench_holds',
+    'legal_reviews',
+    'candidate_backgrounds',
   ];
   for (const table of purge) {
     const { error } = await admin.from(table).delete().eq('candidate_id', candidateId);

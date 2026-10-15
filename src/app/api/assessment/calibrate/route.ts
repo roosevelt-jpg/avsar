@@ -1,3 +1,4 @@
+import { refreshIntegrations } from '@/lib/integrations/runtime';
 import { NextResponse } from 'next/server';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { getViewer } from '@/lib/auth';
@@ -20,6 +21,7 @@ export const maxDuration = 60;
  * enough of this output.
  */
 async function run(request: Request) {
+  await refreshIntegrations();
   const secret = process.env.CRON_SECRET;
   const authorised =
     (secret && request.headers.get('authorization') === `Bearer ${secret}`) ||

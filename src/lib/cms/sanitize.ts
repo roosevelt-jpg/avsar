@@ -68,7 +68,15 @@ function sanitizeField(field: Field, value: unknown): unknown {
 
 function sanitizeObject(fields: Field[], raw: Record<string, unknown>): BlockData {
   const out: BlockData = {};
-  for (const field of fields) out[field.name] = sanitizeField(field, raw[field.name]);
+  for (const field of fields) {
+    const value = sanitizeField(field, raw[field.name]);
+    if (field.kind === 'link' && field.optional) {
+      const pair = value as { label: string; href: string };
+      if (!pair.label && !pair.href) continue;
+    }
+    if (field.kind === 'media' && field.optional && !value) continue;
+    out[field.name] = value;
+  }
   return out;
 }
 
@@ -90,13 +98,17 @@ export function sanitizeBlocks(input: unknown): Block[] {
   return blocks;
 }
 
-export type PageSeo = { title: string; description: string; ogImage: string; noindex: boolean };
+/** Search fields, and separate share fields for when a page is posted on WhatsApp or social media. */
+export type PageSeo = { title: string; description: string; ogTitle: string; ogDescription: string; ogImage: string; noindex: boolean };
 
 export function sanitizeSeo(input: unknown): PageSeo {
   const raw = (input && typeof input === 'object' ? input : {}) as Record<string, unknown>;
+  const text = (value: unknown, max: number) => (typeof value === 'string' ? value.trim().slice(0, max) : '');
   return {
-    title: typeof raw.title === 'string' ? raw.title.trim().slice(0, 80) : '',
-    description: typeof raw.description === 'string' ? raw.description.trim().slice(0, 200) : '',
+    title: text(raw.title, 80),
+    description: text(raw.description, 200),
+    ogTitle: text(raw.ogTitle, 90),
+    ogDescription: text(raw.ogDescription, 200),
     ogImage: safeUrl(raw.ogImage),
     noindex: raw.noindex === true,
   };

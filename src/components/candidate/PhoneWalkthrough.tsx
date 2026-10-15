@@ -190,7 +190,7 @@ export function PhoneWalkthrough({ t }: { t: Dictionary }) {
                   </Mono>
                   <span
                     className={`mt-1.5 block text-[18px] font-semibold leading-[1.35] transition-colors duration-300 ${
-                      current ? 'text-paper' : 'text-dark-muted-2/70 group-hover:text-dark-muted-2'
+                      current ? 'text-on-night' : 'text-dark-muted-2/70 group-hover:text-dark-muted-2'
                     }`}
                   >
                     {title}

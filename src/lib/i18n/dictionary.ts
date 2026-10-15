@@ -15,7 +15,6 @@
  * These translations need a native read before they are treated as final.
  */
 
-import { PLACEMENT_FEE_UNDISCLOSED } from '@/lib/data/brand';
 import { ar } from './ar';
 import { as } from './langs/as';
 import { bn } from './langs/bn';
@@ -466,7 +465,7 @@ const en: Dictionary = {
   videoPlay: 'Play the film',
   askWork: 'What position are you applying for?',
   cta: 'Start your application',
-  fine: 'You pay the assessment fee once, after you have seen what the assessment involves. Selection is not guaranteed, and we tell you either way within {days} days.',
+  fine: 'The assessment and the recruitment database are free; the career package is optional and gives no priority. Selection is not guaranteed, and we tell you either way within {days} days.',
   heroMeta: '{price} · 20–30 min · online',
 
   includesTitle: 'What your fee includes',
@@ -482,7 +481,7 @@ const en: Dictionary = {
   placeFine: 'Selection is not guaranteed. You receive an answer within {days} days of completing your application.',
   selectionRules: 'Selection rules',
   noPlacementFee:
-    'You never pay us for the job itself. The assessment fee is the only thing you pay. The employer pays our placement fee, not you.',
+    'You never pay us for the job itself. The optional career package is the only thing we sell to candidates. The employer pays our placement fee, not you.',
   placementFee:
     'If you are placed, there is a placement fee of €{eur}. You pay it only once your job is confirmed and your contract is signed, never before. The {price} assessment fee is separate and is what you pay now. The placement fee is invoiced separately and is never charged through this site.',
   placementFeeShort: 'Placement fee €{eur}, payable only after your job is confirmed.',
@@ -501,15 +500,15 @@ const en: Dictionary = {
   ctaTitle: 'Applications are open.',
 
   includes: [
-    ['Professional assessment', 'Twenty to thirty minutes online: your trade skills, your work experience, your English, and a short spoken introduction employers listen to.'],
+    ['Professional assessment', 'Free, up to 90 minutes online: your trade skills, your work experience, your English, and a short spoken introduction employers listen to.'],
     ['Skills report', 'A scored breakdown of your strengths and gaps. It is yours to keep and share.'],
     ['An answer, either way', 'We tell you within {days} days whether you are moving forward. You are not left waiting.'],
   ],
   steps: [
     ['Register', 'Create your account with your name, mobile and email. It takes two minutes.'],
-    ['Take the assessment', 'Twenty to thirty minutes online, from your phone. It costs nothing to sit.'],
-    ['Pay and unlock', 'Pay the assessment fee if you want your report, your rewritten CV and your place in the talent pool.'],
-    ['Selection', 'Shortlisted candidates are interviewed and presented to employers. Selection is not guaranteed.'],
+    ['Take the assessment', 'Up to 90 minutes online, from your phone. It is free, and finishing it puts you in our recruitment database.'],
+    ['Optional career package', 'Your full report, a professional CV, a preliminary legal review of your documents and career advice. It gives no priority.'],
+    ['Selection', 'A score above 7 out of 10 and the essential requirements of the role qualify you for the shortlist. Shortlisted candidates interview on Zoom. Selection is not guaranteed.'],
   ],
   place: [
     '{years}-year employment contract with a Portuguese employer',
@@ -566,9 +565,9 @@ const en: Dictionary = {
     englishOptions: ['Basic', 'Conversational', 'Fluent'],
     cityState: 'City and state',
     consent:
-      'I understand the assessment is free to sit, and that the fee is payable afterwards if I want my skills report, my rewritten CV and my place in the talent pool. Selection for a Portugal placement is not guaranteed. If I am placed, a placement fee of €1,000 is payable after my job is confirmed and my contract is signed. I have read the',
+      'I understand that joining the recruitment database and taking the assessment are free, and that the Professional Assessment and Career Preparation Package is optional and gives no priority. Selection for a Portugal placement is not guaranteed. If I am placed, a placement fee of €1,000 is payable after my job is confirmed and my contract is signed. I have read the',
     consentNoPlacement:
-      'I understand the assessment is free to sit, and that the fee is payable afterwards if I want my skills report, my rewritten CV and my place in the talent pool. Selection for a Portugal placement is not guaranteed. I have read the',
+      'I understand that joining the recruitment database and taking the assessment are free, and that the Professional Assessment and Career Preparation Package is optional and gives no priority. Selection for a Portugal placement is not guaranteed, and I will never be charged a placement fee. I have read the',
     consentRules: 'selection rules',
     consentRefund: 'refund policy',
     back: 'Back',
@@ -693,8 +692,8 @@ const en: Dictionary = {
     steps: [
       ['Register', 'Create your account with your name, mobile and email. It takes two minutes.'],
       ['Upload your CV and documents', 'A CV and a photo are all we need to start. Adding your passport and supporting documents lets us tell you sooner whether your file is ready for a visa.'],
-      ['Take the assessment', 'Your trade skills, your work experience and your English, plus a forty-five second recording of you speaking. Twenty to thirty minutes, from your phone, whenever suits you. It costs nothing to sit.'],
-      ['Pay the assessment fee', 'Pay once, after you have seen what the assessment involves.'],
+      ['Take the assessment', 'Your trade skills, your work experience and your English, plus a forty-five second recording of you speaking. Up to 90 minutes, from your phone, whenever suits you. It is free, and finishing it puts you in our recruitment database.'],
+      ['Optional career package', 'Your full report, a professional CV, a preliminary legal review and career advice. It gives no priority in selection.'],
       ['Assessment call', 'If you are shortlisted, one of our recruiters calls you. This is a real conversation about the work, not a formality.'],
       ['Confirmation letter', 'If you are selected, you receive a confirmation letter to sign, and we begin the visa process with you.'],
     ],
@@ -811,17 +810,17 @@ const en: Dictionary = {
     registered: 'Registered',
     profile: 'Profile and CV',
     assessment: 'Assessment',
-    payment: 'Assessment fee',
+    payment: 'Career package (optional)',
     report: 'Skills report',
     selection: 'Cohort selection',
     unlockEyebrow: 'YOUR ASSESSMENT IS COMPLETE',
-    unlockTitle: 'Unlock your report and career pack',
+    unlockTitle: 'Professional Assessment and Career Preparation Package',
     unlockBody:
-      'Your answers are scored and your report is written. Pay the {price} assessment fee to download your skills report, your rewritten CV in three formats and your interview preparation, and to appear in the talent pool employers search for 12 months.',
-    unlockCta: 'Pay {price} and unlock',
+      'Your test is scored and you are in our recruitment database for free. For {price} you also receive: a personal skills and English report with your strengths and what to improve; a professionally prepared CV you can use for any application; a preliminary legal review of your documents for Portugal by our legal team; and individual career recommendations for your role and interviews. Every buyer receives all four, whether or not they are shortlisted or hired.',
+    unlockCta: 'Get the package for {price}',
     unlockFine:
-      'Your score is shown above whether you pay or not. The fee is for the documents you take away and the place in the talent pool.',
-    indicative: 'About {amount} in your currency, as a guide. You are charged in euros and your own bank converts.',
+      'Optional. Shortlisting depends on your score (above 7 out of 10) and the role’s requirements, not on buying the package, and buying it gives no priority. It does not guarantee an interview, a job offer or a visa: visa decisions are made only by the authorities. The legal review is preliminary and is not permission to work.',
+    indicative: 'About {amount} in your currency, as a guide. Your own bank converts the charge.',
     indicativeLabel: 'Show the fee in another currency',
     done: 'Done',
     current: 'Now',
@@ -1343,30 +1342,42 @@ const hi: Dictionary = {
 export const dictionaries: Record<Locale, Dictionary> = { en, hi, bn, mr, te, ta, ur, gu, kn, or, ml, pa, as, ar };
 
 /**
- * Blanked while the placement fee is withheld, so the wording is not merely
- * unrendered but absent.
+ * English for the sentences whose meaning changed with the owner's terms
+ * (October 2026: free database, optional package, no placement fee).
  *
- * The whole dictionary is handed to client components and therefore serialised
- * into the page, so leaving these in place would have published the sentence in
- * the source of every page while no element displayed it. Hidden in the markup
- * and hidden from the reader are not the same thing, and only the second one
- * was asked for.
- *
- * Nothing reads them in this state: each render site is behind
- * `PLACEMENT_FEE.visibleToCandidates`, which is false for the same reason. Set
- * `PLACEMENT_FEE.disclosed` back to true and the strings come back with it.
+ * The older translations promise a place in the talent pool for the fee, which
+ * is no longer true. A candidate reading a correct sentence in English is better
+ * served than one reading a false one in their own language. Remove a key here
+ * once every language has been re-translated.
  */
-export function getDictionary(locale: Locale): Dictionary {
-  const dictionary = dictionaries[locale];
-  if (!PLACEMENT_FEE_UNDISCLOSED) return dictionary;
-
+function withPendingTranslations(locale: Locale, dictionary: Dictionary): Dictionary {
+  if (locale === 'en') return dictionary;
   return {
     ...dictionary,
-    placementFee: '',
-    placementFeeShort: '',
-    noPlacementFee: '',
-    signup: { ...dictionary.signup, consent: '' },
+    fine: en.fine,
+    noPlacementFee: en.noPlacementFee,
+    includes: en.includes,
+    steps: en.steps,
+    process: { ...dictionary.process, steps: en.process.steps },
+    status: {
+      ...dictionary.status,
+      payment: en.status.payment,
+      unlockTitle: en.status.unlockTitle,
+      unlockBody: en.status.unlockBody,
+      unlockCta: en.status.unlockCta,
+      unlockFine: en.status.unlockFine,
+      indicative: en.status.indicative,
+    },
+    signup: {
+      ...dictionary.signup,
+      consent: en.signup.consent,
+      consentNoPlacement: en.signup.consentNoPlacement,
+    },
   };
+}
+
+export function getDictionary(locale: Locale): Dictionary {
+  return withPendingTranslations(locale, dictionaries[locale]);
 }
 
 /** Sector labels in English, used as the canonical value stored in the database. */

@@ -16,6 +16,8 @@ import {
   Noto_Sans_Tamil,
   Noto_Sans_Telugu,
 } from 'next/font/google';
+import { getSiteSettings } from '@/lib/cms/data';
+import { hasServiceRole, isSupabaseConfigured } from '@/lib/supabase/config';
 import './globals.css';
 
 /**
@@ -95,17 +97,30 @@ const bDevanagari = Noto_Serif_Devanagari({
   display: 'swap',
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: 'S&A Recruitment · Work in Portugal',
-    template: '%s · S&A Recruitment',
-  },
-  description:
-    'A recruitment agency under the Smith & Adams brand, hiring across India for jobs in Portugal. Assessment, contract, accommodation, meals and legal support through the whole visa process.',
-  /* The canonical home. Every relative URL in metadata, including the Open
-     Graph image and the canonical tag, is resolved against it, so a stale
-     value here puts the preview URL on every card the brand shares. */
-  metadataBase: new URL(process.env.SITE_ORIGIN ?? 'https://recruitment.smithandadams.com'),
+/**
+ * Site-wide defaults, from Settings › General and Settings › Search & sharing.
+ * Pages override them through `pageMetadata` in src/lib/seo.ts.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  const { siteName } = settings.general;
+  const { defaultTitle, defaultDescription, ogImage } = settings.seo;
+  const images = ogImage ? [{ url: ogImage, width: 1200, height: 630, alt: siteName }] : undefined;
+  return {
+    title: { default: defaultTitle, template: `%s · ${siteName}` },
+    description: defaultDescription,
+    applicationName: siteName,
+    /* The canonical home. Every relative URL in metadata, including the Open
+       Graph image and the canonical tag, is resolved against it, so a stale
+       value here puts the preview URL on every card the brand shares. */
+    metadataBase: new URL(process.env.SITE_ORIGIN ?? 'https://recruitment.smithandadams.com'),
+    ...STATIC_METADATA,
+    openGraph: { type: 'website', siteName, title: defaultTitle, description: defaultDescription, url: './', images },
+    twitter: { card: images ? 'summary_large_image' : 'summary', title: defaultTitle, description: defaultDescription, images: images?.map((image) => image.url) },
+  };
+}
+
+const STATIC_METADATA: Metadata = {
   icons: {
     /* The favicon is a simplified mark with no dotted route, because the route
        turns to mud at 16px. The full mark is used everywhere it has room. */
@@ -117,43 +132,29 @@ export const metadata: Metadata = {
   /* Resolved against `metadataBase`, so every route gets its own canonical
      rather than all of them claiming to be the home page. */
   alternates: { canonical: './' },
-
-  /**
-   * The card a shared link shows.
-   *
-   * This link travels by WhatsApp more than by anything else, to candidates
-   * and to the people reviewing the business, and a link with no card reads as
-   * broken or as something somebody pasted by accident. The image is a static
-   * PNG rather than generated per request: one card for the whole site, and no
-   * render to go wrong at the moment somebody is deciding whether to open it.
-   */
-  openGraph: {
-    type: 'website',
-    siteName: 'S&A Recruitment',
-    title: 'Work in Portugal. We handle everything after you are selected.',
-    description:
-      'A professional assessment of your skills, experience and English. Selected candidates receive a contract with a Portuguese employer, accommodation, meals and legal support through the whole visa process.',
-    url: './',
-    images: [{ url: '/brand/og.png', width: 1200, height: 630, alt: 'S&A Recruitment' }],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Work in Portugal. We handle everything after you are selected.',
-    description:
-      'A professional assessment of your skills, experience and English, and a contract, accommodation, meals and legal support for candidates who are selected.',
-    images: ['/brand/og.png'],
-  },
 };
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#f7f5f0',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#f4f4f5' },
+    { media: '(prefers-color-scheme: dark)', color: '#161513' },
+  ],
 };
+
+/* Applies a stored light or dark choice before first paint, so a dark-mode
+   visitor never sees a white flash. A fixed string written here, not content
+   from anyone, which is why it may be inlined. */
+const THEME_SCRIPT = "try{var t=localStorage.getItem('theme');if(t==='dark'||t==='light')document.documentElement.classList.add(t)}catch(e){}";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    /* The theme script changes the class before React hydrates. */
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body
         className={`${sans.variable} ${devanagari.variable} ${arabic.variable} ${indic} ${mono.variable} ${bSerif.variable} ${bSans.variable} ${bDevanagari.variable}`}
       >
@@ -163,8 +164,37 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <noscript>
           <style>{'[data-reveal]{opacity:1!important;transform:none!important}'}</style>
         </noscript>
-        {children}
+        {isSupabaseConfigured() ? children : <SetupRequired />}
       </body>
     </html>
+  );
+}
+
+/**
+ * There is no demo mode: every page reads live data, so a deployment without
+ * a database says what is missing rather than showing an empty site. Names the
+ * variables only, never their values.
+ */
+function SetupRequired() {
+  const missing = [
+    !process.env.NEXT_PUBLIC_SUPABASE_URL && 'NEXT_PUBLIC_SUPABASE_URL',
+    !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY && 'NEXT_PUBLIC_SUPABASE_ANON_KEY',
+    !hasServiceRole() && 'SUPABASE_SERVICE_ROLE_KEY',
+  ].filter(Boolean) as string[];
+  return (
+    <main className="mx-auto max-w-[60ch] px-6 py-16">
+      <h1 className="m-0 text-[28px] font-semibold tracking-[-0.02em]">Setup required</h1>
+      <p className="mt-4 text-[16px] leading-[1.6] text-ink-2">
+        This site needs its database before it can show anything. Set these environment variables, run the
+        migrations in <code>supabase/migrations</code> and the seeds in <code>supabase/seed</code>, then redeploy.
+      </p>
+      <ul className="mt-4 text-[15px]">
+        {missing.map((name) => (
+          <li key={name}>
+            <code>{name}</code>
+          </li>
+        ))}
+      </ul>
+    </main>
   );
 }

@@ -1,7 +1,7 @@
 import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { apiPermission, demoWriteRefusal } from '@/lib/rbac/server';
+import { apiPermission } from '@/lib/rbac/server';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { defaultPage } from '@/lib/cms/defaults';
 import { sanitizeBlocks, sanitizeSeo } from '@/lib/cms/sanitize';
@@ -36,8 +36,6 @@ export async function PUT(request: Request, { params }: { params: Promise<{ slug
 
   const guard = await apiPermission(action === 'save' ? 'cms.edit' : 'cms.publish');
   if (guard instanceof NextResponse) return guard;
-  const refusal = demoWriteRefusal(guard);
-  if (refusal) return refusal;
 
   const admin = getAdminSupabase();
   if (!admin) return NextResponse.json({ error: 'storage_unconfigured' }, { status: 503 });
@@ -98,8 +96,6 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ s
 
   const guard = await apiPermission('cms.publish');
   if (guard instanceof NextResponse) return guard;
-  const refusal = demoWriteRefusal(guard);
-  if (refusal) return refusal;
 
   const admin = getAdminSupabase();
   if (!admin) return NextResponse.json({ error: 'storage_unconfigured' }, { status: 503 });

@@ -58,8 +58,10 @@ export async function AccountMenu({
   }
 
   return (
-    <span className="flex flex-wrap items-center gap-3">
-      <Mono className="text-muted">{who}</Mono>
+    /* nowrap: in the site header this sits beside the main menu, and a wrapped
+       "Sign out" would push the menu links under the language button. */
+    <span className="flex items-center gap-3 whitespace-nowrap">
+      <Mono className="hidden text-muted 2xl:inline">{who}</Mono>
       {links.map((link) => (
         <Link
           key={link.href}

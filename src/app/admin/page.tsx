@@ -9,9 +9,10 @@ import { searchTalent } from '@/lib/talent-search';
 import { parseQuery, describeQuery } from '@/lib/assessment/query-parser';
 import { SECTOR_SLUGS, sectorLabel, type SectorSlug } from '@/lib/data/sectors';
 import { DEFAULT_EMPLOYER_QUERY, initials, type Cefr } from '@/lib/data/candidates';
-import { COHORT, assessedCount } from '@/lib/data/cohort';
+import { assessedCount } from '@/lib/company/data';
+import { getSiteSettings } from '@/lib/cms/data';
 import { requireStaffOrEmployer } from '@/lib/auth';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
+import { requirePermission } from '@/lib/rbac/server';
 
 export const metadata = { title: 'Talent pool' };
 
@@ -24,11 +25,10 @@ export default async function AdminSearchPage({
 }) {
   const query = await searchParams;
 
-  /* Without Supabase there is no auth to enforce and the page shows sample
-     data, so the gate would only get in the way of reviewing the screen. */
-  const access = isSupabaseConfigured()
-    ? await requireStaffOrEmployer('/admin')
-    : { isStaff: true, label: 'Preview' };
+  const access = await requireStaffOrEmployer('/admin');
+  /* Employers reach this page as employers; staff need the permission, so a
+     content editor typing the address is refused like everywhere else. */
+  if (access.isStaff) await requirePermission('candidates.view', '/admin');
 
   const q = query.q ?? DEFAULT_EMPLOYER_QUERY;
   const sector: SectorSlug | undefined =
@@ -40,9 +40,10 @@ export default async function AdminSearchPage({
     : 'B1';
   const page = Math.max(1, Number(query.page ?? 1) || 1);
 
-  const [result, assessed] = await Promise.all([
+  const [result, assessed, { cohort: COHORT }] = await Promise.all([
     searchTalent({ query: q, sector, minEnglish, page, pageSize: PAGE_SIZE, maskNames: !access.isStaff }),
     assessedCount(),
+    getSiteSettings(),
   ]);
   const understood = describeQuery(parseQuery(q), sectorLabel);
   const pages = Math.max(1, Math.ceil(result.total / PAGE_SIZE));
@@ -66,12 +67,6 @@ export default async function AdminSearchPage({
           </Mono>
           <Mono className="text-muted">Sorted by overall score</Mono>
         </div>
-
-        {result.sample && (
-          <p className="mt-0 mb-4 rounded-[12px] border border-line bg-surface-subtle px-4 py-3 text-[13px] text-muted">
-            Showing the sample pool. Configure Supabase to search real candidates.
-          </p>
-        )}
 
         <div className="scroll-x rounded-[16px] border border-line bg-surface">
           <table className="w-full min-w-[680px] border-collapse text-left">
@@ -123,8 +118,8 @@ export default async function AdminSearchPage({
                           model score as if it measured the person. */}
                       {access.isStaff && (
                         <Link
-                          href={`/admin/review/${result.sample ? 'sample' : row.id}`}
-                          className="t-colors rounded-[8px] border border-line-strong bg-surface px-3 py-1.5 text-[13px] no-underline text-ink hover:border-employer"
+                          href={`/admin/review/${row.id}`}
+                          className="t-colors rounded-[8px] border border-line-strong bg-surface px-3 py-1.5 text-[13px] no-underline text-ink hover:border-ink"
                         >
                           CV review
                         </Link>
@@ -180,7 +175,7 @@ function PageLink({
   return (
     <Link
       href={`/admin?${params.toString()}`}
-      className="t-colors rounded-[8px] border border-line-strong bg-surface px-3 py-1.5 text-[13px] no-underline hover:border-employer"
+      className="t-colors rounded-[8px] border border-line-strong bg-surface px-3 py-1.5 text-[13px] no-underline hover:border-ink"
     >
       {label}
     </Link>

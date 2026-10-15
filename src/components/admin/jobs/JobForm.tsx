@@ -193,7 +193,7 @@ export function JobForm({
         const fields = data?.issues?.fieldErrors ? Object.keys(data.issues.fieldErrors).join(', ') : '';
         const reasons: Record<string, string> = {
           slug_taken: 'Another job already uses this web address. Change the slug.',
-          demo_mode: 'Demo mode: nothing can be saved without Supabase.',
+          not_configured: 'The database is not connected, so nothing was saved.',
           forbidden: 'Your role cannot do this.',
           validation_failed: `Please check: ${fields}`,
         };

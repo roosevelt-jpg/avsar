@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
 import { SiteHeader } from '@/components/candidate/SiteHeader';
-import { SiteFooter } from '@/components/candidate/SiteFooter';
 import type { ResolvedPage } from '@/lib/cms/data';
 import { getSiteSettings } from '@/lib/cms/data';
-import { languageAlternates, type Locale } from '@/lib/i18n';
+import type { Locale } from '@/lib/i18n';
+import { pageMetadata } from '@/lib/seo';
 import { BlockRenderer } from './BlockRenderer';
 
-/** A whole CMS page: site chrome around the rendered blocks. */
+/** A whole CMS page: header and rendered blocks. The footer comes from the locale layout. */
 export async function CmsPageView({
   page,
   locale,
@@ -25,25 +25,20 @@ export async function CmsPageView({
       <main>
         <BlockRenderer blocks={page.blocks} locale={locale} settings={settings} />
       </main>
-      <SiteFooter locale={locale} />
     </>
   );
 }
 
 export async function cmsMetadata(page: ResolvedPage | null, path: string): Promise<Metadata> {
   if (!page) return {};
-  const settings = await getSiteSettings();
-  const image = page.seo.ogImage || settings.seo.ogImage;
-  return {
+  return pageMetadata({
     title: page.seo.title || page.title,
-    description: page.seo.description || settings.seo.defaultDescription,
-    alternates: languageAlternates(path),
-    robots: page.seo.noindex ? { index: false, follow: true } : undefined,
-    openGraph: {
-      title: page.seo.title || page.title,
-      description: page.seo.description || settings.seo.defaultDescription,
-      images: image ? [{ url: image }] : undefined,
-      type: 'website',
-    },
-  };
+    description: page.seo.description,
+    ogTitle: page.seo.ogTitle,
+    ogDescription: page.seo.ogDescription,
+    image: page.seo.ogImage,
+    path,
+    locale: page.locale,
+    noindex: page.seo.noindex,
+  });
 }

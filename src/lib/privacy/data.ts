@@ -1,5 +1,4 @@
 import { getAdminSupabase } from '@/lib/supabase/admin';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { ERASE_BLOCKING_STATUSES } from '@/lib/privacy/erase';
 
 /**
@@ -22,27 +21,6 @@ export type PrivacyCandidate = {
 export type AccessEntry = { id: number; actor: string | null; actorEmail: string | null; candidateId: string | null; action: string; detail: unknown; createdAt: string };
 export type ConsentEntry = { consent: string; granted: boolean; version: string | null; source: string | null; createdAt: string };
 
-const SAMPLE_CANDIDATE: PrivacyCandidate = {
-  id: '00000000-0000-4000-8000-0000000c0001',
-  fullName: 'Sample: Arjun Nair',
-  email: 'arjun@example.com',
-  phone: '+919800000010',
-  createdAt: '2026-10-01T09:00:00.000Z',
-  erasedAt: null,
-  blockingReferences: [],
-};
-
-const SAMPLE_LOG: AccessEntry[] = [
-  { id: 3, actor: null, actorEmail: 'recruiter@example.com', candidateId: SAMPLE_CANDIDATE.id, action: 'cv.download', detail: { application: 'APP-SAMPLE0' }, createdAt: '2026-10-15T10:12:00.000Z' },
-  { id: 2, actor: null, actorEmail: 'recruiter@example.com', candidateId: SAMPLE_CANDIDATE.id, action: 'application.view', detail: null, createdAt: '2026-10-15T10:10:00.000Z' },
-  { id: 1, actor: null, actorEmail: null, candidateId: SAMPLE_CANDIDATE.id, action: 'candidate.self_export', detail: null, createdAt: '2026-10-14T18:00:00.000Z' },
-];
-
-const SAMPLE_CONSENTS: ConsentEntry[] = [
-  { consent: 'whatsapp', granted: true, version: null, source: 'apply_form', createdAt: '2026-10-02T11:00:00.000Z' },
-  { consent: 'selection_odds', granted: true, version: '2026-09', source: 'signup', createdAt: '2026-10-01T09:05:00.000Z' },
-];
-
 export const ACCESS_LABELS: Record<string, string> = {
   'cv.download': 'Downloaded the CV',
   'application.view': 'Opened an application',
@@ -57,7 +35,6 @@ export const ACCESS_LABELS: Record<string, string> = {
 export async function searchPrivacyCandidates(q: string): Promise<PrivacyCandidate[]> {
   const term = q.replace(/[%,()]/g, ' ').trim();
   if (term.length < 3) return [];
-  if (!isSupabaseConfigured()) return [SAMPLE_CANDIDATE];
   const admin = getAdminSupabase();
   if (!admin) return [];
   const { data } = await admin
@@ -78,7 +55,6 @@ export async function searchPrivacyCandidates(q: string): Promise<PrivacyCandida
 }
 
 export async function getPrivacyCandidate(id: string): Promise<{ candidate: PrivacyCandidate; log: AccessEntry[]; consents: ConsentEntry[] } | null> {
-  if (!isSupabaseConfigured()) return { candidate: SAMPLE_CANDIDATE, log: SAMPLE_LOG, consents: SAMPLE_CONSENTS };
   const admin = getAdminSupabase();
   if (!admin) return null;
 
@@ -112,7 +88,6 @@ export async function getPrivacyCandidate(id: string): Promise<{ candidate: Priv
 }
 
 export async function accessLog(filter: { candidateId?: string; limit?: number } = {}): Promise<AccessEntry[]> {
-  if (!isSupabaseConfigured()) return SAMPLE_LOG;
   const admin = getAdminSupabase();
   if (!admin) return [];
   let query = admin

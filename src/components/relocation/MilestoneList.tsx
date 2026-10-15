@@ -18,7 +18,7 @@ const DOT: Record<Milestone['status'], string> = {
  * have landed. A blocked step shows the recruiter's note, so "waiting" always
  * says what for.
  */
-export function MilestoneList({ milestones, demo }: { milestones: Milestone[]; demo: boolean }) {
+export function MilestoneList({ milestones }: { milestones: Milestone[] }) {
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -30,7 +30,7 @@ export function MilestoneList({ milestones, demo }: { milestones: Milestone[]; d
     try {
       const response = await fetch(`/api/relocation/milestones/${id}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ done: true }) });
       if (response.ok) router.refresh();
-      else setError(demo || response.status === 503 ? 'This is a preview: nothing is saved.' : 'That did not save. Please try again.');
+      else setError('That did not save. Please try again.');
     } finally {
       setBusy(null);
     }

@@ -51,7 +51,7 @@ export const WHY_PORTUGAL: DefaultPage = {
         eyebrow: 'Life in Portugal',
         title: 'Safe, sunny, and already home to thousands of Indians',
         body:
-          'Portugal has a mild climate, a relaxed pace of life and consistently ranks among the safest countries in the world. Lisbon has Indian grocery shops, restaurants, temples and gurdwaras, and a community from Kerala, Punjab, Gujarat and Goa that has been there for decades.\n\nRent is the largest cost, especially in Lisbon. That is why every job posting says whether housing is provided or arranged, so you can see what you will actually keep.',
+          'Portugal has a mild climate, a relaxed pace of life and consistently ranks among the safest countries in the world. Lisbon has Indian grocery shops, restaurants, temples and gurdwaras, and a community from Kerala, Punjab, Gujarat and Goa that has been there for decades.\n\nRent is the largest cost, especially in Lisbon. That is why jobs through us include housing and meals, so more of your salary is yours to keep.',
         bullets: [
           'Direct flights and one-stop connections to Delhi, Mumbai and Kochi',
           'English widely spoken in cities and in hospitality',
@@ -79,7 +79,7 @@ export const WHY_PORTUGAL: DefaultPage = {
           {
             question: 'Will I earn enough to send money home?',
             answer:
-              'It depends on the job and on housing. A job with housing and meals provided leaves much more to save. Every posting shows the salary range and what is included, so you can compare before you apply.',
+              'It depends on the job and on how you live. Housing and meals are included with jobs through us, which leaves much more to save. Every posting shows the salary range, so you can compare before you apply.',
           },
           {
             question: 'Can I bring my family later?',
@@ -96,7 +96,6 @@ export const WHY_PORTUGAL: DefaultPage = {
         body: '',
         primary: { label: 'Browse jobs', href: '/jobs' },
         secondary: { label: '', href: '' },
-        tone: 'dark',
       },
     ],
   ]),

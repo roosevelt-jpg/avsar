@@ -2,8 +2,8 @@ import { Mono } from '@/components/ui/Mono';
 import { AdminShell, AdminHeading } from '@/components/employer/AdminShell';
 import { requirePermission } from '@/lib/rbac/server';
 import { getAdminSupabase } from '@/lib/supabase/admin';
-import { COHORT } from '@/lib/data/cohort';
-import { SELECTION_FUNNEL } from '@/lib/data/brand';
+import Link from 'next/link';
+import { getSiteSettings } from '@/lib/cms/data';
 
 export const metadata = { title: 'Cohorts' };
 
@@ -32,6 +32,7 @@ export default async function CohortsPage() {
     return total ?? 0;
   };
 
+  const { cohort: COHORT, hiring } = await getSiteSettings();
   const [registered, paid, assessed, shortlisted, placed] = await Promise.all([
     count('candidates'),
     count('candidates', 'payment_status', 'paid'),
@@ -72,15 +73,23 @@ export default async function CohortsPage() {
       </div>
 
       <div className="mt-8 max-w-[900px] rounded-[14px] border border-line bg-surface-subtle px-5 py-4">
-        <Mono className="text-muted">PRESENTED TO HIRED</Mono>
+        <Mono className="text-muted">SHORTLISTED TO HIRED</Mono>
         <p className="mt-2 mb-0 text-[15px] leading-[1.6] text-ink-2">
-          The site publishes <strong className="text-ink">{SELECTION_FUNNEL.presentedToHirePercent}%</strong>.
+          The site publishes <strong className="text-ink">{hiring.outcomeHired} of every {hiring.outcomeShortlisted}</strong> shortlisted
+          candidates hired ({hiring.outcomeShortlisted > 0 ? Math.round((hiring.outcomeHired / hiring.outcomeShortlisted) * 100) : 0}%).
           {actualRate === null
             ? ' This cohort has nobody shortlisted yet, so there is no rate to compare it with.'
             : ` This cohort is at ${actualRate}%, from ${placed} started out of ${shortlisted} shortlisted.`}
         </p>
         <p className="mt-2 mb-0 text-[13px] leading-[1.6] text-muted">
-          {SELECTION_FUNNEL.basis}
+          {hiring.outcomeBasis}
+        </p>
+        <p className="mt-2 mb-0 text-[13px] text-muted">
+          The cohort and the published figures are edited on{' '}
+          <Link href="/admin/settings/company" className="text-accent-deep">
+            Settings › Company &amp; pricing
+          </Link>
+          .
         </p>
       </div>
     </AdminShell>

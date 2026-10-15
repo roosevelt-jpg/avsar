@@ -1,4 +1,5 @@
 import { getAdminSupabase } from '@/lib/supabase/admin';
+import { refreshIntegrations } from '@/lib/integrations/runtime';
 
 /**
  * WhatsApp Business (Cloud API) template messages.
@@ -52,6 +53,7 @@ export async function sendWhatsApp(input: {
   template: WhatsAppTemplate;
   params: string[];
 }): Promise<void> {
+  await refreshIntegrations();
   const settings = config();
   if (!settings) return;
   const admin = getAdminSupabase();
@@ -85,6 +87,7 @@ export async function sendWhatsApp(input: {
  * "WhatsApp is fine" tick); this only refuses a number that is not E.164.
  */
 export async function sendWhatsAppToNumber(input: { to: string; template: WhatsAppTemplate; params: string[] }): Promise<{ sent: boolean }> {
+  await refreshIntegrations();
   const settings = config();
   const admin = getAdminSupabase();
   if (!settings || !admin || !/^\+[1-9]\d{6,14}$/.test(input.to)) return { sent: false };

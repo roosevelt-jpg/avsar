@@ -2,8 +2,8 @@ import { Mono } from '@/components/ui/Mono';
 import { AdminShell, AdminHeading, AdminEmpty } from '@/components/employer/AdminShell';
 import { PlacementState } from '@/components/employer/PlacementState';
 import { requireStaffOrEmployer } from '@/lib/auth';
+import { requirePermission } from '@/lib/rbac/server';
 import { getServerSupabase } from '@/lib/supabase/server';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { PLACEMENT_STATES, stateLabel } from '@/lib/data/placements';
 
 export const metadata = { title: 'Placements' };
@@ -17,9 +17,8 @@ export const metadata = { title: 'Placements' };
  * record rather than the current value being the record.
  */
 export default async function PlacementsPage() {
-  const access = isSupabaseConfigured()
-    ? await requireStaffOrEmployer('/admin/placements')
-    : { isStaff: true, label: 'Preview' };
+  const access = await requireStaffOrEmployer('/admin/placements');
+  if (access.isStaff) await requirePermission('placements.manage', '/admin/placements');
 
   const supabase = await getServerSupabase();
   const { data } = (await supabase

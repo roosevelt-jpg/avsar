@@ -1,6 +1,6 @@
 import { localePath } from '@/lib/i18n';
 import { getMailer } from './index';
-import { renderEmail } from './template';
+import { composeEmail } from './compose';
 import { STATUS_META, type ApplicationStatus } from '@/lib/applications/status';
 
 /**
@@ -22,23 +22,20 @@ export async function sendApplicationUpdate(input: {
 }): Promise<void> {
   try {
     const meta = STATUS_META[input.status];
-    const first = input.name.split(' ')[0] || input.name;
     const url = `${input.origin}${localePath(input.locale, '/dashboard/applications')}`;
-    const paragraphs = [`Hello ${first},`, `${input.jobTitle} (${input.reference}): ${meta.candidateBody}`];
-    if (input.note) paragraphs.push(`Message from your recruiter: ${input.note}`);
-
-    await getMailer().send({
-      to: input.to,
-      subject: `${meta.candidateTitle}: ${input.jobTitle}`,
-      text: `${paragraphs.join('\n\n')}\n\nTrack your application: ${url}`,
-      html: renderEmail({
-        preheader: meta.candidateTitle,
-        heading: meta.candidateTitle,
-        paragraphs,
-        action: { label: 'Track my application', url },
-        origin: input.origin,
-      }),
-    });
+    const email = await composeEmail(
+      'application_update',
+      {
+        first_name: input.name.split(' ')[0] || input.name,
+        job_title: input.jobTitle,
+        reference: input.reference,
+        status_title: meta.candidateTitle,
+        status_body: meta.candidateBody,
+        recruiter_note: input.note ? `Message from your recruiter: ${input.note}` : '',
+      },
+      { origin: input.origin, actionUrl: url },
+    );
+    await getMailer().send({ to: input.to, ...email });
   } catch (error) {
     console.error('[email] application update failed', error);
   }

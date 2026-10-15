@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import { SiteFooter } from '@/components/candidate/SiteFooter';
 import { isLocale, locales, localeDirection } from '@/lib/i18n';
 
 export function generateStaticParams() {
@@ -22,10 +23,14 @@ export default async function LocaleLayout({
    * `dir` rides along for the same reason. Everything inside inherits it, so
    * one attribute flips text alignment, list markers, the order of flex and
    * grid children, and which side the scrollbar sits on.
+   *
+   * The footer lives here rather than in each page so every candidate page,
+   * sign-up and dashboard included, carries the same legal details and links.
    */
   return (
     <div lang={locale} dir={localeDirection[locale]} className="avsar-root">
       {children}
+      <SiteFooter locale={locale} />
     </div>
   );
 }

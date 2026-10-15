@@ -1,5 +1,5 @@
 import { getAdminSupabase } from '@/lib/supabase/admin';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
+import type { ChargeCurrency } from '@/lib/company/config';
 
 export type PaymentRow = {
   id: string;
@@ -7,7 +7,7 @@ export type PaymentRow = {
   provider: string;
   providerOrderId: string;
   amountMinor: number;
-  currency: 'INR' | 'EUR';
+  currency: ChargeCurrency;
   status: string;
   methodHint: string | null;
   createdAt: string;
@@ -15,23 +15,24 @@ export type PaymentRow = {
   candidate: { name: string; email: string };
 };
 
-/** Rails that settle Indian rupees; everything else on this platform charges euros. */
+/** Rails that settle Indian rupees or dirhams; everything else on this platform charges euros. */
 const INR_RAILS = new Set(['eximpe', 'cashfree', 'razorpay']);
+const AED_RAILS = new Set(['ngenius']);
 
-export function formatMinor(minor: number, currency: 'INR' | 'EUR'): string {
+function railCurrency(provider: string): ChargeCurrency {
+  if (INR_RAILS.has(provider)) return 'INR';
+  if (AED_RAILS.has(provider)) return 'AED';
+  return 'EUR';
+}
+
+export function formatMinor(minor: number, currency: ChargeCurrency): string {
   const units = minor / 100;
-  return currency === 'INR'
-    ? `₹${units.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`
-    : `€${units.toLocaleString('en-GB', { maximumFractionDigits: 2 })}`;
+  if (currency === 'INR') return `₹${units.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
+  if (currency === 'AED') return `AED ${units.toLocaleString('en-GB', { maximumFractionDigits: 2 })}`;
+  return `€${units.toLocaleString('en-GB', { maximumFractionDigits: 2 })}`;
 }
 
 export async function listPayments(status?: string, limit = 200): Promise<PaymentRow[]> {
-  if (!isSupabaseConfigured()) {
-    return [
-      { id: 'p1', receipt: 'SA-01-000412', provider: 'eximpe', providerOrderId: 'order_demo_1', amountMinor: 240000, currency: 'INR', status: 'paid', methodHint: 'upi', createdAt: '2026-10-12T08:10:00Z', paidAt: '2026-10-12T08:11:00Z', candidate: { name: 'Arjun Nair', email: 'arjun@example.com' } },
-      { id: 'p2', receipt: 'SA-01-000413', provider: 'eximpe', providerOrderId: 'order_demo_2', amountMinor: 240000, currency: 'INR', status: 'created', methodHint: 'upi', createdAt: '2026-10-13T11:40:00Z', paidAt: null, candidate: { name: 'Priya Sharma', email: 'priya@example.com' } },
-    ];
-  }
   const admin = getAdminSupabase();
   if (!admin) return [];
   let query = admin
@@ -52,7 +53,7 @@ export async function listPayments(status?: string, limit = 200): Promise<Paymen
       provider,
       providerOrderId: String(row.provider_order_id),
       amountMinor: Number(row.amount_paise ?? 0),
-      currency: INR_RAILS.has(provider) ? 'INR' : 'EUR',
+      currency: railCurrency(provider),
       status: String(row.status),
       methodHint: (row.method_hint as string | null) ?? null,
       createdAt: String(row.created_at),

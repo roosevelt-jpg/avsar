@@ -21,7 +21,7 @@ export function IntroVideo({ t }: { t: Dictionary }) {
 
   return (
     <figure className="m-0 w-full max-w-[720px]">
-      <div className="relative aspect-video w-full overflow-hidden rounded-[20px] bg-ink shadow-[0_24px_60px_-28px_rgba(27,26,23,0.55)] ring-1 ring-line">
+      <div className="relative aspect-video w-full overflow-hidden rounded-[20px] bg-night shadow-[0_24px_60px_-28px_rgba(27,26,23,0.55)] ring-1 ring-line">
         {playing ? (
           <video
             src="/video/intro.mp4"

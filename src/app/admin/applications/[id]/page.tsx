@@ -9,6 +9,8 @@ import { Mono } from '@/components/ui/Mono';
 import { getApplicationForConsole } from '@/lib/applications/data';
 import { STATUS_META } from '@/lib/applications/status';
 import { positionLabel } from '@/lib/data/positions';
+import { getSiteSettings } from '@/lib/cms/data';
+import { meetsShortlistScore } from '@/lib/company/config';
 import { can, requirePermission } from '@/lib/rbac/server';
 import { logDataAccess } from '@/lib/privacy/log';
 import { MilestoneEditor, StartPlan } from '@/components/admin/RelocationActions';
@@ -16,6 +18,8 @@ import { ScorecardForm } from '@/components/admin/HiringActions';
 import { applicationHiring, FEE_STATUS_LABELS } from '@/lib/hiring/data';
 import { averageScore, RECOMMENDATION_LABELS } from '@/lib/hiring/scorecard';
 import { applicationRelocation } from '@/lib/relocation/data';
+import { backgroundFor } from '@/lib/candidate/background';
+import { BackgroundSummary } from '@/components/admin/BackgroundSummary';
 import { computeReadiness, DOCUMENT_LABELS } from '@/lib/relocation/documents';
 import { milestoneTemplate, progress } from '@/lib/relocation/milestones';
 
@@ -28,9 +32,14 @@ export default async function ApplicationDetail({ params }: { params: Promise<{ 
   const access = await requirePermission('applications.view', `/admin/applications/${id}`);
   const app = await getApplicationForConsole(id);
   if (!app) notFound();
-  if (!access.demo) await logDataAccess(access.userId, app.candidate.id, 'application.view', { application: app.id });
+  await logDataAccess(access.userId, app.candidate.id, 'application.view', { application: app.id });
   const meta = STATUS_META[app.status];
-  const [hiring, relocation] = await Promise.all([applicationHiring(app.id), applicationRelocation(app.id, app.candidate.id)]);
+  const [hiring, relocation, background, { hiring: rules }] = await Promise.all([
+    applicationHiring(app.id),
+    applicationRelocation(app.id, app.candidate.id),
+    backgroundFor(app.candidate.id),
+    getSiteSettings(),
+  ]);
   const readiness = computeReadiness(relocation.documents);
   const canManage = can(access, 'applications.manage');
   const canRelocate = can(access, 'relocation.manage');
@@ -59,7 +68,7 @@ export default async function ApplicationDetail({ params }: { params: Promise<{ 
                 ['Role', app.candidate.position ? positionLabel(app.candidate.position) : '-'],
                 ['Experience', app.candidateExtra.yearsBand != null ? YEARS[app.candidateExtra.yearsBand] : '-'],
                 ['Passport', app.candidateExtra.hasPassport ? 'Yes' : 'Not yet'],
-                ['Assessment', app.candidate.paymentStatus === 'paid' ? 'Completed and paid' : 'Not completed'],
+                ['Career package', app.candidate.paymentStatus === 'paid' ? 'Bought (deliverables owed)' : 'Not bought'],
                 ['Visible to employers', app.candidateExtra.visible ? 'Yes' : 'No (hidden by candidate)'],
                 ['WhatsApp updates', app.candidateExtra.whatsappOptIn ? 'Opted in' : 'Not opted in'],
                 [
@@ -214,6 +223,24 @@ export default async function ApplicationDetail({ params }: { params: Promise<{ 
         </div>
 
         <aside className="flex flex-col gap-4 xl:sticky xl:top-20 xl:self-start">
+          <section className="rounded-[16px] border border-line bg-surface p-4">
+            <h2 className="m-0 flex items-baseline justify-between text-[15px] font-semibold">
+              Assessment score
+              <span className="font-mono text-[22px]">
+                {hiring.assessmentScore ?? '–'}
+                <span className="text-[13px] font-normal text-muted">/100</span>
+              </span>
+            </h2>
+            <p className="m-0 mt-2 text-[13px] text-ink-2">
+              {hiring.assessmentScore === null
+                ? 'Assessment not finished yet.'
+                : meetsShortlistScore(rules, hiring.assessmentScore)
+                  ? `Above ${rules.shortlistMinScore / 10} out of 10: qualifies for the shortlist if the role's essential requirements are met.`
+                  : `Not above ${rules.shortlistMinScore / 10} out of 10: below the shortlist score.`}
+            </p>
+            <p className="m-0 mt-2 text-[12px] text-muted">Whether the candidate paid for the package plays no part in shortlisting.</p>
+          </section>
+          <BackgroundSummary background={background} />
           <section className="rounded-[16px] border border-line bg-surface p-4">
             <h2 className="m-0 flex items-baseline justify-between text-[15px] font-semibold">
               Fit for this job

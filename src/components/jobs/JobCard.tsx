@@ -40,7 +40,7 @@ export function JobCard({ job, locale, priority = false, saved }: { job: Job; lo
             <span className="rounded-full bg-accent px-2.5 py-1 font-mono text-[11px] uppercase tracking-[0.06em] text-white">{siteText(locale, 'Featured')}</span>
           )}
           {job.visaSponsored && (
-            <span className="rounded-full bg-white/90 px-2.5 py-1 font-mono text-[11px] uppercase tracking-[0.06em] text-ink backdrop-blur">
+            <span className="rounded-full bg-surface/90 px-2.5 py-1 font-mono text-[11px] uppercase tracking-[0.06em] text-ink backdrop-blur">
               {siteText(locale, 'Visa support')}
             </span>
           )}

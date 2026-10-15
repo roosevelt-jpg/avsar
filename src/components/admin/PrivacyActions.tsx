@@ -42,8 +42,8 @@ export function PrivacyActions({
       setMessage({
         ok: false,
         text:
-          data?.error === 'demo_mode'
-            ? 'Demo mode: nothing is erased.'
+          data?.error === 'not_configured'
+            ? 'The database is not connected, so nothing was erased.'
             : data?.error === 'active_process'
               ? `Not erased: ${data.references?.join(', ')} is at offer, contract or visa stage. Explain this to the person and erase once it has moved on.`
               : 'Erasure failed. Nothing reported as erased should be assumed gone; check the access log and try again.',
@@ -94,7 +94,7 @@ export function PrivacyActions({
                 type="button"
                 disabled={busy || confirm !== 'ERASE'}
                 onClick={() => void erase()}
-                className="cursor-pointer rounded-full border-0 bg-accent-deep px-4 py-2 text-[14px] text-paper disabled:opacity-40"
+                className="cursor-pointer rounded-full border-0 bg-ink px-4 py-2 text-[14px] text-paper hover:bg-ink-hover disabled:opacity-40"
               >
                 Erase permanently
               </button>

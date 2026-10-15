@@ -3,7 +3,7 @@ import { ReportDocument, type ReportData } from '@/lib/report/ReportDocument';
 import { canReceiveReport, getSessionCandidate, getSessionStaff } from '@/lib/auth';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { sectorLabel, SECTOR_SLUGS, type SectorSlug } from '@/lib/data/sectors';
-import { COHORT } from '@/lib/data/cohort';
+import { getSiteSettings } from '@/lib/cms/data';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -65,6 +65,7 @@ export async function GET(request: Request) {
     ? (person.sector as SectorSlug)
     : SECTOR_SLUGS[0];
 
+  const { cohort: COHORT } = await getSiteSettings();
   const data: ReportData = {
     name: person.full_name as string,
     sector: sectorLabel(sector),

@@ -395,7 +395,7 @@ export function ProfileForm({ t, initial }: { t: Dictionary; initial: ProfileInp
                 onClick={() => setRelocation(option.value)}
                 className={`t-colors cursor-pointer rounded-full border px-[18px] py-2.5 text-[14px] ${
                   relocationReady === option.value
-                    ? 'border-ink bg-ink text-white'
+                    ? 'border-ink bg-ink text-paper'
                     : 'border-line-strong bg-surface text-ink hover:border-ink'
                 }`}
               >
@@ -411,7 +411,7 @@ export function ProfileForm({ t, initial }: { t: Dictionary; initial: ProfileInp
           type="button"
           onClick={save}
           disabled={state === 'saving'}
-          className="t-colors cursor-pointer rounded-[12px] border-0 bg-ink px-5 py-3 text-[15px] font-medium text-white hover:bg-accent disabled:opacity-50"
+          className="t-colors cursor-pointer rounded-[12px] border-0 bg-ink px-5 py-3 text-[15px] font-medium text-paper hover:bg-ink-hover disabled:opacity-50"
         >
           {state === 'saving' ? p.saving : p.save}
         </button>

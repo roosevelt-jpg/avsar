@@ -6,9 +6,22 @@ any `NEXT_PUBLIC_*` variable (those are shipped to every browser).
 
 ## Where they live
 
-All secrets are Vercel environment variables, set per environment
-(Production, Preview, Development). Preview deployments should use sandbox
-or test credentials, never production ones: a preview URL can be shared.
+Two places:
+
+- **Bootstrap secrets** are Vercel environment variables, set per environment
+  (Production, Preview, Development): the Supabase variables, `IDENTITY_HASH_SALT`,
+  `CRON_SECRET` and `INTEGRATIONS_MASTER_KEY`. The app cannot start or reach
+  the database without them, so they cannot live in the database.
+- **Third-party API keys** (payment rails, mailer, WhatsApp, Anthropic, Turnstile,
+  Upstash, Sentry) can be entered by a super admin in Settings › Integrations.
+  They are stored in the `integration_secrets` table encrypted with AES-256-GCM
+  under `INTEGRATIONS_MASTER_KEY`; only the service role can read the table, and
+  the console shows a masked hint, never the value. A value saved there takes
+  precedence over the environment variable of the same name; clearing it falls
+  back to the environment.
+
+Preview deployments should use sandbox or test credentials, never production
+ones: a preview URL can be shared.
 
 ## Inventory
 
@@ -29,7 +42,10 @@ or test credentials, never production ones: a preview URL can be shared.
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Bot check, browser side | Yes, by design | With the secret |
 | `SENTRY_DSN` | Error reporting | Low risk | On project move |
 | `CRON_SECRET` | Vercel Cron calls carry it; cron routes refuse without it | No | Yearly |
-| `STAFF_ALERT_EMAIL` | Where vacancy requests are emailed | Not secret | As needed |
+| `STAFF_ALERT_EMAIL` | Older single address; used only when `STAFF_ALERT_EMAILS` is not set | Not secret | Replace with `STAFF_ALERT_EMAILS` |
+| `NGENIUS_API_KEY`, `NGENIUS_OUTLET_REF`, `NGENIUS_WEBHOOK_SECRET` (plus `NGENIUS_ENV`, `NGENIUS_API_BASE`, `NGENIUS_WEBHOOK_HEADER`) | Network International card checkout on the UAE company, and the shared header that authenticates its webhook | Secrets: yes (API key, webhook secret) | Yearly, and on suspicion |
+| `STAFF_ALERT_EMAILS` | Comma-separated staff addresses emailed on every new application, every paid package and every employer vacancy request. Links in the payment email use `SITE_ORIGIN` | Not secret | When staff change |
+| `INTEGRATIONS_MASTER_KEY` | At least 32 characters of random text that encrypt the keys saved in Settings › Integrations. Generate with `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"` | **No** | Only with a planned re-entry: every saved key stops decrypting. Re-enter the integration keys after rotating |
 | `STAFF_REQUIRE_MFA` | `true` makes every console page and admin API require an authenticator-app code (enrol at `/admin/security` first) | Not secret | Turn on once all staff have enrolled |
 
 ## Rotating a secret

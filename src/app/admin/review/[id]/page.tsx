@@ -1,3 +1,4 @@
+import type { ComponentProps } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Mono } from '@/components/ui/Mono';
@@ -6,57 +7,48 @@ import { CvReviewPanel } from '@/components/employer/CvReviewPanel';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { rubricFor, RUBRIC_VERSION } from '@/lib/cv/rubric';
 import { SECTOR_SLUGS, sectorLabel, type SectorSlug } from '@/lib/data/sectors';
-import { SAMPLE_ASSESSMENT } from '@/lib/cv/sample';
 import { requirePermission } from '@/lib/rbac/server';
 import { logDataAccess } from '@/lib/privacy/log';
 import { AccountMenu } from '@/components/auth/AccountMenu';
 
 export const metadata = { title: 'CV review' };
 
-/**
- * Review one AI-assisted assessment.
- *
- * With no Supabase configured this renders a worked example so the screen and
- * the shape of the output are reviewable before any real CV exists.
- */
+type PanelProps = ComponentProps<typeof CvReviewPanel>;
+
+/** Review one AI-assisted assessment. */
 export default async function CvReviewPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
   const access = await requirePermission('cv.review', `/admin/review/${id}`);
 
   const supabase = getAdminSupabase();
+  if (!supabase) notFound();
 
-  let row = SAMPLE_ASSESSMENT;
-  let sample = true;
+  const { data } = await supabase
+    .from('cv_assessments')
+    .select(
+      'id, candidate_id, sector, suggested_score, role_fit, criteria, strengths, concerns, discrepancies, attention_reasons, model, prompt_version, rubric_version',
+    )
+    .eq('id', id)
+    .maybeSingle();
 
-  if (supabase && id !== 'sample') {
-    const { data } = await supabase
-      .from('cv_assessments')
-      .select(
-        'id, candidate_id, sector, suggested_score, role_fit, criteria, strengths, concerns, discrepancies, attention_reasons, model, prompt_version, rubric_version',
-      )
-      .eq('id', id)
-      .maybeSingle();
+  if (!data) notFound();
+  await logDataAccess(access.userId, String(data.candidate_id), 'cv_assessment.view', { assessment: id });
 
-    if (!data) notFound();
-    await logDataAccess(access.userId, String(data.candidate_id), 'cv_assessment.view', { assessment: id });
-
-    row = {
-      id: data.id as string,
-      sector: data.sector as SectorSlug,
-      suggestedScore: data.suggested_score as number,
-      roleFit: data.role_fit as string,
-      criteria: data.criteria as typeof SAMPLE_ASSESSMENT.criteria,
-      strengths: data.strengths as string[],
-      concerns: data.concerns as string[],
-      discrepancies: data.discrepancies as typeof SAMPLE_ASSESSMENT.discrepancies,
-      attentionReasons: data.attention_reasons as string[],
-      model: data.model as string,
-      promptVersion: data.prompt_version as string,
-      rubricVersion: data.rubric_version as string,
-    };
-    sample = false;
-  }
+  const row = {
+    id: data.id as string,
+    sector: data.sector as SectorSlug,
+    suggestedScore: data.suggested_score as number,
+    roleFit: data.role_fit as string,
+    criteria: data.criteria as PanelProps['criteria'],
+    strengths: data.strengths as string[],
+    concerns: data.concerns as string[],
+    discrepancies: data.discrepancies as PanelProps['discrepancies'],
+    attentionReasons: data.attention_reasons as string[],
+    model: data.model as string,
+    promptVersion: data.prompt_version as string,
+    rubricVersion: data.rubric_version as string,
+  };
 
   const sector: SectorSlug = (SECTOR_SLUGS as readonly string[]).includes(row.sector)
     ? row.sector
@@ -73,8 +65,8 @@ export default async function CvReviewPage({ params }: { params: Promise<{ id: s
       <header className="flex flex-wrap items-center justify-between gap-4 border-b border-line px-[clamp(20px,4cqi,56px)] py-[18px]">
         <Wordmark href="/admin" suffix="review" accent="employer" />
         <span className="flex flex-wrap items-center gap-4">
-          <Link href="/admin" className="text-[15px] no-underline text-ink-2 hover:text-employer t-colors">
-            Back to search
+          <Link href="/admin/cvs" className="text-[15px] no-underline text-ink-2 hover:text-employer t-colors">
+            Back to the CV queue
           </Link>
           <AccountMenu locale="en" tone="employer" />
         </span>
@@ -85,12 +77,6 @@ export default async function CvReviewPage({ params }: { params: Promise<{ id: s
         <h1 className="mt-3 mb-6 text-[clamp(26px,3.6cqi,42px)] font-semibold leading-[1.1] tracking-[-0.03em]">
           Review before deciding
         </h1>
-
-        {sample && (
-          <p className="mt-0 mb-6 rounded-[12px] border border-line bg-surface-subtle px-4 py-3 text-[13px] text-muted">
-            Worked example. Configure Supabase and ANTHROPIC_API_KEY to review real assessments.
-          </p>
-        )}
 
         {staleRubric && (
           <p className="mt-0 mb-6 rounded-[12px] border border-accent bg-accent-tint px-4 py-3 text-[13px] text-ink">

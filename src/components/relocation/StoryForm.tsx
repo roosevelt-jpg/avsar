@@ -16,7 +16,7 @@ const STATUS_TEXT: Record<Story['status'], string> = {
  * the same move. Their words, the name they choose, read by staff before it
  * appears, and withdrawable whenever they like.
  */
-export function StoryForm({ story, demo }: { story: Story | null; demo: boolean }) {
+export function StoryForm({ story }: { story: Story | null }) {
   const router = useRouter();
   const [displayName, setDisplayName] = useState(story?.displayName ?? '');
   const [roleLabel, setRoleLabel] = useState(story?.roleLabel ?? '');
@@ -79,7 +79,7 @@ export function StoryForm({ story, demo }: { story: Story | null; demo: boolean 
         </label>
       </div>
       <div className="mt-3 flex flex-wrap gap-2">
-        <button type="button" disabled={busy || demo || !consent || quote.trim().length < 20 || !displayName.trim() || !roleLabel.trim()} onClick={() => void send('POST')} className="cursor-pointer rounded-full border-0 bg-ink px-4 py-2 text-[14px] text-paper disabled:opacity-40">
+        <button type="button" disabled={busy || !consent || quote.trim().length < 20 || !displayName.trim() || !roleLabel.trim()} onClick={() => void send('POST')} className="cursor-pointer rounded-full border-0 bg-ink px-4 py-2 text-[14px] text-paper disabled:opacity-40">
           Send for review
         </button>
         {story && story.status !== 'withdrawn' && (

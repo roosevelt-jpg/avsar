@@ -34,6 +34,8 @@ export const PERMISSIONS = [
   'roles.manage',
   'audit.view',
   'privacy.manage',
+  'company.manage',
+  'integrations.manage',
 ] as const;
 
 export type Permission = (typeof PERMISSIONS)[number];
@@ -101,11 +103,13 @@ export const PERMISSION_GROUPS: { group: string; items: { key: Permission; label
       { key: 'roles.manage', label: 'Edit role permissions' },
       { key: 'audit.view', label: 'Read the audit log' },
       { key: 'privacy.manage', label: 'Export or erase personal data' },
+      { key: 'company.manage', label: 'Company details, prices, selection figures' },
+      { key: 'integrations.manage', label: 'Integrations and API keys' },
     ],
   },
 ];
 
-/** The roles seeded in 0014, for labels and for the demo console. */
+/** The roles seeded in 0014, for labels. */
 export const SYSTEM_ROLES: { key: string; name: string; description: string }[] = [
   { key: 'super_admin', name: 'Super admin', description: 'Everything, including roles and staff.' },
   { key: 'admin', name: 'Admin', description: 'Runs the platform day to day. Cannot change role permissions.' },

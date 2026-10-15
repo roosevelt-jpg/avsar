@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { CmsPageView } from '@/components/cms/CmsPageView';
+import { SiteFooter } from '@/components/candidate/SiteFooter';
 import { getDraftPage } from '@/lib/cms/data';
 import { requirePermission } from '@/lib/rbac/server';
 import { isLocale, localeDirection } from '@/lib/i18n';
@@ -28,6 +29,7 @@ export default async function PreviewPage({ searchParams }: { searchParams: Prom
           </div>
         }
       />
+      <SiteFooter locale={locale} />
     </div>
   );
 }

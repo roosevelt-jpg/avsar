@@ -4,6 +4,7 @@ import { Mono } from '@/components/ui/Mono';
 import { formatMinor, listPayments } from '@/lib/payments/console';
 import { getPaymentProvider } from '@/lib/payments';
 import { requirePermission } from '@/lib/rbac/server';
+import type { ChargeCurrency } from '@/lib/company/config';
 
 export const metadata = { title: 'Payments' };
 
@@ -31,7 +32,7 @@ export default async function PaymentsPage({ searchParams }: { searchParams: Pro
         {Object.entries(totals).map(([currency, minor]) => (
           <div key={currency} className="rounded-[16px] border border-line bg-surface px-5 py-4">
             <Mono className="text-muted">PAID IN THIS LIST · {currency}</Mono>
-            <p className="m-0 mt-1 text-[26px] font-semibold tracking-[-0.02em]">{formatMinor(minor, currency as 'INR' | 'EUR')}</p>
+            <p className="m-0 mt-1 text-[26px] font-semibold tracking-[-0.02em]">{formatMinor(minor, currency as ChargeCurrency)}</p>
           </div>
         ))}
       </div>

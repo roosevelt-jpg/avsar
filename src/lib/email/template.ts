@@ -1,5 +1,3 @@
-import { BRAND, ENTITY } from '@/lib/data/brand';
-
 /**
  * The shell every transactional message is poured into.
  *
@@ -19,7 +17,7 @@ import { BRAND, ENTITY } from '@/lib/data/brand';
  */
 
 const INK = '#1B1A17';
-const PAPER = '#F7F5F0';
+const PAPER = '#F4F4F5';
 const SURFACE = '#FFFFFF';
 const TERRACOTTA = '#B9583A';
 const MUTED = '#6E6A61';
@@ -51,10 +49,14 @@ export type EmailLayout = {
   unsubscribe?: { label: string; url: string };
   /** Absolute, because an email has no origin of its own. */
   origin: string;
+  /** Name and footer lines, from Settings. See `emailBrand` in compose.ts. */
+  brand: EmailBrand;
 };
 
+export type EmailBrand = { name: string; slogan: string; legalName: string; jurisdiction: string; supportEmail: string };
+
 export function renderEmail(layout: EmailLayout): string {
-  const { preheader, heading, paragraphs, action, fallbackNote, closing, unsubscribe, origin } =
+  const { preheader, heading, paragraphs, action, fallbackNote, closing, unsubscribe, origin, brand } =
     layout;
 
   const body = paragraphs
@@ -67,7 +69,7 @@ export function renderEmail(layout: EmailLayout): string {
   /* A button made of a table, because a padded anchor collapses in Outlook. */
   const button = action
     ? `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:28px 0 8px;">
-<tr><td align="center" bgcolor="${TERRACOTTA}" style="border-radius:12px;">
+<tr><td align="center" bgcolor="${INK}" style="border-radius:12px;">
 <a href="${escape(action.url)}" style="display:inline-block;padding:15px 30px;font-family:${FONT};font-size:16px;font-weight:600;color:#FFFFFF;text-decoration:none;border-radius:12px;">${escape(action.label)}</a>
 </td></tr></table>`
     : '';
@@ -110,7 +112,7 @@ export function renderEmail(layout: EmailLayout): string {
 <tr><td bgcolor="${INK}" style="background-color:${INK};border-radius:20px 20px 0 0;padding:26px 32px;">
 <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
 <td style="padding-right:12px;vertical-align:middle;"><img src="${origin}/brand/email-mark.png" width="63" height="36" alt="" style="display:block;border:0;"></td>
-<td style="vertical-align:middle;font-family:${FONT};font-size:20px;font-weight:600;color:${PAPER};letter-spacing:-0.02em;">${escape(BRAND.name)}</td>
+<td style="vertical-align:middle;font-family:${FONT};font-size:20px;font-weight:600;color:${PAPER};letter-spacing:-0.02em;">${escape(brand.name)}</td>
 </tr></table>
 </td></tr>
 
@@ -122,9 +124,9 @@ ${body}${button}${fallback}${tail}
 <tr><td bgcolor="${SURFACE}" style="background-color:${SURFACE};padding:0 32px 28px;border-left:1px solid ${LINE};border-right:1px solid ${LINE};border-bottom:1px solid ${LINE};border-radius:0 0 20px 20px;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top:1px solid ${LINE};">
 <tr><td style="padding-top:20px;font-size:12px;line-height:1.6;color:${MUTED};">
-<strong style="color:${INK};font-weight:600;">${escape(BRAND.name)}</strong> &middot; ${escape(BRAND.slogan)}<br>
-${escape(ENTITY.legalName)}, ${escape(ENTITY.jurisdiction)}<br>
-<a href="mailto:${escape(ENTITY.supportEmail)}" style="color:${MUTED};">${escape(ENTITY.supportEmail)}</a>${
+<strong style="color:${INK};font-weight:600;">${escape(brand.name)}</strong> &middot; ${escape(brand.slogan)}<br>
+${escape(brand.legalName)}, ${escape(brand.jurisdiction)}<br>
+<a href="mailto:${escape(brand.supportEmail)}" style="color:${MUTED};">${escape(brand.supportEmail)}</a>${
     unsubscribe
       ? `<br><br><a href="${escape(unsubscribe.url)}" style="color:${MUTED};">${escape(unsubscribe.label)}</a>`
       : ''

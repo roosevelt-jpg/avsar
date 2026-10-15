@@ -11,7 +11,7 @@ import { sendApplicationUpdate } from '@/lib/email/application';
 import type { ScreeningQuestion } from '@/lib/jobs/types';
 import { clientIp, rateLimit, rateLimitedResponse, RATE_LIMITS } from '@/lib/security/rate-limit';
 import { withIdempotency } from '@/lib/security/idempotency';
-import { notifyStaff } from '@/lib/notifications/staff';
+import { emailStaff, notifyStaff } from '@/lib/notifications/staff';
 import { log, requestIdOf } from '@/lib/observability/log';
 import { recordConsent } from '@/lib/privacy/log';
 
@@ -42,9 +42,9 @@ export async function POST(request: Request) {
   const parsed = schema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: 'invalid_payload' }, { status: 400 });
 
-  /* A bare checkout: the flow is clickable end to end and nothing is stored. */
+  /* No database, no application: say so rather than pretend it was sent. */
   if (!isSupabaseConfigured()) {
-    return NextResponse.json({ reference: 'APP-DEMO0001', simulated: true });
+    return NextResponse.json({ error: 'not_configured' }, { status: 503 });
   }
 
   const candidate = await getSessionCandidate();
@@ -168,6 +168,13 @@ async function apply(
       title: `New application: ${String(job.title)}`,
       body: `${candidate.fullName} · ${application.reference}`,
       href: `/admin/applications/${application.id}`,
+    });
+    await emailStaff({
+      subject: `New application: ${String(job.title)}`,
+      line: `${candidate.fullName} applied for ${String(job.title)} (${application.reference}).`,
+      href: `/admin/applications/${application.id}`,
+      actionLabel: 'Open the application',
+      origin: new URL(request.url).origin,
     });
   }
 

@@ -1,4 +1,5 @@
 import { headers } from 'next/headers';
+import { privateMetadata } from '@/lib/seo';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Mono } from '@/components/ui/Mono';
@@ -11,28 +12,26 @@ import { JourneyStatus } from '@/components/candidate/JourneyStatus';
 import { VerifyEmailBanner } from '@/components/candidate/VerifyEmailBanner';
 import { UnlockReport } from '@/components/candidate/UnlockReport';
 import { availablePaymentMethods, getPaymentProvider } from '@/lib/payments';
-import { activePrice, formatPrice } from '@/lib/data/cohort';
+import { getSiteSettings } from '@/lib/cms/data';
+import { formatFee } from '@/lib/company/config';
 import { getCandidateStatus, type CandidateStatus } from '@/lib/candidate/status';
 import { CareerPack } from '@/components/candidate/CareerPack';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import type { CareerPack as Pack } from '@/lib/cv/coach-schema';
 import { fill, getDictionary, isLocale, localePath } from '@/lib/i18n';
 import { requireCandidate } from '@/lib/auth';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { getServerSupabase } from '@/lib/supabase/server';
 import { sectorLabel, SECTOR_SLUGS, type SectorSlug } from '@/lib/data/sectors';
 import { englishBand, skillBand } from '@/lib/report/bands';
 import { listSavedJobs } from '@/lib/jobs/saved';
 import { formatSalary } from '@/lib/jobs/types';
 import { interviewTimes } from '@/lib/interviews/time';
+import { deliveredReviewFor } from '@/lib/legal/review';
+import { backgroundFor, EMPTY_BACKGROUND } from '@/lib/candidate/background';
+import { BackgroundForm } from '@/components/candidate/BackgroundForm';
 
-export const metadata = { title: 'Your report' };
+export const metadata = privateMetadata('Your dashboard');
 
-/**
- * Shown when Supabase is not configured, so the screen stays reviewable in a
- * bare checkout. With Supabase present this is replaced by the signed-in
- * candidate's own report.
- */
 type DashboardReport = {
   name: string;
   overall: number;
@@ -43,32 +42,6 @@ type DashboardReport = {
   years: number;
   sector: string;
   breakdown: { label: string; score: number }[];
-  timeline: readonly { date: string; state: 'done' | 'now' | 'next' }[];
-};
-
-const SAMPLE_REPORT: DashboardReport = {
-  name: 'Arjun Nair',
-  overall: 78,
-  percentile: 12,
-  english: 'B1',
-  skills: 82,
-  experienceScore: 71,
-  years: 6,
-  sector: 'Hospitality',
-  breakdown: [
-    { label: 'Guest service', score: 86 },
-    { label: 'Housekeeping standards', score: 84 },
-    { label: 'Health and safety', score: 79 },
-    { label: 'English: reading', score: 74 },
-    { label: 'English: speaking', score: 66 },
-  ],
-  timeline: [
-    { date: '2 Oct 2026', state: 'done' },
-    { date: '5 Oct 2026', state: 'done' },
-    { date: '11 Oct 2026', state: 'done' },
-    { date: 'Until 15 Dec 2026', state: 'now' },
-    { date: '15 Jan 2027', state: 'next' },
-  ],
 };
 
 export default async function DashboardPage({ params }: { params: Promise<{ locale: string }> }) {
@@ -77,23 +50,20 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
   const t = getDictionary(locale);
   const d = t.dash;
 
-  let r: DashboardReport = SAMPLE_REPORT;
-  let visible = true;
-  let reportReady = true;
-  let status: CandidateStatus | null = null;
+  let r: DashboardReport | null = null;
   let pack: Pack | null = null;
+  let whatsappOptIn = false;
+  const settings = await getSiteSettings();
+  const fee = formatFee(settings.pricing);
+
+  const candidate = await requireCandidate(locale, localePath(locale, '/dashboard'));
+  const candidateId = candidate.id;
+  const visible = candidate.visibleToEmployers;
+  const status: CandidateStatus = await getCandidateStatus(candidate.id, candidate.paymentStatus);
   /* Shown only while the address is unproved, and it is the only thing on this
      page that asks for anything. The report is what the proof releases. */
-  let unverifiedEmail: string | null = null;
-  let candidateId: string | null = null;
-  let whatsappOptIn = false;
-
-  if (isSupabaseConfigured()) {
-    const candidate = await requireCandidate(locale, localePath(locale, '/dashboard'));
-    candidateId = candidate.id;
-    visible = candidate.visibleToEmployers;
-    status = await getCandidateStatus(candidate.id, candidate.paymentStatus);
-    unverifiedEmail = candidate.emailConfirmed ? null : candidate.email;
+  const unverifiedEmail = candidate.emailConfirmed ? null : candidate.email;
+  {
 
     const admin = getAdminSupabase();
     const { data: prefs } = (await admin
@@ -150,25 +120,26 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
         years: [0, 2, 4, 6][candidate.yearsBand ?? 0] ?? 0,
         sector: sectorLabel(sector),
         breakdown,
-        timeline: SAMPLE_REPORT.timeline,
       };
-    } else {
-      /* Paid but not assessed yet, or assessed but not scored. Showing a
-         placeholder score to a real candidate would be a lie about their
-         standing, so the page says plainly that it is not ready. */
-      reportReady = false;
-      r = { ...SAMPLE_REPORT, name: candidate.fullName };
     }
   }
+  /* Not assessed yet, or assessed but not scored: the page says plainly that
+     the report is not ready rather than showing a placeholder score. */
+  const reportReady = r !== null;
 
   /* Applications sit at the top: for most candidates "where is my
      application?" is the reason they signed in. */
-  const [applications, savedJobs] = await Promise.all([listCandidateApplications(candidateId), listSavedJobs(candidateId)]);
+  const [applications, savedJobs, legalReview, background] = await Promise.all([
+    listCandidateApplications(candidateId),
+    listSavedJobs(candidateId),
+    deliveredReviewFor(candidateId),
+    backgroundFor(candidateId),
+  ]);
   const nextInterview = applications
     .flatMap((application) => application.interviews.map((interview) => ({ interview, application })))
     .sort((a, b) => a.interview.startsAt.localeCompare(b.interview.startsAt))[0];
 
-  const stats = [
+  const stats = !r ? [] : [
     { label: d.overall, value: String(r.overall), suffix: '/100', note: fill(d.overallNote, { percentile: r.percentile }), dark: true },
     /* The word under the number comes from the number. See lib/report/bands. */
     { label: d.englishLabel, value: r.english, note: englishBand(r.english, t), dark: false },
@@ -191,10 +162,11 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
         {/* The assessment is done and the fee is outstanding. This is the only
             place the fee is asked for, and it sits above the report so the
             score they already have is visible while they decide. */}
-        {status?.awaitingPayment && (
+        {status.awaitingPayment && (
           <UnlockReport
             t={t}
-            price={formatPrice(activePrice().totalMinor)}
+            price={fee}
+            pricing={settings.pricing}
             methods={availablePaymentMethods()}
             provider={getPaymentProvider().name}
             country={(await headers()).get('x-vercel-ip-country')}
@@ -208,6 +180,32 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
                   : 'sandbox'
             }
           />
+        )}
+        {/* Until the test is finished there is no report to unlock and nothing
+            for employers to search, so finishing it is the first thing asked. */}
+        {!status.assessmentComplete && (
+          <section className="mb-10 rounded-[24px] border border-accent/40 bg-accent-tint p-5 sm:p-6">
+            <Mono className="text-accent-deep">
+              {status.sectionsDone.length === 0
+                ? 'Your next step'
+                : `${status.sectionsDone.length} of ${status.sectionsTotal} parts done`}
+            </Mono>
+            <h2 className="m-0 mt-2 text-[22px] font-semibold tracking-[-0.02em]">
+              {status.sectionsDone.length === 0 ? 'Take the skills test' : 'Finish your skills test'}
+            </h2>
+            <p className="m-0 mt-2 max-w-[62ch] text-[15px] leading-[1.6] text-ink-2">
+              Skills and English questions for your trade, up to 90 minutes on your phone, and free. Once you finish, you
+              are in our recruitment database and your result goes with every application you send. Scores above{' '}
+              {settings.hiring.shortlistMinScore / 10} out of 10 qualify for the shortlist, whether or not you buy anything. The career package (
+              {fee}) is optional.
+            </p>
+            <Link
+              href={localePath(locale, status.nextSection ? `/assessment?section=${status.nextSection}` : '/assessment')}
+              className="t-colors mt-4 inline-flex rounded-full bg-ink px-5 py-3 text-[15px] font-medium text-paper no-underline hover:bg-ink-hover"
+            >
+              {status.sectionsDone.length === 0 ? 'Start the test' : 'Continue the test'}
+            </Link>
+          </section>
         )}
         <section className="mb-10 rounded-[24px] border border-line bg-surface p-5 sm:p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -284,7 +282,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
           </section>
         )}
 
-        <Mono className="text-muted">{fill(d.greeting, { name: r.name.split(' ')[0] ?? r.name })}</Mono>
+        <Mono className="text-muted">{fill(d.greeting, { name: candidate.fullName.split(' ')[0] ?? candidate.fullName })}</Mono>
         <div className="mt-3 mb-9 flex flex-wrap items-end justify-between gap-4">
           <h1 className="m-0 text-[clamp(28px,4cqi,48px)] font-semibold leading-[1.1] tracking-[-0.03em]">
             {reportReady ? d.title : d.pending}
@@ -329,47 +327,13 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
         )}
 
         <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-[clamp(20px,3cqi,40px)]">
-          {status ? (
-            <JourneyStatus locale={locale} t={t} status={status} />
-          ) : (
-            <section>
-              <h2 className="m-0 mb-5 text-[21px] font-semibold">{d.cohortStatus}</h2>
-              <ol className="m-0 flex list-none flex-col p-0">
-                {d.timeline.map((label, index) => {
-                  const entry = r.timeline[index];
-                  const state = entry?.state ?? 'next';
-                  const last = index === d.timeline.length - 1;
-                  return (
-                    <li key={label} className="flex gap-3.5">
-                      <div className="flex flex-col items-center">
-                        <span
-                          aria-hidden
-                          className="mt-1.5 size-[11px] shrink-0 rounded-full border-2"
-                          style={{
-                            background:
-                              state === 'next' ? '#fff' : state === 'now' ? 'oklch(0.56 0.14 40)' : '#1b1a17',
-                            borderColor:
-                              state === 'next' ? '#d9d4c8' : state === 'now' ? 'oklch(0.56 0.14 40)' : '#1b1a17',
-                          }}
-                        />
-                        {!last && <span aria-hidden className="w-px flex-1 bg-line" />}
-                      </div>
-                      <div className={`pb-6 ${state === 'next' ? 'text-muted' : 'text-ink'}`}>
-                        <p className="m-0 text-[15px] font-medium">{label}</p>
-                        <Mono className="text-muted">{entry?.date}</Mono>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ol>
-            </section>
-          )}
+          <JourneyStatus locale={locale} t={t} status={status} />
 
           {/* report breakdown */}
           <section hidden={!reportReady}>
             <h2 className="m-0 mb-5 text-[21px] font-semibold">{d.breakdown}</h2>
             <ul className="m-0 flex list-none flex-col gap-4 p-0">
-              {r.breakdown.map((axis) => (
+              {(r?.breakdown ?? []).map((axis) => (
                 <li key={axis.label}>
                   <div className="mb-2 flex items-baseline justify-between gap-3">
                     <span className="text-[15px]">{axis.label}</span>
@@ -390,11 +354,61 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
         {/* The part of the fee the candidate keeps, whether or not they are
             ever placed. It sits above the visibility switch because it is the
             thing they came back for. */}
-        {status && (
+        {(
           <div className="mt-12">
             <CareerPack pack={pack} canGenerate={status.reportReady} locale={locale} />
           </div>
         )}
+
+        {/* The package's legal review needs documents to review, so a buyer
+            without one delivered yet is pointed at the upload page. */}
+        {(legalReview || status.paid) && (
+          <section className="mt-12 rounded-[24px] border border-line bg-surface p-5 sm:p-6">
+            <h2 className="m-0 text-[20px] font-semibold tracking-[-0.02em]">Preliminary legal review</h2>
+            {legalReview ? (
+              <>
+                <dl className="m-0 mt-4 flex flex-col gap-4 text-[15px] leading-[1.6]">
+                  {[
+                    ['Summary', legalReview.summary],
+                    ['What a Portuguese work visa needs', legalReview.requirements],
+                    ['Still missing', legalReview.missingDocuments],
+                    ['Needs a closer look', legalReview.issues],
+                  ]
+                    .filter(([, value]) => value)
+                    .map(([label, value]) => (
+                      <div key={label}>
+                        <dt className="font-medium">{label}</dt>
+                        <dd className="m-0 whitespace-pre-line text-ink-2">{value}</dd>
+                      </div>
+                    ))}
+                </dl>
+                <p className="m-0 mt-4 text-[13px] text-muted">
+                  A preliminary review of the documents you provided by our legal team. It is not permission to work and not
+                  a decision on a visa: those are made only by the authorities.
+                </p>
+              </>
+            ) : (
+              <p className="m-0 mt-2 text-[15px] leading-[1.6] text-ink-2">
+                Our legal team reviews the documents you provide and tells you what a Portuguese work visa needs and what is
+                missing. Upload your passport, or a national ID card if you have no passport yet, so we can start.{' '}
+                <Link href={localePath(locale, '/dashboard/relocation')} className="prose-link">Upload documents</Link>.
+              </p>
+            )}
+          </section>
+        )}
+
+        {/* Native <details>, closed once answered, so a finished form does not
+            push the settings below it off the screen. */}
+        <details open={!background?.updatedAt} className="mt-12 rounded-[24px] border border-line bg-surface p-5 sm:p-6">
+          <summary className="cursor-pointer text-[20px] font-semibold tracking-[-0.02em]">
+            Your background {background?.updatedAt ? <span className="text-[14px] font-normal text-muted">· answered</span> : null}
+          </summary>
+          <p className="m-0 mt-3 max-w-[62ch] text-[15px] leading-[1.6] text-ink-2">
+            A few questions our recruiters and the immigration lawyers need before a visa file is started. A &ldquo;yes&rdquo; does
+            not rule you out: knowing early lets us plan around it. Only our team sees these answers, never employers.
+          </p>
+          <BackgroundForm initial={background ?? EMPTY_BACKGROUND} />
+        </details>
 
         <div className="mt-10 flex flex-col gap-3">
           <VisibilityToggle label={d.visible} note={d.visibleNote} initial={visible} />

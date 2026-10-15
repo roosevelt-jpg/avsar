@@ -1,3 +1,4 @@
+import { refreshIntegrations } from '@/lib/integrations/runtime';
 import { NextResponse } from 'next/server';
 import { notifyStaff } from '@/lib/notifications/staff';
 import { getAdminSupabase } from '@/lib/supabase/admin';
@@ -18,12 +19,13 @@ const EXPIRY_WARNING_DAYS = 30;
  * counted separately so the message says what is new.
  */
 async function run(request: Request) {
+  await refreshIntegrations();
   const secret = process.env.CRON_SECRET;
   if (!secret || request.headers.get('authorization') !== `Bearer ${secret}`) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
   const admin = getAdminSupabase();
-  if (!admin) return NextResponse.json({ error: 'demo_mode' }, { status: 503 });
+  if (!admin) return NextResponse.json({ error: 'not_configured' }, { status: 503 });
 
   const today = new Date().toISOString().slice(0, 10);
   const yesterday = new Date(Date.now() - 86_400_000).toISOString().slice(0, 10);

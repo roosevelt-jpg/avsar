@@ -2,10 +2,10 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { audit } from '@/lib/audit';
 import { getMailer } from '@/lib/email';
-import { renderEmail } from '@/lib/email/template';
+import { composeEmail } from '@/lib/email/compose';
 import { localePath } from '@/lib/i18n';
 import { logDataAccess } from '@/lib/privacy/log';
-import { apiPermission, demoWriteRefusal } from '@/lib/rbac/server';
+import { apiPermission } from '@/lib/rbac/server';
 import { DOCUMENT_LABELS, type DocumentKind } from '@/lib/relocation/documents';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 
@@ -29,7 +29,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
   const { id } = await params;
   if (!z.string().uuid().safeParse(id).success) return NextResponse.json({ error: 'not_found' }, { status: 404 });
   const admin = getAdminSupabase();
-  if (!admin) return NextResponse.json({ error: 'demo_mode' }, { status: 503 });
+  if (!admin) return NextResponse.json({ error: 'not_configured' }, { status: 503 });
 
   const { data: doc } = await admin.from('relocation_documents').select('candidate_id, kind, storage_path').eq('id', id).maybeSingle();
   if (!doc) return NextResponse.json({ error: 'not_found' }, { status: 404 });
@@ -48,8 +48,6 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const guard = await apiPermission('relocation.manage');
   if (guard instanceof NextResponse) return guard;
-  const refusal = demoWriteRefusal(guard);
-  if (refusal) return refusal;
 
   const { id } = await params;
   const parsed = schema.safeParse(await request.json().catch(() => null));
@@ -81,14 +79,13 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     const origin = new URL(request.url).origin;
     const url = `${origin}${localePath(candidate.locale ?? 'en', '/dashboard/relocation')}`;
     const label = DOCUMENT_LABELS[doc.kind as DocumentKind] ?? 'A document';
-    const paragraphs = [`Hello ${(candidate.full_name ?? '').split(' ')[0] || 'there'},`, `We checked your ${label.toLowerCase()} and need a new copy.`, `Why: ${body.reason}`];
     try {
-      await getMailer().send({
-        to: candidate.email,
-        subject: `Please upload your ${label.toLowerCase()} again`,
-        text: `${paragraphs.join('\n\n')}\n\nUpload it here: ${url}`,
-        html: renderEmail({ preheader: body.reason, heading: 'A document needs a new upload', paragraphs, action: { label: 'Upload again', url }, origin }),
-      });
+      const email = await composeEmail(
+        'document_reupload',
+        { first_name: (candidate.full_name ?? '').split(' ')[0] || 'there', document: label.toLowerCase(), reason: body.reason },
+        { origin, actionUrl: url },
+      );
+      await getMailer().send({ to: candidate.email, ...email });
     } catch (mailError) {
       console.error('[relocation] rejection email failed', mailError);
     }

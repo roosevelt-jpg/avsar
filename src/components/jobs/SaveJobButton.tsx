@@ -37,7 +37,7 @@ export function SaveJobButton({ jobId, initialSaved, className = '' }: { jobId: 
       aria-pressed={saved}
       aria-label={saved ? 'Remove from saved jobs' : 'Save this job'}
       title={saved ? 'Saved' : 'Save'}
-      className={`relative z-10 grid size-10 cursor-pointer place-items-center rounded-full border-0 bg-white/90 shadow-sm backdrop-blur hover:text-accent ${saved ? 'text-accent' : 'text-ink'} ${className}`}
+      className={`relative z-10 grid size-10 cursor-pointer place-items-center rounded-full border-0 bg-surface/90 shadow-sm backdrop-blur hover:text-accent ${saved ? 'text-accent' : 'text-ink'} ${className}`}
     >
       <svg viewBox="0 0 24 24" className="size-5" fill={saved ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth={1.8} aria-hidden>
         <path

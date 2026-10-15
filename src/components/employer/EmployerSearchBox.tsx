@@ -23,7 +23,7 @@ export function EmployerSearchBox() {
           event.preventDefault();
           search(query);
         }}
-        className="flex flex-wrap items-center gap-2.5 rounded-[20px] border border-line bg-surface p-3 shadow-[0_1px_0_#e4e0d6,0_24px_48px_-28px_rgba(27,26,23,.25)]"
+        className="flex flex-wrap items-center gap-2.5 rounded-[20px] border border-line bg-surface p-3 shadow-[0_1px_0_#e4e4e7,0_24px_48px_-28px_rgba(27,26,23,.25)]"
       >
         <label className="sr-only-focusable" htmlFor="employer-q">
           Describe the role you need to fill
@@ -38,7 +38,7 @@ export function EmployerSearchBox() {
         <button
           type="submit"
           disabled={pending}
-          className="t-colors cursor-pointer rounded-[12px] border-0 bg-employer px-5 py-3 text-[15px] font-medium text-white hover:bg-employer-deep disabled:opacity-60"
+          className="t-colors cursor-pointer rounded-[12px] border-0 bg-ink px-5 py-3 text-[15px] font-medium text-paper hover:bg-ink-hover disabled:opacity-60"
         >
           Search talent pool
         </button>
@@ -53,7 +53,7 @@ export function EmployerSearchBox() {
               setQuery(example);
               search(example);
             }}
-            className="t-colors cursor-pointer rounded-full border border-line-strong bg-surface px-3.5 py-2 text-[13px] text-ink-2 hover:border-employer hover:text-employer"
+            className="t-colors cursor-pointer rounded-full border border-line-strong bg-surface px-3.5 py-2 text-[13px] text-ink-2 hover:border-ink hover:text-ink"
           >
             {example}
           </button>

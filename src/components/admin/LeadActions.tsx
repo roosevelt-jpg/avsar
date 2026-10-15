@@ -7,7 +7,7 @@ import { LEAD_STATUS_LABELS, LEAD_STATUSES, type LeadStatus } from '@/lib/leads/
 type Channel = 'email' | 'whatsapp' | 'note';
 
 const ERRORS: Record<string, string> = {
-  demo_mode: 'Demo mode: nothing is sent or saved.',
+  not_configured: 'The database is not connected, so nothing was saved.',
   no_email: 'There is no email address on this lead.',
   no_whatsapp_consent: 'This person has not said WhatsApp is fine.',
   whatsapp_unconfigured: 'WhatsApp is not connected on this deployment.',

@@ -1,4 +1,5 @@
 import { notFound, redirect } from 'next/navigation';
+import { staticPageMetadata } from '@/lib/seo';
 import { AssessmentRunner } from '@/components/candidate/AssessmentRunner';
 import { getDictionary, isLocale, localePath } from '@/lib/i18n';
 import {
@@ -12,9 +13,10 @@ import { SECTOR_SLUGS, type SectorSlug } from '@/lib/data/sectors';
 import { getServerSupabase } from '@/lib/supabase/server';
 import { secondsUntil } from '@/lib/clock';
 import { requireCandidate } from '@/lib/auth';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
-
-export const metadata = { title: 'Assessment' };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  return staticPageMetadata('assessment', locale);
+}
 
 /** Wall-clock budget for the whole assessment, from the handoff's 60-90 min. */
 const SECTION_SECONDS = 90 * 60;
@@ -40,16 +42,14 @@ export default async function AssessmentPage({
   let sector: SectorSlug = SECTOR_SLUGS[0];
   let position: string | undefined;
 
-  /**
-   * The attempt and its deadline are server state. Without Supabase there is no
-   * attempt to resume, so the runner keeps answers in memory and the timer
-   * starts from the full budget.
-   */
+  /* The attempt and its deadline are server state. If the attempt cannot be
+     started, the runner keeps answers in memory and the timer starts from the
+     full budget, and submitting will report the failure. */
   let attemptId: string | null = null;
   let secondsRemaining = SECTION_SECONDS;
   const savedAnswers: Record<string, number> = {};
 
-  if (isSupabaseConfigured()) {
+  {
     const candidate = await requireCandidate(locale, localePath(locale, `/assessment?section=${section}`));
 
     if ((SECTOR_SLUGS as readonly string[]).includes(candidate.sector ?? '')) {

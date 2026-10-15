@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { apiPermission, demoWriteRefusal } from '@/lib/rbac/server';
+import { apiPermission } from '@/lib/rbac/server';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { MEDIA_BUCKET, MEDIA_TYPES, safeFileName } from '@/lib/cms/media';
 import { rateLimit, rateLimitedResponse, RATE_LIMITS } from '@/lib/security/rate-limit';
@@ -21,8 +21,6 @@ const schema = z.object({
 export async function POST(request: Request) {
   const guard = await apiPermission('media.manage');
   if (guard instanceof NextResponse) return guard;
-  const refusal = demoWriteRefusal(guard);
-  if (refusal) return refusal;
 
   const limited = await rateLimit(RATE_LIMITS.mediaSign, guard.userId);
   if (!limited.ok) return rateLimitedResponse(limited);

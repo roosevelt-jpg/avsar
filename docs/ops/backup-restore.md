@@ -38,7 +38,7 @@ database.
 ### Restore
 
 1. **Stop writes first.** Set the Vercel project to maintenance (redeploy with
-   Supabase env vars removed puts the site in demo mode: pages render, writes
+   Supabase env vars removed shows a "Setup required" page and API writes
    return 503) so nothing new lands while you restore.
 2. **Prefer restoring into a new project** and pointing Vercel at it, rather
    than over the live one. You keep the broken state to investigate.

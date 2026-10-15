@@ -64,16 +64,16 @@ export function JourneyStatus({
                   style={{
                     background:
                       step.state === 'todo'
-                        ? '#fff'
+                        ? 'var(--color-surface)'
                         : step.state === 'current'
-                          ? 'oklch(0.56 0.14 40)'
-                          : '#1b1a17',
+                          ? 'var(--color-accent)'
+                          : 'var(--color-ink)',
                     borderColor:
                       step.state === 'todo'
-                        ? '#d9d4c8'
+                        ? 'var(--color-line-strong)'
                         : step.state === 'current'
-                          ? 'oklch(0.56 0.14 40)'
-                          : '#1b1a17',
+                          ? 'var(--color-accent)'
+                          : 'var(--color-ink)',
                   }}
                 />
                 {!last && <span aria-hidden className="w-px flex-1 bg-line" />}
@@ -102,7 +102,7 @@ export function JourneyStatus({
       {action && (
         <Link
           href={action.href}
-          className="t-colors inline-block rounded-[12px] bg-ink px-5 py-3 text-[15px] font-medium text-white no-underline hover:bg-accent"
+          className="t-colors inline-block rounded-[12px] bg-ink px-5 py-3 text-[15px] font-medium text-paper no-underline hover:bg-ink-hover"
         >
           {action.label} →
         </Link>

@@ -15,7 +15,7 @@ async function send(url: string, method: string, body: unknown): Promise<{ ok: b
 }
 
 const ERRORS: Record<string, string> = {
-  demo_mode: 'Demo mode: nothing is saved.',
+  not_configured: 'The database is not connected, so nothing was saved.',
   no_interview_yet: 'You can score once the interview has taken place.',
   network: 'The connection dropped. Try again.',
 };

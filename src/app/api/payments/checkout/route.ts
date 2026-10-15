@@ -1,7 +1,8 @@
+import { refreshIntegrations } from '@/lib/integrations/runtime';
 import { localePath } from '@/lib/i18n';
 import { NextResponse } from 'next/server';
-import { ACTIVE_TIER, COHORT, activePrice, chargeAmountMinor, CHARGE_CURRENCY, RAIL_CURRENCIES } from '@/lib/data/cohort';
-import { BRAND, PLACEMENT_FEE_UNDISCLOSED } from '@/lib/data/brand';
+import { getSiteSettings } from '@/lib/cms/data';
+import { RAIL_CURRENCIES, priceBreakdown } from '@/lib/company/config';
 import { getPaymentProvider, receiptNumber } from '@/lib/payments';
 import { paymentMethodSchema } from '@/lib/validation';
 import { getAdminSupabase } from '@/lib/supabase/admin';
@@ -22,26 +23,7 @@ export const runtime = 'nodejs';
  * Neither has ever come from the request and neither starts now.
  */
 export async function POST(request: Request) {
-  /**
-   * Refuses while the placement fee is withheld from the site.
-   *
-   * The assessment fee is what induces payment, and a candidate who pays it
-   * without having been told that €1,000 follows if they are placed has been
-   * charged on an omission of the one term with the most consequence attached.
-   * The product's own note on `PLACEMENT_FEE` is blunt about why that term
-   * matters: it is above India's Emigration Act cap and it is the shape
-   * anti-trafficking frameworks read as a debt bondage indicator.
-   *
-   * Nothing is lost today, because no provider is configured and no money can
-   * move. This is here so that the day one is, the hidden state cannot become
-   * a paying state without somebody deciding to. Either disclose it again or
-   * move `payer` to 'employer'; both close this.
-   */
-  if (PLACEMENT_FEE_UNDISCLOSED) {
-    console.error('[checkout] refused: placement fee is withheld from candidates');
-    return NextResponse.json({ error: 'disclosure_incomplete' }, { status: 503 });
-  }
-
+  await refreshIntegrations();
   const candidate = await getSessionCandidate();
   if (!candidate) return NextResponse.json({ error: 'unauthenticated' }, { status: 401 });
 
@@ -73,15 +55,23 @@ async function openCheckout(request: Request, candidate: SessionCandidate): Prom
 
   const supabase = getAdminSupabase();
   const provider = getPaymentProvider();
+  const settings = await getSiteSettings();
+  const price = priceBreakdown(settings.pricing);
+  const COHORT = settings.cohort;
+
+  /* A price of zero is a settings mistake, never a free package. */
+  if (price.totalMinor <= 0) {
+    console.error('[checkout] refused: no package price for', price.currency);
+    return NextResponse.json({ error: 'payment_misconfigured' }, { status: 503 });
+  }
 
   /* A rail that cannot charge the configured currency must not be asked to:
      EximPe would reject euros, and Viva would reject rupees. Refusing here
      turns a silent misconfiguration into one clear log line. */
-  if (!(RAIL_CURRENCIES[provider.name] ?? []).includes(CHARGE_CURRENCY)) {
-    console.error(`[checkout] ${provider.name} cannot charge ${CHARGE_CURRENCY}. Set NEXT_PUBLIC_CHARGE_CURRENCY to match PAYMENT_PROVIDER.`);
+  if (!(RAIL_CURRENCIES[provider.name] ?? []).includes(price.currency)) {
+    console.error(`[checkout] ${provider.name} cannot charge ${price.currency}. Change the charge currency on Settings › Company & pricing.`);
     return NextResponse.json({ error: 'payment_misconfigured' }, { status: 503 });
   }
-  const price = activePrice();
   const locale = candidate.locale;
 
   const receipt = receiptNumber(1, Math.floor(Math.random() * 999_999));
@@ -90,10 +80,10 @@ async function openCheckout(request: Request, candidate: SessionCandidate): Prom
   let session;
   try {
     session = await provider.createCheckout({
-      amountMinor: chargeAmountMinor(),
-      currency: CHARGE_CURRENCY,
+      amountMinor: price.totalMinor,
+      currency: price.currency,
       receipt,
-      description: `${BRAND.name} assessment`,
+      description: `${settings.general.siteName} career package`,
       customer: { name: candidate.fullName, email: candidate.email, phone: '' },
       methodHint: method.data,
       /*
@@ -108,7 +98,7 @@ async function openCheckout(request: Request, candidate: SessionCandidate): Prom
       cancelUrl: `${origin}${localePath(locale, '/dashboard?status=cancelled')}`,
       metadata: {
         cohort: COHORT.id,
-        tier: ACTIVE_TIER,
+        tier: 'standard',
         receipt,
         candidate_id: candidate.id,
         webhook_url: `${origin}/api/payments/webhook`,

@@ -20,7 +20,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
   if (guard instanceof NextResponse) return guard;
 
   const admin = getAdminSupabase();
-  if (!admin) return NextResponse.json({ error: 'demo_mode' }, { status: 503 });
+  if (!admin) return NextResponse.json({ error: 'not_configured' }, { status: 503 });
 
   const data = await collectCandidateData(admin, id);
   if (!data) return NextResponse.json({ error: 'not_found' }, { status: 404 });

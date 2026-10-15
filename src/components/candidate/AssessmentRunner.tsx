@@ -203,7 +203,7 @@ export function AssessmentRunner({
         <button
           type="button"
           onClick={() => router.push(localePath(locale, '/dashboard'))}
-          className="t-colors cursor-pointer rounded-[12px] border-0 bg-ink px-5 py-3 text-[15px] font-medium text-white hover:bg-accent"
+          className="t-colors cursor-pointer rounded-[12px] border-0 bg-ink px-5 py-3 text-[15px] font-medium text-paper hover:bg-ink-hover"
         >
           Back to your dashboard
         </button>
@@ -305,8 +305,8 @@ export function AssessmentRunner({
                     onClick={() => pick(position)}
                     className="t-colors flex cursor-pointer items-start gap-3.5 rounded-[12px] p-4 text-left text-[16px]"
                     style={{
-                      border: active ? '2px solid #1b1a17' : '1px solid #e4e0d6',
-                      background: active ? '#ffffff' : '#fbfaf7',
+                      border: active ? '2px solid var(--color-ink)' : '1px solid var(--color-line)',
+                      background: active ? 'var(--color-surface)' : 'var(--color-surface-subtle)',
                     }}
                   >
                     <Mono className="mt-0.5 shrink-0 text-muted">{KEYS[position]}</Mono>
@@ -329,7 +329,7 @@ export function AssessmentRunner({
                 type="button"
                 onClick={() => (safeIndex < total - 1 ? setIndex(safeIndex + 1) : finishSection())}
                 disabled={finishing}
-                className="t-colors cursor-pointer rounded-[12px] border-0 bg-ink px-5 py-3 text-[15px] font-medium text-white hover:bg-accent disabled:opacity-50"
+                className="t-colors cursor-pointer rounded-[12px] border-0 bg-ink px-5 py-3 text-[15px] font-medium text-paper hover:bg-ink-hover disabled:opacity-50"
               >
                 {safeIndex < total - 1 ? a.next : a.finish}
               </button>

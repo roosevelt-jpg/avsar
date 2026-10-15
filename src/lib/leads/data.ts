@@ -1,13 +1,10 @@
 ﻿import { getServerSupabase } from '@/lib/supabase/server';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
 
 /**
  * The inbox: people who wrote to us, or were handed to us, before applying.
  *
  * Read through the session client, so the `leads.manage` policy decides what
- * comes back, the same way the page guard decides who gets here. Demo mode
- * shows a few invented rows so the screen can be reviewed without a database;
- * they are obviously samples and never reach the public site.
+ * comes back, the same way the page guard decides who gets here.
  */
 
 export * from '@/lib/leads/types';
@@ -39,45 +36,9 @@ export function leadFromRow(row: Record<string, unknown>): Lead {
   };
 }
 
-const hoursAgo = (h: number) => new Date(Date.now() - h * 3600_000).toISOString();
-
-const SAMPLE_LEADS: Lead[] = [
-  {
-    id: '00000000-0000-4000-8000-00000000a001', kind: 'contact', status: 'new', topic: 'scam_report',
-    fullName: 'Sample: Ravi K.', email: null, phone: '+919800000001', whatsappOk: true,
-    message: 'Someone on Facebook says he is your agent and asks â‚¹40,000 for a Portugal visa. Is this real?',
-    position: null, city: 'Kochi', company: null, openings: null, source: 'contact_form',
-    candidateId: null, assignedTo: null, createdAt: hoursAgo(2), updatedAt: hoursAgo(2),
-  },
-  {
-    id: '00000000-0000-4000-8000-00000000a002', kind: 'contact', status: 'open', topic: 'employer',
-    fullName: 'Sample: Ana Ferreira', email: 'ana@example.com', phone: '+351910000000', whatsappOk: false,
-    message: 'We need housekeeping staff for the summer season, starting in May.',
-    position: 'Housekeeping attendant', city: 'Albufeira', company: 'Sample Hotel Group', openings: 8,
-    source: 'employers_page', candidateId: null, assignedTo: null, createdAt: hoursAgo(26), updatedAt: hoursAgo(5),
-  },
-  {
-    id: '00000000-0000-4000-8000-00000000a003', kind: 'import', status: 'new', topic: 'candidate',
-    fullName: 'Sample: Priya S.', email: 'priya@example.com', phone: '+919800000003', whatsappOk: true,
-    message: null, position: 'Commis chef', city: 'Pune', company: null, openings: null,
-    source: 'partner-list-march.csv', candidateId: null, assignedTo: null, createdAt: hoursAgo(50), updatedAt: hoursAgo(50),
-  },
-];
-
-const SAMPLE_EVENTS: LeadEvent[] = [
-  { id: 1, kind: 'email', body: 'Thank you, Ana. A recruiter will call you tomorrow to go through the roles.', fromStatus: null, toStatus: null, actor: null, createdAt: hoursAgo(5) },
-  { id: 2, kind: 'status', body: null, fromStatus: 'new', toStatus: 'open', actor: null, createdAt: hoursAgo(5) },
-];
-
 export type LeadFilter = { status?: LeadStatus | 'all'; topic?: LeadTopic; kind?: LeadKind; q?: string };
 
 export async function listLeads(filter: LeadFilter = {}, limit = 200): Promise<Lead[]> {
-  if (!isSupabaseConfigured()) {
-    return SAMPLE_LEADS.filter((lead) => {
-      const statusOk = filter.status === 'all' ? true : filter.status ? lead.status === filter.status : lead.status !== 'closed';
-      return statusOk && (!filter.topic || lead.topic === filter.topic) && (!filter.kind || lead.kind === filter.kind);
-    });
-  }
   const supabase = await getServerSupabase();
   if (!supabase) return [];
 
@@ -98,10 +59,6 @@ export async function listLeads(filter: LeadFilter = {}, limit = 200): Promise<L
 }
 
 export async function getLead(id: string): Promise<{ lead: Lead; events: LeadEvent[] } | null> {
-  if (!isSupabaseConfigured()) {
-    const lead = SAMPLE_LEADS.find((l) => l.id === id);
-    return lead ? { lead, events: lead.id === SAMPLE_LEADS[1]!.id ? SAMPLE_EVENTS : [] } : null;
-  }
   const supabase = await getServerSupabase();
   if (!supabase) return null;
 
@@ -131,7 +88,6 @@ export async function getLead(id: string): Promise<{ lead: Lead; events: LeadEve
 
 /** For the nav badge and the dashboard: conversations nobody has picked up. */
 export async function countNewLeads(): Promise<number> {
-  if (!isSupabaseConfigured()) return SAMPLE_LEADS.filter((l) => l.status === 'new').length;
   const supabase = await getServerSupabase();
   if (!supabase) return 0;
   const { count } = await supabase.from('leads').select('id', { count: 'exact', head: true }).eq('status', 'new');

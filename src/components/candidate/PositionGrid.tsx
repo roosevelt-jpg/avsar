@@ -137,7 +137,7 @@ export function PositionGrid({
               <div className="mt-7 flex flex-wrap items-center gap-3">
                 <Link
                   href={localePath(locale, `/signup?position=${active.slug}`)}
-                  className="t-colors rounded-[12px] bg-ink px-5 py-3 text-[15px] font-medium text-white no-underline hover:bg-accent"
+                  className="t-colors rounded-[12px] bg-ink px-5 py-3 text-[15px] font-medium text-paper no-underline hover:bg-ink-hover"
                 >
                   {t.positionApply}
                 </Link>

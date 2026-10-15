@@ -1,3 +1,4 @@
+import { refreshIntegrations } from '@/lib/integrations/runtime';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { assessCv, needsReview } from '@/lib/cv/pipeline';
@@ -28,6 +29,7 @@ const schema = z.object({ documentId: z.string().uuid() });
  */
 export async function POST(request: Request) {
   /* A signed-in staff member, or a worker carrying the shared secret. */
+  await refreshIntegrations();
   const secret = process.env.CRON_SECRET;
   const isWorker = Boolean(secret) && request.headers.get('authorization') === `Bearer ${secret}`;
   if (!isWorker && !(await getSessionStaff())) {

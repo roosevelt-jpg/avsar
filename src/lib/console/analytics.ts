@@ -2,7 +2,8 @@ import { getAdminSupabase } from '@/lib/supabase/admin';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { PIPELINE, type ApplicationStatus } from '@/lib/applications/status';
 import { positionLabel } from '@/lib/data/positions';
-import { CHARGE_CURRENCY } from '@/lib/data/cohort';
+import { getSiteSettings } from '@/lib/cms/data';
+import type { ChargeCurrency } from '@/lib/company/config';
 
 /**
  * Console analytics: everything the dashboard's cards and charts show, for one
@@ -31,6 +32,8 @@ export type Kpi = {
   previous: number | null;
   /** How to print the value. */
   format: 'count' | 'money' | 'percent' | 'hours';
+  /** For money: the charge currency set on Settings › Company & pricing. */
+  currency?: ChargeCurrency;
   /** Whether a rise is good news (drives the delta's colour). */
   upIsGood: boolean;
   /** Daily values across the range, oldest first, for the sparkline. */
@@ -101,9 +104,9 @@ export async function getAnalytics(range: RangeDays): Promise<Analytics> {
   const start = new Date(now.getTime() - range * DAY);
   const prevStart = new Date(now.getTime() - 2 * range * DAY);
 
-  if (!isSupabaseConfigured()) return demoAnalytics(range, now);
+  if (!isSupabaseConfigured()) return emptyAnalytics(range, now);
   const admin = getAdminSupabase();
-  if (!admin) return demoAnalytics(range, now);
+  if (!admin) return emptyAnalytics(range, now);
 
   const one = <T,>(value: unknown) => (Array.isArray(value) ? value[0] : value) as T | null;
 
@@ -160,11 +163,13 @@ export async function getAnalytics(range: RangeDays): Promise<Analytics> {
     if (row.status === 'offer') live.offersOpen++;
   }
 
-  return aggregate({ range, now, start, apps, currentApps, prevApps, events, candidates, payments, live });
+  const currency = (await getSiteSettings()).pricing.chargeCurrency;
+  return aggregate({ range, now, start, apps, currentApps, prevApps, events, candidates, payments, live, currency });
 }
 
 export function aggregate(input: {
   range: RangeDays;
+  currency?: ChargeCurrency;
   now: Date;
   start: Date;
   apps: AppRow[];
@@ -236,7 +241,7 @@ export function aggregate(input: {
     { key: 'applications', label: 'Applications', value: currentApps.length, previous: prevApps.length, format: 'count', upIsGood: true, trend: series.applications, href: '/admin/applications' },
     { key: 'signups', label: 'New candidates', value: sum(series.signups), previous: prevSignups, format: 'count', upIsGood: true, trend: series.signups, href: '/admin/cohorts' },
     { key: 'paid', label: 'Assessments paid', value: sum(series.payments), previous: prevPaid, format: 'count', upIsGood: true, trend: series.payments, href: '/admin/payments' },
-    { key: 'revenue', label: 'Revenue', value: sum(series.revenue), previous: prevRevenue, format: 'money', upIsGood: true, trend: series.revenue, href: '/admin/payments' },
+    { key: 'revenue', label: 'Revenue', value: sum(series.revenue), previous: prevRevenue, format: 'money', currency: input.currency, upIsGood: true, trend: series.revenue, href: '/admin/payments' },
     { key: 'shortlist', label: 'Shortlist rate', value: rate(currentApps), previous: prevApps.length ? rate(prevApps) : null, format: 'percent', upIsGood: true, trend: [] },
     { key: 'response', label: 'Median time to first response', value: responseHours(currentApps) ?? 0, previous: responseHours(prevApps), format: 'hours', upIsGood: false, trend: [] },
   ];
@@ -274,78 +279,31 @@ export function aggregate(input: {
   };
 }
 
-// ---------------------------------------------------------------- demo data
-
-/** Deterministic pseudo-random numbers, so the demo dashboard is stable between loads. */
-function seeded(seed: number) {
-  let s = seed;
-  return () => {
-    s = (s * 16807) % 2147483647;
-    return (s - 1) / 2147483646;
-  };
-}
-
-function demoAnalytics(range: RangeDays, now: Date): Analytics {
-  const rand = seeded(42);
+/**
+ * What the dashboard shows before Supabase is connected: zeros, not invented
+ * figures, so nobody mistakes a sample for the business.
+ */
+function emptyAnalytics(range: RangeDays, now: Date): Analytics {
   const days = emptyDays(range, now);
-  const daily = days.map((date, i) => {
-    const growth = 1 + i / days.length;
-    const weekend = [0, 6].includes(new Date(date).getUTCDay()) ? 0.7 : 1;
-    return {
-      date,
-      applications: Math.round((14 + rand() * 12) * growth * weekend),
-      signups: Math.round((30 + rand() * 20) * growth * weekend),
-      payments: Math.round((6 + rand() * 6) * growth * weekend),
-    };
-  });
-  const sum = (key: 'applications' | 'signups' | 'payments') => daily.reduce((a, d) => a + d[key], 0);
-  const apps = sum('applications');
-  const paid = sum('payments');
-  const funnelShares = [1, 0.82, 0.31, 0.18, 0.07, 0.05, 0.03];
+  const zeros = days.map(() => 0);
+  const kpi = (key: string, label: string, format: Kpi['format'], upIsGood = true, href?: string): Kpi => ({ key, label, value: 0, previous: null, format, upIsGood, trend: zeros, href });
   return {
     range,
     generatedAt: now.toISOString(),
     kpis: [
-      { key: 'applications', label: 'Applications', value: apps, previous: Math.round(apps * 0.82), format: 'count', upIsGood: true, trend: daily.map((d) => d.applications), href: '/admin/applications' },
-      { key: 'signups', label: 'New candidates', value: sum('signups'), previous: Math.round(sum('signups') * 0.9), format: 'count', upIsGood: true, trend: daily.map((d) => d.signups), href: '/admin/cohorts' },
-      { key: 'paid', label: 'Assessments paid', value: paid, previous: Math.round(paid * 1.06), format: 'count', upIsGood: true, trend: daily.map((d) => d.payments), href: '/admin/payments' },
-      { key: 'revenue', label: 'Revenue', value: paid * (CHARGE_CURRENCY === 'INR' ? 240000 : 2500), previous: Math.round(paid * 1.06) * (CHARGE_CURRENCY === 'INR' ? 240000 : 2500), format: 'money', upIsGood: true, trend: daily.map((d) => d.payments * (CHARGE_CURRENCY === 'INR' ? 240000 : 2500)), href: '/admin/payments' },
-      { key: 'shortlist', label: 'Shortlist rate', value: 31, previous: 27.5, format: 'percent', upIsGood: true, trend: [] },
-      { key: 'response', label: 'Median time to first response', value: 19.5, previous: 31, format: 'hours', upIsGood: false, trend: [] },
+      kpi('applications', 'Applications', 'count', true, '/admin/applications'),
+      kpi('signups', 'New candidates', 'count', true, '/admin/cohorts'),
+      kpi('paid', 'Packages paid', 'count', true, '/admin/payments'),
+      kpi('revenue', 'Revenue', 'money', true, '/admin/payments'),
+      kpi('shortlist', 'Shortlist rate', 'percent'),
+      kpi('response', 'Median time to first response', 'hours', false),
     ],
-    daily,
-    funnel: PIPELINE.map((stage, i) => ({ stage, reached: Math.round(apps * (funnelShares[i] ?? 0)) })),
-    topJobs: [
-      { id: '00000000-0000-4000-8000-000000000001', label: 'Line cook, Albufeira', value: Math.round(apps * 0.26) },
-      { id: '00000000-0000-4000-8000-000000000003', label: 'Electrician (construction), Porto', value: Math.round(apps * 0.19) },
-      { id: '00000000-0000-4000-8000-000000000004', label: 'Delivery driver, Lisbon', value: Math.round(apps * 0.17) },
-      { id: '00000000-0000-4000-8000-000000000002', label: 'Housekeeping attendant, Lisbon', value: Math.round(apps * 0.15) },
-      { id: '00000000-0000-4000-8000-000000000005', label: 'Restaurant server, Lisbon', value: Math.round(apps * 0.13) },
-      { id: '00000000-0000-4000-8000-000000000006', label: 'MIG/MAG welder, Setúbal', value: Math.round(apps * 0.1) },
-    ],
-    topRoles: [
-      { label: 'Chef', value: Math.round(apps * 0.28) },
-      { label: 'Electrician', value: Math.round(apps * 0.18) },
-      { label: 'Driver', value: Math.round(apps * 0.16) },
-      { label: 'Cleaner', value: Math.round(apps * 0.14) },
-      { label: 'Welder', value: Math.round(apps * 0.1) },
-      { label: 'Food and beverage service', value: Math.round(apps * 0.09) },
-    ],
-    origins: [
-      { label: 'Kerala', value: Math.round(apps * 0.31) },
-      { label: 'Punjab', value: Math.round(apps * 0.19) },
-      { label: 'Tamil Nadu', value: Math.round(apps * 0.13) },
-      { label: 'Uttar Pradesh', value: Math.round(apps * 0.1) },
-      { label: 'Gujarat', value: Math.round(apps * 0.08) },
-      { label: 'Goa', value: Math.round(apps * 0.06) },
-      { label: 'Rajasthan', value: Math.round(apps * 0.05) },
-      { label: 'Maharashtra', value: Math.round(apps * 0.04) },
-    ],
-    paymentMethods: [
-      { label: 'UPI', value: Math.round(paid * 0.78) },
-      { label: 'CARD', value: Math.round(paid * 0.15) },
-      { label: 'NETBANKING', value: Math.round(paid * 0.07) },
-    ],
-    live: { openJobs: 6, awaitingReview: 23, interviewsActive: 9, offersOpen: 4 },
+    daily: days.map((date) => ({ date, applications: 0, signups: 0, payments: 0 })),
+    funnel: PIPELINE.map((stage) => ({ stage, reached: 0 })),
+    topJobs: [],
+    topRoles: [],
+    origins: [],
+    paymentMethods: [],
+    live: { openJobs: 0, awaitingReview: 0, interviewsActive: 0, offersOpen: 0 },
   };
 }

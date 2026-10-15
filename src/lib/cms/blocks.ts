@@ -22,11 +22,13 @@ export type Field =
   | { kind: 'text'; name: string; label: string; help?: string; max?: number; placeholder?: string }
   | { kind: 'textarea'; name: string; label: string; help?: string; max?: number; rows?: number; markdown?: boolean }
   | { kind: 'url'; name: string; label: string; help?: string }
-  | { kind: 'media'; name: string; label: string; help?: string; accept: 'image' | 'video' | 'any' }
+  | { kind: 'media'; name: string; label: string; help?: string; accept: 'image' | 'video' | 'any'; optional?: boolean }
   | { kind: 'number'; name: string; label: string; help?: string; min: number; max: number }
   | { kind: 'select'; name: string; label: string; help?: string; options: { value: string; label: string }[] }
   | { kind: 'boolean'; name: string; label: string; help?: string }
-  | { kind: 'link'; name: string; label: string; help?: string }
+  /* optional: an empty link is left out of the saved data rather than stored
+     as a blank pair, so content written without it stays unchanged. */
+  | { kind: 'link'; name: string; label: string; help?: string; optional?: boolean }
   | { kind: 'stringList'; name: string; label: string; help?: string; max?: number }
   | { kind: 'list'; name: string; label: string; help?: string; itemLabel: string; fields: Field[]; max?: number };
 
@@ -64,8 +66,59 @@ export const BLOCKS = {
       { kind: 'text', name: 'title', label: 'Headline', max: 160 },
       { kind: 'textarea', name: 'subtitle', label: 'Subtitle', rows: 3, max: 500 },
       { kind: 'link', name: 'primaryCta', label: 'Primary button' },
-      { kind: 'link', name: 'secondaryCta', label: 'Secondary button' },
+      { kind: 'link', name: 'secondaryCta', label: 'Secondary link', help: 'Shown as a text link, so the primary button stays the one obvious action' },
+      {
+        kind: 'media',
+        name: 'filmUrl',
+        label: 'Film to play',
+        help: 'A YouTube link or an uploaded film. Adds a "watch" button that plays it in a pop-up; YouTube loads only when pressed.',
+        accept: 'video',
+      },
+      { kind: 'text', name: 'filmLabel', label: 'Film button text', help: 'e.g. "Watch how it works · 53 seconds"', max: 80 },
       { kind: 'stringList', name: 'highlights', label: 'Highlights', help: 'Short ticks under the buttons', max: 5 },
+      { kind: 'text', name: 'intentsLabel', label: 'Choices question', help: 'e.g. "What would you like to do?" Shown above the choice buttons', max: 80 },
+      {
+        kind: 'list',
+        name: 'intents',
+        label: 'Choice buttons',
+        help: 'Rounded buttons that send each visitor straight to the right page',
+        itemLabel: 'Choice',
+        max: 6,
+        fields: [
+          { kind: 'select', name: 'icon', label: 'Icon', options: iconOptions },
+          { kind: 'text', name: 'label', label: 'Label', max: 40 },
+          { kind: 'url', name: 'href', label: 'Goes to' },
+          { kind: 'media', name: 'image', label: '3D image', help: 'Optional. With images, the choices show as picture cards instead of small buttons', accept: 'image', optional: true },
+        ],
+      },
+      {
+        kind: 'stringList',
+        name: 'bubbles',
+        label: 'Background bubbles',
+        help: 'Short phrases that float either side of the headline on wide screens (1536px and up), e.g. "Interview on Zoom". Keep each one true and under 30 characters.',
+        max: 12,
+      },
+      {
+        kind: 'boolean',
+        name: 'liveProof',
+        label: 'Show live numbers under the headline',
+        help: 'Counted from the database: tests finished, people put forward, people hired. Shown only once at least 50 people have finished the test.',
+      },
+      {
+        kind: 'boolean',
+        name: 'routeMap',
+        label: 'Show the India to Portugal map watermark',
+        help: 'A very faint map behind the headline with flight routes from Delhi and Mumbai to Lisbon and Porto.',
+      },
+      {
+        kind: 'select',
+        name: 'layout',
+        label: 'Layout',
+        options: [
+          { value: 'split', label: 'Text beside the media' },
+          { value: 'stacked', label: 'Text centred, media wide underneath' },
+        ],
+      },
       {
         kind: 'select',
         name: 'mediaType',
@@ -91,7 +144,7 @@ export const BLOCKS = {
         ],
       },
     ],
-    empty: { eyebrow: '', title: 'New headline', subtitle: '', primaryCta: { label: '', href: '' }, secondaryCta: { label: '', href: '' }, highlights: [], mediaType: 'none', mediaSrc: '', mediaPoster: '', mediaAlt: '', stats: [] },
+    empty: { eyebrow: '', title: 'New headline', subtitle: '', primaryCta: { label: '', href: '' }, secondaryCta: { label: '', href: '' }, filmUrl: '', filmLabel: '', highlights: [], intentsLabel: '', intents: [], bubbles: [], liveProof: false, routeMap: false, layout: 'split', mediaType: 'none', mediaSrc: '', mediaPoster: '', mediaAlt: '', stats: [] },
   },
   trust_bar: {
     label: 'Trust bar',
@@ -133,6 +186,51 @@ export const BLOCKS = {
     ],
     empty: { eyebrow: '', title: '', items: [] },
   },
+  live_funnel: {
+    label: 'Live odds',
+    description:
+      'Out of every 100 people who finish the test, how many qualify, are put forward to an employer and are hired. Counted live from the database, never typed in.',
+    fields: [
+      eyebrow,
+      title,
+      intro,
+      { kind: 'text', name: 'completedLabel', label: 'Stage 1 label', max: 120 },
+      { kind: 'text', name: 'qualifiedLabel', label: 'Stage 2 label', help: '{{shortlist_score}} is the score out of 10', max: 120 },
+      { kind: 'text', name: 'shortlistedLabel', label: 'Stage 3 label', max: 120 },
+      { kind: 'text', name: 'hiredLabel', label: 'Stage 4 label', max: 120 },
+      {
+        kind: 'number',
+        name: 'minSample',
+        label: 'Publish rates from',
+        help: 'Finished tests needed before percentages are shown. Below this, the waiting text is shown instead, because a rate from a handful of people misleads.',
+        min: 1,
+        max: 100000,
+      },
+      {
+        kind: 'textarea',
+        name: 'pendingText',
+        label: 'Waiting text',
+        help: '{{finished}} is how many have finished so far, {{min_sample}} the number above.',
+        rows: 3,
+        max: 600,
+      },
+      { kind: 'textarea', name: 'note', label: 'Note under the figures', rows: 3, max: 600 },
+      { kind: 'link', name: 'cta', label: 'Link', help: 'Shown as a text link, not a button' },
+    ],
+    empty: {
+      eyebrow: '',
+      title: 'Where people actually get to',
+      intro: '',
+      completedLabel: 'finish the free test',
+      qualifiedLabel: 'score above {{shortlist_score}} out of 10',
+      shortlistedLabel: 'are put forward to an employer',
+      hiredLabel: 'are hired',
+      minSample: 50,
+      pendingText: '{{finished}} people have finished the test so far. We publish these rates once {{min_sample}} have, because a rate from a handful of people misleads.',
+      note: '',
+      cta: { label: '', href: '' },
+    },
+  },
   steps: {
     label: 'Steps',
     description: 'A numbered process, optionally with a picture per step.',
@@ -153,8 +251,18 @@ export const BLOCKS = {
           { kind: 'media', name: 'image', label: 'Image', accept: 'image' },
         ],
       },
+      {
+        kind: 'select',
+        name: 'layout',
+        label: 'Layout',
+        help: 'Timeline hides the pictures and joins the steps with a line',
+        options: [
+          { value: 'cards', label: 'Cards' },
+          { value: 'timeline', label: 'Timeline' },
+        ],
+      },
     ],
-    empty: { eyebrow: '', title: 'How it works', intro: '', items: [] },
+    empty: { eyebrow: '', title: 'How it works', intro: '', items: [], layout: 'cards' },
   },
   features: {
     label: 'Feature grid',
@@ -183,10 +291,27 @@ export const BLOCKS = {
           { kind: 'select', name: 'icon', label: 'Icon', options: iconOptions },
           { kind: 'text', name: 'title', label: 'Title', max: 100 },
           { kind: 'textarea', name: 'body', label: 'Body', rows: 3, max: 400 },
+          { kind: 'link', name: 'link', label: 'Link', help: 'Optional. Shown as "Learn more" style text under the card', optional: true },
+          { kind: 'media', name: 'image', label: '3D image', help: 'Optional. Shown floating at the top of the card in place of the icon', accept: 'image', optional: true },
+        ],
+      },
+      {
+        kind: 'boolean',
+        name: 'typing',
+        label: 'Type the card text as it scrolls into view',
+        help: 'The text writes itself out once, like someone typing. Visitors who turn off motion see it straight away.',
+      },
+      {
+        kind: 'select',
+        name: 'style',
+        label: 'Style',
+        options: [
+          { value: 'cards', label: 'White cards' },
+          { value: 'tiles', label: 'Soft coloured tiles' },
         ],
       },
     ],
-    empty: { eyebrow: '', title: '', intro: '', columns: '3', items: [] },
+    empty: { eyebrow: '', title: '', intro: '', columns: '3', items: [], style: 'cards', typing: false },
   },
   split: {
     label: 'Image and text',
@@ -321,18 +446,8 @@ export const BLOCKS = {
       { kind: 'textarea', name: 'body', label: 'Body', rows: 3, max: 500 },
       { kind: 'link', name: 'primary', label: 'Primary button' },
       { kind: 'link', name: 'secondary', label: 'Secondary button' },
-      {
-        kind: 'select',
-        name: 'tone',
-        label: 'Style',
-        options: [
-          { value: 'dark', label: 'Dark' },
-          { value: 'accent', label: 'Terracotta' },
-          { value: 'light', label: 'Light' },
-        ],
-      },
     ],
-    empty: { title: '', body: '', primary: { label: '', href: '' }, secondary: { label: '', href: '' }, tone: 'dark' },
+    empty: { title: '', body: '', primary: { label: '', href: '' }, secondary: { label: '', href: '' } },
   },
   rich_text: {
     label: 'Text',
@@ -377,6 +492,30 @@ export const BLOCKS = {
     description: 'Phone, WhatsApp, email and office, read from Site settings.',
     fields: [eyebrow, title, intro],
     empty: { eyebrow: '', title: 'Talk to a person', intro: '' },
+  },
+  document: {
+    label: 'Document',
+    description: 'A full page of text with its own page title: terms, policies, rules.',
+    fields: [
+      { kind: 'text', name: 'title', label: 'Page title', help: 'The main heading of the page', max: 160 },
+      { kind: 'text', name: 'updated', label: 'Last updated', help: 'e.g. 15 October 2026. Leave empty to hide.', max: 60 },
+      {
+        kind: 'textarea',
+        name: 'body',
+        label: 'Text',
+        help: '## for a section heading, - for a list item, **bold**, [link text](/path). Placeholders such as {{legal_name}} are filled from Settings.',
+        rows: 24,
+        max: 40000,
+        markdown: true,
+      },
+    ],
+    empty: { title: '', updated: '', body: '' },
+  },
+  contact_form: {
+    label: 'Contact form',
+    description: 'The message form. Messages arrive in the console inbox.',
+    fields: [{ kind: 'text', name: 'title', label: 'Page title', help: 'Shown as the main heading', max: 160 }, intro],
+    empty: { title: 'Contact us', intro: '' },
   },
 } satisfies Record<string, Definition>;
 

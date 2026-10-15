@@ -33,7 +33,7 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
         <button type="submit" className="cursor-pointer rounded-full border-0 bg-ink px-4 py-2 text-[14px] text-paper">Filter</button>
       </form>
       {rows.length === 0 ? (
-        <AdminEmpty>{admin ? 'Nothing recorded yet.' : 'Demo mode: the audit log needs Supabase.'}</AdminEmpty>
+        <AdminEmpty>{admin ? 'Nothing recorded yet.' : 'The audit log needs the database, which is not connected.'}</AdminEmpty>
       ) : (
         <div className="scroll-x mt-6 rounded-[16px] border border-line bg-surface">
           <table className="w-full min-w-[820px] border-collapse text-[13px]">

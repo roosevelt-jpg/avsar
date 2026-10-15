@@ -6,11 +6,10 @@ import { CMS_ROUTED_SLUGS } from '@/lib/cms/defaults';
 import { isLocale, locales, localePath } from '@/lib/i18n';
 
 /**
- * Every CMS content page: /about, /hi/faq, /visa-and-relocation, ...
+ * Every CMS content page: /about, /hi/faq, /terms, /privacy, /contact, ...
  *
- * Static routes in this folder (signup, dashboard, jobs, pricing, the legal
- * pages) take precedence over this dynamic segment, so a CMS slug can never
- * shadow them. The slugs that render here are exactly the default pages in
+ * Static routes in this folder (signup, dashboard, jobs, pricing) take
+ * precedence over this dynamic segment, so a CMS slug can never shadow them. The slugs that render here are exactly the default pages in
  * src/lib/cms/defaults, which is also the list the console offers.
  */
 

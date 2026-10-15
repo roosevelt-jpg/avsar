@@ -35,7 +35,7 @@ export function StatCard({ kpi, range }: { kpi: Kpi; range: number }) {
       <p className="m-0 mt-1.5 text-[11px] text-muted">vs previous {range} days</p>
     </>
   );
-  const className = 't-colors block h-full rounded-[18px] border border-line bg-surface p-4 no-underline';
+  const className = 't-colors block h-full rounded-[18px] border border-line/70 bg-surface p-5 no-underline shadow-[0_1px_2px_rgba(27,26,23,0.05)]';
   return kpi.href ? (
     <Link href={kpi.href} className={`${className} hover:border-line-strong`}>
       {body}

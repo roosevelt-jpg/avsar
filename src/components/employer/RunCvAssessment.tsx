@@ -58,7 +58,7 @@ export function RunCvAssessment({
         type="button"
         onClick={run}
         disabled={busy || running}
-        className="t-colors cursor-pointer rounded-[8px] border border-line-strong bg-surface px-3 py-1.5 text-[13px] hover:border-employer disabled:opacity-50"
+        className="t-colors cursor-pointer rounded-[8px] border border-line-strong bg-surface px-3 py-1.5 text-[13px] hover:border-ink disabled:opacity-50"
       >
         {busy || running ? 'Reading…' : state === 'failed' ? 'Retry' : 'Read CV'}
       </button>

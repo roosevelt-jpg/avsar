@@ -24,7 +24,7 @@ export default async function NotificationsPage() {
   return (
     <AdminShell current="/admin/notifications" isStaff>
       <AdminHeading title="Notifications" lead="New applications, vacancy requests, messages and privacy requests, for the parts of the console your role can open." />
-      <MarkNotificationsSeen unseen={access.demo ? 0 : unseen} />
+      <MarkNotificationsSeen unseen={unseen} />
 
       {items.length === 0 ? (
         <AdminEmpty>Nothing yet.</AdminEmpty>

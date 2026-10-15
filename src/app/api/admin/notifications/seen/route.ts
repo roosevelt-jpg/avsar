@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { apiStaff, demoWriteRefusal } from '@/lib/rbac/server';
+import { apiStaff } from '@/lib/rbac/server';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 
 export const runtime = 'nodejs';
@@ -8,8 +8,6 @@ export const runtime = 'nodejs';
 export async function POST() {
   const guard = await apiStaff();
   if (guard instanceof NextResponse) return guard;
-  const refusal = demoWriteRefusal(guard);
-  if (refusal) return refusal;
 
   const admin = getAdminSupabase();
   if (!admin) return NextResponse.json({ error: 'storage_unconfigured' }, { status: 503 });

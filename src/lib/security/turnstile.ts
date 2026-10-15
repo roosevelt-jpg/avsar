@@ -3,10 +3,11 @@
  *
  * Only account creation is challenged: it is the one anonymous write that costs
  * us something (an auth user, a candidate row, a verification email). Without
- * a secret configured the check passes, so demo mode and local development
- * need no keys. Setting the secret without the public site key would refuse
+ * a secret configured the check passes, so local development needs no keys. Setting the secret without the public site key would refuse
  * every registration, so the two are set together.
  */
+
+import { refreshIntegrations } from '@/lib/integrations/runtime';
 
 export const TURNSTILE_HEADER = 'x-turnstile-token';
 
@@ -15,6 +16,7 @@ export function isTurnstileConfigured(): boolean {
 }
 
 export async function verifyTurnstile(token: string | null, ip: string): Promise<boolean> {
+  await refreshIntegrations();
   const secret = process.env.TURNSTILE_SECRET_KEY;
   if (!secret) return true;
   if (!token) return false;

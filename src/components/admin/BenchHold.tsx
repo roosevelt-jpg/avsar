@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 const ERRORS: Record<string, string> = {
-  demo_mode: 'Demo mode: nothing is saved.',
+  not_configured: 'The database is not connected, so nothing was saved.',
   held_by_another: 'Another employer is talking to this candidate.',
   too_many_holds: 'You are holding five people already. Let one go first.',
 };

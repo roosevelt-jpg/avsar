@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { audit } from '@/lib/audit';
 import { IMPORT_MAX_BYTES, parseCsv, readLeadRows } from '@/lib/leads/import';
-import { apiPermission, demoWriteRefusal } from '@/lib/rbac/server';
+import { apiPermission } from '@/lib/rbac/server';
 import { withIdempotency } from '@/lib/security/idempotency';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 
@@ -56,8 +56,6 @@ export async function POST(request: Request) {
 
   if (dryRun) return NextResponse.json({ status: 'checked', ...summary });
 
-  const refusal = demoWriteRefusal(guard);
-  if (refusal) return refusal;
   if (!admin) return NextResponse.json({ error: 'storage_unconfigured' }, { status: 503 });
 
   return withIdempotency(request, 'leads.import', guard.userId, async () => {

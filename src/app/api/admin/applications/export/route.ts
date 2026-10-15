@@ -24,7 +24,7 @@ export async function GET(request: Request) {
   if (guard instanceof NextResponse) return guard;
 
   const url = new URL(request.url);
-  const ids = new Set((url.searchParams.get('ids') ?? '').split(',').filter((id) => uuid.safeParse(id).success || id.startsWith('sample-')));
+  const ids = new Set((url.searchParams.get('ids') ?? '').split(',').filter((id) => uuid.safeParse(id).success));
   const rawStatus = url.searchParams.get('status') ?? '';
   const status = isApplicationStatus(rawStatus) ? rawStatus : undefined;
   const rawJob = url.searchParams.get('job') ?? '';
@@ -42,7 +42,7 @@ export async function GET(request: Request) {
   const selected = ids.size ? rows.filter((row) => ids.has(row.id)) : rows;
 
   const csv = toCsv(
-    ['Reference', 'Candidate', 'Email', 'Mobile', 'From', 'Role', 'Job', 'Job city', 'Stage', 'Assessment', 'Rating', 'Applied', 'Last move'],
+    ['Reference', 'Candidate', 'Email', 'Mobile', 'From', 'Role', 'Job', 'Job city', 'Stage', 'Career package', 'Rating', 'Applied', 'Last move'],
     selected.map((row) => [
       row.reference,
       row.candidate.fullName,
@@ -53,7 +53,7 @@ export async function GET(request: Request) {
       row.job.title,
       row.job.city,
       STATUS_META[row.status].label,
-      row.candidate.paymentStatus === 'paid' ? 'Completed' : 'Not yet',
+      row.candidate.paymentStatus === 'paid' ? 'Bought' : 'No',
       row.rating,
       row.createdAt.slice(0, 10),
       row.statusChangedAt.slice(0, 10),

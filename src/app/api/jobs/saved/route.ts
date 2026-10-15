@@ -15,7 +15,7 @@ const schema = z.object({ jobId: z.string().uuid() });
  * pins the row to this candidate; the candidate id is never read from the body.
  */
 async function handle(request: Request, save: boolean) {
-  if (!isSupabaseConfigured()) return NextResponse.json({ error: 'demo_mode' }, { status: 503 });
+  if (!isSupabaseConfigured()) return NextResponse.json({ error: 'not_configured' }, { status: 503 });
 
   const parsed = schema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: 'invalid_payload' }, { status: 400 });

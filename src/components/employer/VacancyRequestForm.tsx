@@ -68,7 +68,7 @@ export function VacancyRequestForm() {
       });
       const data = (await response.json().catch(() => null)) as { status?: string; error?: string } | null;
 
-      if (data?.error === 'demo_mode') {
+      if (data?.error === 'not_configured') {
         setFailed(true);
         setMessage('This is a preview: nothing is saved until the platform is connected to its database.');
         return;
@@ -185,7 +185,7 @@ export function VacancyRequestForm() {
         type="button"
         onClick={() => void submit()}
         disabled={busy || !ready}
-        className="t-colors mt-4 cursor-pointer rounded-[10px] border-0 bg-ink px-4 py-2.5 text-[14px] font-medium text-white hover:bg-accent disabled:opacity-40"
+        className="t-colors mt-4 cursor-pointer rounded-[10px] border-0 bg-ink px-4 py-2.5 text-[14px] font-medium text-paper hover:bg-ink-hover disabled:opacity-40"
       >
         Send request
       </button>

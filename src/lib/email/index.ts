@@ -1,5 +1,6 @@
 import crypto from 'node:crypto';
-import { ENTITY } from '@/lib/data/brand';
+import { getSiteSettings } from '@/lib/cms/data';
+import { refreshIntegrations } from '@/lib/integrations/runtime';
 
 /**
  * Outbound email that is not authentication.
@@ -33,7 +34,9 @@ export type Message = {
  * doing the right thing, and the answer must not disappear into a subdomain
  * nobody reads, so every message is addressed back to the monitored inbox.
  */
-const REPLY_TO = ENTITY.supportEmail;
+async function replyTo(): Promise<string> {
+  return (await getSiteSettings()).general.supportEmail;
+}
 
 export type Mailer = {
   name: string;
@@ -60,7 +63,7 @@ function resendMailer(apiKey: string, from: string): Mailer {
         body: JSON.stringify({
           from,
           to: [message.to],
-          reply_to: REPLY_TO,
+          reply_to: await replyTo(),
           subject: message.subject,
           text: message.text,
           ...(message.html ? { html: message.html } : {}),
@@ -112,7 +115,7 @@ function sesMailer(region: string, accessKey: string, secretKey: string, from: s
       const body = JSON.stringify({
         FromEmailAddress: from,
         Destination: { ToAddresses: [message.to] },
-        ReplyToAddresses: [REPLY_TO],
+        ReplyToAddresses: [await replyTo()],
         Content: {
           Simple: {
             Subject: { Data: message.subject, Charset: 'UTF-8' },
@@ -186,7 +189,23 @@ function sesMailer(region: string, accessKey: string, secretKey: string, from: s
   };
 }
 
+/**
+ * The mailer for the current keys. Sending refreshes the keys saved on the
+ * Integrations page first, so a key changed there is used by the next email
+ * rather than after the next deploy.
+ */
 export function getMailer(): Mailer {
+  const current = pickMailer();
+  return {
+    name: current.name,
+    async send(message) {
+      await refreshIntegrations();
+      return pickMailer().send(message);
+    },
+  };
+}
+
+function pickMailer(): Mailer {
   const from = process.env.EMAIL_FROM;
 
   /* Resend first, because it is what the Supabase auth mail goes through, and

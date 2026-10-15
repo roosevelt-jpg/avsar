@@ -6,13 +6,13 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 /**
- * For the uptime monitor. 200 when the app is up and, if Supabase is
- * configured, the database answers a one-row read as the public would.
- * Says nothing about configuration beyond demo or live.
+ * For the uptime monitor. 200 when the app is up and the database answers a
+ * one-row read as the public would; 503 when it does not, or when the
+ * deployment has no database configured, because nothing works without one.
  */
 export async function GET() {
   if (!isSupabaseConfigured()) {
-    return NextResponse.json({ ok: true, mode: 'demo' }, { headers: { 'cache-control': 'no-store' } });
+    return NextResponse.json({ ok: false, mode: 'not_configured' }, { status: 503, headers: { 'cache-control': 'no-store' } });
   }
 
   const anon = getAnonSupabase();

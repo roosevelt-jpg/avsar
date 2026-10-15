@@ -33,7 +33,7 @@ export const STAY_SAFE: DefaultPage = {
         tone: 'warning',
         title: 'We will never ask you for money outside this website',
         body:
-          'Not on WhatsApp, not by bank transfer to a personal account, not in cash, and not through an "agent". The only payment we take is the optional assessment fee of {{fee_inr}}, on this website, with a receipt.',
+          'Not on WhatsApp, not by bank transfer to a personal account, not in cash, and not through an "agent". The only payment we take is the optional career package of {{fee_inr}}, on this website, with a receipt.',
       },
     ],
     [
@@ -70,7 +70,6 @@ export const STAY_SAFE: DefaultPage = {
         body: 'Tell us. Reports can be anonymous. It helps us warn other candidates and act against the people responsible.',
         primary: { label: 'Report by email', href: 'mailto:{{support_email}}?subject=Fraud%20report' },
         secondary: { label: 'Report on WhatsApp', href: 'https://wa.me/{{whatsapp_digits}}' },
-        tone: 'accent',
       },
     ],
   ]),

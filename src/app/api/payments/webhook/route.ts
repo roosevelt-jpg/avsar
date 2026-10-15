@@ -1,3 +1,4 @@
+import { refreshIntegrations } from '@/lib/integrations/runtime';
 import { NextResponse } from 'next/server';
 import { getPaymentProvider } from '@/lib/payments';
 import { vivaWebhookKey } from '@/lib/payments/viva';
@@ -36,6 +37,7 @@ export async function GET() {
  * which is why its adapter verifies by asking the API instead.
  */
 export async function POST(request: Request) {
+  await refreshIntegrations();
   const provider = getPaymentProvider();
   const raw = await request.text();
 

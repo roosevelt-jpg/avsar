@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { privateMetadata } from '@/lib/seo';
 import { notFound } from 'next/navigation';
 import { DashboardNav } from '@/components/candidate/DashboardNav';
 import { ApplicationTracker } from '@/components/candidate/ApplicationTracker';
@@ -8,24 +9,18 @@ import { listCandidateApplications } from '@/lib/applications/data';
 import { STATUS_META } from '@/lib/applications/status';
 import { requireCandidate } from '@/lib/auth';
 import { recommendedJobs } from '@/lib/jobs/data';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { isLocale, localePath } from '@/lib/i18n';
 
-export const metadata = { title: 'My applications', robots: { index: false } };
+export const metadata = privateMetadata('My applications');
 
 export default async function ApplicationsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
 
-  let candidateId: string | null = null;
-  let position: string | null = null;
-  if (isSupabaseConfigured()) {
-    const candidate = await requireCandidate(locale, localePath(locale, '/dashboard/applications'));
-    candidateId = candidate.id;
-    position = candidate.position;
-  }
+  const candidate = await requireCandidate(locale, localePath(locale, '/dashboard/applications'));
+  const position = candidate.position;
 
-  const applications = await listCandidateApplications(candidateId);
+  const applications = await listCandidateApplications(candidate.id);
   const active = applications.filter((a) => STATUS_META[a.status].tone !== 'stopped');
   const closed = applications.filter((a) => STATUS_META[a.status].tone === 'stopped');
   const suggestions = await recommendedJobs(position, applications.map((a) => a.job.id), 3);
@@ -42,7 +37,7 @@ export default async function ApplicationsPage({ params }: { params: Promise<{ l
                 {active.length ? `${active.length} in progress` : 'Nothing in progress yet'}
               </h1>
             </div>
-            <Link href={localePath(locale, '/jobs')} className="t-colors rounded-full bg-accent px-5 py-3 text-[15px] font-medium text-white no-underline hover:bg-accent-deep">
+            <Link href={localePath(locale, '/jobs')} className="t-colors rounded-full bg-ink px-5 py-3 text-[15px] font-medium text-paper no-underline hover:bg-ink-hover">
               Find more jobs
             </Link>
           </div>
