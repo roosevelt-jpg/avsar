@@ -5,7 +5,7 @@ a CMS-driven candidate site with a jobs board and one-step apply, a candidate
 dashboard that tracks every application, UPI payments through a cross-border
 aggregator, and a staff console with role-based access.
 
-**Start here:** `AGENTS.md` (how the code is organised and the rules),
+**Start here:** `CURSOR_BUILD.md` (the full production build spec and phased plan), `AGENTS.md` (how the code is organised and the rules),
 `docs/v2-platform.md` (what v2 added, how to switch it on, launch checklist),
 `docs/ROADMAP.md` (next tasks with ready-to-paste Cursor prompts).
 
