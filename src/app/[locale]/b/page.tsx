@@ -3,10 +3,11 @@ import { notFound } from 'next/navigation';
 import { Placeholder } from '@/components/ui/Placeholder';
 import { LocaleToggle } from '@/components/candidate/LocaleToggle';
 import { SectorSelectorB } from '@/components/candidate/SectorSelectorB';
-import { getDictionary, isLocale } from '@/lib/i18n';
+import { getDictionary, isLocale, localePath } from '@/lib/i18n';
 import { POSITIONS } from '@/lib/data/positions';
 
-export const metadata = { title: 'Direction B · candidate landing' };
+/* A design study, not a page for candidates to land on from a search. */
+export const metadata = { title: 'Direction B · candidate landing', robots: { index: false, follow: false } };
 
 /**
  * Direction B: the alternative visual direction for the candidate landing page.
@@ -47,7 +48,7 @@ export default async function CandidateLandingB({ params }: { params: Promise<{ 
         >
           <span>{t.navHow}</span>
           <span>{t.navSectors}</span>
-          <Link href={`/${locale}/pricing`} style={{ color: 'var(--b-body)' }}>
+          <Link href={localePath(locale, '/pricing')} style={{ color: 'var(--b-body)' }}>
             {t.navPricing}
           </Link>
           <Link href="/employers" style={{ color: 'var(--b-body)' }}>
@@ -56,7 +57,7 @@ export default async function CandidateLandingB({ params }: { params: Promise<{ 
         </nav>
         <div className="flex items-center gap-2">
           <LocaleToggle locale={locale} />
-          <Link href={`/${locale}/dashboard`} className="px-2.5 py-2 text-[15px]" style={{ color: 'var(--b-ink)' }}>
+          <Link href={localePath(locale, '/dashboard')} className="px-2.5 py-2 text-[15px]" style={{ color: 'var(--b-ink)' }}>
             {t.signIn}
           </Link>
         </div>
@@ -145,7 +146,7 @@ export default async function CandidateLandingB({ params }: { params: Promise<{ 
         </ul>
         <p className="mt-7 mb-0 text-[14px]" style={{ color: 'var(--b-muted)' }}>
           {t.placeFine}{' '}
-          <Link href={`/${locale}/selection-rules`} style={{ color: 'var(--b-azulejo)' }}>
+          <Link href={localePath(locale, '/selection-rules')} style={{ color: 'var(--b-azulejo)' }}>
             {t.selectionRules}
           </Link>
         </p>
@@ -194,7 +195,7 @@ export default async function CandidateLandingB({ params }: { params: Promise<{ 
           {t.ctaTitle}
         </h2>
         <Link
-          href={`/${locale}/signup`}
+          href={localePath(locale, '/signup')}
           className="shrink-0 px-5 py-3 text-[15px] font-medium no-underline"
           style={{ background: '#fff', color: 'var(--b-ink)', borderRadius: 'var(--b-radius)' }}
         >

@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import { getServerSupabase } from '@/lib/supabase/server';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { getSessionStaff, getViewer, homeFor } from '@/lib/auth';
-import { defaultLocale } from '@/lib/i18n';
+import { defaultLocale, localePath } from '@/lib/i18n';
 import { grants, type Permission } from './permissions';
 
 /**
@@ -70,7 +70,7 @@ export async function requirePermission(permission: Permission, returnTo: string
 
   const viewer = await getViewer();
   if (viewer.role !== 'anonymous' && viewer.role !== 'staff') redirect(homeFor(viewer, defaultLocale));
-  redirect(`/${defaultLocale}/signin?next=${encodeURIComponent(returnTo)}`);
+  redirect(localePath(defaultLocale, `/signin?next=${encodeURIComponent(returnTo)}`));
 }
 
 /**

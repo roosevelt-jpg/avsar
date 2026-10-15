@@ -1,5 +1,5 @@
 import { BRAND, ENTITY } from '@/lib/data/brand';
-import type { Locale } from '@/lib/i18n';
+import { isLocale, localePath, type Locale } from '@/lib/i18n/path';
 
 /**
  * Site settings: the public, editable configuration of the site.
@@ -17,7 +17,15 @@ import type { Locale } from '@/lib/i18n';
  * content editor should not be able to change it.
  */
 
-export type NavItem = { label: string; labelHi?: string; labelAr?: string; href: string };
+export type NavItem = {
+  label: string;
+  /** Kept so a saved Hindi or Arabic label from the console still wins. */
+  labelHi?: string;
+  labelAr?: string;
+  /** Other languages, keyed by locale. Missing keys fall back to English. */
+  labels?: Partial<Record<Locale, string>>;
+  href: string;
+};
 
 export type SiteSettings = {
   general: {
@@ -31,7 +39,7 @@ export type SiteSettings = {
     socials: { instagram: string; facebook: string; linkedin: string; youtube: string };
   };
   announcement: { enabled: boolean; text: string; linkLabel: string; href: string };
-  navigation: { items: NavItem[]; headerCta: { label: string; href: string } };
+  navigation: { items: NavItem[]; headerCta: { label: string; href: string; labels?: Partial<Record<Locale, string>> } };
   footer: { blurb: string };
   applications: {
     /** When true, a candidate must have paid for the assessment before applying. Off by default: applying should be free and fast. */
@@ -64,14 +72,54 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   },
   navigation: {
     items: [
-      { label: 'Jobs', labelHi: 'नौकरियाँ', labelAr: 'الوظائف', href: '/jobs' },
-      { label: 'How it works', labelHi: 'यह कैसे काम करता है', labelAr: 'كيف يعمل', href: '/how-it-works' },
-      { label: 'Why Portugal', labelHi: 'पुर्तगाल क्यों', labelAr: 'لماذا البرتغال', href: '/why-portugal' },
-      { label: 'Visa & relocation', labelHi: 'वीज़ा और स्थानांतरण', labelAr: 'التأشيرة والانتقال', href: '/visa-and-relocation' },
-      { label: 'FAQ', labelHi: 'सवाल-जवाब', labelAr: 'الأسئلة الشائعة', href: '/faq' },
-      { label: 'Employers', labelHi: 'नियोक्ता', labelAr: 'أصحاب العمل', href: '/employers' },
+      {
+        label: 'Jobs',
+        labelHi: 'नौकरियाँ',
+        labelAr: 'الوظائف',
+        labels: { bn: 'চাকরি', mr: 'नोकऱ्या', te: 'ఉద్యోగాలు', ta: 'வேலைகள்', ur: 'نوکریاں', gu: 'નોકરીઓ', kn: 'ಉದ್ಯೋಗಗಳು', or: 'ଚାକିରି', ml: 'ജോലികൾ', pa: 'ਨੌਕਰੀਆਂ', as: 'চাকৰি' },
+        href: '/jobs',
+      },
+      {
+        label: 'How it works',
+        labelHi: 'यह कैसे काम करता है',
+        labelAr: 'كيف يعمل',
+        labels: { bn: 'কীভাবে কাজ করে', mr: 'हे कसे काम करते', te: 'ఇది ఎలా పని చేస్తుంది', ta: 'எப்படி வேலை செய்கிறது', ur: 'یہ کیسے کام کرتا ہے', gu: 'આ કેવી રીતે કામ કરે છે', kn: 'ಇದು ಹೇಗೆ ಕೆಲಸ ಮಾಡುತ್ತದೆ', or: 'ଏହା କିପରି କାମ କରେ', ml: 'എങ്ങനെ പ്രവർത്തിക്കുന്നു', pa: 'ਇਹ ਕਿਵੇਂ ਕੰਮ ਕਰਦਾ ਹੈ', as: 'এইটো কেনেকৈ কাম কৰে' },
+        href: '/how-it-works',
+      },
+      {
+        label: 'Why Portugal',
+        labelHi: 'पुर्तगाल क्यों',
+        labelAr: 'لماذا البرتغال',
+        labels: { bn: 'পর্তুগাল কেন', mr: 'पोर्तुगाल का', te: 'పోర్చుగల్ ఎందుకు', ta: 'ஏன் போர்ச்சுகல்', ur: 'پرتگال کیوں', gu: 'પોર્ટુગલ શા માટે', kn: 'ಪೋರ್ಚುಗಲ್ ಏಕೆ', or: 'ପର୍ତ୍ତୁଗାଲ କାହିଁକି', ml: 'എന്തുകൊണ്ട് പോർച്ചുഗൽ', pa: 'ਪੁਰਤਗਾਲ ਕਿਉਂ', as: 'পৰ্তুগাল কিয়' },
+        href: '/why-portugal',
+      },
+      {
+        label: 'Visa & relocation',
+        labelHi: 'वीज़ा और स्थानांतरण',
+        labelAr: 'التأشيرة والانتقال',
+        labels: { bn: 'ভিসা ও স্থানান্তর', mr: 'व्हिसा आणि स्थलांतर', te: 'వీసా మరియు తరలింపు', ta: 'விசா மற்றும் இடமாற்றம்', ur: 'ویزا اور منتقلی', gu: 'વિઝા અને સ્થળાંતર', kn: 'ವೀಸಾ ಮತ್ತು ಸ್ಥಳಾಂತರ', or: 'ଭିସା ଏବଂ ସ୍ଥାନାନ୍ତର', ml: 'വിസയും മാറ്റിപ്പാർപ്പും', pa: 'ਵੀਜ਼ਾ ਅਤੇ ਤਬਾਦਲਾ', as: 'ভিছা আৰু স্থানান্তৰ' },
+        href: '/visa-and-relocation',
+      },
+      {
+        label: 'FAQ',
+        labelHi: 'सवाल-जवाब',
+        labelAr: 'الأسئلة الشائعة',
+        labels: { bn: 'প্রশ্নোত্তর', mr: 'प्रश्न', te: 'ప్రశ్నలు', ta: 'கேள்விகள்', ur: 'سوالات', gu: 'પ્રશ્નો', kn: 'ಪ್ರಶ್ನೆಗಳು', or: 'ପ୍ରଶ୍ନ', ml: 'ചോദ്യങ്ങൾ', pa: 'ਸਵਾਲ', as: 'প্ৰশ্ন' },
+        href: '/faq',
+      },
+      {
+        label: 'Employers',
+        labelHi: 'नियोक्ता',
+        labelAr: 'أصحاب العمل',
+        labels: { bn: 'নিয়োগকর্তা', mr: 'नियोक्ते', te: 'యజమానులు', ta: 'முதலாளிகள்', ur: 'آجر', gu: 'નોકરીદાતાઓ', kn: 'ಉದ್ಯೋಗದಾತರು', or: 'ନିଯୁକ୍ତିଦାତା', ml: 'തൊഴിലുടമകൾ', pa: 'ਮਾਲਕ', as: 'নিয়োগকর্তা' },
+        href: '/employers',
+      },
     ],
-    headerCta: { label: 'Apply now', href: '/jobs' },
+    headerCta: {
+      label: 'Apply now',
+      href: '/jobs',
+      labels: { hi: 'अभी आवेदन करें', bn: 'এখনই আবেদন করুন', mr: 'आत्ता अर्ज करा', te: 'ఇప్పుడే దరఖాస్తు చేయండి', ta: 'இப்போது விண்ணப்பிக்கவும்', ur: 'اب درخواست دیں', gu: 'હમણાં અરજી કરો', kn: 'ಈಗ ಅರ್ಜಿ ಸಲ್ಲಿಸಿ', or: 'ଏବେ ଆବେଦନ କରନ୍ତୁ', ml: 'ഇപ്പോൾ അപേക്ഷിക്കുക', pa: 'ਹੁਣੇ ਅਰਜ਼ੀ ਦਿਓ', as: 'এতিয়াই আবেদন কৰক', ar: 'قدّم الآن' },
+    },
   },
   footer: {
     blurb: 'Recruitment from India to Portugal, with real employers, legal contracts and support from your first application to your first month at work.',
@@ -100,20 +148,31 @@ export function mergeSettings(rows: { key: string; value: unknown }[]): SiteSett
 
 /** Label for the current locale, falling back to English. */
 export function navLabel(item: NavItem, locale: Locale): string {
+  const translated = item.labels?.[locale];
+  if (translated) return translated;
   if (locale === 'hi' && item.labelHi) return item.labelHi;
   if (locale === 'ar' && item.labelAr) return item.labelAr;
   return item.label;
 }
 
+/** Header button, with the same fallback as navigation labels. */
+export function ctaLabel(cta: { label: string; labels?: Partial<Record<Locale, string>> }, locale: Locale): string {
+  return cta.labels?.[locale] || cta.label;
+}
+
 /**
- * Prefix a site path with the locale. Paths outside the candidate site
- * (employers, admin, api, assets) and absolute URLs are returned untouched.
+ * Public URL for a candidate path in this language.
+ *
+ * English has no prefix. Paths outside the candidate site (employers, admin,
+ * api, assets) and absolute URLs are returned untouched, as is a path that
+ * already names its language.
  */
 export function localHref(locale: Locale, href: string): string {
   if (!href.startsWith('/') || href.startsWith('//')) return href;
-  if (/^\/(employers|admin|api|auth|brand|video|positions|walkthrough)(\/|$|\?|#)/.test(href)) return href;
-  if (/^\/(en|hi|ar)(\/|$|\?|#)/.test(href)) return href;
-  return href === '/' ? `/${locale}` : `/${locale}${href}`;
+  if (/^\/(employers|admin|api|auth|dev|brand|video|positions|walkthrough)(\/|$|\?|#)/.test(href)) return href;
+  const segment = href.split(/[/?#]/)[1] ?? '';
+  if (isLocale(segment)) return href;
+  return localePath(locale, href);
 }
 
 /** wa.me link from a phone number in any format. */

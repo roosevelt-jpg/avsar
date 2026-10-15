@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { getViewer, resolveDestination } from '@/lib/auth';
-import { defaultLocale, isLocale, type Locale } from '@/lib/i18n';
+import { defaultLocale, isLocale, type Locale, localePath } from '@/lib/i18n';
 
 /**
  * Post-sign-in router.
@@ -20,7 +20,7 @@ export default async function AuthRoutePage({
   const locale: Locale = rawLocale && isLocale(rawLocale) ? rawLocale : defaultLocale;
 
   const viewer = await getViewer();
-  if (viewer.role === 'anonymous') redirect(`/${locale}/signin`);
+  if (viewer.role === 'anonymous') redirect(localePath(locale, '/signin'));
 
   redirect(resolveDestination(viewer, next, locale));
 }

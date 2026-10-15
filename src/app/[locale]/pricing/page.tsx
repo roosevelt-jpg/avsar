@@ -4,7 +4,7 @@ import { Mono } from '@/components/ui/Mono';
 import { SiteHeader } from '@/components/candidate/SiteHeader';
 import { SiteFooter } from '@/components/candidate/SiteFooter';
 import { FaqAccordion } from '@/components/candidate/FaqAccordion';
-import { fill, getDictionary, isLocale } from '@/lib/i18n';
+import { fill, getDictionary, isLocale, localePath } from '@/lib/i18n';
 import { EMPLOYER_PRICE_EUR, activePrice, formatPrice } from '@/lib/data/cohort';
 import { formatIndicative } from '@/lib/data/brand';
 
@@ -29,7 +29,7 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
       */
       note: `${p.candidatesNote} ${fill(t.feeIndicative, { charged: formatPrice(activePrice().totalMinor) })}`,
       features: p.candidatesFeatures,
-      cta: { label: p.startCta, href: `/${locale}/signup` },
+      cta: { label: p.startCta, href: localePath(locale, '/signup') },
       dark: true,
     },
     {

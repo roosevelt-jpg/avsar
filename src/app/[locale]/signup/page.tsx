@@ -4,7 +4,7 @@ import { Wordmark } from '@/components/ui/Wordmark';
 import { SignupFlow } from '@/components/candidate/SignupFlow';
 import { OrderSummary } from '@/components/candidate/OrderSummary';
 import { ENTITY } from '@/lib/data/brand';
-import { fill, getDictionary, isLocale } from '@/lib/i18n';
+import { fill, getDictionary, isLocale, localePath } from '@/lib/i18n';
 import { POSITIONS, positionBySlug, type PositionSlug } from '@/lib/data/positions';
 
 export const metadata = { title: 'Register for Cohort 01' };
@@ -29,9 +29,9 @@ export default async function SignupPage({
   return (
     <>
       <header className="flex flex-wrap items-center justify-between gap-4 border-b border-line px-[clamp(20px,4cqi,56px)] py-[18px]">
-        <Wordmark href={`/${locale}`} />
+        <Wordmark href={localePath(locale, '/')} />
         <p className="m-0 text-[14px] text-muted">
-          <Link href={`/${locale}/contact`} className="prose-link">
+          <Link href={localePath(locale, '/contact')} className="prose-link">
             {fill(t.signup.help, { phone: ENTITY.phone })}
           </Link>
         </p>

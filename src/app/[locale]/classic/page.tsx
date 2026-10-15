@@ -10,7 +10,7 @@ import { positionCopy } from '@/lib/data/position-copy';
 import { SiteHeader } from '@/components/candidate/SiteHeader';
 import { SiteFooter } from '@/components/candidate/SiteFooter';
 import { PositionSelector } from '@/components/candidate/PositionSelector';
-import { fill, getDictionary, isLocale } from '@/lib/i18n';
+import { fill, getDictionary, isLocale, localePath } from '@/lib/i18n';
 import { activePrice, formatPrice } from '@/lib/data/cohort';
 import {
   BRAND,
@@ -164,7 +164,7 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
             </p>
           </div>
           <Link
-            href={`/${locale}/signup`}
+            href={localePath(locale, '/signup')}
             className="t-colors shrink-0 rounded-[12px] bg-white px-5 py-3 text-[15px] font-medium text-ink no-underline hover:bg-paper"
           >
             {t.cta} →
@@ -343,7 +343,7 @@ export default async function CandidateLanding({ params }: { params: Promise<{ l
 
           <p className="mt-7 border-t border-line pt-5 text-[14px] leading-[1.55] text-muted">
             {fill(t.placeFine, money)}{' '}
-            <Link href={`/${locale}/selection-rules`} className="prose-link">
+            <Link href={localePath(locale, '/selection-rules')} className="prose-link">
               {t.selectionRules}
             </Link>
           </p>

@@ -18,21 +18,21 @@ const GROUPS: { title: string; note: string; rows: [string, string, string][] }[
     title: 'Candidate, Direction A',
     note: 'Build this one unless the owner picks B.',
     rows: [
-      ['/en', '01 Landing', 'hero selector, fee breakdown, odds disclosure'],
+      ['/', '01 Landing', 'hero selector, fee breakdown, odds disclosure'],
       ['/hi', '01 Landing, Hindi', 'same page, full Hindi dictionary'],
-      ['/en/signup', '03 Sign-up + pay', '3 steps, order summary, mandatory consent'],
-      ['/en/signin', 'Sign in (all roles)', 'password for staff and employers, code for candidates'],
-      ['/en/assessment', '04 Assessment', 'server timer, autosave, A-D keys'],
-      ['/en/profile', 'Profile', 'CV upload or manual entry, ATS-style fields'],
-      ['/en/dashboard', '05 Dashboard', 'real journey status, report, visibility switch'],
-      ['/en/pricing', '07 Pricing + FAQ', '3 plans, accordion'],
+      ['/signup', '03 Sign-up + pay', '3 steps, order summary, mandatory consent'],
+      ['/signin', 'Sign in (all roles)', 'password for staff and employers, code for candidates'],
+      ['/assessment', '04 Assessment', 'server timer, autosave, A-D keys'],
+      ['/profile', 'Profile', 'CV upload or manual entry, ATS-style fields'],
+      ['/dashboard', '05 Dashboard', 'real journey status, report, visibility switch'],
+      ['/pricing', '07 Pricing + FAQ', '3 plans, accordion'],
     ],
   },
   {
     title: 'Candidate, Direction B',
     note: 'Alternative visual direction, isolated tokens. Landing only.',
     rows: [
-      ['/en/b', 'Landing, Direction B', 'azulejo blue, DM Serif, 4px radii'],
+      ['/b', 'Landing, Direction B', 'azulejo blue, DM Serif, 4px radii'],
       ['/hi/b', 'Landing, Direction B, Hindi', ''],
     ],
   },
@@ -50,10 +50,10 @@ const GROUPS: { title: string; note: string; rows: [string, string, string][] }[
     title: 'Legal',
     note: 'Every odds disclosure links here. Reviewed and approved, 6 October 2026.',
     rows: [
-      ['/en/selection-rules', 'Selection rules', 'the odds, in plain words'],
-      ['/en/refund-policy', 'Refund policy', ''],
-      ['/en/privacy', 'Privacy', 'includes the automated-decisions section'],
-      ['/en/contact', 'Contact', 'includes the off-platform fee report channel'],
+      ['/selection-rules', 'Selection rules', 'the odds, in plain words'],
+      ['/refund-policy', 'Refund policy', ''],
+      ['/privacy', 'Privacy', 'includes the automated-decisions section'],
+      ['/contact', 'Contact', 'includes the off-platform fee report channel'],
     ],
   },
   {
@@ -75,7 +75,7 @@ export default function DevIndex() {
   return (
     <div className="avsar-root">
       <header className="flex flex-wrap items-center justify-between gap-4 border-b border-line px-[clamp(20px,4cqi,56px)] py-[18px]">
-        <Wordmark href="/en" />
+        <Wordmark href="/" />
         <Mono className="text-muted">Development only · not served in production</Mono>
       </header>
 

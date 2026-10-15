@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Mono } from '@/components/ui/Mono';
-import { fill, type Dictionary, type Locale } from '@/lib/i18n';
+import { fill, type Dictionary, type Locale, localePath } from '@/lib/i18n';
 import type { ClientItem, SectionId } from '@/lib/assessment/items';
 
 const KEYS = ['A', 'B', 'C', 'D'] as const;
@@ -155,7 +155,7 @@ export function AssessmentRunner({
    */
   async function finishSection() {
     if (!attemptId) {
-      router.push(`/${locale}/dashboard`);
+      router.push(localePath(locale, '/dashboard'));
       return;
     }
 
@@ -177,9 +177,9 @@ export function AssessmentRunner({
 
       router.refresh();
       if (body?.nextSection) {
-        router.push(`/${locale}/assessment?section=${body.nextSection}`);
+        router.push(localePath(locale, `/assessment?section=${body.nextSection}`));
       } else {
-        router.push(`/${locale}/dashboard`);
+        router.push(localePath(locale, '/dashboard'));
       }
     } catch (error) {
       console.error('[assessment] submit failed', error);
@@ -202,7 +202,7 @@ export function AssessmentRunner({
         </p>
         <button
           type="button"
-          onClick={() => router.push(`/${locale}/dashboard`)}
+          onClick={() => router.push(localePath(locale, '/dashboard'))}
           className="t-colors cursor-pointer rounded-[12px] border-0 bg-ink px-5 py-3 text-[15px] font-medium text-white hover:bg-accent"
         >
           Back to your dashboard

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Mono } from '@/components/ui/Mono';
-import { fill, type Dictionary, type Locale } from '@/lib/i18n';
+import { fill, type Dictionary, type Locale, localePath } from '@/lib/i18n';
 import type { CandidateStatus } from '@/lib/candidate/status';
 
 /**
@@ -39,10 +39,10 @@ export function JourneyStatus({
   */
   const action =
     !status.profileComplete && !status.cvUploaded
-      ? { href: `/${locale}/profile`, label: s.completeProfile }
+      ? { href: localePath(locale, '/profile'), label: s.completeProfile }
       : !status.assessmentComplete
         ? {
-            href: `/${locale}/assessment`,
+            href: localePath(locale, '/assessment'),
             label: status.sectionsDone.length > 0 ? s.continueAssessment : s.startAssessment,
           }
         : null;

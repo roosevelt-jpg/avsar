@@ -16,12 +16,15 @@ import { getCandidateStatus, type CandidateStatus } from '@/lib/candidate/status
 import { CareerPack } from '@/components/candidate/CareerPack';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import type { CareerPack as Pack } from '@/lib/cv/coach-schema';
-import { fill, getDictionary, isLocale } from '@/lib/i18n';
+import { fill, getDictionary, isLocale, localePath } from '@/lib/i18n';
 import { requireCandidate } from '@/lib/auth';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { getServerSupabase } from '@/lib/supabase/server';
 import { sectorLabel, SECTOR_SLUGS, type SectorSlug } from '@/lib/data/sectors';
 import { englishBand, skillBand } from '@/lib/report/bands';
+import { listSavedJobs } from '@/lib/jobs/saved';
+import { formatSalary } from '@/lib/jobs/types';
+import { interviewTimes } from '@/lib/interviews/time';
 
 export const metadata = { title: 'Your report' };
 
@@ -83,15 +86,23 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
      page that asks for anything. The report is what the proof releases. */
   let unverifiedEmail: string | null = null;
   let candidateId: string | null = null;
+  let whatsappOptIn = false;
 
   if (isSupabaseConfigured()) {
-    const candidate = await requireCandidate(locale, `/${locale}/dashboard`);
+    const candidate = await requireCandidate(locale, localePath(locale, '/dashboard'));
     candidateId = candidate.id;
     visible = candidate.visibleToEmployers;
     status = await getCandidateStatus(candidate.id, candidate.paymentStatus);
     unverifiedEmail = candidate.emailConfirmed ? null : candidate.email;
 
     const admin = getAdminSupabase();
+    const { data: prefs } = (await admin
+      ?.from('candidates')
+      .select('whatsapp_opt_in_at')
+      .eq('id', candidate.id)
+      .maybeSingle()) ?? { data: null };
+    whatsappOptIn = Boolean(prefs?.whatsapp_opt_in_at);
+
     const { data: stored } = (await admin
       ?.from('career_packs')
       .select('strengths, improvements, interview, improved_cv, translated')
@@ -152,7 +163,10 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
 
   /* Applications sit at the top: for most candidates "where is my
      application?" is the reason they signed in. */
-  const applications = await listCandidateApplications(candidateId);
+  const [applications, savedJobs] = await Promise.all([listCandidateApplications(candidateId), listSavedJobs(candidateId)]);
+  const nextInterview = applications
+    .flatMap((application) => application.interviews.map((interview) => ({ interview, application })))
+    .sort((a, b) => a.interview.startsAt.localeCompare(b.interview.startsAt))[0];
 
   const stats = [
     { label: d.overall, value: String(r.overall), suffix: '/100', note: fill(d.overallNote, { percentile: r.percentile }), dark: true },
@@ -199,16 +213,26 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 className="m-0 text-[20px] font-semibold tracking-[-0.02em]">My applications</h2>
             <div className="flex gap-2">
-              <Link href={`/${locale}/jobs`} className="t-colors rounded-full border border-line-strong px-4 py-2 text-[14px] text-ink no-underline hover:border-ink">
+              <Link href={localePath(locale, '/jobs')} className="t-colors rounded-full border border-line-strong px-4 py-2 text-[14px] text-ink no-underline hover:border-ink">
                 Find jobs
               </Link>
               {applications.length > 0 && (
-                <Link href={`/${locale}/dashboard/applications`} className="t-colors rounded-full bg-ink px-4 py-2 text-[14px] text-paper no-underline">
+                <Link href={localePath(locale, '/dashboard/applications')} className="t-colors rounded-full bg-ink px-4 py-2 text-[14px] text-paper no-underline">
                   Track all
                 </Link>
               )}
             </div>
           </div>
+          {nextInterview && (
+            <Link
+              href={localePath(locale, '/dashboard/applications')}
+              className="mt-4 block rounded-[16px] border border-accent/40 bg-accent-tint px-4 py-3 text-ink no-underline"
+            >
+              <span className="block font-mono text-[11px] uppercase tracking-[0.1em] text-accent-deep">Next interview</span>
+              <span className="mt-1 block text-[15px] font-medium">{nextInterview.application.job.title}</span>
+              <span className="block text-[14px] text-ink-2">{interviewTimes(nextInterview.interview.startsAt).both}</span>
+            </Link>
+          )}
           {applications.length > 0 && (
             <div className="mt-4">
               <ApplicationStats applications={applications} />
@@ -217,7 +241,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
           {applications.length === 0 ? (
             <p className="m-0 mt-3 text-[15px] text-ink-2">
               You have not applied to a job yet. Applying is free:{' '}
-              <Link href={`/${locale}/jobs`} className="prose-link">see open jobs</Link>.
+              <Link href={localePath(locale, '/jobs')} className="prose-link">see open jobs</Link>.
             </p>
           ) : (
             <ul className="m-0 mt-4 flex list-none flex-col divide-y divide-line-soft p-0">
@@ -238,13 +262,35 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
           )}
         </section>
 
+        {savedJobs.length > 0 && (
+          <section className="mb-10 rounded-[24px] border border-line bg-surface p-5 sm:p-6">
+            <h2 className="m-0 text-[20px] font-semibold tracking-[-0.02em]">Saved jobs</h2>
+            <p className="m-0 mt-1 text-[14px] text-muted">Jobs you marked with the heart. Closed jobs drop off this list.</p>
+            <ul className="m-0 mt-4 flex list-none flex-col divide-y divide-line-soft p-0">
+              {savedJobs.map((job) => (
+                <li key={job.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
+                  <div>
+                    <Link href={localePath(locale, `/jobs/${job.slug}`)} className="text-[15px] font-medium text-ink no-underline hover:text-accent">
+                      {job.title}
+                    </Link>
+                    <p className="m-0 font-mono text-[12px] text-muted">{[job.city, formatSalary(job)].filter(Boolean).join(' · ')}</p>
+                  </div>
+                  <Link href={localePath(locale, `/jobs/${job.slug}`)} className="t-colors rounded-full border border-line-strong px-4 py-2 text-[14px] text-ink no-underline hover:border-ink">
+                    View and apply
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
         <Mono className="text-muted">{fill(d.greeting, { name: r.name.split(' ')[0] ?? r.name })}</Mono>
         <div className="mt-3 mb-9 flex flex-wrap items-end justify-between gap-4">
           <h1 className="m-0 text-[clamp(28px,4cqi,48px)] font-semibold leading-[1.1] tracking-[-0.03em]">
             {reportReady ? d.title : d.pending}
           </h1>
           <Link
-            href={`/${locale}/dashboard/report.pdf`}
+            href={localePath(locale, '/dashboard/report.pdf')}
             className="t-colors rounded-[12px] border border-line-strong bg-surface px-4 py-2.5 text-[14px] no-underline hover:border-ink"
           >
             {d.download}
@@ -350,8 +396,15 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
           </div>
         )}
 
-        <div className="mt-10">
+        <div className="mt-10 flex flex-col gap-3">
           <VisibilityToggle label={d.visible} note={d.visibleNote} initial={visible} />
+          <VisibilityToggle
+            label="WhatsApp updates"
+            note="Messages on WhatsApp when your application moves or an interview is booked. Email updates continue either way."
+            initial={whatsappOptIn}
+            endpoint="/api/candidate/whatsapp"
+            field="optIn"
+          />
         </div>
       </main>
     </>

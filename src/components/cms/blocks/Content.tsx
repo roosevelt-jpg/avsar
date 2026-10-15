@@ -109,7 +109,7 @@ export function SplitBlock({ data, locale }: Props) {
   const cta = link(data, 'cta');
   return (
     <Section>
-      <div className={`grid items-center gap-[clamp(32px,5cqi,72px)] ${image ? 'lg:grid-cols-2' : ''}`}>
+      <div className={`grid grid-cols-1 items-center gap-[clamp(32px,5cqi,72px)] ${image ? 'lg:grid-cols-2' : ''}`}>
         <div className={left ? 'lg:order-2' : ''}>
           <SectionHeading eyebrow={str(data, 'eyebrow')} title={str(data, 'title')} />
           {str(data, 'body') ? <Markdown text={str(data, 'body')} locale={locale} className="-mt-4 text-[17px] text-ink-2" /> : null}

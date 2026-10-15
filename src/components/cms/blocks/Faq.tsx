@@ -14,7 +14,7 @@ export function FaqBlock({ data, locale }: { data: BlockData; locale: Locale }) 
   if (!list.length) return null;
   return (
     <Section>
-      <div className="grid gap-[clamp(24px,4cqi,64px)] lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
+      <div className="grid grid-cols-1 gap-[clamp(24px,4cqi,64px)] lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
         <SectionHeading eyebrow={str(data, 'eyebrow')} title={str(data, 'title')} intro={str(data, 'intro')} />
         <div className="flex flex-col gap-2.5">
           {list.map((item, index) => (

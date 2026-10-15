@@ -1,6 +1,6 @@
 import { notFound, redirect } from 'next/navigation';
 import { AssessmentRunner } from '@/components/candidate/AssessmentRunner';
-import { getDictionary, isLocale } from '@/lib/i18n';
+import { getDictionary, isLocale, localePath } from '@/lib/i18n';
 import {
   itemsForSection,
   toClientItem,
@@ -50,7 +50,7 @@ export default async function AssessmentPage({
   const savedAnswers: Record<string, number> = {};
 
   if (isSupabaseConfigured()) {
-    const candidate = await requireCandidate(locale, `/${locale}/assessment?section=${section}`);
+    const candidate = await requireCandidate(locale, localePath(locale, `/assessment?section=${section}`));
 
     if ((SECTOR_SLUGS as readonly string[]).includes(candidate.sector ?? '')) {
       sector = candidate.sector as SectorSlug;
@@ -61,7 +61,7 @@ export default async function AssessmentPage({
        report, the career pack and the CV when it is done. The profile is the
        only thing needed first, because the questions are chosen from it. */
     if (!candidate.profileComplete) {
-      redirect(`/${locale}/signup?resume=profile`);
+      redirect(localePath(locale, '/signup?resume=profile'));
     }
 
     const supabase = await getServerSupabase();
@@ -75,7 +75,7 @@ export default async function AssessmentPage({
 
       const submitted = new Set((done ?? []).map((row) => row.section as string));
       const next = SECTION_ORDER.find((candidateSection) => !submitted.has(candidateSection));
-      if (!next) redirect(`/${locale}/dashboard`);
+      if (!next) redirect(localePath(locale, '/dashboard'));
       section = next;
     }
 

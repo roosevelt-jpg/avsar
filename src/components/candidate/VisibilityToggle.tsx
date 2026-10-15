@@ -10,10 +10,15 @@ export function VisibilityToggle({
   label,
   note,
   initial = true,
+  endpoint = '/api/candidate/visibility',
+  field = 'visible',
 }: {
   label: string;
   note: string;
   initial?: boolean;
+  /** The same switch serves other per-candidate preferences, e.g. WhatsApp updates. */
+  endpoint?: string;
+  field?: string;
 }) {
   const [on, setOn] = useState(initial);
   const [pending, setPending] = useState(false);
@@ -23,11 +28,12 @@ export function VisibilityToggle({
     setOn(next);
     setPending(true);
     try {
-      await fetch('/api/candidate/visibility', {
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ visible: next }),
+        body: JSON.stringify({ [field]: next }),
       });
+      if (!response.ok) setOn(!next);
     } catch {
       setOn(!next); // Roll back so the switch never lies about stored state.
     } finally {

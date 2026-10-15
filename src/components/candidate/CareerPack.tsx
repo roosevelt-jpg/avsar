@@ -1,5 +1,6 @@
 'use client';
 
+import { localePath } from '@/lib/i18n/path';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Mono } from '@/components/ui/Mono';
@@ -227,7 +228,7 @@ export function CareerPack({
         </div>
 
         <a
-          href={`/${locale}/dashboard/cv.pdf?template=${template}`}
+          href={localePath(locale, `/dashboard/cv.pdf?template=${template}`)}
           className="t-colors mb-6 inline-block rounded-[12px] bg-paper px-5 py-3 text-[15px] font-medium text-ink no-underline hover:bg-white"
         >
           Download as PDF

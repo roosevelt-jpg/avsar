@@ -10,8 +10,11 @@ import { SUPABASE_ANON_KEY, SUPABASE_URL, isSupabaseConfigured } from './config'
  * silently expires and a signed-in candidate gets bounced to sign-in
  * mid-assessment. This is the only place cookies are actually written.
  */
-export async function updateSession(request: NextRequest): Promise<NextResponse> {
-  let response = NextResponse.next({ request });
+export async function updateSession(
+  request: NextRequest,
+  respond: () => NextResponse = () => NextResponse.next({ request }),
+): Promise<NextResponse> {
+  let response = respond();
 
   if (!isSupabaseConfigured()) return response;
 
@@ -20,7 +23,8 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
       getAll: () => request.cookies.getAll(),
       setAll: (list: { name: string; value: string; options: CookieOptions }[]) => {
         for (const { name, value } of list) request.cookies.set(name, value);
-        response = NextResponse.next({ request });
+        /* Rebuild the same response. Recreating `next()` here would drop a rewrite. */
+        response = respond();
         for (const { name, value, options } of list) response.cookies.set(name, value, options);
       },
     },

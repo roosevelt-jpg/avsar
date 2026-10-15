@@ -381,7 +381,7 @@ export function JobForm({
               </button>
             )}
             {job && status === 'published' && (
-              <a href={`/en/jobs/${job.slug}`} target="_blank" rel="noreferrer" className="px-4 py-2 text-center text-[14px] text-ink-2">View live ↗</a>
+              <a href={`/jobs/${job.slug}`} target="_blank" rel="noreferrer" className="px-4 py-2 text-center text-[14px] text-ink-2">View live ↗</a>
             )}
           </div>
         </section>

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { Mono } from '@/components/ui/Mono';
 import { AREAS, POSITIONS, positionsInArea } from '@/lib/data/positions';
-import { fill, type Dictionary, type Locale } from '@/lib/i18n';
+import { fill, type Dictionary, type Locale, localePath } from '@/lib/i18n';
 
 /**
  * Position picker in the hero.
@@ -28,7 +28,7 @@ export function PositionSelector({
   const [pending, startTransition] = useTransition();
 
   const start = () =>
-    startTransition(() => router.push(`/${locale}/signup?position=${selected}`));
+    startTransition(() => router.push(localePath(locale, `/signup?position=${selected}`)));
 
   return (
     <div className="w-full max-w-[760px] rounded-[20px] border border-line bg-surface p-[clamp(18px,2.4cqi,26px)] text-left shadow-[0_1px_0_#e4e0d6,0_24px_48px_-28px_rgba(27,26,23,.25)]">

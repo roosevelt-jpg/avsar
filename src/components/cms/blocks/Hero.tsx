@@ -24,8 +24,11 @@ export function HeroBlock({ data, locale, first }: { data: BlockData; locale: Lo
             'radial-gradient(60% 60% at 85% 10%, oklch(0.94 0.03 40 / 0.9) 0%, transparent 60%), radial-gradient(50% 50% at 0% 100%, oklch(0.95 0.02 150 / 0.6) 0%, transparent 60%)',
         }}
       />
+      {/* grid-cols-1 is minmax(0, 1fr): without it the implicit column grows to
+          the longest unbreakable word, and Tamil and Malayalam compounds are
+          wider than a 360px phone. */}
       <div
-        className={`relative mx-auto grid w-full max-w-[1200px] items-center gap-[clamp(32px,5cqi,72px)] ${
+        className={`relative mx-auto grid w-full max-w-[1200px] grid-cols-1 items-center gap-[clamp(32px,5cqi,72px)] ${
           hasMedia ? 'lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]' : 'text-center'
         }`}
       >
@@ -36,7 +39,7 @@ export function HeroBlock({ data, locale, first }: { data: BlockData; locale: Lo
               {str(data, 'eyebrow')}
             </p>
           ) : null}
-          <Heading className="m-0 text-balance text-[clamp(36px,5.2cqi,64px)] font-semibold leading-[1.02] tracking-[-0.04em]">
+          <Heading className="m-0 text-balance break-words text-[clamp(36px,5.2cqi,64px)] font-semibold leading-[1.02] tracking-[-0.04em]">
             {str(data, 'title')}
           </Heading>
           {str(data, 'subtitle') ? (
@@ -66,10 +69,10 @@ export function HeroBlock({ data, locale, first }: { data: BlockData; locale: Lo
           {stats.length > 0 && (
             <dl className={`m-0 mt-10 grid max-w-[640px] grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-px overflow-hidden rounded-[18px] border border-line bg-line ${hasMedia ? '' : 'mx-auto'}`}>
               {stats.map((stat, index) => (
-                <div key={index} className="bg-surface px-5 py-4 text-start">
+                <div key={index} className="min-w-0 bg-surface px-5 py-4 text-start">
                   <dt className="sr-only">{str(stat, 'label')}</dt>
                   <dd className="m-0 text-[26px] font-semibold tracking-[-0.03em]">{str(stat, 'value')}</dd>
-                  <dd className="m-0 mt-1 text-[13px] leading-[1.4] text-muted">{str(stat, 'label')}</dd>
+                  <dd className="m-0 mt-1 text-[13px] leading-[1.4] text-muted [overflow-wrap:anywhere]">{str(stat, 'label')}</dd>
                 </div>
               ))}
             </dl>

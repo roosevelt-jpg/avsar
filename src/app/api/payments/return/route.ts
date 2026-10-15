@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getPaymentProvider } from '@/lib/payments';
 import { recordPayment } from '@/lib/payments/record';
-import { isLocale, defaultLocale } from '@/lib/i18n';
+import { isLocale, defaultLocale, localePath } from '@/lib/i18n';
 
 export const runtime = 'nodejs';
 
@@ -23,7 +23,7 @@ export const runtime = 'nodejs';
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const requested = url.searchParams.get('locale') ?? '';
-  const dashboard = `/${isLocale(requested) ? requested : defaultLocale}/dashboard`;
+  const dashboard = localePath(isLocale(requested) ? requested : defaultLocale, '/dashboard');
 
   /*
     Viva names it `t`; other rails differ, so the generic spelling is accepted

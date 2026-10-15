@@ -72,6 +72,35 @@ export async function listPublishedJobs(filters: JobFilters = {}): Promise<JobPa
   return { jobs: (data ?? []).map((row) => jobFromRow(row as Record<string, unknown>)), total: count ?? 0, page, pageSize };
 }
 
+/**
+ * Every live posting's slug and last edit, for the sitemap. Paged, because a
+ * sitemap that silently stops at the first page hides the newest jobs from
+ * search engines exactly when there are most of them.
+ */
+export async function listPublishedJobSlugs(): Promise<{ slug: string; updatedAt: string }[]> {
+  if (!isSupabaseConfigured()) return SAMPLE_JOBS.map((job) => ({ slug: job.slug, updatedAt: job.updatedAt }));
+  const supabase = getAnonSupabase();
+  if (!supabase) return [];
+
+  const PAGE = 1000;
+  const out: { slug: string; updatedAt: string }[] = [];
+  for (let from = 0; from < 20 * PAGE; from += PAGE) {
+    const { data, error } = await supabase
+      .from('job_postings')
+      .select('slug, updated_at')
+      .eq('status', 'published')
+      .order('published_at', { ascending: false })
+      .range(from, from + PAGE - 1);
+    if (error) {
+      console.error('[jobs] sitemap list failed', error);
+      break;
+    }
+    out.push(...(data ?? []).map((row) => ({ slug: String(row.slug), updatedAt: String(row.updated_at) })));
+    if (!data || data.length < PAGE) break;
+  }
+  return out;
+}
+
 export async function getPublishedJob(slug: string): Promise<Job | null> {
   if (!isSupabaseConfigured()) return SAMPLE_JOBS.find((job) => job.slug === slug) ?? null;
   const supabase = getAnonSupabase();
@@ -115,24 +144,40 @@ export async function openCities(): Promise<string[]> {
 
 // ------------------------------------------------------------------ console
 
-export type AdminJobRow = Job & { pipeline: { total: number; submitted: number; inProgress: number; offers: number } };
+export type AdminJobRow = Job & {
+  pipeline: { total: number; submitted: number; inProgress: number; offers: number };
+  /** Set when the posting began as an employer's vacancy request. */
+  requestedAt: string | null;
+};
 
-export async function listAllJobs(status?: JobStatus | 'all'): Promise<AdminJobRow[]> {
+/** `requests` lists postings that began as an employer's vacancy request, in any status. */
+export async function listAllJobs(status?: JobStatus | 'all' | 'requests'): Promise<AdminJobRow[]> {
   const empty = { total: 0, submitted: 0, inProgress: 0, offers: 0 };
   if (!isSupabaseConfigured()) {
-    return SAMPLE_JOBS.map((job, index) => ({ ...job, pipeline: { ...empty, total: 12 - index * 2, submitted: 4 - (index % 3) } }));
+    /* The first sample stands in for a request, so the label and the filter
+       can be seen without a database. */
+    const rows = SAMPLE_JOBS.map((job, index) => ({
+      ...job,
+      pipeline: { ...empty, total: 12 - index * 2, submitted: 4 - (index % 3) },
+      requestedAt: index === 0 ? '2026-09-22T10:40:00.000Z' : null,
+    }));
+    return status === 'requests' ? rows.filter((row) => row.requestedAt) : rows;
   }
   const admin = getAdminSupabase();
   if (!admin) return [];
 
   let query = admin.from('job_postings').select('*').order('updated_at', { ascending: false }).limit(500);
-  if (status && status !== 'all') query = query.eq('status', status);
+  if (status === 'requests') query = query.not('requested_at', 'is', null);
+  else if (status && status !== 'all') query = query.eq('status', status);
   const { data, error } = await query;
   if (error) {
     console.error('[jobs] admin list failed', error);
     return [];
   }
-  const jobs = (data ?? []).map((row) => jobFromRow(row as Record<string, unknown>));
+  const jobs = (data ?? []).map((row) => ({
+    ...jobFromRow(row as Record<string, unknown>),
+    requestedAt: ((row as Record<string, unknown>).requested_at as string | null) ?? null,
+  }));
 
   const { data: pipeline } = await admin.from('job_pipeline').select('*');
   const byJob = new Map(

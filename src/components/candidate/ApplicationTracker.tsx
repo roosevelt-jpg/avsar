@@ -5,6 +5,8 @@ import { PIPELINE, STATUS_META, canWithdraw, pipelineIndex } from '@/lib/applica
 import { jobLocation } from '@/lib/jobs/types';
 import { jobImage } from '@/components/jobs/JobCard';
 import type { Locale } from '@/lib/i18n';
+import { localePath } from '@/lib/i18n/path';
+import { INTERVIEW_MODE_LABELS, interviewTimes } from '@/lib/interviews/time';
 import { WithdrawButton } from './WithdrawButton';
 
 const STEP_LABELS: Record<string, string> = {
@@ -39,7 +41,7 @@ export function ApplicationTracker({ application, locale }: { application: Candi
             {application.reference} · applied {date(application.createdAt)}
           </p>
           <h2 className="m-0 mt-1 text-[20px] font-semibold tracking-[-0.02em]">
-            <Link href={`/${locale}/jobs/${application.job.slug}`} className="text-ink no-underline hover:text-accent">
+            <Link href={localePath(locale, `/jobs/${application.job.slug}`)} className="text-ink no-underline hover:text-accent">
               {application.job.title}
             </Link>
           </h2>
@@ -86,6 +88,30 @@ export function ApplicationTracker({ application, locale }: { application: Candi
         </div>
       )}
 
+      {application.interviews.length > 0 && (
+        <div className="mx-5 mt-5 flex flex-col gap-3 sm:mx-6">
+          {application.interviews.map((interview) => {
+            const times = interviewTimes(interview.startsAt);
+            return (
+              <section key={interview.id} className="rounded-[16px] border border-accent/40 bg-accent-tint px-4 py-3">
+                <p className="m-0 font-mono text-[11px] uppercase tracking-[0.1em] text-accent-deep">
+                  Interview · {INTERVIEW_MODE_LABELS[interview.mode]} · {interview.durationMinutes} min
+                </p>
+                <p className="m-0 mt-1 text-[16px] font-semibold">{times.india}</p>
+                <p className="m-0 text-[14px] text-ink-2">{times.lisbon}</p>
+                {interview.location && <p className="m-0 mt-2 text-[14px] text-ink-2">{interview.location}</p>}
+                {interview.candidateMessage && <p className="m-0 mt-2 text-[14px] leading-[1.5] text-ink">{interview.candidateMessage}</p>}
+                {interview.link && (
+                  <a href={interview.link} target="_blank" rel="noreferrer" className="prose-link mt-2 inline-block text-[14px]">
+                    Join the {interview.mode === 'video' ? 'video call' : 'interview'}
+                  </a>
+                )}
+              </section>
+            );
+          })}
+        </div>
+      )}
+
       <div className="grid gap-6 p-5 sm:p-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <div>
           <p className="m-0 font-mono text-[11px] uppercase tracking-[0.1em] text-muted">What this means</p>
@@ -96,7 +122,7 @@ export function ApplicationTracker({ application, locale }: { application: Candi
             </div>
           )}
           {application.status === 'withdrawn' && application.job.status === 'published' && (
-            <Link href={`/${locale}/jobs/${application.job.slug}`} className="prose-link mt-4 inline-block text-[14px]">
+            <Link href={localePath(locale, `/jobs/${application.job.slug}`)} className="prose-link mt-4 inline-block text-[14px]">
               Apply again
             </Link>
           )}

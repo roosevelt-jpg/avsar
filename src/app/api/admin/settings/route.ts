@@ -10,7 +10,8 @@ export const runtime = 'nodejs';
 
 const text = (max: number) => z.string().trim().max(max);
 const url = z.string().trim().max(500).transform((value) => (value ? safeUrl(value) : ''));
-const nav = z.object({ label: text(40).min(1), labelHi: text(40).optional(), labelAr: text(40).optional(), href: url });
+const labels = z.record(z.string().max(8), text(80)).optional();
+const nav = z.object({ label: text(40).min(1), labelHi: text(40).optional(), labelAr: text(40).optional(), labels, href: url });
 
 /** One schema per settings key. Unknown keys are refused, so nothing arbitrary lands in a public table. */
 const schemas = {
@@ -25,7 +26,7 @@ const schemas = {
     socials: z.object({ instagram: url, facebook: url, linkedin: url, youtube: url }),
   }),
   announcement: z.object({ enabled: z.boolean(), text: text(240), linkLabel: text(60), href: url }),
-  navigation: z.object({ items: z.array(nav).max(10), headerCta: z.object({ label: text(40), href: url }) }),
+  navigation: z.object({ items: z.array(nav).max(10), headerCta: z.object({ label: text(40), href: url, labels }) }),
   footer: z.object({ blurb: text(400) }),
   applications: z.object({ requirePaidAssessment: z.boolean(), allowQuickApply: z.boolean() }),
   seo: z.object({ defaultTitle: text(80), defaultDescription: text(200), ogImage: url }),

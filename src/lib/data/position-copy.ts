@@ -1,3 +1,4 @@
+import { siteText } from '@/lib/cms/localize';
 import type { Locale } from '@/lib/i18n';
 import type { PositionSlug } from '@/lib/data/positions';
 
@@ -171,6 +172,21 @@ const hi: Record<PositionSlug, PositionCopy> = {
   },
 };
 
+function overlay(copy: Record<PositionSlug, PositionCopy>, locale: Locale): Record<PositionSlug, PositionCopy> {
+  const out = {} as Record<PositionSlug, PositionCopy>;
+  for (const slug of Object.keys(copy) as PositionSlug[]) {
+    const item = copy[slug];
+    out[slug] = {
+      summary: siteText(locale, item.summary),
+      detail: siteText(locale, item.detail),
+      looksFor: item.looksFor.map((line) => siteText(locale, line)),
+    };
+  }
+  return out;
+}
+
 export function positionCopy(locale: Locale): Record<PositionSlug, PositionCopy> {
-  return locale === 'hi' ? hi : en;
+  if (locale === 'hi') return hi;
+  if (locale === 'en') return en;
+  return overlay(en, locale);
 }

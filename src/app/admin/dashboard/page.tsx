@@ -5,7 +5,8 @@ import { TrendChart } from '@/components/admin/analytics/TrendChart';
 import { Funnel } from '@/components/admin/analytics/Funnel';
 import { BarList } from '@/components/admin/analytics/BarList';
 import { LiveUpdates } from '@/components/admin/analytics/LiveUpdates';
-import { listApplicationsForConsole, type AdminApplicationRow } from '@/lib/applications/data';
+import { listApplicationsForConsole, listUpcomingInterviews, type AdminApplicationRow, type UpcomingInterview } from '@/lib/applications/data';
+import { interviewTimes } from '@/lib/interviews/time';
 import { STATUS_META } from '@/lib/applications/status';
 import { getAnalytics, parseRange, RANGES } from '@/lib/console/analytics';
 import { can, requirePermission } from '@/lib/rbac/server';
@@ -41,9 +42,10 @@ export default async function ConsoleDashboard({ searchParams }: { searchParams:
   const showMoney = can(access, 'payments.view');
   const showJobs = can(access, 'jobs.view');
 
-  const [analytics, recent] = await Promise.all([
+  const [analytics, recent, interviews] = await Promise.all([
     getAnalytics(range),
     showApps ? listApplicationsForConsole({}) : Promise.resolve({ rows: [] as AdminApplicationRow[], total: 0, pageSize: 0 }),
+    showApps ? listUpcomingInterviews() : Promise.resolve([] as UpcomingInterview[]),
   ]);
 
   const kpis = analytics.kpis.filter((kpi) => {
@@ -130,6 +132,24 @@ export default async function ConsoleDashboard({ searchParams }: { searchParams:
           </Panel>
         )}
       </div>
+
+      {showApps && interviews.length > 0 && (
+        <div className="mt-4">
+          <Panel title="Upcoming interviews" note="India time, Lisbon in brackets">
+            <ul className="m-0 grid list-none grid-cols-1 gap-2 p-0 md:grid-cols-2 xl:grid-cols-3">
+              {interviews.map((interview) => (
+                <li key={interview.id}>
+                  <Link href={`/admin/applications/${interview.applicationId}`} className="block rounded-[12px] bg-paper px-4 py-3 text-ink no-underline hover:text-employer">
+                    <span className="block text-[14px] font-medium">{interview.candidateName}</span>
+                    <span className="block text-[12px] text-muted">{interview.jobTitle}</span>
+                    <span className="mt-1 block text-[13px] text-ink-2">{interviewTimes(interview.startsAt).both}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </Panel>
+        </div>
+      )}
 
       {showApps && (
         <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">

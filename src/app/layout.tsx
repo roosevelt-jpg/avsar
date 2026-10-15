@@ -7,6 +7,14 @@ import {
   DM_Serif_Display,
   Noto_Serif_Devanagari,
   Noto_Sans_Arabic,
+  Noto_Sans_Bengali,
+  Noto_Sans_Gujarati,
+  Noto_Sans_Gurmukhi,
+  Noto_Sans_Kannada,
+  Noto_Sans_Malayalam,
+  Noto_Sans_Oriya,
+  Noto_Sans_Tamil,
+  Noto_Sans_Telugu,
 } from 'next/font/google';
 import './globals.css';
 
@@ -43,6 +51,21 @@ const arabic = Noto_Sans_Arabic({
   variable: '--font-arabic',
   display: 'swap',
 });
+
+/**
+ * One face per Indian script the site now speaks. Urdu uses the Arabic face
+ * above, and Assamese uses Bengali. `preload: false` so the English page does
+ * not wait on fonts a visitor may never need.
+ */
+const bengali = Noto_Sans_Bengali({ subsets: ['bengali'], weight: ['400', '600'], variable: '--font-bengali', display: 'swap', preload: false });
+const gujarati = Noto_Sans_Gujarati({ subsets: ['gujarati'], weight: ['400', '600'], variable: '--font-gujarati', display: 'swap', preload: false });
+const gurmukhi = Noto_Sans_Gurmukhi({ subsets: ['gurmukhi'], weight: ['400', '600'], variable: '--font-gurmukhi', display: 'swap', preload: false });
+const kannada = Noto_Sans_Kannada({ subsets: ['kannada'], weight: ['400', '600'], variable: '--font-kannada', display: 'swap', preload: false });
+const malayalam = Noto_Sans_Malayalam({ subsets: ['malayalam'], weight: ['400', '600'], variable: '--font-malayalam', display: 'swap', preload: false });
+const oriya = Noto_Sans_Oriya({ subsets: ['oriya'], weight: ['400', '600'], variable: '--font-oriya', display: 'swap', preload: false });
+const tamil = Noto_Sans_Tamil({ subsets: ['tamil'], weight: ['400', '600'], variable: '--font-tamil', display: 'swap', preload: false });
+const telugu = Noto_Sans_Telugu({ subsets: ['telugu'], weight: ['400', '600'], variable: '--font-telugu', display: 'swap', preload: false });
+const indic = [bengali, gujarati, gurmukhi, kannada, malayalam, oriya, tamil, telugu].map((font) => font.variable).join(' ');
 
 const mono = JetBrains_Mono({
   subsets: ['latin'],
@@ -132,7 +155,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body
-        className={`${sans.variable} ${devanagari.variable} ${mono.variable} ${bSerif.variable} ${bSans.variable} ${bDevanagari.variable} ${arabic.variable}`}
+        className={`${sans.variable} ${devanagari.variable} ${arabic.variable} ${indic} ${mono.variable} ${bSerif.variable} ${bSans.variable} ${bDevanagari.variable}`}
       >
         {/* The scroll reveals start hidden and are uncovered by an observer,
             so without scripting they would never arrive. Crawlers run the

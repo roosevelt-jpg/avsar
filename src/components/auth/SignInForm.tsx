@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Mono } from '@/components/ui/Mono';
 import { getBrowserSupabase } from '@/lib/supabase/browser';
-import { fill, type Dictionary, type Locale } from '@/lib/i18n';
+import { fill, type Dictionary, type Locale, localePath } from '@/lib/i18n';
 
 /**
  * One sign-in page for all three audiences.
@@ -222,7 +222,7 @@ export function SignInForm({
 
       <p className="mt-8 mb-0 border-t border-line pt-6 text-[14px] leading-[1.6] text-muted">
         {a.notRegistered}{' '}
-        <Link href={`/${locale}/signup`} className="prose-link">
+        <Link href={localePath(locale, '/signup')} className="prose-link">
           {a.registerCta}
         </Link>
       </p>

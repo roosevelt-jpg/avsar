@@ -1,3 +1,4 @@
+import { localePath } from '@/lib/i18n';
 import { renderEmail } from '@/lib/email/template';
 import { BRAND } from '@/lib/data/brand';
 
@@ -89,7 +90,7 @@ export function renderReminder(
   const pack = COPY[locale]!;
   const copy = pack[stage];
 
-  const url = `${origin}/${row.locale}/${stage === 'assessment' ? 'assessment' : 'signup'}`;
+  const url = `${origin}${localePath(row.locale, `/${stage === 'assessment' ? 'assessment' : 'signup'}`)}`;
   const paragraphs = copy.paragraphs(firstName);
 
   const text = [

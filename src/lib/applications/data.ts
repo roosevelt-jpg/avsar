@@ -3,6 +3,7 @@ import { getServerSupabase } from '@/lib/supabase/server';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { SAMPLE_JOBS } from '@/lib/jobs/sample';
 import { jobFromRow, type Job } from '@/lib/jobs/types';
+import { INTERVIEW_COLUMNS, interviewFromRow, type Interview } from '@/lib/interviews/time';
 import type { ApplicationStatus } from './status';
 
 export type ApplicationEvent = {
@@ -24,7 +25,25 @@ export type CandidateApplication = {
   coverNote: string | null;
   job: Pick<Job, 'id' | 'slug' | 'title' | 'city' | 'region' | 'country' | 'employerDisplay' | 'heroImageUrl' | 'positionSlug' | 'status' | 'closesAt'>;
   events: ApplicationEvent[];
+  /** Scheduled interviews still to come, soonest first. */
+  interviews: Interview[];
 };
+
+function upcoming(raw: unknown): Interview[] {
+  const now = Date.now() - 2 * 3_600_000;
+  return (Array.isArray(raw) ? raw : [])
+    .map((row) => interviewFromRow(row as Record<string, unknown>))
+    .filter((interview) => interview.status === 'scheduled' && new Date(interview.startsAt).getTime() > now)
+    .sort((a, b) => a.startsAt.localeCompare(b.startsAt));
+}
+
+/* Two days ahead at 08:30 UTC (14:00 in India), so the demo always shows an interview still to come. */
+function sampleInterviewTime(): string {
+  const date = new Date();
+  date.setUTCDate(date.getUTCDate() + 2);
+  date.setUTCHours(8, 30, 0, 0);
+  return date.toISOString();
+}
 
 function eventFromRow(row: Record<string, unknown>): ApplicationEvent {
   return {
@@ -53,7 +72,21 @@ const SAMPLE_APPLICATIONS: CandidateApplication[] = (() => {
         { id: 1, fromStatus: null, toStatus: 'submitted', note: 'Application received', visibleToCandidate: true, createdAt: '2026-10-02T10:00:00Z' },
         { id: 2, fromStatus: 'submitted', toStatus: 'screening', note: null, visibleToCandidate: true, createdAt: '2026-10-04T10:00:00Z' },
         { id: 3, fromStatus: 'screening', toStatus: 'shortlisted', note: 'Strong kitchen experience.', visibleToCandidate: true, createdAt: '2026-10-08T10:00:00Z' },
-        { id: 4, fromStatus: 'shortlisted', toStatus: 'interview', note: 'Video interview on 16 October, 14:00 IST. Link sent by email.', visibleToCandidate: true, createdAt: '2026-10-11T10:00:00Z' },
+        { id: 4, fromStatus: 'shortlisted', toStatus: 'interview', note: 'Video interview booked. Details below and by email.', visibleToCandidate: true, createdAt: '2026-10-11T10:00:00Z' },
+      ],
+      interviews: [
+        {
+          id: 'sample-interview-1',
+          applicationId: 'sample-app-1',
+          startsAt: sampleInterviewTime(),
+          durationMinutes: 30,
+          timezone: 'Asia/Kolkata',
+          mode: 'video',
+          link: null,
+          location: null,
+          candidateMessage: 'With the head chef. Please have your passport and certificates nearby.',
+          status: 'scheduled',
+        },
       ],
     },
     {
@@ -67,6 +100,7 @@ const SAMPLE_APPLICATIONS: CandidateApplication[] = (() => {
       events: [
         { id: 5, fromStatus: null, toStatus: 'submitted', note: 'Application received', visibleToCandidate: true, createdAt: '2026-10-12T10:00:00Z' },
       ],
+      interviews: [],
     },
   ];
 })();
@@ -85,7 +119,7 @@ export async function listCandidateApplications(candidateId: string | null): Pro
   const { data, error } = await supabase
     .from('applications')
     .select(
-      'id, reference, status, created_at, status_changed_at, cover_note, job_postings (id, slug, title, city, region, country, employer_display, hero_image_url, position_slug, status, closes_at), application_events (id, from_status, to_status, note, visible_to_candidate, created_at)',
+      `id, reference, status, created_at, status_changed_at, cover_note, job_postings (id, slug, title, city, region, country, employer_display, hero_image_url, position_slug, status, closes_at), application_events (id, from_status, to_status, note, visible_to_candidate, created_at), application_interviews (${INTERVIEW_COLUMNS})`,
     )
     .eq('candidate_id', candidateId)
     .order('created_at', { ascending: false });
@@ -112,6 +146,7 @@ export async function listCandidateApplications(candidateId: string | null): Pro
       coverNote: (row.cover_note as string | null) ?? null,
       job,
       events,
+      interviews: upcoming(row.application_interviews),
     };
   });
 }
@@ -227,14 +262,19 @@ export type AdminApplicationDetail = AdminApplicationRow & {
   answers: Record<string, unknown>;
   screeningQuestions: Job['screeningQuestions'];
   events: ApplicationEvent[];
-  candidateExtra: { yearsBand: number | null; hasPassport: boolean; createdAt: string | null; visible: boolean };
+  candidateExtra: { yearsBand: number | null; hasPassport: boolean; createdAt: string | null; visible: boolean; whatsappOptIn: boolean };
+  /** The CV attached when applying, if any. Downloaded through a staff-only signed URL. */
+  cvDocumentId: string | null;
+  /** Every interview, newest first, including cancelled and past ones. */
+  interviews: Interview[];
 };
 
 const DETAIL_SELECT =
-  'id, reference, status, created_at, status_changed_at, rating, cover_note, answers, ' +
-  'candidates!inner (id, full_name, email, phone, city_state, position, payment_status, years_experience_band, has_passport, created_at, visible_to_employers), ' +
+  'id, reference, status, created_at, status_changed_at, rating, cover_note, answers, cv_document_id, ' +
+  'candidates!inner (id, full_name, email, phone, city_state, position, payment_status, years_experience_band, has_passport, created_at, visible_to_employers, whatsapp_opt_in_at), ' +
   'job_postings!inner (id, title, city, slug, screening_questions), ' +
-  'application_events (id, from_status, to_status, note, visible_to_candidate, actor, created_at)';
+  'application_events (id, from_status, to_status, note, visible_to_candidate, actor, created_at), ' +
+  `application_interviews (${INTERVIEW_COLUMNS})`;
 
 export async function getApplicationForConsole(id: string): Promise<AdminApplicationDetail | null> {
   if (!isSupabaseConfigured()) {
@@ -247,7 +287,9 @@ export async function getApplicationForConsole(id: string): Promise<AdminApplica
       answers: { haccp: 'yes', cuisine: 'South Indian, continental, buffet' },
       screeningQuestions: job?.screeningQuestions ?? [],
       events: SAMPLE_APPLICATIONS[0]?.events ?? [],
-      candidateExtra: { yearsBand: 2, hasPassport: true, createdAt: '2026-10-01T09:00:00Z', visible: true },
+      candidateExtra: { yearsBand: 2, hasPassport: true, createdAt: '2026-10-01T09:00:00Z', visible: true, whatsappOptIn: true },
+      cvDocumentId: null,
+      interviews: row.status === 'interview' ? (SAMPLE_APPLICATIONS[0]?.interviews ?? []) : [],
     };
   }
 
@@ -265,7 +307,9 @@ export async function getApplicationForConsole(id: string): Promise<AdminApplica
     return null;
   }
 
-  const raw = data as Record<string, unknown>;
+  // The joined select is too complex for the generated client types, so Supabase
+  // types this row as an error string. At runtime it is the application object.
+  const raw = data as unknown as Record<string, unknown>;
   const base = adminRowFrom(raw);
   const c = (Array.isArray(raw.candidates) ? raw.candidates[0] : raw.candidates) as Record<string, unknown>;
   const j = (Array.isArray(raw.job_postings) ? raw.job_postings[0] : raw.job_postings) as Record<string, unknown>;
@@ -284,8 +328,54 @@ export async function getApplicationForConsole(id: string): Promise<AdminApplica
       hasPassport: Boolean(c?.has_passport),
       createdAt: (c?.created_at as string | null) ?? null,
       visible: c?.visible_to_employers !== false,
+      whatsappOptIn: Boolean(c?.whatsapp_opt_in_at),
     },
+    cvDocumentId: (raw.cv_document_id as string | null) ?? null,
+    interviews: (Array.isArray(raw.application_interviews) ? raw.application_interviews : [])
+      .map((row) => interviewFromRow(row as Record<string, unknown>))
+      .sort((a, b) => b.startsAt.localeCompare(a.startsAt)),
   };
+}
+
+export type UpcomingInterview = Interview & { candidateName: string; jobTitle: string };
+
+/**
+ * The next scheduled interviews across all applications, for the console
+ * dashboard. Service role: callers check applications.view first.
+ */
+export async function listUpcomingInterviews(limit = 6): Promise<UpcomingInterview[]> {
+  if (!isSupabaseConfigured()) {
+    const sample = SAMPLE_APPLICATIONS[0];
+    return (sample?.interviews ?? []).map((interview) => ({
+      ...interview,
+      applicationId: 'sample-0',
+      candidateName: 'Arjun Nair',
+      jobTitle: sample?.job.title ?? '',
+    }));
+  }
+  const admin = getAdminSupabase();
+  if (!admin) return [];
+  const { data, error } = await admin
+    .from('application_interviews')
+    .select(`${INTERVIEW_COLUMNS}, applications!inner (candidates!inner (full_name), job_postings!inner (title))`)
+    .eq('status', 'scheduled')
+    .gte('starts_at', new Date(Date.now() - 3_600_000).toISOString())
+    .order('starts_at', { ascending: true })
+    .limit(limit);
+  if (error) {
+    console.error('[interviews] upcoming failed', error);
+    return [];
+  }
+  const one = (value: unknown) => (Array.isArray(value) ? value[0] : value) as Record<string, unknown> | undefined;
+  return (data ?? []).map((raw) => {
+    const row = raw as Record<string, unknown>;
+    const app = one(row.applications) ?? {};
+    return {
+      ...interviewFromRow(row),
+      candidateName: String(one(app.candidates)?.full_name ?? ''),
+      jobTitle: String(one(app.job_postings)?.title ?? ''),
+    };
+  });
 }
 
 /** Counts per status, for the console overview and the filter chips. */

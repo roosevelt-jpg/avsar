@@ -12,6 +12,11 @@ export function secondsUntil(iso: string): number {
   return Math.max(0, Math.floor((target - new Date().getTime()) / 1000));
 }
 
+/** Whether an ISO timestamp is already behind us. */
+export function isPast(iso: string): boolean {
+  return new Date(iso).getTime() < new Date().getTime();
+}
+
 /** Current instant as an ISO string, for writes. */
 export function nowIso(): string {
   return new Date().toISOString();

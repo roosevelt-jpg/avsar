@@ -3,10 +3,10 @@ import { notFound } from 'next/navigation';
 import { CmsPageView, cmsMetadata } from '@/components/cms/CmsPageView';
 import { getPublishedPage } from '@/lib/cms/data';
 import { CMS_ROUTED_SLUGS } from '@/lib/cms/defaults';
-import { isLocale, locales } from '@/lib/i18n';
+import { isLocale, locales, localePath } from '@/lib/i18n';
 
 /**
- * Every CMS content page: /en/about, /hi/faq, /en/visa-and-relocation, ...
+ * Every CMS content page: /about, /hi/faq, /visa-and-relocation, ...
  *
  * Static routes in this folder (signup, dashboard, jobs, pricing, the legal
  * pages) take precedence over this dynamic segment, so a CMS slug can never
@@ -23,7 +23,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; slug: string }> }): Promise<Metadata> {
   const { locale, slug } = await params;
   if (!isLocale(locale) || !CMS_ROUTED_SLUGS.includes(slug)) return {};
-  return cmsMetadata(await getPublishedPage(slug, locale), `/${locale}/${slug}`);
+  return cmsMetadata(await getPublishedPage(slug, locale), localePath(locale, `/${slug}`));
 }
 
 export default async function CmsPage({ params }: { params: Promise<{ locale: string; slug: string }> }) {

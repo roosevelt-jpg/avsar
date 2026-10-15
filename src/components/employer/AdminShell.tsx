@@ -9,7 +9,7 @@ import { grants, roleName, type Permission } from '@/lib/rbac/permissions';
  *
  * The navigation is filtered by permission, so a content editor sees Pages
  * and Media and nothing else, and a link is never shown to a page that would
- * refuse the person clicking it. Employers get their own three items.
+ * refuse the person clicking it. Employers get their own short list.
  *
  * One definition still means a link and the page behind it are added together
  * or not at all; that is why this file exists.
@@ -61,6 +61,8 @@ const EMPLOYER_NAV: Group[] = [
   {
     label: 'Hiring',
     items: [
+      { href: '/admin/vacancies', label: 'Vacancies' },
+      { href: '/admin/applicants', label: 'Applicants' },
       { href: '/admin', label: 'Search talent' },
       { href: '/admin/shortlists', label: 'Shortlists' },
       { href: '/admin/placements', label: 'Placements' },
@@ -191,17 +193,7 @@ export function AdminEmpty({ children }: { children: React.ReactNode }) {
   );
 }
 
-/** A small rounded label, used for statuses across the console. */
-export function Pill({ children, tone = 'neutral' }: { children: React.ReactNode; tone?: 'neutral' | 'accent' | 'success' | 'muted' | 'dark' }) {
-  const tones = {
-    neutral: 'bg-surface border border-line text-ink-2',
-    accent: 'bg-accent-tint text-accent-deep',
-    success: 'bg-success/15 text-[oklch(0.42_0.12_150)]',
-    muted: 'bg-canvas text-muted',
-    dark: 'bg-ink text-paper',
-  } as const;
-  return <span className={`inline-flex items-center whitespace-nowrap rounded-full px-2.5 py-0.5 text-[12px] font-medium ${tones[tone]}`}>{children}</span>;
-}
+export { Pill } from '@/components/admin/Pill';
 
 /** Primary/secondary link buttons for headings. */
 export function AdminButton({ href, children, variant = 'dark' }: { href: string; children: React.ReactNode; variant?: 'dark' | 'light' }) {

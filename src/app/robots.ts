@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next';
+import { localePath, locales } from '@/lib/i18n/path';
 
 /**
  * Closed to search engines until somebody says otherwise.
@@ -27,7 +28,13 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: '*',
         allow: '/',
         /* Nothing behind a session, and nothing that is only a route. */
-        disallow: ['/api/', '/admin/', '/dev/', '/auth/', '/en/dashboard', '/hi/dashboard', '/ar/dashboard', '/en/classic', '/hi/classic', '/ar/classic'],
+        disallow: [
+          '/api/',
+          '/admin/',
+          '/dev/',
+          '/auth/',
+          ...locales.flatMap((code) => [localePath(code, '/dashboard'), localePath(code, '/classic')]),
+        ],
       },
     ],
     sitemap: `${origin}/sitemap.xml`,

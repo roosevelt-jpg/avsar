@@ -14,6 +14,7 @@
 export const ICONS = [
   'shield', 'check', 'rupee', 'globe', 'home', 'chat', 'briefcase', 'plane',
   'document', 'star', 'clock', 'users', 'phone', 'heart', 'graduation', 'map',
+  'euro',
 ] as const;
 export type IconName = (typeof ICONS)[number];
 

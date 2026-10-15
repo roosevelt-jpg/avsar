@@ -8,3 +8,9 @@ out
 next-env.d.ts
 .vercel
 .env*.local
+
+# Local archives and scan copies of the project; not source.
+/avsar-platform.zip
+/avsar-platform/
+test-results
+playwright-report

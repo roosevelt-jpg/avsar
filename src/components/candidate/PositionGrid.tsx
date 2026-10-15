@@ -7,7 +7,7 @@ import { Mono } from '@/components/ui/Mono';
 import { POSITION_LQIP, positionImage } from '@/lib/data/position-images';
 import { AREAS, POSITIONS, type PositionSlug } from '@/lib/data/positions';
 import type { PositionCopy } from '@/lib/data/position-copy';
-import type { Dictionary, Locale } from '@/lib/i18n';
+import { localePath, type Dictionary, type Locale } from '@/lib/i18n';
 
 /**
  * The positions, each opening a description.
@@ -136,7 +136,7 @@ export function PositionGrid({
 
               <div className="mt-7 flex flex-wrap items-center gap-3">
                 <Link
-                  href={`/${locale}/signup?position=${active.slug}`}
+                  href={localePath(locale, `/signup?position=${active.slug}`)}
                   className="t-colors rounded-[12px] bg-ink px-5 py-3 text-[15px] font-medium text-white no-underline hover:bg-accent"
                 >
                   {t.positionApply}

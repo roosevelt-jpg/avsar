@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { getServerSupabase } from '@/lib/supabase/server';
-import { defaultLocale, type Locale } from '@/lib/i18n';
+import { defaultLocale, type Locale, localePath } from '@/lib/i18n';
 
 /**
  * Session helpers.
@@ -118,7 +118,7 @@ export async function requireCandidate(
   const viewer = await getViewer();
   if (viewer.role !== 'anonymous') redirect(homeFor(viewer, locale));
 
-  redirect(`/${locale}/signin?next=${encodeURIComponent(returnTo)}`);
+  redirect(localePath(locale, `/signin?next=${encodeURIComponent(returnTo)}`));
 }
 
 export type StaffUser = { userId: string; email: string; role: string };
@@ -160,7 +160,7 @@ export async function requireStaff(returnTo: string): Promise<StaffUser> {
   const viewer = await getViewer();
   if (viewer.role !== 'anonymous') redirect(homeFor(viewer, defaultLocale));
 
-  redirect(`/${defaultLocale}/signin?next=${encodeURIComponent(returnTo)}`);
+  redirect(localePath(defaultLocale, `/signin?next=${encodeURIComponent(returnTo)}`));
 }
 
 export type EmployerUser = { userId: string; employerId: string; name: string; role: string };
@@ -287,14 +287,14 @@ export function homeFor(viewer: Viewer, locale: Locale): string {
       /* Profile, then assessment, then pay. The dashboard is where an unpaid
          candidate who has finished is sent, because that is where the fee is
          asked for and where the locked report sits. */
-      if (!viewer.candidate.profileComplete) return `/${locale}/signup?resume=profile`;
-      return `/${locale}/dashboard`;
+      if (!viewer.candidate.profileComplete) return localePath(locale, '/signup?resume=profile');
+      return localePath(locale, '/dashboard');
     case 'registered':
       /* Signed in with nothing attached. The application is the only thing
          they can usefully do, and it will find their account. */
-      return `/${locale}/signup`;
+      return localePath(locale, '/signup');
     default:
-      return `/${locale}`;
+      return localePath(locale, '/');
   }
 }
 
@@ -314,5 +314,5 @@ export async function requireStaffOrEmployer(
      would tell them to authenticate when they already have. */
   if (viewer.role === 'candidate') redirect(homeFor(viewer, defaultLocale));
 
-  redirect(`/${defaultLocale}/signin?next=${encodeURIComponent(returnTo)}`);
+  redirect(localePath(defaultLocale, `/signin?next=${encodeURIComponent(returnTo)}`));
 }

@@ -109,7 +109,7 @@ export const HOME: DefaultPage = {
           { icon: 'chat', title: 'A real person on WhatsApp', body: 'Questions answered by our team on {{whatsapp}}, in English or Hindi.' },
           { icon: 'clock', title: 'Track every step', body: 'Your dashboard shows each application, what stage it is at and what happens next.' },
           { icon: 'rupee', title: 'Pay the Indian way', body: 'UPI, RuPay and Indian net banking accepted for the assessment fee. A receipt every time.' },
-          { icon: 'globe', title: 'In your language', body: 'The site works in English and Hindi. Your recruiter speaks both.' },
+          { icon: 'globe', title: 'In your language', body: 'The site works in English, Hindi, Malayalam, Tamil, Urdu and the other major languages of India. Switch language from the menu at the top.' },
           { icon: 'check', title: 'Honest odds', body: 'About {{hire_rate}} in 100 applicants are hired. We publish the numbers so you can decide with open eyes.' },
         ],
       },

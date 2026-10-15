@@ -12,7 +12,7 @@ A recruitment platform that places candidates from **India** with employers in
 |---|---|---|
 | Candidates | `/[locale]/...` (en, hi, ar) | Browse jobs, apply in one step, track applications, take the assessment, pay by UPI |
 | Staff | `/admin/...` | Jobs, applications, candidates, CMS, media, settings, payments, staff and roles (RBAC) |
-| Employers | `/admin` (limited) | Search the talent pool, shortlists, placements |
+| Employers | `/admin` (limited) | Request vacancies, see shortlisted applicants, search the talent pool, shortlists, placements |
 
 ## Stack
 
@@ -48,6 +48,8 @@ src/app/[locale]/classic/page.tsx      The old hand-built landing, kept for refe
 src/app/admin/...                      Console. Every page starts with requirePermission()
 src/app/api/applications/...           Candidate apply / withdraw
 src/app/api/admin/...                  Console APIs. Every handler starts with apiPermission()
+src/app/admin/vacancies, /applicants   Employer portal pages (requireEmployerPortal, not requirePermission)
+src/app/api/employer/vacancies         Employer vacancy request: a draft linked to the session's employer
 
 src/lib/rbac/                          permissions.ts (names), server.ts (guards), data.ts
 src/lib/cms/                           blocks.ts (registry), sanitize.ts, data.ts, settings.ts,
@@ -55,10 +57,12 @@ src/lib/cms/                           blocks.ts (registry), sanitize.ts, data.t
 src/lib/jobs/                          types, zod schema, data access, sample jobs
 src/lib/applications/                  status vocabulary, data access
 src/lib/console/analytics.ts           dashboard KPIs, series, funnel, breakdowns (one range, one place)
+src/lib/employer/portal.ts             employer portal: guard, vacancy requests, shortlisted applicants
 src/lib/payments/                      rail adapters (EximPe, Cashfree, Razorpay, Stripe, Viva, Dodo)
 src/components/cms/                    BlockRenderer + one component per block type
 src/components/admin/                  console client components (editors, forms, pickers)
-supabase/migrations/                   schema, in order. 0014 = RBAC, jobs, applications, CMS; 0015 = realtime
+supabase/migrations/                   schema, in order. 0014 = RBAC, jobs, applications, CMS; 0015 = realtime;
+                                       0016 = growth; 0017 = employer portal
 supabase/seed/                         optional: sample job drafts, first super admin
 ```
 
@@ -114,3 +118,13 @@ and the form in `src/components/admin/SettingsForm.tsx`.
 Comments explain *why*, in full sentences, above the thing they explain (see any
 existing file). Copy is plain, honest and specific: salary, city, what is
 included, what it costs. No hype, no invented testimonials, no guaranteed jobs.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

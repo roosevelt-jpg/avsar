@@ -33,10 +33,10 @@ export default async function EmployerLanding() {
           <Link href="/employers#how" className="no-underline hover:text-employer t-colors">
             How it works
           </Link>
-          <Link href="/en/pricing" className="no-underline hover:text-employer t-colors">
+          <Link href="/pricing" className="no-underline hover:text-employer t-colors">
             Pricing
           </Link>
-          <Link href="/en" className="no-underline hover:text-employer t-colors">
+          <Link href="/" className="no-underline hover:text-employer t-colors">
             For candidates
           </Link>
         </nav>

@@ -1,3 +1,4 @@
+import { localePath } from '@/lib/i18n';
 import { getMailer } from './index';
 import { renderEmail } from './template';
 import { STATUS_META, type ApplicationStatus } from '@/lib/applications/status';
@@ -22,7 +23,7 @@ export async function sendApplicationUpdate(input: {
   try {
     const meta = STATUS_META[input.status];
     const first = input.name.split(' ')[0] || input.name;
-    const url = `${input.origin}/${input.locale}/dashboard/applications`;
+    const url = `${input.origin}${localePath(input.locale, '/dashboard/applications')}`;
     const paragraphs = [`Hello ${first},`, `${input.jobTitle} (${input.reference}): ${meta.candidateBody}`];
     if (input.note) paragraphs.push(`Message from your recruiter: ${input.note}`);
 

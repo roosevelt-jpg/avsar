@@ -1,10 +1,11 @@
 import Link from 'next/link';
 import { Wordmark } from '@/components/ui/Wordmark';
 import { LocaleToggle } from './LocaleToggle';
-import { type Locale } from '@/lib/i18n';
+import type { Locale } from '@/lib/i18n';
+import { localePath } from '@/lib/i18n/path';
 import { AccountMenu } from '@/components/auth/AccountMenu';
 import { getSiteSettings } from '@/lib/cms/data';
-import { localHref, navLabel } from '@/lib/cms/settings';
+import { ctaLabel, localHref, navLabel } from '@/lib/cms/settings';
 
 /**
  * The header on every candidate page.
@@ -36,7 +37,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
 
       <header className="sticky top-0 z-40 border-b border-line bg-paper/85 px-[clamp(20px,4cqi,56px)] py-[14px] backdrop-blur-md">
         <div className="mx-auto flex w-full max-w-[1200px] items-center justify-between gap-4">
-          <Wordmark href={`/${locale}`} size={26} />
+          <Wordmark href={localePath(locale, '/')} size={26} />
 
           <nav aria-label="Main" className="hidden items-center gap-[clamp(14px,2cqi,26px)] text-[15px] text-ink-2 lg:flex">
             {navigation.items.map((item) => (
@@ -54,16 +55,14 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
             >
               {general.supportPhone}
             </a>
-            <div className="hidden sm:block">
-              <LocaleToggle locale={locale} />
-            </div>
+            <LocaleToggle locale={locale} />
             <AccountMenu locale={locale} />
             {navigation.headerCta.label && navigation.headerCta.href ? (
               <Link
                 href={localHref(locale, navigation.headerCta.href)}
                 className="t-colors hidden rounded-full bg-accent px-4 py-2 text-[14px] font-medium text-white no-underline hover:bg-accent-deep md:inline-flex"
               >
-                {navigation.headerCta.label}
+                {ctaLabel(navigation.headerCta, locale)}
               </Link>
             ) : null}
 
@@ -91,8 +90,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
                     </Link>
                   ))}
                 </nav>
-                <div className="mt-2 flex items-center justify-between gap-3 border-t border-line px-3 pt-3">
-                  <LocaleToggle locale={locale} />
+                <div className="mt-2 flex items-center justify-end gap-3 border-t border-line px-3 pt-3">
                   <a href={`tel:${general.supportPhone.replace(/\s/g, '')}`} dir="ltr" className="font-mono text-[13px] text-ink-2 no-underline">
                     {general.supportPhone}
                   </a>
@@ -102,7 +100,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
                     href={localHref(locale, navigation.headerCta.href)}
                     className="mt-3 flex justify-center rounded-full bg-accent px-4 py-3 text-[15px] font-medium text-white no-underline"
                   >
-                    {navigation.headerCta.label}
+                    {ctaLabel(navigation.headerCta, locale)}
                   </Link>
                 ) : null}
               </div>

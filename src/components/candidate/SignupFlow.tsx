@@ -4,12 +4,13 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
 import { Mono } from '@/components/ui/Mono';
+import { Turnstile, TURNSTILE_HEADER } from '@/components/security/Turnstile';
 import { ENTITY, PLACEMENT_FEE, PLACEMENT_FEE_UNDISCLOSED } from '@/lib/data/brand';
 import { DIAL_CODES, DEFAULT_COUNTRY } from '@/lib/data/dial-codes';
 import { phoneFields } from '@/lib/validation';
 import { AREAS, POSITIONS, positionsInArea, type PositionSlug } from '@/lib/data/positions';
 import { formatPrice, activePrice } from '@/lib/data/cohort';
-import { fill, type Dictionary, type Locale } from '@/lib/i18n';
+import { fill, type Dictionary, type Locale, localePath } from '@/lib/i18n';
 
 type Errors = Partial<
   Record<'fullName' | 'mobile' | 'email' | 'password' | 'cityState' | 'consent' | 'form', string>
@@ -45,6 +46,8 @@ export function SignupFlow({
   /* Set once the account exists, so Continue cannot open a second one if the
      candidate steps back to the first screen and forward again. */
   const [registered, setRegistered] = useState(false);
+  const [challenge, setChallenge] = useState<string | null>(null);
+  const [challengeKey, setChallengeKey] = useState(0);
 
   const [position, setPosition] = useState<PositionSlug>(initialPosition);
   const [years, setYears] = useState(0);
@@ -102,7 +105,7 @@ export function SignupFlow({
       if (!response.ok) throw new Error(`signup ${response.status}`);
 
       router.refresh();
-      router.push(`/${locale}/assessment`);
+      router.push(localePath(locale, '/assessment'));
     } catch (error) {
       console.error(error);
       setErrors({ form: s.payFailed });
@@ -123,7 +126,11 @@ export function SignupFlow({
     try {
       const response = await fetch('/api/auth/register', {
         method: 'POST',
-        headers: { 'content-type': 'application/json', 'x-avsar-locale': locale },
+        headers: {
+          'content-type': 'application/json',
+          'x-avsar-locale': locale,
+          ...(challenge ? { [TURNSTILE_HEADER]: challenge } : {}),
+        },
         body: JSON.stringify({
           fullName: fullName.trim(),
           country,
@@ -135,6 +142,12 @@ export function SignupFlow({
       });
 
       const data = (await response.json().catch(() => null)) as { status?: string } | null;
+
+      /* Turnstile tokens are single use, so any refusal needs a fresh check. */
+      if (data?.status !== 'created') {
+        setChallenge(null);
+        setChallengeKey((k) => k + 1);
+      }
 
       /* Supabase will not tell the browser that an address is taken, so the
          server answers instead. Without this the candidate would be shown
@@ -185,7 +198,7 @@ export function SignupFlow({
 
   function back() {
     if (step === 0) {
-      router.push(`/${locale}`);
+      router.push(localePath(locale, '/'));
       return;
     }
     setStep(step - 1);
@@ -208,7 +221,7 @@ export function SignupFlow({
           {fill(s.successBody, { receipt })}
         </p>
         <Link
-          href={`/${locale}/assessment`}
+          href={localePath(locale, '/assessment')}
           className="t-colors inline-block rounded-[12px] bg-ink px-5 py-3 text-[15px] font-medium text-white no-underline hover:bg-accent"
         >
           {s.successCta} →
@@ -335,6 +348,8 @@ export function SignupFlow({
               ))}
             </div>
           </fieldset>
+
+          {!registered && <Turnstile key={challengeKey} onToken={setChallenge} />}
         </div>
       )}
 
@@ -473,15 +488,15 @@ export function SignupFlow({
               {/* The box is a record of what somebody agreed to, so it cannot
                   name an amount the site is not showing them. */}
               {PLACEMENT_FEE_UNDISCLOSED ? s.consentNoPlacement : s.consent}{' '}
-              <Link href={`/${locale}/selection-rules`} className="prose-link">
+              <Link href={localePath(locale, '/selection-rules')} className="prose-link">
                 {s.consentRules}
               </Link>{' '}
               &amp;{' '}
-              <Link href={`/${locale}/refund-policy`} className="prose-link">
+              <Link href={localePath(locale, '/refund-policy')} className="prose-link">
                 {s.consentRefund}
               </Link>{' '}
               &amp;{' '}
-              <Link href={`/${locale}/terms`} className="prose-link">
+              <Link href={localePath(locale, '/terms')} className="prose-link">
                 {t.footerTerms}
               </Link>
               .

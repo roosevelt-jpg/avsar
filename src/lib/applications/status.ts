@@ -109,6 +109,24 @@ export function pipelineIndex(status: ApplicationStatus): number {
   return PIPELINE.indexOf(status);
 }
 
+/**
+ * The stages at which the employer sees an application in their portal. Keep
+ * in step with `employer_applicants()` in migration 0017.
+ */
+export const EMPLOYER_VISIBLE_STATUSES: readonly ApplicationStatus[] = [
+  'shortlisted',
+  'interview',
+  'offer',
+  'hired',
+  'visa_processing',
+  'relocated',
+];
+
+/** True for the move that first puts an application in front of the employer. */
+export function becomesVisibleToEmployer(from: ApplicationStatus, to: ApplicationStatus): boolean {
+  return !EMPLOYER_VISIBLE_STATUSES.includes(from) && EMPLOYER_VISIBLE_STATUSES.includes(to);
+}
+
 export function canWithdraw(status: ApplicationStatus): boolean {
   return !['hired', 'visa_processing', 'relocated', 'rejected', 'withdrawn'].includes(status);
 }

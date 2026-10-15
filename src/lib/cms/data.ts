@@ -5,6 +5,8 @@ import { isSupabaseConfigured } from '@/lib/supabase/config';
 import type { Block } from './blocks';
 import { DEFAULT_PAGES, defaultPage } from './defaults';
 import { sanitizeBlocks, sanitizeSeo, type PageSeo } from './sanitize';
+import { isLocale, locales, type Locale } from '@/lib/i18n/path';
+import { localizePage } from './localize';
 import { mergeSettings, type SiteSettings, DEFAULT_SETTINGS } from './settings';
 
 /**
@@ -12,11 +14,12 @@ import { mergeSettings, type SiteSettings, DEFAULT_SETTINGS } from './settings';
  *
  * Resolution order for a public page, most specific first:
  *   1. the published copy in the visitor's locale
- *   2. the published English copy
- *   3. the default content in code
+ *   2. the translation of the default content that ships in code
+ *   3. the published English copy
+ *   4. the English default
  *
- * So a page is never empty, a Hindi visitor never sees a blank page because
- * nobody has translated it yet, and "Reset to default" is simply deleting rows.
+ * A page is never empty. Resetting a language deletes its stored row and the
+ * site falls back to the translation that ships with that language.
  */
 
 export type ResolvedPage = {
@@ -31,12 +34,13 @@ export type ResolvedPage = {
 function fromDefault(slug: string, locale: string): ResolvedPage | null {
   const page = defaultPage(slug);
   if (!page) return null;
+  const localized = isLocale(locale) ? localizePage(page, locale) : page;
   return {
     slug,
     locale,
-    title: page.title,
-    blocks: page.blocks,
-    seo: { title: page.seo.title, description: page.seo.description, ogImage: '', noindex: false },
+    title: localized.title,
+    blocks: localized.blocks,
+    seo: { title: localized.seo.title, description: localized.seo.description, ogImage: '', noindex: false },
     source: 'default',
   };
 }
@@ -54,7 +58,11 @@ export const getPublishedPage = cache(async (slug: string, locale: string): Prom
   if (error) console.error('[cms] published read failed', slug, error);
 
   const rows = (data ?? []) as { slug: string; locale: string; title: string; blocks: unknown; seo: unknown }[];
-  const row = rows.find((r) => r.locale === locale) ?? rows.find((r) => r.locale === 'en');
+  const own = rows.find((r) => r.locale === locale);
+  /* No published copy in this language: use the translation that ships in
+     code, rather than a later English edit the visitor cannot read. */
+  if (!own && locale !== 'en') return fromDefault(slug, locale);
+  const row = own ?? rows.find((r) => r.locale === 'en');
   if (!row) return fromDefault(slug, locale);
 
   const fallback = defaultPage(slug);
@@ -89,12 +97,9 @@ export async function getDraftPage(slug: string, locale: string): Promise<(Resol
     .maybeSingle()) ?? { data: null };
 
   if (!data) {
-    /* Not stored in this locale yet. Start the editor from the English copy if
-       there is one, otherwise from the defaults. */
-    if (locale !== 'en') {
-      const en = await getDraftPage(slug, 'en');
-      if (en) return { ...en, locale, stored: false, publishedAt: null, updatedAt: null, hasUnpublishedChanges: false };
-    }
+    /* Not stored yet. Open the editor on the translation that already ships,
+       so a Malayalam editor is correcting Malayalam rather than starting from
+       a blank English page. */
     return fallback ? { ...fallback, stored: false, publishedAt: null, updatedAt: null, hasUnpublishedChanges: false } : null;
   }
 
@@ -118,7 +123,7 @@ export type PageListEntry = {
   path: string;
   title: string;
   purpose: string;
-  locales: { locale: string; stored: boolean; publishedAt: string | null; updatedAt: string | null; dirty: boolean }[];
+  locales: { locale: Locale; stored: boolean; publishedAt: string | null; updatedAt: string | null; dirty: boolean }[];
 };
 
 /** Every page the CMS knows about, with what is stored for each locale. */
@@ -150,7 +155,7 @@ export async function listPagesForConsole(): Promise<PageListEntry[]> {
       path: page.path,
       title: page.title,
       purpose: page.purpose,
-      locales: ['en', 'hi', 'ar'].map((locale) => {
+      locales: locales.map((locale) => {
         const row = rows.find((r) => r.locale === locale);
         return row
           ? { locale, stored: true, publishedAt: row.publishedAt, updatedAt: row.updatedAt, dirty: row.dirty }

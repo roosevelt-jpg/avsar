@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { localePath } from '@/lib/i18n/path';
 import { getServerSupabase } from '@/lib/supabase/server';
 
 export const runtime = 'nodejs';
@@ -12,5 +13,5 @@ export async function POST(request: Request) {
   if (supabase) await supabase.auth.signOut();
 
   const origin = new URL(request.url).origin;
-  return NextResponse.redirect(`${origin}/en`, { status: 303 });
+  return NextResponse.redirect(`${origin}${localePath('en', '/')}`, { status: 303 });
 }

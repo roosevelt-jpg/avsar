@@ -2,6 +2,9 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { AdminHeading, AdminShell, Pill } from '@/components/employer/AdminShell';
 import { ApplicationActions } from '@/components/admin/ApplicationActions';
+import { InterviewForm } from '@/components/admin/InterviewForm';
+import { isPast } from '@/lib/clock';
+import { INTERVIEW_MODE_LABELS, interviewTimes } from '@/lib/interviews/time';
 import { Mono } from '@/components/ui/Mono';
 import { getApplicationForConsole } from '@/lib/applications/data';
 import { STATUS_META } from '@/lib/applications/status';
@@ -44,6 +47,17 @@ export default async function ApplicationDetail({ params }: { params: Promise<{ 
                 ['Passport', app.candidateExtra.hasPassport ? 'Yes' : 'Not yet'],
                 ['Assessment', app.candidate.paymentStatus === 'paid' ? 'Completed and paid' : 'Not completed'],
                 ['Visible to employers', app.candidateExtra.visible ? 'Yes' : 'No (hidden by candidate)'],
+                ['WhatsApp updates', app.candidateExtra.whatsappOptIn ? 'Opted in' : 'Not opted in'],
+                [
+                  'CV',
+                  app.cvDocumentId && can(access, 'candidates.view') ? (
+                    <a key="cv" href={`/api/admin/applications/${app.id}/cv`} className="prose-link">Download the CV</a>
+                  ) : app.cvDocumentId ? (
+                    'Attached (your role cannot download it)'
+                  ) : (
+                    'None attached'
+                  ),
+                ],
               ].map(([label, value]) => (
                 <div key={String(label)}>
                   <dt><Mono className="text-muted">{String(label).toUpperCase()}</Mono></dt>
@@ -76,6 +90,36 @@ export default async function ApplicationDetail({ params }: { params: Promise<{ 
             </section>
           )}
 
+          {app.interviews.length > 0 && (
+            <section className="rounded-[16px] border border-line bg-surface p-5">
+              <h2 className="m-0 text-[16px] font-semibold">Interviews</h2>
+              <ul className="m-0 mt-4 flex list-none flex-col gap-3 p-0">
+                {app.interviews.map((interview) => {
+                  const times = interviewTimes(interview.startsAt);
+                  const past = isPast(interview.startsAt);
+                  return (
+                    <li key={interview.id} className="rounded-[12px] bg-paper px-4 py-3 text-[14px]">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <span className="font-medium">{times.india}</span>
+                        <Pill tone={interview.status === 'cancelled' ? 'muted' : past ? 'neutral' : 'accent'}>
+                          {interview.status === 'cancelled' ? 'cancelled' : past ? 'past' : 'upcoming'}
+                        </Pill>
+                      </div>
+                      <p className="m-0 mt-0.5 text-ink-2">
+                        {times.lisbon} · {INTERVIEW_MODE_LABELS[interview.mode]} · {interview.durationMinutes} min
+                      </p>
+                      {interview.link && (
+                        <a href={interview.link} target="_blank" rel="noreferrer" className="prose-link mt-1 inline-block break-all">{interview.link}</a>
+                      )}
+                      {interview.location && <p className="m-0 mt-1 text-ink-2">{interview.location}</p>}
+                      {interview.candidateMessage && <p className="m-0 mt-1 text-ink-2">“{interview.candidateMessage}”</p>}
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          )}
+
           <section className="rounded-[16px] border border-line bg-surface p-5">
             <h2 className="m-0 text-[16px] font-semibold">History</h2>
             <ol className="m-0 mt-4 flex list-none flex-col gap-3 p-0">
@@ -99,7 +143,10 @@ export default async function ApplicationDetail({ params }: { params: Promise<{ 
 
         <aside className="xl:sticky xl:top-20 xl:self-start">
           {can(access, 'applications.manage') ? (
-            <ApplicationActions id={app.id} status={app.status} rating={app.rating} />
+            <div className="flex flex-col gap-4">
+              <ApplicationActions id={app.id} status={app.status} rating={app.rating} />
+              <InterviewForm applicationId={app.id} />
+            </div>
           ) : (
             <p className="rounded-[16px] border border-line bg-surface p-4 text-[14px] text-ink-2">Your role can view applications but not move them.</p>
           )}

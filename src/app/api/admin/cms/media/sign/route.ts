@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { apiPermission, demoWriteRefusal } from '@/lib/rbac/server';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { MEDIA_BUCKET, MEDIA_TYPES, safeFileName } from '@/lib/cms/media';
+import { rateLimit, rateLimitedResponse, RATE_LIMITS } from '@/lib/security/rate-limit';
 
 export const runtime = 'nodejs';
 
@@ -22,6 +23,9 @@ export async function POST(request: Request) {
   if (guard instanceof NextResponse) return guard;
   const refusal = demoWriteRefusal(guard);
   if (refusal) return refusal;
+
+  const limited = await rateLimit(RATE_LIMITS.mediaSign, guard.userId);
+  if (!limited.ok) return rateLimitedResponse(limited);
 
   const parsed = schema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: 'invalid_payload' }, { status: 400 });

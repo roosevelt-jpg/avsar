@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { POSITIONS } from '@/lib/data/positions';
-import type { Dictionary, Locale } from '@/lib/i18n';
+import { localePath, type Dictionary, type Locale } from '@/lib/i18n';
 
 /** Direction B's white selector card. Same behaviour as A, different skin. */
 export function SectorSelectorB({ locale, t }: { locale: Locale; t: Dictionary }) {
@@ -55,7 +55,7 @@ export function SectorSelectorB({ locale, t }: { locale: Locale; t: Dictionary }
         onClick={() =>
           startTransition(() =>
             router.push(
-              `/${locale}/signup?position=${POSITIONS[selected]?.slug ?? POSITIONS[0].slug}`,
+              localePath(locale, `/signup?position=${POSITIONS[selected]?.slug ?? POSITIONS[0].slug}`),
             ),
           )
         }

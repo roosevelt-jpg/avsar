@@ -4,7 +4,7 @@ import { AccountMenu } from '@/components/auth/AccountMenu';
 import { CvUpload } from '@/components/candidate/CvUpload';
 import { VoiceIntro } from '@/components/candidate/VoiceIntro';
 import { ProfileForm } from '@/components/candidate/ProfileForm';
-import { getDictionary, isLocale } from '@/lib/i18n';
+import { getDictionary, isLocale, localePath } from '@/lib/i18n';
 import { requireCandidate } from '@/lib/auth';
 import { getServerSupabase } from '@/lib/supabase/server';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
@@ -35,7 +35,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
     return (
       <>
         <header className="flex flex-wrap items-center justify-between gap-4 border-b border-line px-[clamp(20px,4cqi,56px)] py-[18px]">
-          <Wordmark href={`/${locale}`} />
+          <Wordmark href={localePath(locale, '/')} />
         </header>
         <main className="px-[clamp(20px,4cqi,56px)] py-[clamp(36px,6cqi,72px)]">
           <ProfileForm t={t} initial={EMPTY} />
@@ -44,7 +44,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
     );
   }
 
-  const candidate = await requireCandidate(locale, `/${locale}/profile`);
+  const candidate = await requireCandidate(locale, localePath(locale, '/profile'));
   const supabase = await getServerSupabase();
   const status = await getCandidateStatus(candidate.id, candidate.paymentStatus);
 
@@ -98,7 +98,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
   return (
     <>
       <header className="flex flex-wrap items-center justify-between gap-4 border-b border-line px-[clamp(20px,4cqi,56px)] py-[18px]">
-        <Wordmark href={`/${locale}`} />
+        <Wordmark href={localePath(locale, '/')} />
         <AccountMenu locale={locale} />
       </header>
 

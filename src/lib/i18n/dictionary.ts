@@ -6,25 +6,85 @@
  * for Hindi to be extended beyond the landing page, so sign-up, assessment,
  * dashboard and FAQ copy is translated here.
  *
- * English and Hindi live in this file; Arabic is large enough to live in its
- * own. Adding a language means a key in `locales`, a label, a direction, and a
- * complete block: the `Dictionary` type refuses a partial one, which is
- * deliberate, because a half-translated page is worse than a late one.
+ * English and Hindi live in this file. Arabic and the other Indian languages
+ * each live in their own file. Adding a language means a key in `locales`, a
+ * label, a direction, and a complete block: the `Dictionary` type refuses a
+ * partial one, which is deliberate, because a half-translated page is worse
+ * than a late one.
+ *
+ * These translations need a native read before they are treated as final.
  */
 
 import { PLACEMENT_FEE_UNDISCLOSED } from '@/lib/data/brand';
 import { ar } from './ar';
+import { as } from './langs/as';
+import { bn } from './langs/bn';
+import { gu } from './langs/gu';
+import { kn } from './langs/kn';
+import { ml } from './langs/ml';
+import { mr } from './langs/mr';
+import { or } from './langs/or';
+import { pa } from './langs/pa';
+import { ta } from './langs/ta';
+import { te } from './langs/te';
+import { ur } from './langs/ur';
+import { defaultLocale, isLocale, locales, type Locale } from './path';
 
-export const locales = ['en', 'hi', 'ar'] as const;
-export type Locale = (typeof locales)[number];
-export const defaultLocale: Locale = 'en';
+export { defaultLocale, isLocale, locales, type Locale };
 
-export function isLocale(value: string): value is Locale {
-  return (locales as readonly string[]).includes(value);
-}
+/** Short label on the closed language control. Each in its own script. */
+export const localeLabels: Record<Locale, string> = {
+  en: 'EN',
+  hi: 'हिं',
+  bn: 'বাং',
+  mr: 'मरा',
+  te: 'తె',
+  ta: 'த',
+  ur: 'اردو',
+  gu: 'ગુ',
+  kn: 'ಕ',
+  or: 'ଓ',
+  ml: 'മ',
+  pa: 'ਪੰ',
+  as: 'অ',
+  ar: 'ع',
+};
 
-/** Label shown in the language pill. Each in its own script. */
-export const localeLabels: Record<Locale, string> = { en: 'EN', hi: 'हिं', ar: 'ع' };
+/** Full name in the language menu, written in that language. */
+export const localeNames: Record<Locale, string> = {
+  en: 'English',
+  hi: 'हिन्दी',
+  bn: 'বাংলা',
+  mr: 'मराठी',
+  te: 'తెలుగు',
+  ta: 'தமிழ்',
+  ur: 'اردو',
+  gu: 'ગુજરાતી',
+  kn: 'ಕನ್ನಡ',
+  or: 'ଓଡ଼ିଆ',
+  ml: 'മലയാളം',
+  pa: 'ਪੰਜਾਬੀ',
+  as: 'অসমীয়া',
+  ar: 'العربية',
+};
+
+/** English names for the console, where staff may not read every script. */
+export const localeEnglishNames: Record<Locale, string> = {
+  en: 'English',
+  hi: 'Hindi',
+  bn: 'Bengali',
+  mr: 'Marathi',
+  te: 'Telugu',
+  ta: 'Tamil',
+  ur: 'Urdu',
+  gu: 'Gujarati',
+  kn: 'Kannada',
+  or: 'Odia',
+  ml: 'Malayalam',
+  pa: 'Punjabi',
+  as: 'Assamese',
+  ar: 'Arabic',
+};
 
 /**
  * Writing direction.
@@ -34,7 +94,22 @@ export const localeLabels: Record<Locale, string> = { en: 'EN', hi: 'हिं',
  * inside flips: text alignment, list markers, the order of flex and grid
  * children, and scrollbars.
  */
-export const localeDirection: Record<Locale, 'ltr' | 'rtl'> = { en: 'ltr', hi: 'ltr', ar: 'rtl' };
+export const localeDirection: Record<Locale, 'ltr' | 'rtl'> = {
+  en: 'ltr',
+  hi: 'ltr',
+  bn: 'ltr',
+  mr: 'ltr',
+  te: 'ltr',
+  ta: 'ltr',
+  ur: 'rtl',
+  gu: 'ltr',
+  kn: 'ltr',
+  or: 'ltr',
+  ml: 'ltr',
+  pa: 'ltr',
+  as: 'ltr',
+  ar: 'rtl',
+};
 
 type Pair = readonly [title: string, body: string];
 
@@ -1265,7 +1340,7 @@ const hi: Dictionary = {
   },
 };
 
-export const dictionaries: Record<Locale, Dictionary> = { en, hi, ar };
+export const dictionaries: Record<Locale, Dictionary> = { en, hi, bn, mr, te, ta, ur, gu, kn, or, ml, pa, as, ar };
 
 /**
  * Blanked while the placement fee is withheld, so the wording is not merely

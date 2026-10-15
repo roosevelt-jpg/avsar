@@ -9,7 +9,7 @@ import { STATUS_META } from '@/lib/applications/status';
 import { requireCandidate } from '@/lib/auth';
 import { recommendedJobs } from '@/lib/jobs/data';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
-import { isLocale } from '@/lib/i18n';
+import { isLocale, localePath } from '@/lib/i18n';
 
 export const metadata = { title: 'My applications', robots: { index: false } };
 
@@ -20,7 +20,7 @@ export default async function ApplicationsPage({ params }: { params: Promise<{ l
   let candidateId: string | null = null;
   let position: string | null = null;
   if (isSupabaseConfigured()) {
-    const candidate = await requireCandidate(locale, `/${locale}/dashboard/applications`);
+    const candidate = await requireCandidate(locale, localePath(locale, '/dashboard/applications'));
     candidateId = candidate.id;
     position = candidate.position;
   }
@@ -42,7 +42,7 @@ export default async function ApplicationsPage({ params }: { params: Promise<{ l
                 {active.length ? `${active.length} in progress` : 'Nothing in progress yet'}
               </h1>
             </div>
-            <Link href={`/${locale}/jobs`} className="t-colors rounded-full bg-accent px-5 py-3 text-[15px] font-medium text-white no-underline hover:bg-accent-deep">
+            <Link href={localePath(locale, '/jobs')} className="t-colors rounded-full bg-accent px-5 py-3 text-[15px] font-medium text-white no-underline hover:bg-accent-deep">
               Find more jobs
             </Link>
           </div>
@@ -57,7 +57,7 @@ export default async function ApplicationsPage({ params }: { params: Promise<{ l
             <div className="mt-8 rounded-[24px] border border-dashed border-line-strong bg-surface px-6 py-14 text-center">
               <p className="m-0 text-[19px] font-semibold">You have not applied to any jobs yet.</p>
               <p className="m-0 mt-2 text-[15px] text-ink-2">Applying is free and takes a minute. Every application you send appears here with its progress.</p>
-              <Link href={`/${locale}/jobs`} className="mt-6 inline-flex rounded-full bg-ink px-5 py-3 text-[15px] text-paper no-underline">Browse open jobs</Link>
+              <Link href={localePath(locale, '/jobs')} className="mt-6 inline-flex rounded-full bg-ink px-5 py-3 text-[15px] text-paper no-underline">Browse open jobs</Link>
             </div>
           ) : (
             <div className="mt-8 flex flex-col gap-4">

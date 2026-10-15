@@ -1,7 +1,7 @@
 import { notFound, redirect } from 'next/navigation';
 import { Wordmark } from '@/components/ui/Wordmark';
 import { SignInForm } from '@/components/auth/SignInForm';
-import { getDictionary, isLocale } from '@/lib/i18n';
+import { getDictionary, isLocale, localePath } from '@/lib/i18n';
 import { getViewer, resolveDestination } from '@/lib/auth';
 
 export const metadata = { title: 'Sign in' };
@@ -25,7 +25,7 @@ export default async function SignInPage({
   return (
     <>
       <header className="flex items-center justify-between gap-4 border-b border-line px-[clamp(20px,4cqi,56px)] py-[18px]">
-        <Wordmark href={`/${locale}`} />
+        <Wordmark href={localePath(locale, '/')} />
       </header>
       <main className="px-[clamp(20px,4cqi,56px)] py-[clamp(48px,8cqi,96px)]">
         <SignInForm locale={locale} t={t} next={next} />

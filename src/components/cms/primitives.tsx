@@ -49,7 +49,10 @@ export function SectionHeading({
 }) {
   if (!eyebrow && !title && !intro) return null;
   return (
-    <div className={`mb-[clamp(28px,4cqi,48px)] ${align === 'center' ? 'mx-auto text-center' : ''} max-w-[760px]`}>
+    /* min-w-0 and break-words: in a flex or grid row the heading would
+       otherwise be as wide as its longest word, and some Tamil and Malayalam
+       words are wider than a phone. */
+    <div className={`mb-[clamp(28px,4cqi,48px)] min-w-0 break-words ${align === 'center' ? 'mx-auto text-center' : ''} max-w-[760px]`}>
       {eyebrow ? (
         <p className={`m-0 mb-3 font-mono text-[12px] uppercase tracking-[0.14em] ${dark ? 'text-accent-on-dark' : 'text-accent'}`}>
           {eyebrow}
@@ -188,6 +191,7 @@ const PATHS: Record<IconName, ReactNode> = {
   heart: <path d="M12 20s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.5-7 10-7 10z" />,
   graduation: <path d="M2 9l10-5 10 5-10 5-10-5z M6 11v5c0 1.5 3 3 6 3s6-1.5 6-3v-5" />,
   map: <path d="M12 21s-6-6-6-11a6 6 0 0112 0c0 5-6 11-6 11z M12 12a2 2 0 100-4 2 2 0 000 4z" />,
+  euro: <path d="M17.5 6.5A6.5 6.5 0 007 12a6.5 6.5 0 0010.5 5.5 M4.5 10.5h9 M4.5 13.5h9" />,
 };
 
 export function Icon({ name, className = 'size-6' }: { name: string; className?: string }) {

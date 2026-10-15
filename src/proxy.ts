@@ -1,4 +1,5 @@
-import type { NextRequest } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
+import { englishRedirectPath, englishRewritePath } from '@/lib/i18n/path';
 import { updateSession } from '@/lib/supabase/middleware';
 
 /**
@@ -13,6 +14,24 @@ import { updateSession } from '@/lib/supabase/middleware';
  * signed-in candidate mid-assessment.
  */
 export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  /* Old English links (/en, /en/jobs) become the bare URL. Hindi and Arabic stay. */
+  const stripped = englishRedirectPath(pathname);
+  if (stripped) {
+    const url = request.nextUrl.clone();
+    url.pathname = stripped;
+    return NextResponse.redirect(url, 308);
+  }
+
+  /* / and /jobs render the English locale route without changing the address bar. */
+  const internal = englishRewritePath(pathname);
+  if (internal) {
+    const url = request.nextUrl.clone();
+    url.pathname = internal;
+    return updateSession(request, () => NextResponse.rewrite(url, { request }));
+  }
+
   return updateSession(request);
 }
 

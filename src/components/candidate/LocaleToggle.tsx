@@ -1,50 +1,55 @@
 'use client';
 
-import { usePathname, useRouter } from 'next/navigation';
-import { useTransition } from 'react';
-import { locales, localeLabels, type Locale } from '@/lib/i18n';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { localeLabels, localeNames, locales, type Locale } from '@/lib/i18n';
 import { rememberLocale } from '@/lib/i18n/locale-cookie';
+import { barePath, localePath } from '@/lib/i18n/path';
 
 /**
- * EN / हिं pill. Swaps the locale segment in the current path and writes a
- * cookie so the choice survives a later visit to `/`.
+ * Language menu. A pill of buttons cannot hold Malayalam, Tamil, Urdu and the
+ * other major Indian languages, so this is a native disclosure: it works before
+ * JavaScript arrives, and each choice is a real link.
+ *
+ * English has no prefix. Every other language keeps one.
  */
 export function LocaleToggle({ locale }: { locale: Locale }) {
   const pathname = usePathname();
-  const router = useRouter();
-  const [pending, startTransition] = useTransition();
-
-  function switchTo(next: Locale) {
-    if (next === locale) return;
-    rememberLocale(next);
-    const segments = pathname.split('/');
-    segments[1] = next;
-    startTransition(() => router.push(segments.join('/') || `/${next}`));
-  }
+  const bare = barePath(pathname);
 
   return (
-    <div
-      className="flex rounded-full border border-line-strong p-[3px] text-[13px]"
-      role="group"
-      aria-label="Language"
-    >
-      {locales.map((code) => {
-        const active = code === locale;
-        return (
-          <button
-            key={code}
-            type="button"
-            onClick={() => switchTo(code)}
-            aria-current={active ? 'true' : undefined}
-            disabled={pending}
-            className={`t-colors cursor-pointer rounded-full border-0 px-2.5 py-[5px] ${
-              active ? 'bg-ink text-white' : 'bg-transparent text-ink'
-            }`}
-          >
-            {localeLabels[code]}
-          </button>
-        );
-      })}
-    </div>
+    <details className="group relative">
+      <summary
+        aria-label="Language"
+        className="t-colors flex cursor-pointer list-none items-center gap-1 rounded-full border border-line-strong bg-surface px-2.5 py-[5px] text-[13px] text-ink [&::-webkit-details-marker]:hidden"
+      >
+        <span lang={locale}>{localeLabels[locale]}</span>
+        <svg viewBox="0 0 24 24" className="size-3.5 text-muted group-open:rotate-180" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
+          <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </summary>
+      <ul className="absolute end-0 z-50 m-0 mt-2 max-h-[min(70vh,420px)] w-[220px] list-none overflow-auto rounded-[16px] border border-line bg-surface p-1.5 shadow-[0_24px_60px_-24px_rgba(27,26,23,0.45)]">
+        {locales.map((code) => {
+          const active = code === locale;
+          return (
+            <li key={code}>
+              <Link
+                href={localePath(code, bare)}
+                hrefLang={code}
+                lang={code}
+                aria-current={active ? 'true' : undefined}
+                onClick={() => rememberLocale(code)}
+                className={`t-colors flex items-center justify-between gap-3 rounded-[12px] px-3 py-2 text-[15px] no-underline ${
+                  active ? 'bg-ink text-white' : 'text-ink hover:bg-paper'
+                }`}
+              >
+                <span>{localeNames[code]}</span>
+                <span className={`font-mono text-[11px] uppercase ${active ? 'text-white/70' : 'text-muted'}`}>{code}</span>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </details>
   );
 }

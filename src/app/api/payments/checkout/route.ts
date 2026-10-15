@@ -1,3 +1,4 @@
+import { localePath } from '@/lib/i18n';
 import { NextResponse } from 'next/server';
 import { ACTIVE_TIER, COHORT, activePrice, chargeAmountMinor, CHARGE_CURRENCY, RAIL_CURRENCIES } from '@/lib/data/cohort';
 import { BRAND, PLACEMENT_FEE_UNDISCLOSED } from '@/lib/data/brand';
@@ -98,7 +99,7 @@ export async function POST(request: Request) {
         reads whichever it recognises.
       */
       successUrl: `${origin}/api/payments/return?locale=${locale}&paid=${receipt}`,
-      cancelUrl: `${origin}/${locale}/dashboard?status=cancelled`,
+      cancelUrl: `${origin}${localePath(locale, '/dashboard?status=cancelled')}`,
       metadata: {
         cohort: COHORT.id,
         tier: ACTIVE_TIER,

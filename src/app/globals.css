@@ -37,7 +37,7 @@
   --color-success: oklch(0.62 0.14 150);
 
   /* Type. The --font-* variables come from next/font in the root layout. */
-  --font-sans: var(--font-schibsted), var(--font-devanagari), var(--font-arabic), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-schibsted), var(--font-devanagari), var(--font-bengali), var(--font-tamil), var(--font-telugu), var(--font-malayalam), var(--font-kannada), var(--font-gujarati), var(--font-gurmukhi), var(--font-oriya), var(--font-arabic), ui-sans-serif, system-ui, sans-serif;
   /* Arabic in the mono stack too: the small uppercase labels carry Arabic in
      the third locale, and JetBrains Mono has no Arabic glyphs at all. */
   --font-mono: var(--font-jetbrains), var(--font-arabic), ui-monospace, monospace;
@@ -123,6 +123,16 @@ textarea {
   container-type: inline-size;
   background: var(--color-paper);
   min-height: 100vh;
+}
+
+/* Malayalam and Tamil words are long and their glyphs wide: at the 36px
+   minimum the hero heading breaks mid-word on a 360px phone. Below 480px
+   their page headings step down instead. The :lang() selector outranks the
+   utility class, which is the point. */
+@media (max-width: 480px) {
+  :is(:lang(ml), :lang(ta)) h1 {
+    font-size: 28px;
+  }
 }
 
 /* Links follow the prototype: ink with an offset underline, accent on hover. */

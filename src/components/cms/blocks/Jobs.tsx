@@ -5,6 +5,7 @@ import { listFeaturedJobs } from '@/lib/jobs/data';
 import { AREAS, POSITIONS } from '@/lib/data/positions';
 import { POSITION_LQIP, positionImage } from '@/lib/data/position-images';
 import type { Locale } from '@/lib/i18n';
+import { localePath } from '@/lib/i18n/path';
 import { JobCard } from '@/components/jobs/JobCard';
 import { CmsButton, Section, SectionHeading } from '../primitives';
 
@@ -57,7 +58,7 @@ export function JobCategoriesBlock({ data, locale }: Props) {
                 {positions.map((position) => (
                   <li key={position.slug}>
                     <Link
-                      href={`/${locale}/jobs?position=${position.slug}`}
+                      href={localePath(locale, `/jobs?position=${position.slug}`)}
                       className="group relative block aspect-[4/3] overflow-hidden rounded-[18px] bg-canvas no-underline"
                     >
                       <Image

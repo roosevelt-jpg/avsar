@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSupabase } from '@/lib/supabase/server';
 import { getViewer, resolveDestination } from '@/lib/auth';
-import { defaultLocale, isLocale, type Locale } from '@/lib/i18n';
+import { defaultLocale, isLocale, type Locale, localePath } from '@/lib/i18n';
 
 export const runtime = 'nodejs';
 
@@ -30,25 +30,25 @@ export async function GET(request: Request) {
   const locale: Locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
 
   const supabase = await getServerSupabase();
-  if (!supabase) return NextResponse.redirect(`${url.origin}/${locale}`);
+  if (!supabase) return NextResponse.redirect(`${url.origin}${localePath(locale, '/')}`);
 
   if (code) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (error) {
       console.error('[auth/callback] exchange failed', error.message);
-      return NextResponse.redirect(`${url.origin}/${locale}/signin?error=link_expired`);
+      return NextResponse.redirect(`${url.origin}${localePath(locale, '/signin?error=link_expired')}`);
     }
   } else if (tokenHash) {
     const { error } = await supabase.auth.verifyOtp({ type: 'magiclink', token_hash: tokenHash });
     if (error) {
       console.error('[auth/callback] verifyOtp failed', error.message);
-      return NextResponse.redirect(`${url.origin}/${locale}/signin?error=link_expired`);
+      return NextResponse.redirect(`${url.origin}${localePath(locale, '/signin?error=link_expired')}`);
     }
   }
 
   const viewer = await getViewer();
   if (viewer.role === 'anonymous') {
-    return NextResponse.redirect(`${url.origin}/${locale}/signin`);
+    return NextResponse.redirect(`${url.origin}${localePath(locale, '/signin')}`);
   }
 
   /**

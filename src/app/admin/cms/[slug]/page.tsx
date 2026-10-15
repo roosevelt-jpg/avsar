@@ -1,3 +1,4 @@
+import { isLocale, localeEnglishNames, localePath, locales, type Locale } from '@/lib/i18n';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { AdminHeading, AdminShell } from '@/components/employer/AdminShell';
@@ -9,8 +10,6 @@ import { getAdminSupabase } from '@/lib/supabase/admin';
 
 export const metadata = { title: 'Edit page' };
 
-const LOCALES = ['en', 'hi', 'ar'] as const;
-
 export default async function EditCmsPage({
   params,
   searchParams,
@@ -19,8 +18,8 @@ export default async function EditCmsPage({
   searchParams: Promise<{ locale?: string }>;
 }) {
   const { slug } = await params;
-  const { locale: rawLocale } = await searchParams;
-  const locale = (LOCALES as readonly string[]).includes(rawLocale ?? '') ? (rawLocale as string) : 'en';
+  const { locale: rawLocale = '' } = await searchParams;
+  const locale: Locale = isLocale(rawLocale) ? rawLocale : 'en';
 
   const access = await requirePermission('cms.view', `/admin/cms/${slug}`);
   const def = defaultPage(slug);
@@ -65,13 +64,13 @@ export default async function EditCmsPage({
         title={def.title}
         lead={def.purpose}
         actions={
-          <nav aria-label="Language" className="flex rounded-full border border-line-strong bg-surface p-1 text-[13px]">
-            {LOCALES.map((code) =>
+          <nav aria-label="Language" className="flex max-w-[560px] flex-wrap justify-end gap-1 text-[12px]">
+            {locales.map((code) =>
               code === locale ? (
-                <span key={code} className="rounded-full bg-ink px-3 py-1 text-paper">{code.toUpperCase()}</span>
+                <span key={code} className="rounded-full bg-ink px-2.5 py-1 text-paper">{localeEnglishNames[code]}</span>
               ) : (
-                <Link key={code} href={`/admin/cms/${slug}?locale=${code}`} className="rounded-full px-3 py-1 text-ink-2 no-underline hover:text-ink">
-                  {code.toUpperCase()}
+                <Link key={code} href={`/admin/cms/${slug}?locale=${code}`} className="rounded-full border border-line bg-surface px-2.5 py-1 text-ink-2 no-underline hover:text-ink">
+                  {localeEnglishNames[code]}
                 </Link>
               ),
             )}
@@ -80,7 +79,7 @@ export default async function EditCmsPage({
       />
       {!page.stored && locale !== 'en' && (
         <p className="m-0 mt-4 rounded-[12px] bg-accent-tint px-4 py-3 text-[14px]">
-          There is no {locale === 'hi' ? 'Hindi' : 'Arabic'} version yet, so visitors see English. The editor has copied the English content as a starting point: translate it and publish to create this language.
+          There is no saved {localeEnglishNames[locale]} version yet. Visitors see the translation that ships with the site. Edit it and publish to replace that version.
         </p>
       )}
       <div className="mt-6">
@@ -88,7 +87,7 @@ export default async function EditCmsPage({
           key={`${slug}-${locale}`}
           slug={slug}
           locale={locale}
-          publicPath={`/${locale}${def.path}`}
+          publicPath={localePath(locale, def.path || '/')}
           initial={{ title: page.title, blocks: page.blocks, seo: page.seo }}
           stored={page.stored}
           publishedAt={page.publishedAt}

@@ -84,7 +84,7 @@ export const FAQ: DefaultPage = {
     ],
     [
       'contact_cards',
-      { eyebrow: 'Still unsure?', title: 'Talk to a person', intro: 'Our team answers in English and Hindi.' },
+      { eyebrow: 'Still unsure?', title: 'Talk to a person', intro: 'Our team answers in the language of this page.' },
     ],
   ]),
 };

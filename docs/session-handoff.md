@@ -4,6 +4,173 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Block 52 - 15 Oct 2026
+
+**Phase 6, employer portal, done in code.** Run `0017_employer_portal.sql`
+after 0016.
+
+- Employers get two new pages, Vacancies and Applicants, first in their
+  navigation (`src/lib/employer/portal.ts`).
+- **Vacancy requests.** `POST /api/employer/vacancies` creates a draft
+  `job_postings` row linked to the employer in the session. The fields are
+  whitelisted: role, city, contract, openings, salary, housing, meals, English
+  and a free note. Status, featured, images and SEO are never taken from the
+  employer. Rate limited (10 an hour per user) and audited as `vacancy.request`.
+  Candidates see nothing until a recruiter publishes it.
+- **Staff side.** The jobs list has an "Employer requests" filter and an
+  "employer request" label. The job editor shows the employer's note and the
+  date above the form. Duplicating a job does not copy the request. Optional
+  `STAFF_ALERT_EMAIL`: one inbox is emailed a link to each new request.
+- **Applicants.** `employer_applicants()` (security definer, fixed columns)
+  returns applicants to the employer's own postings, and only from
+  `shortlisted` onwards. It carries no email, phone or assessment score.
+  Interview times are shown in Lisbon and India time.
+- Employers read their own postings in any status through RLS
+  (`jobs_employer_read`).
+- Demo mode shows both pages with sample data, and the request form answers
+  503 `demo_mode`. Staff who open either page are sent to the console
+  equivalent.
+- e2e: `tests/e2e/employer.spec.ts`.
+
+### Employer shortlist email
+- When an application first becomes visible to the employer (moving into
+  shortlisted, interview or later from an earlier stage), every contact of
+  that employer gets an email linking to Applicants
+  (`src/lib/employer/notify.ts`). It covers the single move, the bulk move
+  (one email per employer, however many applications) and booking an
+  interview that moves the stage forward.
+- It is sent whether or not "tell the candidate" was ticked. It lists the
+  vacancy and the application references, never candidate names.
+- Moving someone back from interview to shortlisted sends nothing.
+- `becomesVisibleToEmployer()` in `status.ts` mirrors the list in
+  `employer_applicants()`; change both together.
+
+### Phase 7 prep (code side)
+- hreflang alternates (`languageAlternates()` in `src/lib/i18n/path.ts`) on
+  CMS pages, the jobs board and job pages, with English as `x-default`.
+- The sitemap lists every live job, not just the first 50, with alternates on
+  each entry.
+- `/[locale]/b` is noindex.
+- e2e: `tests/e2e/seo.spec.ts`.
+
+### Open
+- Add `STAFF_ALERT_EMAIL` to `.env.example`.
+- Phase 7 itself is the Part 5 and Part 6 checklists: accounts, keys,
+  counsel, real jobs, staff training. Set `ALLOW_INDEXING=true` only once a
+  real payment has gone through. Delete `/[locale]/classic` once the CMS home
+  is signed off.
+
+---
+
+## Block 51 - 15 Oct 2026
+
+**CURSOR_BUILD.md phases 3, 4 and 5 done in code, plus the 360px QA pass of
+phase 0.2. All green: typecheck, lint, build, 65 unit tests, 70 e2e tests
+(desktop and Pixel 7).**
+
+### Before deploying this
+- **Run migration `0016_growth.sql` first.** The candidate dashboard, the
+  tracker and the console application pages select its new columns and tables
+  (`whatsapp_opt_in_at`, `job_alert_sent_at`, `notification_log`,
+  `applications.cv_document_id`, `application_interviews`). Without it those
+  pages error in live mode. Demo mode is unaffected.
+- New server env vars (all optional; each feature is a no-op until set). Add
+  the names to `.env.example`:
+  - `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`: rate limiting. Fails
+    open if Upstash is down.
+  - `TURNSTILE_SECRET_KEY` + `NEXT_PUBLIC_TURNSTILE_SITE_KEY`: set both or
+    neither. Server verification fails closed.
+  - `SENTRY_DSN`: server errors via `src/instrumentation.ts`, no SDK.
+  - `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`: Cloud API.
+  - `CRON_SECRET`: protects `/api/cron/job-alerts` (Mondays 04:00 UTC, in
+    `vercel.json`).
+- WhatsApp templates to submit to Meta for approval, each with three body
+  parameters, language `en`: `application_received`, `application_update`,
+  `interview_scheduled` (`src/lib/whatsapp/index.ts`).
+- Uptime monitor targets: `/api/health` (checks the database), `/en`, and
+  `GET /api/payments/webhook`.
+
+### Phase 3: tests and CI
+- Vitest in `tests/unit/`, Playwright in `tests/e2e/` against a demo-mode
+  production build on port 3123.
+- `.github/workflows/ci.yml`: typecheck, lint, unit tests and build on every
+  PR; e2e on pushes to main.
+
+### Phase 4: hardening
+- Security headers and CSP in `next.config.ts`. A new third-party script,
+  frame or API host has to be added there, or the browser blocks it.
+- Rate limits (`src/lib/security/rate-limit.ts`): register, apply,
+  request-code (per IP and per email), media sign (per staff user).
+- Turnstile on register (`src/lib/security/turnstile.ts`,
+  `src/components/security/Turnstile.tsx`).
+- `src/app/global-error.tsx`, `/api/health`, Sentry reporter.
+
+### Phase 5: growth
+- WhatsApp opt-in (apply form, dashboard switch); sends are logged to
+  `notification_log` and go only to candidates who opted in.
+- Saved jobs (heart on cards and the job page, dashboard section) and a weekly
+  job-alert email with an unsubscribe link.
+- CV upload on the apply form; staff download via a 60-second signed URL,
+  audited.
+- Interviews: staff book from the application page; the candidate sees India
+  and Lisbon time on the tracker and dashboard and gets an email and WhatsApp.
+- Console: bulk stage move (with or without telling candidates), CSV export
+  (formula-injection safe), duplicate job, upcoming interviews on the
+  dashboard.
+
+### Phase 0.2: 360px
+- An e2e test checks no horizontal scroll at 360px on home, jobs, a job and
+  FAQ in all fourteen locales. Fixes: icon-only sign-in on phones,
+  `grid-cols-1` / `min-w-0` / `break-words` on hero, section headings, FAQ
+  and image-and-text; smaller `h1` for Malayalam and Tamil under 480px.
+- Arabic job page: facts wrapped in `<bdi>` so the euro salary reads in the
+  right order; the salary icon is now a euro sign.
+
+### Open (needs accounts or decisions, not code)
+- Phases 1 and 2: Supabase, Vercel, EximPe and Resend production keys;
+  backups and point-in-time recovery; a staging project.
+- Sentry, Upstash, Turnstile and WhatsApp accounts and keys; Meta template
+  approval.
+- Phase 6 (employer portal) is optional and not started.
+- Phase 7 launch and the Part 6 legal items.
+- The announcement bar is site-settings text and stays English in every
+  locale.
+
+---
+
+## Block 50 - 15 Oct 2026
+
+**Thirteen candidate languages, building green. Page content translated for all of them.**
+
+- Locales: en, hi, bn, mr, te, ta, ur, gu, kn, or, ml, pa, as, ar. English has
+  no URL prefix (`src/lib/i18n/path.ts`, rewritten in `src/proxy.ts`); `/en/...`
+  redirects to the bare path.
+- UI dictionaries complete for every locale (`src/lib/i18n/langs/`). Assamese
+  added this block, written from the Bengali file.
+- Page and job copy that lives in code is translated through
+  `src/lib/cms/localize.ts`, keyed by the English string. A missing key renders
+  English. A published console page or saved job translation still wins.
+- Coverage of the 590 strings: complete for all thirteen locales. Arabic and
+  Urdu keep Western digits; brand names, payment rails and `{{tokens}}` stay
+  in Latin script inside the translated sentence.
+- Regenerate with `node scripts/extract-copy.mjs` (sources) then
+  `node scripts/emit-content-copy.mjs` (writes `src/lib/cms/copy/*.ts`). Older
+  rows live in the underscore scripts (two are positional); everything since is
+  in `scripts/copy-tables/*.mjs`, keyed by the English or a unique prefix ending
+  in `...`. The emitter fails on unknown keys, empty values, changed tokens,
+  links or bold, and letters from another script; it warns on digit changes.
+- Fixed for the build: Indic font loaders hoisted to module-scope consts in
+  `src/app/layout.tsx`; locale narrowing in `/admin/cms/[slug]`.
+
+### Open
+- Every new language needs a native read before launch. All thirteen were
+  machine-drafted; Odia, Punjabi, Assamese and Arabic were drafted last and
+  have had no second pass.
+- New English copy in code renders English in every locale until a row is
+  added to a table in `scripts/copy-tables/` and the emitter is re-run.
+
+---
+
 ## Block 49 - 14 Oct 2026, prepared for cryvo25@gmail.com
 
 **Platform v2: jobs board, one-step apply, application tracking, CMS, RBAC.**

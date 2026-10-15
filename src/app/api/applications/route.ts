@@ -4,9 +4,12 @@ import { getSessionCandidate, getViewer, hasPaid } from '@/lib/auth';
 import { getSiteSettings } from '@/lib/cms/data';
 import { getServerSupabase } from '@/lib/supabase/server';
 import { getAnonSupabase } from '@/lib/supabase/anon';
+import { getAdminSupabase } from '@/lib/supabase/admin';
+import { sendWhatsApp } from '@/lib/whatsapp';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { sendApplicationUpdate } from '@/lib/email/application';
 import type { ScreeningQuestion } from '@/lib/jobs/types';
+import { clientIp, rateLimit, rateLimitedResponse, RATE_LIMITS } from '@/lib/security/rate-limit';
 
 export const runtime = 'nodejs';
 
@@ -15,6 +18,10 @@ const schema = z.object({
   coverNote: z.string().trim().max(2000).nullable().optional(),
   answers: z.record(z.string().max(40), z.string().trim().max(500)).default({}),
   source: z.string().trim().max(80).optional(),
+  /** Ticked on the apply form. Only ever turns the opt-in on; turning it off is on the dashboard. */
+  whatsappOptIn: z.boolean().optional(),
+  /** A CV this candidate uploaded through /api/cv/upload a moment ago. Ownership is checked below. */
+  cvDocumentId: z.string().uuid().optional(),
 });
 
 /**
@@ -25,6 +32,9 @@ const schema = z.object({
  * somebody else, to a draft, or straight into "offer".
  */
 export async function POST(request: Request) {
+  const limited = await rateLimit(RATE_LIMITS.apply, clientIp(request));
+  if (!limited.ok) return rateLimitedResponse(limited);
+
   const parsed = schema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: 'invalid_payload' }, { status: 400 });
 
@@ -97,7 +107,38 @@ export async function POST(request: Request) {
   const application = (Array.isArray(data) ? data[0] : data) as { id: string; reference: string } | null;
   if (!application) return NextResponse.json({ error: 'storage_failed' }, { status: 500 });
 
+  /* Extras the database function does not take. The service role writes them,
+     keyed on ids that came from the session or were checked against it, and a
+     failure here never fails the application itself. */
+  const admin = getAdminSupabase();
+  if (admin && parsed.data.whatsappOptIn) {
+    const { error: optInError } = await admin
+      .from('candidates')
+      .update({ whatsapp_opt_in_at: new Date().toISOString() })
+      .eq('id', candidate.id)
+      .is('whatsapp_opt_in_at', null);
+    if (optInError) console.error('[applications] whatsapp opt-in failed', optInError);
+  }
+  if (admin && parsed.data.cvDocumentId) {
+    const { data: cv } = await admin
+      .from('cv_documents')
+      .select('id')
+      .eq('id', parsed.data.cvDocumentId)
+      .eq('candidate_id', candidate.id)
+      .maybeSingle();
+    if (cv) {
+      const { error: cvError } = await admin.from('applications').update({ cv_document_id: cv.id }).eq('id', application.id);
+      if (cvError) console.error('[applications] cv attach failed', cvError);
+    }
+  }
+
   if (isNew) {
+    await sendWhatsApp({
+      candidateId: candidate.id,
+      applicationId: application.id,
+      template: 'application_received',
+      params: [candidate.fullName.split(' ')[0] || candidate.fullName, String(job.title), application.reference],
+    });
     await sendApplicationUpdate({
       to: candidate.email,
       name: candidate.fullName,

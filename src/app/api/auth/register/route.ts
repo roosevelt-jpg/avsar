@@ -5,6 +5,8 @@ import { getAdminSupabase } from '@/lib/supabase/admin';
 import { getServerSupabase } from '@/lib/supabase/server';
 import { identityHash } from '@/lib/hash';
 import { sendVerificationLink } from '@/lib/email/verification';
+import { clientIp, rateLimit, rateLimitedResponse, RATE_LIMITS } from '@/lib/security/rate-limit';
+import { TURNSTILE_HEADER, verifyTurnstile } from '@/lib/security/turnstile';
 
 export const runtime = 'nodejs';
 
@@ -24,6 +26,16 @@ export const runtime = 'nodejs';
  * and getting either wrong strands a candidate silently.
  */
 export async function POST(request: Request) {
+  const ip = clientIp(request);
+  const limited = await rateLimit(RATE_LIMITS.register, ip);
+  if (!limited.ok) return rateLimitedResponse(limited);
+
+  /* Checked before anything touches Supabase, so a script cannot create
+     accounts or send verification emails in bulk. */
+  if (!(await verifyTurnstile(request.headers.get(TURNSTILE_HEADER), ip))) {
+    return NextResponse.json({ status: 'challenge_failed', error: 'challenge_failed' }, { status: 403 });
+  }
+
   const parsed = registerSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) {
     return NextResponse.json(

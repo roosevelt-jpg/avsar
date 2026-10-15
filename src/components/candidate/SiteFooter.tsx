@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { BRAND, ENTITY } from '@/lib/data/brand';
-import { getDictionary, type Locale } from '@/lib/i18n';
+import { getDictionary, type Locale, localePath } from '@/lib/i18n';
 import { getSiteSettings } from '@/lib/cms/data';
 import { localHref, navLabel, whatsappHref } from '@/lib/cms/settings';
 
@@ -10,12 +10,12 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
   const settings = await getSiteSettings();
   const socials = Object.entries(settings.general.socials).filter(([, url]) => url);
   const links = [
-    { href: `/${locale}/terms`, label: t.footerTerms },
-    { href: `/${locale}/refund-policy`, label: t.footerRefund },
-    { href: `/${locale}/delivery`, label: t.footerDelivery },
-    { href: `/${locale}/privacy`, label: t.footerPrivacy },
-    { href: `/${locale}/selection-rules`, label: t.selectionRules },
-    { href: `/${locale}/contact`, label: t.footerContact },
+    { href: localePath(locale, '/terms'), label: t.footerTerms },
+    { href: localePath(locale, '/refund-policy'), label: t.footerRefund },
+    { href: localePath(locale, '/delivery'), label: t.footerDelivery },
+    { href: localePath(locale, '/privacy'), label: t.footerPrivacy },
+    { href: localePath(locale, '/selection-rules'), label: t.selectionRules },
+    { href: localePath(locale, '/contact'), label: t.footerContact },
   ];
 
   return (

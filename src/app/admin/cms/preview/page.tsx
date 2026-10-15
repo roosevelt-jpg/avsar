@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { CmsPageView } from '@/components/cms/CmsPageView';
 import { getDraftPage } from '@/lib/cms/data';
 import { requirePermission } from '@/lib/rbac/server';
-import { isLocale } from '@/lib/i18n';
+import { isLocale, localeDirection } from '@/lib/i18n';
 
 export const metadata = { title: 'Preview', robots: { index: false, follow: false } };
 
@@ -18,7 +18,7 @@ export default async function PreviewPage({ searchParams }: { searchParams: Prom
   if (!page) notFound();
 
   return (
-    <div lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'} className="avsar-root">
+    <div lang={locale} dir={localeDirection[locale]} className="avsar-root">
       <CmsPageView
         page={page}
         locale={locale}

@@ -6,13 +6,12 @@ import { getAdminSupabase } from '@/lib/supabase/admin';
 import { defaultPage } from '@/lib/cms/defaults';
 import { sanitizeBlocks, sanitizeSeo } from '@/lib/cms/sanitize';
 import { audit } from '@/lib/audit';
+import { locales } from '@/lib/i18n/path';
 
 export const runtime = 'nodejs';
 
-const LOCALES = ['en', 'hi', 'ar'] as const;
-
 const putSchema = z.object({
-  locale: z.enum(LOCALES),
+  locale: z.enum(locales),
   title: z.string().trim().min(1).max(120),
   blocks: z.array(z.unknown()).max(60),
   seo: z.unknown(),
@@ -94,7 +93,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ s
   const { slug } = await params;
   if (!defaultPage(slug)) return NextResponse.json({ error: 'unknown_page' }, { status: 404 });
 
-  const parsed = z.object({ locale: z.enum(LOCALES) }).safeParse(await request.json().catch(() => null));
+  const parsed = z.object({ locale: z.enum(locales) }).safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: 'invalid_payload' }, { status: 400 });
 
   const guard = await apiPermission('cms.publish');

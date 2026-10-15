@@ -2,8 +2,9 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { apiPermission, demoWriteRefusal } from '@/lib/rbac/server';
 import { getAdminSupabase } from '@/lib/supabase/admin';
-import { APPLICATION_STATUSES, type ApplicationStatus } from '@/lib/applications/status';
-import { sendApplicationUpdate } from '@/lib/email/application';
+import { APPLICATION_STATUSES, becomesVisibleToEmployer, type ApplicationStatus } from '@/lib/applications/status';
+import { notifyStageChange } from '@/lib/applications/notify';
+import { notifyEmployersOfShortlist } from '@/lib/employer/notify';
 import { audit } from '@/lib/audit';
 
 export const runtime = 'nodejs';
@@ -43,7 +44,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
   const { data: current } = await admin
     .from('applications')
-    .select('id, reference, status, candidates!inner (full_name, email, locale), job_postings!inner (title)')
+    .select('id, reference, status, candidates!inner (id, full_name, email, locale), job_postings!inner (title)')
     .eq('id', id)
     .maybeSingle();
   if (!current) return NextResponse.json({ error: 'not_found' }, { status: 404 });
@@ -78,10 +79,12 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   }
 
   if (moving && body.visibleToCandidate && body.notify) {
-    const candidate = (Array.isArray(current.candidates) ? current.candidates[0] : current.candidates) as { full_name: string; email: string; locale: string };
+    const candidate = (Array.isArray(current.candidates) ? current.candidates[0] : current.candidates) as { id: string; full_name: string; email: string; locale: string };
     const job = (Array.isArray(current.job_postings) ? current.job_postings[0] : current.job_postings) as { title: string };
-    await sendApplicationUpdate({
-      to: candidate.email,
+    await notifyStageChange({
+      applicationId: id,
+      candidateId: candidate.id,
+      email: candidate.email,
       name: candidate.full_name,
       jobTitle: job.title,
       reference: String(current.reference),
@@ -90,6 +93,12 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       origin: new URL(request.url).origin,
       locale: candidate.locale ?? 'en',
     });
+  }
+
+  /* Independent of "tell the candidate": the employer is a different audience,
+     and a shortlist they never hear about is a shortlist nobody interviews. */
+  if (moving && becomesVisibleToEmployer(from, body.status as ApplicationStatus)) {
+    await notifyEmployersOfShortlist([id], new URL(request.url).origin);
   }
 
   await audit(guard.userId, moving ? 'application.move' : 'application.note', `application:${id}`, {

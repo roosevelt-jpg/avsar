@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getAnonSupabase } from '@/lib/supabase/anon';
 import { getAdminSupabase } from '@/lib/supabase/admin';
+import { clientIp, rateLimit, rateLimitedResponse, RATE_LIMITS } from '@/lib/security/rate-limit';
 
 export const runtime = 'nodejs';
 
@@ -25,12 +26,20 @@ const schema = z.object({
  * identical either way, so this cannot be used to test who has registered.
  */
 export async function POST(request: Request) {
+  const byIp = await rateLimit(RATE_LIMITS.requestCodeIp, clientIp(request));
+  if (!byIp.ok) return rateLimitedResponse(byIp);
+
   const parsed = schema.safeParse(await request.json().catch(() => null));
 
   /* Even a malformed address gets the neutral answer. */
   if (!parsed.success) return NextResponse.json({ sent: true });
 
   const email = parsed.data.email.toLowerCase();
+
+  /* Per address as well as per IP, so nobody can flood one inbox from many
+     IPs. The 429 is the same whether or not the address is registered. */
+  const byEmail = await rateLimit(RATE_LIMITS.requestCodeEmail, email);
+  if (!byEmail.ok) return rateLimitedResponse(byEmail);
   const origin = new URL(request.url).origin;
 
   const next = parsed.data.next;
