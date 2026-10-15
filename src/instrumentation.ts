@@ -13,5 +13,11 @@ export const onRequestError: Instrumentation.onRequestError = async (error, requ
     routePath: context.routePath,
     routeType: context.routeType,
     digest,
+    /* Headers are otherwise never sent; this one is an id we generated. */
+    requestId: headerValue(request.headers['x-request-id']),
   });
 };
+
+function headerValue(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value[0] : value;
+}

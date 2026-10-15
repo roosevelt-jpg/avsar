@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { englishRedirectPath, englishRewritePath } from '@/lib/i18n/path';
+import { newRequestId, REQUEST_ID_HEADER } from '@/lib/observability/log';
 import { updateSession } from '@/lib/supabase/middleware';
 
 /**
@@ -9,11 +10,23 @@ import { updateSession } from '@/lib/supabase/middleware';
  * inside `src/` here: with a `src` directory, a file at the project root is
  * silently ignored rather than reported as an error.
  *
- * Its only job is refreshing the Supabase session, because Server Components
- * cannot write cookies and the access token would otherwise expire under a
- * signed-in candidate mid-assessment.
+ * It refreshes the Supabase session, because Server Components cannot write
+ * cookies and the access token would otherwise expire under a signed-in
+ * candidate mid-assessment, and it stamps every request with an id for the logs.
  */
 export async function proxy(request: NextRequest) {
+  /* Every request gets an id, set on the request so route handlers and the
+     error reporter can log it, and on the response so the browser can show
+     it. A caller-supplied id is ignored: it would let anyone write whatever
+     they liked into the logs. */
+  const id = newRequestId();
+  request.headers.set(REQUEST_ID_HEADER, id);
+  const response = await route(request);
+  response.headers.set(REQUEST_ID_HEADER, id);
+  return response;
+}
+
+async function route(request: NextRequest): Promise<NextResponse> {
   const { pathname } = request.nextUrl;
 
   /* Old English links (/en, /en/jobs) become the bare URL. Hindi and Arabic stay. */

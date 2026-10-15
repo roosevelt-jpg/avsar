@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSessionEmployer } from '@/lib/auth';
 import { audit } from '@/lib/audit';
+import { notifyStaff } from '@/lib/notifications/staff';
 import { getMailer } from '@/lib/email';
 import { renderEmail } from '@/lib/email/template';
 import { CEFR_LEVELS, EMPLOYMENT_TYPES, HOUSING_OPTIONS, slugify } from '@/lib/jobs/types';
@@ -103,6 +104,13 @@ export async function POST(request: Request) {
 
   await audit(employer.userId, 'vacancy.request', `job:${data.id}`, { employer: employer.employerId });
   await alertStaff({ origin: new URL(request.url).origin, jobId: String(data.id), employer: employer.name, title: input.title, city: input.city });
+  await notifyStaff({
+    permission: 'jobs.edit',
+    kind: 'vacancy.request',
+    title: `Vacancy request: ${input.title}`,
+    body: `${employer.name} · ${input.city}`,
+    href: `/admin/jobs/${data.id}`,
+  });
   return NextResponse.json({ id: data.id, status: 'created' }, { status: 201 });
 }
 

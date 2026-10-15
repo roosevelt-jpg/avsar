@@ -29,6 +29,7 @@ export type ErrorContext = {
   routePath?: string;
   routeType?: string;
   digest?: string;
+  requestId?: string;
 };
 
 export async function captureServerError(error: unknown, context: ErrorContext = {}): Promise<void> {
@@ -47,7 +48,7 @@ export async function captureServerError(error: unknown, context: ErrorContext =
     exception: { values: [{ type: err.name, value: err.message }] },
     /* Paths only, never query strings: those can hold emails and tokens. */
     request: context.path ? { url: context.path.split('?')[0], method: context.method } : undefined,
-    tags: { route: context.routePath, route_type: context.routeType, digest: context.digest },
+    tags: { route: context.routePath, route_type: context.routeType, digest: context.digest, request_id: context.requestId },
     extra: { stack: err.stack },
   };
 

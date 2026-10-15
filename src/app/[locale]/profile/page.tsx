@@ -4,6 +4,7 @@ import { AccountMenu } from '@/components/auth/AccountMenu';
 import { CvUpload } from '@/components/candidate/CvUpload';
 import { VoiceIntro } from '@/components/candidate/VoiceIntro';
 import { ProfileForm } from '@/components/candidate/ProfileForm';
+import { YourData } from '@/components/candidate/YourData';
 import { getDictionary, isLocale, localePath } from '@/lib/i18n';
 import { requireCandidate } from '@/lib/auth';
 import { getServerSupabase } from '@/lib/supabase/server';
@@ -39,6 +40,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
         </header>
         <main className="px-[clamp(20px,4cqi,56px)] py-[clamp(36px,6cqi,72px)]">
           <ProfileForm t={t} initial={EMPTY} />
+          <YourData demo />
         </main>
       </>
     );
@@ -127,6 +129,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
         <p className="mb-5 text-[14px] font-medium text-muted">{t.profile.orManual}</p>
 
         <ProfileForm t={t} initial={initial} />
+        <YourData />
       </main>
     </>
   );

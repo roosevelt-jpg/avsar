@@ -5,6 +5,7 @@ import { EmployerSearchBox } from '@/components/employer/EmployerSearchBox';
 import { SAMPLE_TALENT, initials } from '@/lib/data/candidates';
 import { EMPLOYER_PRICE_EUR } from '@/lib/data/cohort';
 import { AccountMenu } from '@/components/auth/AccountMenu';
+import { ContactForm } from '@/components/contact/ContactForm';
 
 export const metadata = {
   title: 'Hire pre-assessed workers from India',
@@ -103,7 +104,7 @@ export default async function EmployerLanding() {
       </section>
 
       <section id="contact" className="px-[clamp(20px,4cqi,56px)] py-[clamp(56px,8cqi,104px)]">
-        <div className="flex flex-wrap items-center justify-between gap-6 rounded-[28px] bg-employer px-[clamp(24px,4cqi,56px)] py-[clamp(32px,5cqi,56px)]">
+        <div className="grid gap-8 rounded-[28px] bg-employer px-[clamp(24px,4cqi,56px)] py-[clamp(32px,5cqi,56px)] lg:grid-cols-[minmax(0,1fr)_minmax(0,640px)]">
           <div>
             <h2 className="m-0 max-w-[24ch] text-[clamp(24px,3.2cqi,40px)] font-semibold leading-[1.15] tracking-[-0.03em] text-white">
               Tell us what roles you need to fill.
@@ -111,13 +112,13 @@ export default async function EmployerLanding() {
             <p className="m-0 mt-3 text-[15px] text-white/80">
               €{EMPLOYER_PRICE_EUR.toLocaleString('en-GB')} per placement. Search is free.
             </p>
+            <p className="m-0 mt-3 text-[15px] text-white/80">
+              Or write to <span className="font-mono">employers@smithandadams.com</span>.
+            </p>
           </div>
-          <Link
-            href="mailto:employers@smithandadams.com"
-            className="t-colors shrink-0 rounded-[12px] bg-white px-5 py-3 text-[15px] font-medium text-ink no-underline hover:bg-paper"
-          >
-            Book a call →
-          </Link>
+          <div className="rounded-[20px] bg-paper px-5 pt-1 pb-6 sm:px-7">
+            <ContactForm variant="employer" />
+          </div>
         </div>
       </section>
 

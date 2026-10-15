@@ -6,6 +6,10 @@ import { getServerSupabase } from '@/lib/supabase/server';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { isApplicationStatus, type ApplicationStatus } from '@/lib/applications/status';
 import type { JobStatus } from '@/lib/jobs/types';
+import type { Cefr } from '@/lib/data/candidates';
+import { asCefr, sectorOf, yearsFromBand } from '@/lib/hiring/data';
+import { matchScore, type MatchResult } from '@/lib/hiring/match';
+import { benchReady, scoreKinds } from '@/lib/relocation/documents';
 
 /**
  * The employer portal: vacancy requests and shortlisted applicants.
@@ -144,12 +148,20 @@ export type EmployerApplicant = {
   candidateCity: string;
   experience: string;
   nextInterviewAt: string | null;
+  /** False until we approve the employer's request to see the full name. */
+  identityReleased: boolean;
+  unlockPending: boolean;
+  english: Cefr | null;
+  overallScore: number | null;
+  verifiedDocuments: string[];
+  match: MatchResult;
 };
 
 function sampleApplicants(): EmployerApplicant[] {
   const interview = new Date();
   interview.setUTCDate(interview.getUTCDate() + 3);
   interview.setUTCHours(9, 0, 0, 0);
+  const job = { position: 'chef', sector: 'food-beverage', minEnglish: 'A2' as const, minYears: 2 };
   return [
     {
       applicationId: 'sample-0',
@@ -163,6 +175,12 @@ function sampleApplicants(): EmployerApplicant[] {
       candidateCity: 'Kochi, Kerala',
       experience: EXPERIENCE_BANDS[2] ?? '',
       nextInterviewAt: interview.toISOString(),
+      identityReleased: true,
+      unlockPending: false,
+      english: 'B1',
+      overallScore: 74,
+      verifiedDocuments: ['passport', 'police_clearance'],
+      match: matchScore(job, { position: 'chef', sector: 'food-beverage', english: 'B1', yearsExperience: 4, overallScore: 74, verifiedDocuments: ['passport', 'police_clearance'] }),
     },
     {
       applicationId: 'sample-1',
@@ -171,29 +189,55 @@ function sampleApplicants(): EmployerApplicant[] {
       statusChangedAt: '2026-10-14T15:30:00.000Z',
       jobTitle: 'Line cook',
       jobCity: 'Albufeira',
-      candidateName: 'Priya Sharma',
+      candidateName: 'Priya S.',
       candidatePosition: 'Commis chef',
       candidateCity: 'Dehradun, Uttarakhand',
       experience: EXPERIENCE_BANDS[1] ?? '',
       nextInterviewAt: null,
+      identityReleased: false,
+      unlockPending: false,
+      english: 'A2',
+      overallScore: 61,
+      verifiedDocuments: [],
+      match: matchScore(job, { position: 'chef', sector: 'food-beverage', english: 'A2', yearsExperience: 2, overallScore: 61, verifiedDocuments: [] }),
     },
   ];
 }
 
 /**
  * Shortlisted-or-later applicants to the employer's own postings, through
- * `employer_applicants()`, which fixes the columns: no contact details and no
- * assessment scores. Contact goes through the recruiter.
+ * `employer_applicants()`, which fixes the columns: no contact details, and
+ * a shortened name until we approve a request to release it. Contact goes
+ * through the recruiter. The match score is worked out here against the
+ * job's own requirements, which the employer can already read.
  */
 export async function listEmployerApplicants(portal: EmployerPortal): Promise<EmployerApplicant[]> {
   if (portal.demo) return sampleApplicants();
   const supabase = await getServerSupabase();
-  const { data, error } = (await supabase?.rpc('employer_applicants')) ?? { data: null, error: null };
+  if (!supabase) return [];
+  const { data, error } = await supabase.rpc('employer_applicants');
   if (error) console.error('[employer] applicants failed', error);
-  return ((data ?? []) as Record<string, unknown>[]).flatMap((row) => {
+  const rows = (data ?? []) as Record<string, unknown>[];
+
+  const jobIds = [...new Set(rows.map((r) => String(r.job_id)))];
+  const [jobs, unlocks] = await Promise.all([
+    jobIds.length
+      ? supabase.from('job_postings').select('id, position_slug, area, min_english, min_experience_years').in('id', jobIds)
+      : Promise.resolve({ data: [] as Record<string, unknown>[] }),
+    supabase.from('profile_unlock_requests').select('application_id').eq('status', 'pending'),
+  ]);
+  const jobById = new Map(((jobs.data ?? []) as Record<string, unknown>[]).map((j) => [String(j.id), j]));
+  const pending = new Set((unlocks.data ?? []).map((u) => String(u.application_id)));
+
+  return rows.flatMap((row) => {
     const status = String(row.status);
     if (!isApplicationStatus(status)) return [];
     const band = Number(row.experience_band);
+    const job = jobById.get(String(row.job_id)) ?? {};
+    const position = (row.candidate_position as string | null) ?? null;
+    const english = asCefr(row.english_cefr);
+    const overallScore = row.overall_score == null ? null : Number(row.overall_score);
+    const verifiedDocuments = Array.isArray(row.verified_documents) ? row.verified_documents.map(String) : [];
     return [
       {
         applicationId: String(row.application_id),
@@ -203,11 +247,84 @@ export async function listEmployerApplicants(portal: EmployerPortal): Promise<Em
         jobTitle: String(row.job_title),
         jobCity: String(row.job_city),
         candidateName: String(row.candidate_name),
-        candidatePosition: (row.candidate_position as string | null) ?? null,
+        candidatePosition: position,
         candidateCity: String(row.candidate_city ?? ''),
         experience: EXPERIENCE_BANDS[band] ?? '-',
         nextInterviewAt: (row.next_interview_at as string | null) ?? null,
+        identityReleased: row.identity_released === true,
+        unlockPending: pending.has(String(row.application_id)),
+        english,
+        overallScore,
+        verifiedDocuments,
+        match: matchScore(
+          {
+            position: (job.position_slug as string | null) ?? null,
+            sector: (job.area as string | null) ?? null,
+            minEnglish: asCefr(job.min_english),
+            minYears: job.min_experience_years == null ? null : Number(job.min_experience_years),
+          },
+          { position, sector: sectorOf(position), english, yearsExperience: yearsFromBand(band), overallScore, verifiedDocuments },
+        ),
       },
     ];
   });
+}
+
+// ------------------------------------------------------------ bench
+
+export type BenchCandidate = {
+  candidateId: string;
+  name: string;
+  position: string | null;
+  city: string;
+  english: Cefr | null;
+  overallScore: number | null;
+  yearsExperience: number | null;
+  verifiedDocuments: string[];
+  heldUntil: string | null;
+  heldByMe: boolean;
+};
+
+/**
+ * Assessed candidates whose passport and police clearance we have verified,
+ * not yet placed, through `employer_bench()`: shortened names, no contact
+ * details. The SQL narrows to a verified passport; the full rule lives in
+ * `benchReady` so the app and the readiness score agree.
+ */
+export async function listBench(portal: EmployerPortal): Promise<BenchCandidate[]> {
+  if (portal.demo) {
+    return [
+      { candidateId: 'sample-bench-1', name: 'Rahul K.', position: 'chef', city: 'Kochi, Kerala', english: 'B1', overallScore: 78, yearsExperience: 4, verifiedDocuments: ['passport', 'police_clearance', 'photo'], heldUntil: null, heldByMe: false },
+      { candidateId: 'sample-bench-2', name: 'Sunita D.', position: 'cleaner', city: 'Pune, Maharashtra', english: 'A2', overallScore: 69, yearsExperience: 2, verifiedDocuments: ['passport', 'police_clearance'], heldUntil: new Date(Date.now() + 40 * 3_600_000).toISOString(), heldByMe: true },
+    ];
+  }
+  const supabase = await getServerSupabase();
+  if (!supabase) return [];
+  const { data, error } = await supabase.rpc('employer_bench');
+  if (error) console.error('[employer] bench failed', error);
+  return ((data ?? []) as Record<string, unknown>[])
+    .map((row) => ({
+      candidateId: String(row.candidate_id),
+      name: String(row.candidate_name),
+      position: (row.candidate_position as string | null) ?? null,
+      city: String(row.candidate_city ?? ''),
+      english: asCefr(row.english_cefr),
+      overallScore: row.overall_score == null ? null : Number(row.overall_score),
+      yearsExperience: row.years_experience == null ? null : Number(row.years_experience),
+      verifiedDocuments: Array.isArray(row.verified_documents) ? row.verified_documents.map(String) : [],
+      heldUntil: (row.held_until as string | null) ?? null,
+      heldByMe: row.held_by_me === true,
+    }))
+    .filter((c) => benchReady(c.verifiedDocuments));
+}
+
+/** Counts for the top of the Applicants page, from the rows already loaded. */
+export function applicantMetrics(applicants: EmployerApplicant[]): { shortlisted: number; interviewing: number; offers: number; hired: number; travelReady: number } {
+  return {
+    shortlisted: applicants.filter((a) => a.status === 'shortlisted').length,
+    interviewing: applicants.filter((a) => a.status === 'interview').length,
+    offers: applicants.filter((a) => a.status === 'offer').length,
+    hired: applicants.filter((a) => ['hired', 'visa_processing', 'relocated'].includes(a.status)).length,
+    travelReady: applicants.filter((a) => scoreKinds(a.verifiedDocuments).ready).length,
+  };
 }

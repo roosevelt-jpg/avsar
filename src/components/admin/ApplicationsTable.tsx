@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Pill } from '@/components/admin/Pill';
 import { Mono } from '@/components/ui/Mono';
+import { IDEMPOTENCY_HEADER, useIdempotencyKey } from '@/components/security/useIdempotencyKey';
 import type { AdminApplicationRow } from '@/lib/applications/data';
 import { APPLICATION_STATUSES, STATUS_META, type ApplicationStatus } from '@/lib/applications/status';
 import { positionLabel } from '@/lib/data/positions';
@@ -34,6 +35,7 @@ export function ApplicationsTable({
   const [notify, setNotify] = useState(true);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const idempotency = useIdempotencyKey();
 
   const selectable = canManage || canExport;
   const allSelected = rows.length > 0 && rows.every((row) => selected.has(row.id));
@@ -48,11 +50,18 @@ export function ApplicationsTable({
   async function move() {
     setBusy(true);
     setMessage(null);
+    const body = JSON.stringify({ ids: [...selected].sort(), status: target, notify });
     const response = await fetch('/api/admin/applications/bulk', {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ ids: [...selected], status: target, notify }),
-    });
+      headers: { 'content-type': 'application/json', [IDEMPOTENCY_HEADER]: idempotency.current(body) },
+      body,
+    }).catch(() => null);
+    if (!response) {
+      setBusy(false);
+      setMessage('The connection dropped. Press Move again: it will not be applied twice.');
+      return;
+    }
+    idempotency.settle(response);
     const data = (await response.json().catch(() => null)) as { moved?: number; error?: string } | null;
     setBusy(false);
     if (response.ok) {

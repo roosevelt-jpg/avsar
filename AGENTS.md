@@ -48,8 +48,16 @@ src/app/[locale]/classic/page.tsx      The old hand-built landing, kept for refe
 src/app/admin/...                      Console. Every page starts with requirePermission()
 src/app/api/applications/...           Candidate apply / withdraw
 src/app/api/admin/...                  Console APIs. Every handler starts with apiPermission()
-src/app/admin/vacancies, /applicants   Employer portal pages (requireEmployerPortal, not requirePermission)
-src/app/api/employer/vacancies         Employer vacancy request: a draft linked to the session's employer
+src/app/admin/vacancies, /applicants,  Employer portal pages (requireEmployerPortal, not requirePermission)
+  /bench
+src/app/api/employer/...               Employer APIs. Every handler starts with getSessionEmployer()
+src/app/admin/inbox, /privacy,         Leads inbox, data requests, staff bell, relocation queue,
+  /notifications, /relocation,         profile-unlock approvals, employer fees, two-factor enrolment
+  /unlocks, /fees, /security
+src/app/[locale]/dashboard/relocation  Candidate "Your move": visa file, steps, family links, story
+src/app/family/[token]                 Public, noindex progress page for a candidate's family (token = credential)
+src/app/api/relocation/...             Candidate document uploads, arrival steps, family links, story
+src/app/api/cron/...                   Vercel Cron, Bearer CRON_SECRET (reminders, job alerts, relocation)
 
 src/lib/rbac/                          permissions.ts (names), server.ts (guards), data.ts
 src/lib/cms/                           blocks.ts (registry), sanitize.ts, data.ts, settings.ts,
@@ -57,12 +65,21 @@ src/lib/cms/                           blocks.ts (registry), sanitize.ts, data.t
 src/lib/jobs/                          types, zod schema, data access, sample jobs
 src/lib/applications/                  status vocabulary, data access
 src/lib/console/analytics.ts           dashboard KPIs, series, funnel, breakdowns (one range, one place)
-src/lib/employer/portal.ts             employer portal: guard, vacancy requests, shortlisted applicants
+src/lib/employer/portal.ts             employer portal: guard, vacancy requests, applicants (masked, scored), bench
+src/lib/leads/                         contact/import leads: types (client-safe), data, CSV import, phone normalising
+src/lib/privacy/                       access log + consent history, export, erase
+src/lib/relocation/                    documents.ts (readiness), milestones.ts (plan template), data.ts
+src/lib/hiring/                        match.ts (fit score), redact.ts (masking), scorecard.ts, fees.ts, data.ts
+src/lib/notifications/staff.ts         the console bell: notifyStaff() by permission
+src/lib/security/idempotency.ts        idempotency-key replay for apply, checkout, bulk move, contact, import
+src/lib/observability/log.ts           request ids and structured logs
 src/lib/payments/                      rail adapters (EximPe, Cashfree, Razorpay, Stripe, Viva, Dodo)
 src/components/cms/                    BlockRenderer + one component per block type
 src/components/admin/                  console client components (editors, forms, pickers)
 supabase/migrations/                   schema, in order. 0014 = RBAC, jobs, applications, CMS; 0015 = realtime;
-                                       0016 = growth; 0017 = employer portal
+                                       0016 = growth; 0017 = employer portal; 0018 = operations
+                                       (leads, privacy, bell, idempotency); 0019 = relocation and hiring
+docs/ops/                              backup/restore, incident runbook, SLOs, secrets inventory
 supabase/seed/                         optional: sample job drafts, first super admin
 ```
 

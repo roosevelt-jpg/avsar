@@ -8,10 +8,11 @@ import { localePath } from '@/lib/i18n/path';
  * The candidate dashboard's header. One definition, so every dashboard page
  * offers the same way around and marks where you are.
  */
-export function DashboardNav({ locale, current }: { locale: Locale; current: 'overview' | 'applications' | 'jobs' | 'profile' }) {
+export function DashboardNav({ locale, current }: { locale: Locale; current: 'overview' | 'applications' | 'relocation' | 'jobs' | 'profile' }) {
   const items = [
     { key: 'overview', href: localePath(locale, '/dashboard'), label: 'Overview' },
     { key: 'applications', href: localePath(locale, '/dashboard/applications'), label: 'My applications' },
+    { key: 'relocation', href: localePath(locale, '/dashboard/relocation'), label: 'Your move' },
     { key: 'jobs', href: localePath(locale, '/jobs'), label: 'Find jobs' },
     { key: 'profile', href: localePath(locale, '/profile'), label: 'Profile' },
   ] as const;

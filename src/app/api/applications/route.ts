@@ -10,6 +10,10 @@ import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { sendApplicationUpdate } from '@/lib/email/application';
 import type { ScreeningQuestion } from '@/lib/jobs/types';
 import { clientIp, rateLimit, rateLimitedResponse, RATE_LIMITS } from '@/lib/security/rate-limit';
+import { withIdempotency } from '@/lib/security/idempotency';
+import { notifyStaff } from '@/lib/notifications/staff';
+import { log, requestIdOf } from '@/lib/observability/log';
+import { recordConsent } from '@/lib/privacy/log';
 
 export const runtime = 'nodejs';
 
@@ -52,6 +56,14 @@ export async function POST(request: Request) {
     );
   }
 
+  return withIdempotency(request, 'apply', candidate.id, () => apply(request, candidate, parsed.data));
+}
+
+async function apply(
+  request: Request,
+  candidate: NonNullable<Awaited<ReturnType<typeof getSessionCandidate>>>,
+  input: z.infer<typeof schema>,
+): Promise<NextResponse> {
   const settings = await getSiteSettings();
   if (settings.applications.requirePaidAssessment && !hasPaid(candidate)) {
     return NextResponse.json({ error: 'payment_required' }, { status: 402 });
@@ -64,13 +76,13 @@ export async function POST(request: Request) {
   const { data: job } = (await anon
     ?.from('job_postings')
     .select('id, title, screening_questions')
-    .eq('id', parsed.data.jobId)
+    .eq('id', input.jobId)
     .maybeSingle()) ?? { data: null };
   if (!job) return NextResponse.json({ error: 'job_not_open' }, { status: 409 });
 
   const questions = (Array.isArray(job.screening_questions) ? job.screening_questions : []) as ScreeningQuestion[];
   const knownIds = new Set(questions.map((q) => q.id));
-  const answers = Object.fromEntries(Object.entries(parsed.data.answers).filter(([id]) => knownIds.has(id)));
+  const answers = Object.fromEntries(Object.entries(input.answers).filter(([id]) => knownIds.has(id)));
   const missing = questions.filter((q) => q.required && !answers[q.id]);
   if (missing.length) {
     return NextResponse.json({ error: 'answers_required', missing: missing.map((q) => q.id) }, { status: 422 });
@@ -84,23 +96,23 @@ export async function POST(request: Request) {
   const { data: prior } = await supabase
     .from('applications')
     .select('status')
-    .eq('job_id', parsed.data.jobId)
+    .eq('job_id', input.jobId)
     .eq('candidate_id', candidate.id)
     .maybeSingle();
   const isNew = !prior || prior.status === 'withdrawn';
 
   const { data, error } = await supabase.rpc('apply_to_job', {
-    p_job_id: parsed.data.jobId,
-    p_cover_note: parsed.data.coverNote ?? null,
+    p_job_id: input.jobId,
+    p_cover_note: input.coverNote ?? null,
     p_answers: answers,
-    p_source: parsed.data.source ?? null,
+    p_source: input.source ?? null,
   });
 
   if (error) {
     const message = error.message ?? '';
     if (message.includes('job_not_open')) return NextResponse.json({ error: 'job_not_open' }, { status: 409 });
     if (message.includes('no_candidate_for_session')) return NextResponse.json({ error: 'no_candidate' }, { status: 403 });
-    console.error('[applications] apply failed', error);
+    log.error('applications.apply_failed', { requestId: requestIdOf(request), jobId: input.jobId, error });
     return NextResponse.json({ error: 'storage_failed' }, { status: 500 });
   }
 
@@ -111,19 +123,21 @@ export async function POST(request: Request) {
      keyed on ids that came from the session or were checked against it, and a
      failure here never fails the application itself. */
   const admin = getAdminSupabase();
-  if (admin && parsed.data.whatsappOptIn) {
-    const { error: optInError } = await admin
+  if (admin && input.whatsappOptIn) {
+    const { data: optedIn, error: optInError } = await admin
       .from('candidates')
       .update({ whatsapp_opt_in_at: new Date().toISOString() })
       .eq('id', candidate.id)
-      .is('whatsapp_opt_in_at', null);
+      .is('whatsapp_opt_in_at', null)
+      .select('id');
     if (optInError) console.error('[applications] whatsapp opt-in failed', optInError);
+    if (optedIn && optedIn.length > 0) await recordConsent(candidate.id, 'whatsapp', true, 'apply_form');
   }
-  if (admin && parsed.data.cvDocumentId) {
+  if (admin && input.cvDocumentId) {
     const { data: cv } = await admin
       .from('cv_documents')
       .select('id')
-      .eq('id', parsed.data.cvDocumentId)
+      .eq('id', input.cvDocumentId)
       .eq('candidate_id', candidate.id)
       .maybeSingle();
     if (cv) {
@@ -147,6 +161,13 @@ export async function POST(request: Request) {
       status: 'submitted',
       origin: new URL(request.url).origin,
       locale: candidate.locale,
+    });
+    await notifyStaff({
+      permission: 'applications.view',
+      kind: 'application.new',
+      title: `New application: ${String(job.title)}`,
+      body: `${candidate.fullName} · ${application.reference}`,
+      href: `/admin/applications/${application.id}`,
     });
   }
 

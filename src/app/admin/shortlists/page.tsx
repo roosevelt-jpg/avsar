@@ -5,6 +5,7 @@ import { requireStaffOrEmployer } from '@/lib/auth';
 import { getServerSupabase } from '@/lib/supabase/server';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { sectorLabel, SECTOR_SLUGS, type SectorSlug } from '@/lib/data/sectors';
+import { maskName } from '@/lib/hiring/redact';
 
 export const metadata = { title: 'Shortlists' };
 
@@ -50,6 +51,14 @@ export default async function ShortlistsPage() {
     } | null;
   }[];
 
+  /* Employers see the same shortened names as in search, unless we released the identity. */
+  let released = new Set<string>();
+  if (!access.isStaff && supabase && rows.length) {
+    const { data: unlocks } = await supabase.from('profile_unlock_requests').select('candidate_id').eq('status', 'approved');
+    released = new Set((unlocks ?? []).map((u) => String(u.candidate_id)));
+  }
+  const displayName = (c: { id: string; full_name: string }) => (access.isStaff || released.has(c.id) ? c.full_name : maskName(c.full_name));
+
   return (
     <AdminShell current="/admin/shortlists" isStaff={access.isStaff} suffix="shortlists">
       <AdminHeading
@@ -93,8 +102,8 @@ export default async function ShortlistsPage() {
               >
                 <td className="py-3 pr-4">
                   {row.candidates ? (
-                    <Link href={`/admin?q=${encodeURIComponent(row.candidates.full_name)}`} className="prose-link">
-                      {row.candidates.full_name}
+                    <Link href={`/admin?q=${encodeURIComponent(displayName(row.candidates))}`} className="prose-link">
+                      {displayName(row.candidates)}
                     </Link>
                   ) : (
                     <span className="text-muted">Removed</span>

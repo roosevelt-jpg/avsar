@@ -30,6 +30,8 @@ export const RATE_LIMITS = {
   requestCodeEmail: { name: 'code-email', limit: 3, windowSeconds: 600 },
   mediaSign: { name: 'media-sign', limit: 60, windowSeconds: 60 },
   vacancyRequest: { name: 'vacancy-request', limit: 10, windowSeconds: 3600 },
+  contact: { name: 'contact', limit: 8, windowSeconds: 600 },
+  selfExport: { name: 'self-export', limit: 5, windowSeconds: 3600 },
 } satisfies Record<string, RateLimitRule>;
 
 function upstash(): { url: string; token: string } | null {

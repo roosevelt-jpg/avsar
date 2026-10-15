@@ -5,7 +5,8 @@ import { BRAND, PLACEMENT_FEE_UNDISCLOSED } from '@/lib/data/brand';
 import { getPaymentProvider, receiptNumber } from '@/lib/payments';
 import { paymentMethodSchema } from '@/lib/validation';
 import { getAdminSupabase } from '@/lib/supabase/admin';
-import { getSessionCandidate } from '@/lib/auth';
+import { getSessionCandidate, type SessionCandidate } from '@/lib/auth';
+import { withIdempotency } from '@/lib/security/idempotency';
 import { getCandidateStatus } from '@/lib/candidate/status';
 
 export const runtime = 'nodejs';
@@ -48,6 +49,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'already_paid' }, { status: 409 });
   }
 
+  /* A double tap on "Pay" over a slow connection must open one order, not two. */
+  return withIdempotency(request, 'checkout', candidate.id, () => openCheckout(request, candidate));
+}
+
+async function openCheckout(request: Request, candidate: SessionCandidate): Promise<NextResponse> {
   const body = (await request.json().catch(() => null)) as { method?: unknown } | null;
   const method = paymentMethodSchema.safeParse(body?.method);
   if (!method.success) return NextResponse.json({ error: 'invalid_method' }, { status: 400 });

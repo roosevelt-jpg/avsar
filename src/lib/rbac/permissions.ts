@@ -18,6 +18,8 @@ export const PERMISSIONS = [
   'candidates.view',
   'candidates.export',
   'cv.review',
+  'leads.manage',
+  'relocation.manage',
   'employers.manage',
   'placements.manage',
   'cms.view',
@@ -27,9 +29,11 @@ export const PERMISSIONS = [
   'settings.manage',
   'payments.view',
   'payments.refund',
+  'fees.manage',
   'staff.manage',
   'roles.manage',
   'audit.view',
+  'privacy.manage',
 ] as const;
 
 export type Permission = (typeof PERMISSIONS)[number];
@@ -61,6 +65,8 @@ export const PERMISSION_GROUPS: { group: string; items: { key: Permission; label
       { key: 'candidates.view', label: 'View candidates and talent pool' },
       { key: 'candidates.export', label: 'Export candidate data' },
       { key: 'cv.review', label: 'Review CVs and assessments' },
+      { key: 'leads.manage', label: 'Inbox: contact messages and leads' },
+      { key: 'relocation.manage', label: 'Relocation: documents, plans, stories, identity release' },
     ],
   },
   {
@@ -85,6 +91,7 @@ export const PERMISSION_GROUPS: { group: string; items: { key: Permission; label
     items: [
       { key: 'payments.view', label: 'View payments' },
       { key: 'payments.refund', label: 'Mark refunds' },
+      { key: 'fees.manage', label: 'Employer placement fees' },
     ],
   },
   {
@@ -93,6 +100,7 @@ export const PERMISSION_GROUPS: { group: string; items: { key: Permission; label
       { key: 'staff.manage', label: 'Invite and manage staff' },
       { key: 'roles.manage', label: 'Edit role permissions' },
       { key: 'audit.view', label: 'Read the audit log' },
+      { key: 'privacy.manage', label: 'Export or erase personal data' },
     ],
   },
 ];

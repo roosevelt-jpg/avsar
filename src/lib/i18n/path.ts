@@ -20,7 +20,7 @@ export function isLocale(value: string): value is Locale {
 }
 
 /** First path segment of routes that are not candidate pages. */
-const RESERVED = new Set(['admin', 'api', 'auth', 'employers', 'dev', 'brand', 'positions', 'video', 'walkthrough']);
+const RESERVED = new Set(['admin', 'api', 'auth', 'employers', 'family', 'dev', 'brand', 'positions', 'video', 'walkthrough']);
 
 function splitSuffix(path: string): [pathname: string, suffix: string] {
   const index = path.search(/[?#]/);

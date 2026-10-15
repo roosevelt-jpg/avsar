@@ -8,6 +8,7 @@ import type { ScreeningQuestion } from '@/lib/jobs/types';
 import type { Locale } from '@/lib/i18n';
 import { localePath } from '@/lib/i18n/path';
 import { Turnstile, TURNSTILE_HEADER, turnstileEnabled } from '@/components/security/Turnstile';
+import { IDEMPOTENCY_HEADER, useIdempotencyKey } from '@/components/security/useIdempotencyKey';
 
 /**
  * Applying, in one place, with as little in the way as possible.
@@ -66,6 +67,7 @@ export function ApplyPanel({
   const [cv, setCv] = useState<File | null>(null);
   const [challenge, setChallenge] = useState<string | null>(null);
   const [challengeKey, setChallengeKey] = useState(0);
+  const idempotency = useIdempotencyKey();
 
   const next = localePath(locale, `/jobs/${job.slug}`);
   const signInHref = localePath(locale, `/signin?next=${encodeURIComponent(next)}`);
@@ -90,18 +92,20 @@ export function ApplyPanel({
   async function apply(): Promise<boolean> {
     const cvDocumentId = await uploadCv();
     if (cvDocumentId === false) return false;
+    const body = JSON.stringify({
+      jobId: job.id,
+      coverNote: note.trim() || null,
+      answers,
+      source: 'job_page',
+      whatsappOptIn: whatsapp || undefined,
+      cvDocumentId: cvDocumentId ?? undefined,
+    });
     const response = await fetch('/api/applications', {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        jobId: job.id,
-        coverNote: note.trim() || null,
-        answers,
-        source: 'job_page',
-        whatsappOptIn: whatsapp || undefined,
-        cvDocumentId: cvDocumentId ?? undefined,
-      }),
+      headers: { 'content-type': 'application/json', [IDEMPOTENCY_HEADER]: idempotency.current(body) },
+      body,
     });
+    idempotency.settle(response);
     const data = (await response.json().catch(() => null)) as { reference?: string; error?: string } | null;
     if (response.ok && data?.reference) {
       setDone({ reference: data.reference });
@@ -114,6 +118,7 @@ export function ApplyPanel({
       unauthorized: 'Please sign in again to apply.',
       no_candidate: 'Your account is not set up as a candidate. Please contact us.',
       rate_limited: 'Too many attempts from this connection. Please wait a minute and try again.',
+      in_progress: 'Your application is still being sent. Wait a few seconds, then press Apply again.',
     };
     setError(messages[data?.error ?? ''] ?? 'Something went wrong. Please try again in a moment.');
     return false;

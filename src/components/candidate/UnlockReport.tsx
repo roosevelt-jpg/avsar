@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Mono } from '@/components/ui/Mono';
+import { IDEMPOTENCY_HEADER, useIdempotencyKey } from '@/components/security/useIdempotencyKey';
 import { IndicativePrice } from '@/components/candidate/IndicativePrice';
 import { loadEximpe } from '@/lib/payments/eximpe-client';
 import { loadCashfree } from '@/lib/payments/cashfree-client';
@@ -52,16 +53,19 @@ export function UnlockReport({
   const [method, setMethod] = useState<PaymentMethodHint>(methods[0] ?? 'card');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const idempotency = useIdempotencyKey();
 
   async function pay() {
     setBusy(true);
     setError('');
     try {
+      const body = JSON.stringify({ method });
       const response = await fetch('/api/payments/checkout', {
         method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ method }),
+        headers: { 'content-type': 'application/json', [IDEMPOTENCY_HEADER]: idempotency.current(body) },
+        body,
       });
+      idempotency.settle(response);
 
       if (!response.ok) {
         setBusy(false);

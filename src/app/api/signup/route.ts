@@ -4,6 +4,7 @@ import { CONSENT_VERSION } from '@/lib/data/brand';
 import { itemSectorFor } from '@/lib/data/positions';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { getSessionCandidate } from '@/lib/auth';
+import { recordConsent } from '@/lib/privacy/log';
 
 export const runtime = 'nodejs';
 
@@ -80,6 +81,7 @@ export async function POST(request: Request) {
       console.error('[signup] profile update failed', error);
       return NextResponse.json({ error: 'storage_failed' }, { status: 500 });
     }
+    await recordConsent(candidateId, 'selection_odds', true, 'signup', CONSENT_VERSION);
   }
 
   return NextResponse.json({ profileComplete: true });

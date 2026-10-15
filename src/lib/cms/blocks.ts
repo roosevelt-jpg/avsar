@@ -285,6 +285,13 @@ export const BLOCKS = {
     ],
     empty: { eyebrow: '', title: 'In their words', items: [] },
   },
+  candidate_stories: {
+    label: 'Stories from placed candidates',
+    description:
+      'Stories written by candidates we placed, live from the relocation queue. Only stories the candidate submitted and staff approved appear; nothing is shown when there are none.',
+    fields: [eyebrow, title, intro, { kind: 'number', name: 'limit', label: 'How many', min: 1, max: 9 }],
+    empty: { eyebrow: '', title: 'From people who made the move', intro: '', limit: 3 },
+  },
   faq: {
     label: 'FAQ',
     description: 'Questions and answers that open one at a time.',

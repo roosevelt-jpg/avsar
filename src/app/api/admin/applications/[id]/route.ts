@@ -6,6 +6,7 @@ import { APPLICATION_STATUSES, becomesVisibleToEmployer, type ApplicationStatus 
 import { notifyStageChange } from '@/lib/applications/notify';
 import { notifyEmployersOfShortlist } from '@/lib/employer/notify';
 import { audit } from '@/lib/audit';
+import { recordEmployerFees } from '@/lib/hiring/fees';
 
 export const runtime = 'nodejs';
 
@@ -100,6 +101,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (moving && becomesVisibleToEmployer(from, body.status as ApplicationStatus)) {
     await notifyEmployersOfShortlist([id], new URL(request.url).origin);
   }
+  if (moving && body.status === 'hired') await recordEmployerFees(admin, [id]);
 
   await audit(guard.userId, moving ? 'application.move' : 'application.note', `application:${id}`, {
     from: moving ? from : undefined,

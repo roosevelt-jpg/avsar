@@ -41,7 +41,7 @@ export default async function AdminSearchPage({
   const page = Math.max(1, Number(query.page ?? 1) || 1);
 
   const [result, assessed] = await Promise.all([
-    searchTalent({ query: q, sector, minEnglish, page, pageSize: PAGE_SIZE }),
+    searchTalent({ query: q, sector, minEnglish, page, pageSize: PAGE_SIZE, maskNames: !access.isStaff }),
     assessedCount(),
   ]);
   const understood = describeQuery(parseQuery(q), sectorLabel);

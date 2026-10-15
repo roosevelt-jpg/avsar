@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Wordmark } from '@/components/ui/Wordmark';
 import { AccountMenu } from '@/components/auth/AccountMenu';
 import { getStaffAccess } from '@/lib/rbac/server';
+import { unseenCount } from '@/lib/notifications/staff';
 import { grants, roleName, type Permission } from '@/lib/rbac/permissions';
 
 /**
@@ -25,10 +26,12 @@ const STAFF_NAV: Group[] = [
     items: [
       { href: '/admin/jobs', label: 'Jobs', permission: 'jobs.view' },
       { href: '/admin/applications', label: 'Applications', permission: 'applications.view' },
+      { href: '/admin/inbox', label: 'Inbox', permission: 'leads.manage' },
       { href: '/admin', label: 'Talent search', permission: 'candidates.view' },
       { href: '/admin/shortlists', label: 'Shortlists', permission: 'candidates.view' },
       { href: '/admin/cvs', label: 'CV queue', permission: 'cv.review' },
       { href: '/admin/cohorts', label: 'Cohorts', permission: 'candidates.view' },
+      { href: '/admin/relocation', label: 'Relocation', permission: 'relocation.manage' },
     ],
   },
   {
@@ -36,6 +39,7 @@ const STAFF_NAV: Group[] = [
     items: [
       { href: '/admin/employers', label: 'Employers', permission: 'employers.manage' },
       { href: '/admin/placements', label: 'Placements', permission: 'placements.manage' },
+      { href: '/admin/unlocks', label: 'Profile requests', permission: 'relocation.manage' },
     ],
   },
   {
@@ -46,13 +50,21 @@ const STAFF_NAV: Group[] = [
       { href: '/admin/settings', label: 'Site settings', permission: 'settings.manage' },
     ],
   },
-  { label: 'Finance', items: [{ href: '/admin/payments', label: 'Payments', permission: 'payments.view' }] },
+  {
+    label: 'Finance',
+    items: [
+      { href: '/admin/payments', label: 'Payments', permission: 'payments.view' },
+      { href: '/admin/fees', label: 'Employer fees', permission: 'payments.view' },
+    ],
+  },
   {
     label: 'Administration',
     items: [
       { href: '/admin/staff', label: 'Staff', permission: 'staff.manage' },
       { href: '/admin/roles', label: 'Roles & permissions', permission: 'roles.manage' },
       { href: '/admin/audit', label: 'Audit log', permission: 'audit.view' },
+      { href: '/admin/privacy', label: 'Privacy', permission: 'privacy.manage' },
+      { href: '/admin/security', label: 'Sign-in security' },
     ],
   },
 ];
@@ -63,6 +75,7 @@ const EMPLOYER_NAV: Group[] = [
     items: [
       { href: '/admin/vacancies', label: 'Vacancies' },
       { href: '/admin/applicants', label: 'Applicants' },
+      { href: '/admin/bench', label: 'Ready to travel' },
       { href: '/admin', label: 'Search talent' },
       { href: '/admin/shortlists', label: 'Shortlists' },
       { href: '/admin/placements', label: 'Placements' },
@@ -113,6 +126,7 @@ export async function AdminShell({
   children: React.ReactNode;
 }) {
   const access = isStaff ? await getStaffAccess() : null;
+  const unseen = access ? await unseenCount(access.userId) : 0;
   const groups = isStaff
     ? STAFF_NAV.map((group) => ({
         ...group,
@@ -162,7 +176,26 @@ export async function AdminShell({
               </span>
             )}
           </div>
-          <AccountMenu locale="en" tone="employer" />
+          <div className="flex items-center gap-2">
+            {access && (
+              <Link
+                href="/admin/notifications"
+                aria-label={unseen > 0 ? `Notifications, ${unseen} new` : 'Notifications'}
+                className="t-colors relative grid size-10 place-items-center rounded-full border border-line-strong bg-surface text-ink hover:border-ink"
+              >
+                <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
+                  <path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15L6 16Z" strokeLinejoin="round" />
+                  <path d="M10 20a2 2 0 0 0 4 0" strokeLinecap="round" />
+                </svg>
+                {unseen > 0 && (
+                  <span className="absolute -end-1 -top-1 min-w-5 rounded-full bg-accent px-1 text-center font-mono text-[11px] leading-5 text-white">
+                    {unseen > 99 ? '99+' : unseen}
+                  </span>
+                )}
+              </Link>
+            )}
+            <AccountMenu locale="en" tone="employer" />
+          </div>
         </header>
 
         <main className="px-[clamp(20px,3cqi,40px)] py-[clamp(24px,3cqi,40px)]">{children}</main>

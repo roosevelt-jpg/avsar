@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSessionCandidate } from '@/lib/auth';
 import { getAdminSupabase } from '@/lib/supabase/admin';
+import { recordConsent } from '@/lib/privacy/log';
 
 export const runtime = 'nodejs';
 
@@ -33,5 +34,6 @@ export async function POST(request: Request) {
     console.error('[whatsapp-pref] update failed', error);
     return NextResponse.json({ error: 'storage_failed' }, { status: 500 });
   }
+  await recordConsent(candidate.id, 'whatsapp', parsed.data.optIn, 'dashboard');
   return NextResponse.json({ saved: true });
 }

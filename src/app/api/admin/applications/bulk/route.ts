@@ -6,6 +6,8 @@ import { APPLICATION_STATUSES, becomesVisibleToEmployer, type ApplicationStatus 
 import { notifyStageChange } from '@/lib/applications/notify';
 import { notifyEmployersOfShortlist } from '@/lib/employer/notify';
 import { audit } from '@/lib/audit';
+import { recordEmployerFees } from '@/lib/hiring/fees';
+import { withIdempotency } from '@/lib/security/idempotency';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -38,7 +40,13 @@ export async function POST(request: Request) {
 
   const parsed = schema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: 'invalid_payload' }, { status: 400 });
-  const { ids, status, notify } = parsed.data;
+
+  /* A retried bulk move would email every candidate in it a second time. */
+  return withIdempotency(request, 'applications.bulk', guard.userId, () => bulkMove(request, guard.userId, parsed.data));
+}
+
+async function bulkMove(request: Request, userId: string, input: z.infer<typeof schema>): Promise<NextResponse> {
+  const { ids, status, notify } = input;
 
   const admin = getAdminSupabase();
   if (!admin) return NextResponse.json({ error: 'storage_unconfigured' }, { status: 503 });
@@ -62,7 +70,7 @@ export async function POST(request: Request) {
       to_status: status,
       note: null,
       visible_to_candidate: true,
-      actor: guard.userId,
+      actor: userId,
     })),
   );
   if (eventError) {
@@ -104,8 +112,9 @@ export async function POST(request: Request) {
     moving.filter((row) => becomesVisibleToEmployer(row.status, status)).map((row) => row.id),
     new URL(request.url).origin,
   );
+  if (status === 'hired') await recordEmployerFees(admin, moving.map((row) => row.id));
 
-  await audit(guard.userId, 'application.bulk_move', `applications:${moving.length}`, {
+  await audit(userId, 'application.bulk_move', `applications:${moving.length}`, {
     to: status,
     ids: moving.map((row) => row.id),
     notified: notify,

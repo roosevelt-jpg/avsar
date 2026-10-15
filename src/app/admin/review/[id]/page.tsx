@@ -8,6 +8,7 @@ import { rubricFor, RUBRIC_VERSION } from '@/lib/cv/rubric';
 import { SECTOR_SLUGS, sectorLabel, type SectorSlug } from '@/lib/data/sectors';
 import { SAMPLE_ASSESSMENT } from '@/lib/cv/sample';
 import { requirePermission } from '@/lib/rbac/server';
+import { logDataAccess } from '@/lib/privacy/log';
 import { AccountMenu } from '@/components/auth/AccountMenu';
 
 export const metadata = { title: 'CV review' };
@@ -21,7 +22,7 @@ export const metadata = { title: 'CV review' };
 export default async function CvReviewPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-  await requirePermission('cv.review', `/admin/review/${id}`);
+  const access = await requirePermission('cv.review', `/admin/review/${id}`);
 
   const supabase = getAdminSupabase();
 
@@ -32,12 +33,13 @@ export default async function CvReviewPage({ params }: { params: Promise<{ id: s
     const { data } = await supabase
       .from('cv_assessments')
       .select(
-        'id, sector, suggested_score, role_fit, criteria, strengths, concerns, discrepancies, attention_reasons, model, prompt_version, rubric_version',
+        'id, candidate_id, sector, suggested_score, role_fit, criteria, strengths, concerns, discrepancies, attention_reasons, model, prompt_version, rubric_version',
       )
       .eq('id', id)
       .maybeSingle();
 
     if (!data) notFound();
+    await logDataAccess(access.userId, String(data.candidate_id), 'cv_assessment.view', { assessment: id });
 
     row = {
       id: data.id as string,

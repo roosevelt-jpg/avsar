@@ -14,7 +14,7 @@ import {
   TrustBarBlock,
 } from './blocks/Content';
 import { FeaturedJobsBlock, JobCategoriesBlock } from './blocks/Jobs';
-import { GalleryBlock, TestimonialsBlock, VideoBlock } from './blocks/Media';
+import { CandidateStoriesBlock, GalleryBlock, TestimonialsBlock, VideoBlock } from './blocks/Media';
 import { ContactCardsBlock, FaqBlock } from './blocks/Faq';
 
 /**
@@ -57,6 +57,8 @@ export function BlockRenderer({ blocks, locale, settings }: { blocks: Block[]; l
             return <GalleryBlock key={block.id} {...props} />;
           case 'testimonials':
             return <TestimonialsBlock key={block.id} {...props} />;
+          case 'candidate_stories':
+            return <CandidateStoriesBlock key={block.id} {...props} />;
           case 'faq':
             return <FaqBlock key={block.id} {...props} />;
           case 'cta':

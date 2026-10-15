@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { EntityDetails } from '@/components/ui/EntityDetails';
+import { ContactForm } from '@/components/contact/ContactForm';
 import { getDictionary, isLocale } from '@/lib/i18n';
 import { ENTITY, RESPONSE_DAYS } from '@/lib/data/brand';
 
@@ -13,6 +14,13 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
   return (
     <>
       <h1>{t.footerContact}</h1>
+
+      <h2>Write to us</h2>
+      <p>
+        Questions about a job, an application or the visa, and reports of anyone asking you for
+        money, all reach the same team. A person reads every message.
+      </p>
+      <ContactForm locale={locale} />
 
       <h2>Registered office</h2>
       <EntityDetails />

@@ -4,6 +4,112 @@ Newest entry first. Each entry carries date, time and the authoring account.
 
 ---
 
+## Block 53 - 15 Oct 2026
+
+**Operations, privacy, relocation and hiring, done in code.** Run
+`0018_operations.sql` then `0019_relocation_hiring.sql` after 0017. Both are
+new and unapplied; after they are applied, changes go in 0020.
+
+### Operations (0018)
+- **Request ids and logs.** Every request gets `x-request-id` (set in
+  `src/proxy.ts`); `log.info/warn/error` in `src/lib/observability/log.ts`.
+- **Idempotency.** Apply, checkout, bulk move, contact and lead import accept
+  an `idempotency-key` header; a retry with the same key gets the first answer
+  instead of a second write (`src/lib/security/idempotency.ts`, client hook
+  `useIdempotencyKey`).
+- **Inbox** (`/admin/inbox`, `leads.manage`). The contact form (on the contact
+  page and, for employers, on `/employers`) creates a lead. Staff reply by
+  email or by WhatsApp (only with consent), add notes, and import a partner's
+  CSV (dry run first; duplicates dropped against the file and the database).
+  Fee-scam reports are listed first.
+- **Bell.** `notifyStaff()` fans a notification out to everyone holding a
+  permission: new application, vacancy request, contact, privacy request,
+  documents to check, fees to invoice, unlock requests, employer scorecards
+  and holds, and the daily relocation summary.
+- **Privacy** (`/admin/privacy`, `privacy.manage`). Search a person, export all
+  their data, erase it (refused while an offer, hire or visa is in progress),
+  and see who opened what: CV downloads, application views, visa documents
+  and identity releases are written to `data_access_log`. Consents (WhatsApp,
+  selection odds, family links, stories) go to `consent_events`. Candidates
+  can download their own data and ask for erasure from their profile.
+- **Guard test** (`tests/unit/guards.test.ts`): every `api/admin` handler checks
+  a permission before the service role; every `api/employer` handler starts
+  from the session's employer.
+- **Ops docs** in `docs/ops/`; Dependabot weekly.
+
+### Relocation (0019)
+- **Candidate "Your move"** (`/dashboard/relocation`). Visa file with a
+  readiness score (passport, police clearance and contract are required, plus
+  at least 70 of 100 points), uploads to the private `relocation-docs` bucket
+  (PDF or image, checked by content, 10 MB), the step plan with dates, arrival
+  buttons, family links and, once placed, a story form.
+- **Family page** `/family/<token>`: first name, job, city and steps only. The
+  token is shown once; only its hash is stored. Noindex, no referrer, view
+  count shown to the candidate, revocable.
+- **Console** `/admin/relocation` (`relocation.manage`): documents to verify
+  (with expiry) or reject (the candidate is emailed the reason), documents
+  expiring within 30 days, overdue steps, stories to publish. Opening a
+  document is access-logged. Plans are started from the application page at
+  offer, hired or visa processing; each step's status, date and "waiting for"
+  note are edited there.
+- **Cron** `/api/cron/relocation` daily at 03:30 UTC (`vercel.json`): one
+  summary notification for overdue steps and one for expiring documents.
+- **Stories CMS block** "Stories from placed candidates": shows approved
+  stories only, and nothing at all when there are none.
+
+### Hiring (0019)
+- **Fit score** (`src/lib/hiring/match.ts`): role 30, English 25, experience
+  15, assessment 20, verified visa file 10, every point with its reason. On
+  the application page and the employer's Applicants page. A reading order,
+  not a decision.
+- **Masked names.** Employers see "Arjun N." on Applicants, search and
+  shortlists until they ask ("Ask to see full profile") and staff approve at
+  `/admin/unlocks`. Approval is written to the candidate's access log.
+- **Scorecards**: four criteria scored 1 to 5, a recommendation and a summary,
+  from recruiters (per interview) and employers (after the interview has
+  happened). Shown under each interview on the application page.
+- **Employer fees**: a row is created when an application moves to hired on
+  an employer's vacancy (single or bulk move), at `PLACEMENT_FEE.eur` in
+  cents, once per application. `/admin/fees` (`payments.view` to see,
+  `fees.manage` to invoice, mark paid or waive). Never created if the payer
+  is ever not the employer.
+- **Ready to travel** (`/admin/bench`, employers): assessed, visible
+  candidates with a verified passport and police clearance, not yet placed.
+  Holds last 72 hours, five per employer, and do not take anyone off the
+  market; staff are notified.
+- Applicants page: counts at the top, best fit first, CSV export with the
+  same columns as the screen.
+
+### Two-factor sign-in for staff
+- `/admin/security`: set up an authenticator app (Supabase TOTP), enter a
+  code, remove it. With `STAFF_REQUIRE_MFA=true`, console pages redirect there
+  and admin APIs answer 403 `mfa_required` until the session has passed a
+  code. Enable TOTP in Supabase Auth settings first, have every member of
+  staff enrol, then turn the flag on. Appended to `.env.example`.
+
+### Tests
+- Unit: `tests/unit/operations.test.ts` (phone, CSV import, readiness, plan,
+  fit score, masking, scorecards). 91 pass.
+- e2e: `tests/e2e/operations.spec.ts` (inbox, privacy, bell, contact refusal,
+  relocation pages, family link, employer pages, demo refusals). 104 pass on
+  desktop and mobile.
+
+### Open
+- **Translate.** New candidate copy (Your move, family page, contact form,
+  Your data, document hints) is English only.
+- **Masking is in the app, not the database.** An employer with API skills
+  could still read `talent_pool.full_name` and the candidate join on
+  shortlists through PostgREST. Closing that needs a column grant change or a
+  masked view in 0020.
+- **Meta template.** WhatsApp `lead_follow_up` must be approved in Meta
+  Business Manager before inbox WhatsApp replies are delivered.
+- **Counsel.** `SignupFlow` still shows `PLACEMENT_FEE` to candidates; ask the
+  lawyer whether that wording is right under DL 260/2009 now that the fee is
+  billed to employers.
+- Supabase Auth: enable TOTP before using `/admin/security`.
+
+---
+
 ## Block 52 - 15 Oct 2026
 
 **Phase 6, employer portal, done in code.** Run `0017_employer_portal.sql`

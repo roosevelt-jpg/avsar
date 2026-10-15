@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { apiPermission } from '@/lib/rbac/server';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { audit } from '@/lib/audit';
+import { logDataAccess } from '@/lib/privacy/log';
 
 export const runtime = 'nodejs';
 
@@ -23,7 +24,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
 
   const { data: application } = await admin
     .from('applications')
-    .select('cv_document_id, cv_documents (storage_path)')
+    .select('candidate_id, cv_document_id, cv_documents (storage_path)')
     .eq('id', id)
     .maybeSingle();
   const doc = application?.cv_documents as { storage_path?: string } | { storage_path?: string }[] | null | undefined;
@@ -37,5 +38,6 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
   }
 
   await audit(guard.userId, 'cv.download', `application:${id}`);
+  await logDataAccess(guard.userId, String(application?.candidate_id ?? '') || null, 'cv.download', { application: id });
   return NextResponse.redirect(data.signedUrl, 303);
 }

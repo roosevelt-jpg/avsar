@@ -1,5 +1,6 @@
-import { items, str, type BlockData } from '@/lib/cms/blocks';
+import { items, num, str, type BlockData } from '@/lib/cms/blocks';
 import type { Locale } from '@/lib/i18n';
+import { publishedStories } from '@/lib/relocation/data';
 import { CmsImage, CmsVideo, Section, SectionHeading } from '../primitives';
 
 type Props = { data: BlockData; locale: Locale };
@@ -37,6 +38,32 @@ export function GalleryBlock({ data }: Props) {
               </div>
               {str(item, 'caption') ? <figcaption className="mt-2 text-[13px] text-muted">{str(item, 'caption')}</figcaption> : null}
             </figure>
+          </li>
+        ))}
+      </ul>
+    </Section>
+  );
+}
+
+/**
+ * Approved stories, in the candidate's own words and chosen name. Renders
+ * nothing when there are none: an empty "stories" section reads worse than
+ * no section, and inventing filler is not an option.
+ */
+export async function CandidateStoriesBlock({ data }: Props) {
+  const stories = await publishedStories(num(data, 'limit', 3));
+  if (!stories.length) return null;
+  return (
+    <Section tone="surface">
+      <SectionHeading eyebrow={str(data, 'eyebrow')} title={str(data, 'title')} intro={str(data, 'intro')} />
+      <ul className="m-0 grid list-none grid-cols-1 gap-4 p-0 md:grid-cols-3">
+        {stories.map((story) => (
+          <li key={story.id} className="flex flex-col rounded-[22px] border border-line bg-paper p-6">
+            <blockquote className="m-0 flex-1 text-[17px] leading-[1.6] text-ink">“{story.quote}”</blockquote>
+            <div className="mt-6">
+              <p className="m-0 text-[15px] font-semibold">{story.displayName}</p>
+              <p className="m-0 text-[13px] text-muted">{[story.roleLabel, story.cityLabel].filter(Boolean).join(', ')}</p>
+            </div>
           </li>
         ))}
       </ul>

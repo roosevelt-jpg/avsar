@@ -24,6 +24,12 @@ export type StaffAccess = {
   permissions: ReadonlySet<string>;
   /** True only when Supabase is not configured and the console is a demo. */
   demo: boolean;
+  /**
+   * Two-factor sign-in is enforced and this session has not passed it yet.
+   * Such a session can reach `/admin/security` to set up or enter a code,
+   * and nothing else.
+   */
+  needsSecondFactor: boolean;
 };
 
 const DEMO_ACCESS: StaffAccess = {
@@ -32,7 +38,19 @@ const DEMO_ACCESS: StaffAccess = {
   role: 'super_admin',
   permissions: new Set(['*']),
   demo: true,
+  needsSecondFactor: false,
 };
+
+/**
+ * Staff can read candidates' passports and police certificates, so a stolen
+ * password alone should not be enough. With `STAFF_REQUIRE_MFA=true`, every
+ * console page and admin API needs a session that has passed an authenticator
+ * code (Supabase calls this assurance level aal2). Off by default so a new
+ * deployment is not locked out before anyone has enrolled.
+ */
+export function staffMfaRequired(): boolean {
+  return process.env.STAFF_REQUIRE_MFA === 'true';
+}
 
 export async function getStaffAccess(): Promise<StaffAccess | null> {
   /* A bare checkout with no database: the console is browsable with sample
@@ -50,7 +68,13 @@ export async function getStaffAccess(): Promise<StaffAccess | null> {
     Array.isArray(data) ? (data as unknown[]).map((row) => String(typeof row === 'string' ? row : (row as Record<string, unknown>).my_permissions ?? '')) : [],
   );
 
-  return { userId: staff.userId, email: staff.email, role: staff.role, permissions, demo: false };
+  let needsSecondFactor = false;
+  if (staffMfaRequired() && supabase) {
+    const { data: level } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    needsSecondFactor = level?.currentLevel !== 'aal2';
+  }
+
+  return { userId: staff.userId, email: staff.email, role: staff.role, permissions, demo: false, needsSecondFactor };
 }
 
 export function can(access: StaffAccess | null, permission: Permission): boolean {
@@ -64,6 +88,7 @@ export function can(access: StaffAccess | null, permission: Permission): boolean
  */
 export async function requirePermission(permission: Permission, returnTo: string): Promise<StaffAccess> {
   const access = await getStaffAccess();
+  if (access?.needsSecondFactor) redirect(`/admin/security?next=${encodeURIComponent(returnTo)}`);
   if (access && can(access, permission)) return access;
 
   if (access) redirect(`/admin/forbidden?need=${encodeURIComponent(permission)}`);
@@ -79,9 +104,12 @@ export async function requirePermission(permission: Permission, returnTo: string
  *   const guard = await apiPermission('jobs.edit');
  *   if (guard instanceof NextResponse) return guard;
  */
+const SECOND_FACTOR_NEEDED = () => NextResponse.json({ error: 'mfa_required' }, { status: 403 });
+
 export async function apiPermission(permission: Permission): Promise<StaffAccess | NextResponse> {
   const access = await getStaffAccess();
   if (!access) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+  if (access.needsSecondFactor) return SECOND_FACTOR_NEEDED();
   if (!can(access, permission)) {
     return NextResponse.json({ error: 'forbidden', need: permission }, { status: 403 });
   }
@@ -92,10 +120,22 @@ export async function apiPermission(permission: Permission): Promise<StaffAccess
 export async function apiAnyPermission(permissions: Permission[]): Promise<StaffAccess | NextResponse> {
   const access = await getStaffAccess();
   if (!access) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+  if (access.needsSecondFactor) return SECOND_FACTOR_NEEDED();
   if (!permissions.some((permission) => can(access, permission))) {
     return NextResponse.json({ error: 'forbidden', need: permissions.join(' | ') }, { status: 403 });
   }
   return access;
+}
+
+/**
+ * For the few routes about the member of staff themselves (marking their own
+ * notifications read), where any staff role will do and no permission names
+ * the action.
+ */
+export async function apiStaff(): Promise<StaffAccess | NextResponse> {
+  const access = await getStaffAccess();
+  if (!access) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+  return access.needsSecondFactor ? SECOND_FACTOR_NEEDED() : access;
 }
 
 /** Writes need a database. In demo mode, answer clearly instead of pretending to save. */
