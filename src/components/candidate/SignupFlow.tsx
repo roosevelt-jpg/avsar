@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
 import { Mono } from '@/components/ui/Mono';
 import { Turnstile, TURNSTILE_HEADER } from '@/components/security/Turnstile';
+import { PlacePicker } from '@/components/candidate/PlacePicker';
 import { DIAL_CODES, DEFAULT_COUNTRY } from '@/lib/data/dial-codes';
 import { phoneFields } from '@/lib/validation';
 import { AREAS, POSITIONS, positionsInArea, type PositionSlug } from '@/lib/data/positions';
@@ -52,6 +53,8 @@ export function SignupFlow({
   const [position, setPosition] = useState<PositionSlug>(initialPosition);
   const [years, setYears] = useState(0);
   const [cityState, setCityState] = useState('');
+  /* Place search country, seeded from the phone country on step 1. */
+  const [placeCountry, setPlaceCountry] = useState(DEFAULT_COUNTRY);
 
   const [consent, setConsent] = useState(false);
 
@@ -170,6 +173,7 @@ export function SignupFlow({
 
       setRegistered(true);
       setBusy(false);
+      setPlaceCountry(country);
       setStep(1);
       /* The layout reads the session server side, so the header and the
          account menu are stale until this runs. */
@@ -405,14 +409,19 @@ export function SignupFlow({
             </select>
           </Field>
 
-          <Field label={s.cityState} error={errors.cityState}>
-            <input
+          <div>
+            <PlacePicker
               value={cityState}
-              onChange={(event) => setCityState(event.target.value)}
-              autoComplete="address-level2"
-              className={inputClass(!!errors.cityState)}
+              onChange={setCityState}
+              country={placeCountry}
+              onCountryChange={setPlaceCountry}
+              label={s.cityState}
+              countryLabel="Country"
+              error={errors.cityState}
+              inputClassName={inputClass(!!errors.cityState)}
+              language={locale}
             />
-          </Field>
+          </div>
 
           {/*
             The disclosure, at the end of signup rather than at a checkout.

@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Mono } from '@/components/ui/Mono';
+import { PlacePicker } from '@/components/candidate/PlacePicker';
+import { DEFAULT_COUNTRY } from '@/lib/data/dial-codes';
 import type { Dictionary } from '@/lib/i18n';
 import type { ProfileInput } from '@/lib/validation-profile';
 
@@ -37,13 +39,24 @@ const EMPTY_EDUCATION: Education = { institution: '', qualification: '', field: 
  * stable identity in the browser and a partial update on a list someone has
  * just reordered loses work.
  */
-export function ProfileForm({ t, initial }: { t: Dictionary; initial: ProfileInput }) {
+export function ProfileForm({
+  t,
+  initial,
+  initialCityState = '',
+}: {
+  t: Dictionary;
+  initial: ProfileInput;
+  /** Current candidates.city_state from the server. */
+  initialCityState?: string;
+}) {
   const p = t.profile;
   const router = useRouter();
 
   const [headline, setHeadline] = useState(initial.headline ?? '');
   const [summary, setSummary] = useState(initial.summary ?? '');
   const [linkedinUrl, setLinkedin] = useState(initial.linkedinUrl ?? '');
+  const [cityState, setCityState] = useState(initialCityState);
+  const [placeCountry, setPlaceCountry] = useState(DEFAULT_COUNTRY);
   const [skills, setSkills] = useState(initial.skills.join(', '));
   const [languages, setLanguages] = useState<Language[]>(
     initial.languages.length > 0 ? initial.languages : [{ language: 'English', level: 'Conversational' }],
@@ -77,6 +90,7 @@ export function ProfileForm({ t, initial }: { t: Dictionary; initial: ProfileInp
           headline,
           summary,
           linkedinUrl,
+          cityState: cityState.trim() || undefined,
           skills: skills
             .split(',')
             .map((item) => item.trim())
@@ -133,6 +147,18 @@ export function ProfileForm({ t, initial }: { t: Dictionary; initial: ProfileInp
             className={inputClass}
           />
         </Field>
+
+        <div className="mt-4">
+          <PlacePicker
+            value={cityState}
+            onChange={setCityState}
+            country={placeCountry}
+            onCountryChange={setPlaceCountry}
+            label={t.signup.cityState}
+            countryLabel="Country"
+            inputClassName={inputClass}
+          />
+        </div>
       </section>
 
       {/* ------------------------------------------------------- experience */}
@@ -157,13 +183,16 @@ export function ProfileForm({ t, initial }: { t: Dictionary; initial: ProfileInp
                     className={inputClass}
                   />
                 </Field>
-                <Field label={p.jobLocation}>
-                  <input
+                <div>
+                  <PlacePicker
                     value={row.location ?? ''}
-                    onChange={(event) => patchExperience(index, { location: event.target.value })}
-                    className={inputClass}
+                    onChange={(next) => patchExperience(index, { location: next })}
+                    country=""
+                    label={p.jobLocation}
+                    showCountry={false}
+                    inputClassName={inputClass}
                   />
-                </Field>
+                </div>
               </div>
 
               <div className="mt-4 flex flex-wrap items-end gap-4">

@@ -38,6 +38,8 @@ export const RATE_LIMITS = {
   contact: { name: 'contact', limit: 8, windowSeconds: 600 },
   subscribe: { name: 'subscribe', limit: 5, windowSeconds: 600 },
   selfExport: { name: 'self-export', limit: 5, windowSeconds: 3600 },
+  /* Places autocomplete fires as candidates type; keep Google quota safe. */
+  places: { name: 'places', limit: 60, windowSeconds: 60 },
 } satisfies Record<string, RateLimitRule>;
 
 function upstash(): { url: string; token: string } | null {

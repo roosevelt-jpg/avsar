@@ -57,6 +57,17 @@ export async function PUT(request: Request) {
     return NextResponse.json({ error: 'storage_failed' }, { status: 500 });
   }
 
+  if (input.cityState) {
+    const { error: cityError } = await supabase
+      .from('candidates')
+      .update({ city_state: input.cityState })
+      .eq('id', candidate.id);
+    if (cityError) {
+      console.error('[profile] city update failed', cityError);
+      return NextResponse.json({ error: 'storage_failed' }, { status: 500 });
+    }
+  }
+
   await supabase.from('candidate_experiences').delete().eq('candidate_id', candidate.id);
   if (input.experiences.length > 0) {
     const { error } = await supabase.from('candidate_experiences').insert(

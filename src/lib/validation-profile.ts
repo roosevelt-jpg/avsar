@@ -27,6 +27,8 @@ export const profileSchema = z.object({
   headline: z.string().trim().max(200).optional(),
   summary: z.string().trim().max(2000).optional(),
   linkedinUrl: z.string().trim().max(300).optional(),
+  /** Home city/town from the Places picker; written to candidates.city_state. */
+  cityState: z.string().trim().min(2).max(120).optional(),
   skills: z.array(z.string().trim().min(1).max(60)).max(50).default([]),
   languages: z
     .array(z.object({ language: z.string().trim().min(1).max(60), level: z.string().trim().max(20) }))

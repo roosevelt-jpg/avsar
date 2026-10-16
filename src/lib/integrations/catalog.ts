@@ -206,6 +206,14 @@ export const INTEGRATIONS: IntegrationGroup[] = [
     group: 'Services',
     items: [
       {
+        id: 'google-places',
+        name: 'Google Places',
+        description:
+          'City and town autocomplete on sign-up and the candidate profile. Uses Places API (New); enable Autocomplete and Place Details, then paste a server key (not a browser key).',
+        docs: 'https://developers.google.com/maps/documentation/places/web-service/place-autocomplete',
+        fields: [{ name: 'GOOGLE_PLACES_API_KEY', label: 'API key', secret: true, hint: 'Server key with Places API (New) enabled' }],
+      },
+      {
         id: 'anthropic',
         name: 'AI CV service (Anthropic)',
         description: 'Reads CVs and prepares the professional CV in the package.',

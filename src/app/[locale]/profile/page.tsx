@@ -28,7 +28,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
   const supabase = await getServerSupabase();
   const status = await getCandidateStatus(candidate.id, candidate.paymentStatus);
 
-  const [profileRow, experienceRows, educationRows, voiceRow] = await Promise.all([
+  const [profileRow, experienceRows, educationRows, voiceRow, candidateRow] = await Promise.all([
     supabase?.from('candidate_profiles').select('*').eq('candidate_id', candidate.id).maybeSingle(),
     supabase
       ?.from('candidate_experiences')
@@ -45,6 +45,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
       .select('duration_seconds')
       .eq('candidate_id', candidate.id)
       .maybeSingle(),
+    supabase?.from('candidates').select('city_state').eq('id', candidate.id).maybeSingle(),
   ]);
 
   const stored = profileRow?.data;
@@ -106,7 +107,11 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
 
         <p className="mb-5 text-[14px] font-medium text-muted">{t.profile.orManual}</p>
 
-        <ProfileForm t={t} initial={initial} />
+        <ProfileForm
+          t={t}
+          initial={initial}
+          initialCityState={(candidateRow?.data?.city_state as string | null) ?? ''}
+        />
         <YourData />
       </main>
     </>
