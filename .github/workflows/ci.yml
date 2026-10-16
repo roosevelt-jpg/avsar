@@ -25,6 +25,7 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm test
+      # Webpack: Turbopack + many next/font/google faces is flaky in CI.
       - run: npm run build
 
   # Browser tests are slower, so they run on main only. Playwright builds and

@@ -49,7 +49,10 @@ export default defineConfig({
     { name: 'mobile', use: { ...devices['Pixel 7'] } },
   ],
   webServer: {
-    command: `npx next build && npx next start -p ${PORT}`,
+    /* Webpack, not Turbopack: Next 16's default turbopack build intermittently
+       fails on next/font/google with many Indic faces ("queries have exactly
+       one entry"), which stops the e2e webServer before any test runs. */
+    command: `npx next build --webpack && npx next start -p ${PORT}`,
     url: `http://localhost:${PORT}`,
     env: ENV,
     timeout: 300_000,
