@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { Wordmark } from '@/components/ui/Wordmark';
 import { SignupFlow } from '@/components/candidate/SignupFlow';
 import { OrderSummary } from '@/components/candidate/OrderSummary';
+import { AuthPanel, AuthShell } from '@/components/auth/AuthShell';
 import { getSiteSettings } from '@/lib/cms/data';
 import { siteText } from '@/lib/cms/localize';
 import { FilmButton } from '@/components/cms/VideoPlayer';
@@ -34,23 +35,31 @@ export default async function SignupPage({
     : POSITIONS[0].slug;
 
   return (
-    <>
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-line px-[clamp(20px,4cqi,56px)] py-[18px]">
-        <Wordmark href={localePath(locale, '/')} />
-        <p className="m-0 text-[14px] text-muted">
-          <Link href={localePath(locale, '/contact')} className="prose-link">
-            {fill(t.signup.help, { phone: company.phone })}
-          </Link>
-        </p>
-      </header>
-
-      <main className="flex flex-col gap-[clamp(28px,4cqi,56px)] px-[clamp(20px,4cqi,56px)] py-[clamp(36px,6cqi,72px)] lg:flex-row lg:items-start">
-        <SignupFlow
-          locale={locale}
-          t={t}
-          initialPosition={initialPosition}
-          entity={{ statementDescriptor: company.statementDescriptor, tradingAs: company.tradingAs, legalName: company.legalName }}
-        />
+    <AuthShell
+      header={
+        <>
+          <Wordmark href={localePath(locale, '/')} />
+          <p className="m-0 text-[14px] text-ink-2">
+            <Link href={localePath(locale, '/contact')} className="prose-link">
+              {fill(t.signup.help, { phone: company.phone })}
+            </Link>
+          </p>
+        </>
+      }
+    >
+      <div className="mx-auto flex w-full max-w-[1100px] flex-col gap-[clamp(20px,3cqi,28px)] lg:flex-row lg:items-start">
+        <AuthPanel className="min-w-0 flex-1">
+          <SignupFlow
+            locale={locale}
+            t={t}
+            initialPosition={initialPosition}
+            entity={{
+              statementDescriptor: company.statementDescriptor,
+              tradingAs: company.tradingAs,
+              legalName: company.legalName,
+            }}
+          />
+        </AuthPanel>
         <div className="flex w-full flex-col gap-4 lg:w-[340px] lg:shrink-0">
           <OrderSummary t={t} pricing={pricing} />
           {applications.filmUrl && applications.filmLabel ? (
@@ -59,7 +68,7 @@ export default async function SignupPage({
             </div>
           ) : null}
         </div>
-      </main>
-    </>
+      </div>
+    </AuthShell>
   );
 }

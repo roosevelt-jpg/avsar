@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { SiteFooter } from '@/components/candidate/SiteFooter';
+import { LocaleFooter } from '@/components/candidate/LocaleFooter';
 import { isLocale, locales, localeDirection } from '@/lib/i18n';
 
 export function generateStaticParams() {
@@ -24,13 +24,13 @@ export default async function LocaleLayout({
    * one attribute flips text alignment, list markers, the order of flex and
    * grid children, and which side the scrollbar sits on.
    *
-   * The footer lives here rather than in each page so every candidate page,
-   * sign-up and dashboard included, carries the same legal details and links.
+   * The footer lives here for most candidate pages. Sign-in and sign-up hide
+   * it (see LocaleFooter) so those screens stay a single full-viewport composition.
    */
   return (
     <div lang={locale} dir={localeDirection[locale]} className="avsar-root">
       {children}
-      <SiteFooter locale={locale} />
+      <LocaleFooter locale={locale} />
     </div>
   );
 }

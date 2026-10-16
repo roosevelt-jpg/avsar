@@ -8,7 +8,7 @@ export function OrderSummary({ t, pricing }: { t: Dictionary; pricing: PricingSe
   const s = t.signup;
 
   return (
-    <aside className="h-fit w-full rounded-[20px] border border-line bg-surface p-[clamp(20px,2.4cqi,26px)] lg:w-[340px] lg:shrink-0">
+    <aside className="h-fit w-full rounded-[28px] border border-line bg-surface/80 p-[clamp(20px,2.4cqi,26px)] shadow-[0_24px_60px_-28px_rgba(27,26,23,0.35)] backdrop-blur-md lg:w-[340px] lg:shrink-0">
       <Mono className="text-muted">{s.summaryTitle}</Mono>
       <p className="mt-3 mb-4 text-[17px] font-semibold">{s.summaryItem}</p>
 

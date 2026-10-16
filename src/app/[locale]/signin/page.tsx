@@ -1,7 +1,9 @@
+import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { staticPageMetadata } from '@/lib/seo';
 import { Wordmark } from '@/components/ui/Wordmark';
 import { SignInForm } from '@/components/auth/SignInForm';
+import { AuthPanel, AuthShell } from '@/components/auth/AuthShell';
 import { getDictionary, isLocale, localePath } from '@/lib/i18n';
 import { getViewer, resolveDestination } from '@/lib/auth';
 
@@ -27,13 +29,23 @@ export default async function SignInPage({
   if (viewer.role !== 'anonymous') redirect(resolveDestination(viewer, next, locale));
 
   return (
-    <>
-      <header className="flex items-center justify-between gap-4 border-b border-line px-[clamp(20px,4cqi,56px)] py-[18px]">
-        <Wordmark href={localePath(locale, '/')} />
-      </header>
-      <main className="px-[clamp(20px,4cqi,56px)] py-[clamp(48px,8cqi,96px)]">
-        <SignInForm locale={locale} t={t} next={next} />
-      </main>
-    </>
+    <AuthShell
+      header={
+        <>
+          <Wordmark href={localePath(locale, '/')} />
+          <p className="m-0 text-[14px] text-ink-2">
+            <Link href={localePath(locale, '/signup')} className="prose-link">
+              {t.auth.registerCta}
+            </Link>
+          </p>
+        </>
+      }
+    >
+      <div className="mx-auto flex w-full max-w-[480px] flex-1 items-center">
+        <AuthPanel className="w-full">
+          <SignInForm locale={locale} t={t} next={next} />
+        </AuthPanel>
+      </div>
+    </AuthShell>
   );
 }
