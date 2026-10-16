@@ -33,6 +33,7 @@ export const EMAIL_IDS = [
   'application_update',
   'interview_booked',
   'job_alerts',
+  'newsletter_jobs',
   'legal_review_ready',
   'document_reupload',
   'lead_reply',
@@ -53,6 +54,7 @@ export const EMAIL_META: EmailTemplateMeta[] = [
   { id: 'application_update', label: 'Application update', audience: 'Candidates', description: 'Sent when an application is received and on every stage change a recruiter marks as visible.', placeholders: ['first_name', 'job_title', 'reference', 'status_title', 'status_body', 'recruiter_note'] },
   { id: 'interview_booked', label: 'Interview booked', audience: 'Candidates', description: 'Sent when a recruiter books an interview and leaves "notify the candidate" on.', placeholders: ['first_name', 'job_title', 'reference', 'when', 'how', 'recruiter_note', 'join_link'] },
   { id: 'job_alerts', label: 'Weekly job alert', audience: 'Candidates', description: 'Weekly list of new jobs for the role a candidate chose. {{jobs}} is the list, one job per paragraph.', placeholders: ['first_name', 'role', 'count', 'jobs_heading', 'jobs'] },
+  { id: 'newsletter_jobs', label: 'New jobs by email (footer)', audience: 'Leads', description: 'Weekly digest for people who left their email in the site footer. No role filter. {{jobs}} is the list, one job per paragraph.', placeholders: ['count', 'jobs_heading', 'jobs'] },
   { id: 'legal_review_ready', label: 'Legal review delivered', audience: 'Candidates', description: 'Sent when staff deliver a package buyer’s preliminary legal review.', placeholders: ['first_name'] },
   { id: 'document_reupload', label: 'Document needs re-uploading', audience: 'Candidates', description: 'Sent when staff reject a visa document.', placeholders: ['first_name', 'document', 'reason'] },
   { id: 'lead_reply', label: 'Reply to a contact message', audience: 'Leads', description: 'Wraps a recruiter’s reply from the inbox. {{message}} is what the recruiter typed.', placeholders: ['first_name', 'message'] },
@@ -96,6 +98,12 @@ export const DEFAULT_EMAILS: EmailSettings = {
     heading: '{{jobs_heading}}',
     body: 'Hello {{first_name}},\n\nNew this week, for the role you chose. Applying is free.\n\n{{jobs}}',
     action: 'See all {{role}} jobs',
+  },
+  newsletter_jobs: {
+    subject: '{{jobs_heading}}',
+    heading: '{{jobs_heading}}',
+    body: 'New jobs opened this week on {{site_name}}. Applying is free.\n\n{{jobs}}',
+    action: 'See all jobs',
   },
   legal_review_ready: {
     subject: 'Your preliminary legal review is ready',

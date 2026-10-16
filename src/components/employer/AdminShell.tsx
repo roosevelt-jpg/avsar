@@ -83,6 +83,7 @@ const STAFF_NAV: Group[] = [
     icon: 'crm',
     items: [
       { href: '/admin/inbox', label: 'Leads & messages', permission: 'leads.manage' },
+      { href: '/admin/subscribers', label: 'Email subscribers', permission: 'leads.manage' },
       { href: '/admin/employers', label: 'Employers', permission: 'employers.manage' },
     ],
   },

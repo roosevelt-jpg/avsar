@@ -16,4 +16,10 @@ export const FOOTER_LABELS = {
   about: 'About us',
   contact: 'Contact',
   whatsapp: 'Talk to us on WhatsApp',
+  subscribeTitle: 'New jobs by email',
+  subscribeNote: 'We write when new jobs open. No spam, and you can unsubscribe at any time.',
+  subscribePlaceholder: 'Your email',
+  subscribeButton: 'Subscribe',
+  subscribeDone: 'Thank you. You are on the list.',
+  subscribeError: 'That did not work. Check the address and try again.',
 } as const;

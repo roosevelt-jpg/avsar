@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { Wordmark } from '@/components/ui/Wordmark';
+import { FooterSubscribe } from '@/components/candidate/FooterSubscribe';
 import { getDictionary, type Locale, localePath } from '@/lib/i18n';
 import { getSiteSettings } from '@/lib/cms/data';
 import { localHref, navLabel, whatsappHref } from '@/lib/cms/settings';
@@ -196,7 +197,8 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
           bank statement. Payment providers' compliance reviews look for it
           here too.
         */}
-        <div className="flex flex-col gap-1 border-t border-dark-line pt-8 text-[12.5px] leading-[1.7] text-dark-muted">
+        <div className="grid gap-8 border-t border-dark-line pt-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,380px)] lg:gap-16">
+        <div className="flex flex-col gap-1 text-[12.5px] leading-[1.7] text-dark-muted">
           <p className="m-0">
             {company.legalName} · {company.registrationLabel} {company.registrationNumber} · {company.registeredAddress}
           </p>
@@ -232,6 +234,18 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
               {office.city} office: {office.address}
             </p>
           ))}
+        </div>
+          <FooterSubscribe
+            locale={locale}
+            labels={{
+              title: label('subscribeTitle'),
+              note: label('subscribeNote'),
+              placeholder: label('subscribePlaceholder'),
+              button: label('subscribeButton'),
+              done: label('subscribeDone'),
+              error: label('subscribeError'),
+            }}
+          />
         </div>
 
         {/*

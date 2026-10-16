@@ -226,18 +226,22 @@ function pickMailer(): Mailer {
 /**
  * The unsubscribe token.
  *
- * Derived from the candidate id rather than being the candidate id, so a link
- * in an inbox cannot be edited into someone else's. Same salt as the identity
- * hashes: one secret to rotate, not two.
+ * Derived from the row id rather than being the id, so a link in an inbox
+ * cannot be edited into someone else's. Same salt as the identity hashes:
+ * one secret to rotate, not two. The kind prefix keeps a candidate id and a
+ * newsletter id from producing the same token if the uuids ever collided.
  */
 const SALT = process.env.IDENTITY_HASH_SALT ?? 'avsar-dev-salt';
 
-export function unsubscribeToken(candidateId: string): string {
-  return crypto.createHmac('sha256', SALT).update(`unsub:${candidateId}`).digest('hex').slice(0, 32);
+export type UnsubscribeKind = 'candidate' | 'newsletter';
+
+export function unsubscribeToken(id: string, kind: UnsubscribeKind = 'candidate'): string {
+  const prefix = kind === 'newsletter' ? 'unsub:newsletter:' : 'unsub:';
+  return crypto.createHmac('sha256', SALT).update(`${prefix}${id}`).digest('hex').slice(0, 32);
 }
 
-export function unsubscribeMatches(candidateId: string, token: string): boolean {
-  const expected = unsubscribeToken(candidateId);
+export function unsubscribeMatches(id: string, token: string, kind: UnsubscribeKind = 'candidate'): boolean {
+  const expected = unsubscribeToken(id, kind);
   /* Constant time, so the endpoint cannot be used to guess a token byte by
      byte from how long it takes to answer. */
   const a = Buffer.from(expected);
