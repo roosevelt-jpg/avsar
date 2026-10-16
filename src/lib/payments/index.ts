@@ -1,5 +1,6 @@
 import { stripeProvider } from './stripe';
 import { razorpayProvider } from './razorpay';
+import { paytmProvider } from './paytm';
 import { cashfreeProvider } from './cashfree';
 import { eximpeProvider } from './eximpe';
 import { vivaProvider } from './viva';
@@ -10,10 +11,9 @@ import type { PaymentMethodHint, PaymentProvider } from './types';
 /**
  * Which rail collects from candidates.
  *
- * `eximpe` is the live one: an RBI PA-CB import authorisation is what lets it
- * take rupees by UPI from candidates in India and settle them to the company
- * abroad, without an Indian entity. `stripe` remains the fallback and handles
- * employer invoices in euros regardless of which rail collects the fee.
+ * The commercial set for this deployment is Stripe, Razorpay and Paytm
+ * (credentials in Settings › Integrations). Other rails stay wired for
+ * fallback. Only one provider is active via PAYMENT_PROVIDER.
  */
 export function getPaymentProvider(): PaymentProvider {
   switch (process.env.PAYMENT_PROVIDER) {
@@ -29,6 +29,8 @@ export function getPaymentProvider(): PaymentProvider {
       return cashfreeProvider;
     case 'razorpay':
       return razorpayProvider;
+    case 'paytm':
+      return paytmProvider;
     default:
       return stripeProvider;
   }
@@ -80,6 +82,7 @@ export function availablePaymentMethods(): PaymentMethodHint[] {
 
   if (provider === 'viva' || provider === 'ngenius') return ['card'];
 
+  /* Razorpay, Paytm, EximPe, Cashfree, Dodo: Indian methods by construction. */
   if (provider !== 'stripe') return ['upi', 'card', 'netbanking'];
 
   const configured = (process.env.STRIPE_METHODS ?? 'card')

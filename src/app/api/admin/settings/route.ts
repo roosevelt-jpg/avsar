@@ -126,6 +126,18 @@ const schemas = {
     pricingFeatures: z.array(text(160).min(1)).min(1).max(10),
     mentionPackageInJobAlerts: z.boolean(),
   }),
+  vsl: z.object({
+    eyebrow: text(80),
+    headline: text(160).min(1),
+    subhead: text(500).min(1),
+    videoUrl: url,
+    videoPoster: url,
+    videoTitle: text(120),
+    highlights: z.array(text(200).min(1)).min(1).max(6),
+    primaryCtaLabel: text(60).min(1),
+    secondaryCtaLabel: text(60).min(1),
+    stickyCtaLabel: text(60).min(1),
+  }),
 } as const;
 
 const bodySchema = z.object({ key: z.enum(SETTINGS_KEYS), value: z.unknown() });

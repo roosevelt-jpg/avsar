@@ -36,6 +36,9 @@ export async function GET(request: Request) {
     url.searchParams.get('t') ??
     /* Network International appends the order reference as `ref`. */
     url.searchParams.get('ref') ??
+    /* Paytm callback / return uses ORDERID. */
+    url.searchParams.get('ORDERID') ??
+    url.searchParams.get('orderId') ??
     url.searchParams.get('payment_id') ??
     url.searchParams.get('transaction_id');
 
@@ -67,4 +70,20 @@ export async function GET(request: Request) {
   }
 
   return NextResponse.redirect(new URL(dashboard, url.origin));
+}
+
+/**
+ * Paytm (and some other rails) POST the browser back to the callback URL with
+ * form fields. Fold those into the same GET confirmation path.
+ */
+export async function POST(request: Request) {
+  const url = new URL(request.url);
+  const form = await request.formData().catch(() => null);
+  if (form) {
+    for (const key of ['ORDERID', 'orderId', 'TXNID', 'STATUS', 'locale'] as const) {
+      const value = form.get(key);
+      if (typeof value === 'string' && value) url.searchParams.set(key, value);
+    }
+  }
+  return NextResponse.redirect(url, 303);
 }

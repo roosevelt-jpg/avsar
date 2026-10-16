@@ -15,7 +15,7 @@ import { listPublishedJobSlugs } from '@/lib/jobs/data';
  * fourteen versions of a page as one page in fourteen languages rather than as
  * duplicates competing with each other.
  */
-const STATIC_PATHS = ['/pricing', '/terms', '/selection-rules', '/refund-policy', '/delivery', '/privacy', '/contact'];
+const STATIC_PATHS = ['/go', '/pricing', '/terms', '/selection-rules', '/refund-policy', '/delivery', '/privacy', '/contact'];
 
 export const revalidate = 3600;
 

@@ -37,14 +37,68 @@ export const INTEGRATIONS: IntegrationGroup[] = [
       {
         id: 'payments',
         name: 'Active payment rail',
-        description: 'Which provider takes the package payment. Only one is live at a time; the others can be set up in advance.',
+        description:
+          'Which provider takes the package payment. Only one is live at a time. Set up Stripe, Razorpay and Paytm below in advance; switch this when the merchant account is approved.',
         fields: [
           {
             name: 'PAYMENT_PROVIDER',
             label: 'Provider',
             secret: false,
-            options: ['ngenius', 'eximpe', 'cashfree', 'razorpay', 'stripe', 'viva', 'dodo'],
+            options: ['stripe', 'razorpay', 'paytm', 'ngenius', 'eximpe', 'cashfree', 'viva', 'dodo'],
           },
+        ],
+      },
+      {
+        id: 'stripe',
+        name: 'Stripe',
+        description:
+          'International cards (and UPI only on an India-registered Stripe account). Create a webhook for checkout.session.completed pointing at /api/payments/webhook.',
+        docs: 'https://dashboard.stripe.com/apikeys',
+        fields: [
+          { name: 'STRIPE_SECRET_KEY', label: 'Secret key', secret: true, hint: 'sk_live_… or sk_test_…' },
+          { name: 'STRIPE_WEBHOOK_SECRET', label: 'Webhook signing secret', secret: true, hint: 'whsec_… from the Stripe webhook endpoint' },
+          {
+            name: 'STRIPE_METHODS',
+            label: 'Payment method hints',
+            secret: false,
+            hint: 'Comma-separated for the unlock UI: card, upi, netbanking. Hosted Checkout still shows what the Stripe account allows.',
+          },
+        ],
+      },
+      {
+        id: 'razorpay',
+        name: 'Razorpay',
+        description:
+          'UPI, cards and net banking for Indian payers (needs an Indian merchant entity). Also set NEXT_PUBLIC_RAZORPAY_KEY_ID in the hosting environment to the same Key ID, then point the webhook at /api/payments/webhook.',
+        docs: 'https://dashboard.razorpay.com/app/keys',
+        fields: [
+          { name: 'RAZORPAY_KEY_ID', label: 'Key ID', secret: false, hint: 'rzp_live_… or rzp_test_…' },
+          { name: 'RAZORPAY_KEY_SECRET', label: 'Key secret', secret: true },
+          { name: 'RAZORPAY_WEBHOOK_SECRET', label: 'Webhook secret', secret: true, hint: 'From Razorpay › Webhooks' },
+        ],
+      },
+      {
+        id: 'paytm',
+        name: 'Paytm',
+        description:
+          'UPI, cards, Paytm wallet and net banking for Indian payers. Keys come from the Paytm business dashboard (API Keys). Webhook/callback: /api/payments/webhook and the return URL set in the adapter.',
+        docs: 'https://dashboard.paytmpayments.com/next/apikeys',
+        fields: [
+          { name: 'PAYTM_MID', label: 'Merchant ID (MID)', secret: false },
+          { name: 'PAYTM_MERCHANT_KEY', label: 'Merchant key', secret: true, hint: '16-character key used for checksums' },
+          {
+            name: 'PAYTM_WEBSITE',
+            label: 'Website name',
+            secret: false,
+            hint: 'WEBSTAGING for test, DEFAULT (or your assigned website) for production',
+          },
+          {
+            name: 'PAYTM_INDUSTRY_TYPE',
+            label: 'Industry type',
+            secret: false,
+            hint: 'Usually Retail. Leave blank to use Retail.',
+          },
+          { name: 'PAYTM_ENV', label: 'Environment', secret: false, options: ENV_CHOICE },
         ],
       },
       {
@@ -63,7 +117,7 @@ export const INTEGRATIONS: IntegrationGroup[] = [
       {
         id: 'eximpe',
         name: 'EximPe',
-        description: 'UPI, cards and net banking for Indian payers.',
+        description: 'UPI, cards and net banking for Indian payers (cross-border PA-CB).',
         fields: [
           { name: 'EXIMPE_CLIENT_ID', label: 'Client ID', secret: false },
           { name: 'EXIMPE_CLIENT_SECRET', label: 'Client secret', secret: true },
@@ -75,32 +129,12 @@ export const INTEGRATIONS: IntegrationGroup[] = [
       {
         id: 'cashfree',
         name: 'Cashfree',
-        description: 'UPI, cards and net banking for Indian payers.',
+        description: 'UPI, cards and net banking for Indian payers (cross-border PA-CB).',
         fields: [
           { name: 'CASHFREE_APP_ID', label: 'App ID', secret: false },
           { name: 'CASHFREE_SECRET_KEY', label: 'Secret key', secret: true },
           { name: 'CASHFREE_WEBHOOK_SECRET', label: 'Webhook secret', secret: true },
           { name: 'CASHFREE_ENV', label: 'Environment', secret: false, options: ENV_CHOICE },
-        ],
-      },
-      {
-        id: 'razorpay',
-        name: 'Razorpay',
-        description: 'UPI and cards. The public key ID used in the browser is set in the hosting environment as NEXT_PUBLIC_RAZORPAY_KEY_ID.',
-        fields: [
-          { name: 'RAZORPAY_KEY_ID', label: 'Key ID', secret: false },
-          { name: 'RAZORPAY_KEY_SECRET', label: 'Key secret', secret: true },
-          { name: 'RAZORPAY_WEBHOOK_SECRET', label: 'Webhook secret', secret: true },
-        ],
-      },
-      {
-        id: 'stripe',
-        name: 'Stripe',
-        description: 'International cards.',
-        fields: [
-          { name: 'STRIPE_SECRET_KEY', label: 'Secret key', secret: true },
-          { name: 'STRIPE_WEBHOOK_SECRET', label: 'Webhook signing secret', secret: true },
-          { name: 'STRIPE_METHODS', label: 'Payment methods', secret: false, hint: 'Comma-separated, e.g. card,upi' },
         ],
       },
       {

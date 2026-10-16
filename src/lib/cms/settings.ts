@@ -46,6 +46,7 @@ export const STATIC_SEO_PAGES = [
   { key: 'signup', label: 'Register', path: '/signup' },
   { key: 'signin', label: 'Sign in', path: '/signin' },
   { key: 'assessment', label: 'Assessment', path: '/assessment' },
+  { key: 'go', label: 'VSL funnel', path: '/go' },
 ] as const;
 export type StaticSeoPage = (typeof STATIC_SEO_PAGES)[number]['key'];
 export type PageSeoSettings = { title: string; description: string; ogTitle: string; ogImage: string };
@@ -89,6 +90,26 @@ export type SiteSettings = {
    * this section is the wording beside them.
    */
   conversion: ConversionSettings;
+  /**
+   * Paid-traffic VSL funnel at /[locale]/go: video, headline and CTAs that
+   * send the visitor to sign-up. Video falls back to Applications film, then
+   * /video/intro.mp4, so the page never ships blank.
+   */
+  vsl: VslSettings;
+};
+
+export type VslSettings = {
+  eyebrow: string;
+  headline: string;
+  subhead: string;
+  /** YouTube or uploaded MP4. Empty uses Applications film, then intro.mp4. */
+  videoUrl: string;
+  videoPoster: string;
+  videoTitle: string;
+  highlights: string[];
+  primaryCtaLabel: string;
+  secondaryCtaLabel: string;
+  stickyCtaLabel: string;
 };
 
 export type ConversionDeliverable = { title: string; timing: string };
@@ -107,7 +128,21 @@ export type ConversionSettings = {
   mentionPackageInJobAlerts: boolean;
 };
 
-export const SETTINGS_KEYS = ['general', 'announcement', 'navigation', 'footer', 'applications', 'seo', 'company', 'pricing', 'hiring', 'cohort', 'emails', 'conversion'] as const;
+export const SETTINGS_KEYS = [
+  'general',
+  'announcement',
+  'navigation',
+  'footer',
+  'applications',
+  'seo',
+  'company',
+  'pricing',
+  'hiring',
+  'cohort',
+  'emails',
+  'conversion',
+  'vsl',
+] as const;
 
 /** Sections that change the legal entity, the price or the selection rule. */
 export const COMPANY_KEYS = ['company', 'pricing', 'hiring', 'cohort'] as const;
@@ -232,6 +267,13 @@ export const DEFAULT_SETTINGS: SiteSettings = {
         ogTitle: '',
         ogImage: '',
       },
+      go: {
+        title: 'Watch: jobs in Portugal for Indian talent',
+        description:
+          'Watch how the free skills test works, then create your profile. Real Portuguese employers, no placement fee for candidates.',
+        ogTitle: 'Watch: India to Portugal jobs',
+        ogImage: '',
+      },
     },
   },
   company: DEFAULT_COMPANY,
@@ -239,6 +281,24 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   hiring: DEFAULT_HIRING,
   cohort: DEFAULT_COHORT,
   emails: DEFAULT_EMAILS,
+  vsl: {
+    eyebrow: 'India → Portugal · Free to start',
+    headline: 'Real jobs in Portugal. Watch how it works, then apply from your phone.',
+    subhead:
+      'Five minutes to create a free profile and take the skills test. Portuguese employers searching for chefs, cleaners, drivers, electricians and more can find you. No placement fee for candidates.',
+    videoUrl: '',
+    videoPoster: '/video/hero-poster.jpg',
+    videoTitle: 'How Avsar places Indian talent with Portuguese employers',
+    highlights: [
+      'Free skills and English test on your phone',
+      'Housing, meals and visa costs covered when selected',
+      'You never pay to be hired — only an optional career package on this site',
+      'WhatsApp support in Hindi or English',
+    ],
+    primaryCtaLabel: 'Create my free profile',
+    secondaryCtaLabel: 'Or browse open jobs',
+    stickyCtaLabel: 'Start free — take the assessment',
+  },
   conversion: {
     trustLines: [
       'You never pay to be hired. The employer pays our fee.',
@@ -333,7 +393,32 @@ export function mergeSettings(rows: { key: string; value: unknown }[]): SiteSett
           : DEFAULT_SETTINGS.conversion.pricingFeatures,
     };
   }
+  const storedVsl = stored.vsl as Partial<VslSettings> | undefined;
+  if (storedVsl) {
+    out.vsl = {
+      ...DEFAULT_SETTINGS.vsl,
+      ...storedVsl,
+      highlights:
+        Array.isArray(storedVsl.highlights) && storedVsl.highlights.length > 0
+          ? storedVsl.highlights.map(String).slice(0, 6)
+          : DEFAULT_SETTINGS.vsl.highlights,
+    };
+  }
   return out;
+}
+
+/**
+ * Film for the /go funnel: Settings › VSL video, else Applications film,
+ * else the shipped intro clip so ads never land on a blank player.
+ */
+export function resolveVslVideo(settings: SiteSettings): { src: string; poster: string; title: string } {
+  const src =
+    settings.vsl.videoUrl.trim() ||
+    settings.applications.filmUrl.trim() ||
+    '/video/intro.mp4';
+  const poster = settings.vsl.videoPoster.trim() || '/video/hero-poster.jpg';
+  const title = settings.vsl.videoTitle.trim() || 'How it works';
+  return { src, poster, title };
 }
 
 /** Label for the current locale, falling back to English. */

@@ -17,9 +17,32 @@ const supabaseHost = (() => {
 /* Payment SDKs run in the page (EximPe, Cashfree) or open their own frame
    (Razorpay). Stripe, Viva and Dodo are full-page redirects, which CSP does not
    restrict. Turnstile loads a script and a challenge frame from Cloudflare. */
-const PAYMENT_SCRIPTS = ['https://cdn.eximpe.com', 'https://sdk.cashfree.com', 'https://checkout.razorpay.com'];
-const PAYMENT_FRAMES = ['https://*.eximpe.com', 'https://*.cashfree.com', 'https://api.razorpay.com', 'https://checkout.razorpay.com'];
-const PAYMENT_CONNECT = ['https://*.eximpe.com', 'https://*.cashfree.com', 'https://*.razorpay.com'];
+const PAYMENT_SCRIPTS = [
+  'https://cdn.eximpe.com',
+  'https://sdk.cashfree.com',
+  'https://checkout.razorpay.com',
+  'https://securegw.paytm.in',
+  'https://securegw-stage.paytm.in',
+];
+const PAYMENT_FRAMES = [
+  'https://*.eximpe.com',
+  'https://*.cashfree.com',
+  'https://api.razorpay.com',
+  'https://checkout.razorpay.com',
+  'https://securegw.paytm.in',
+  'https://securegw-stage.paytm.in',
+  'https://*.paytm.com',
+  'https://*.paytmpayments.com',
+];
+const PAYMENT_CONNECT = [
+  'https://*.eximpe.com',
+  'https://*.cashfree.com',
+  'https://*.razorpay.com',
+  'https://securegw.paytm.in',
+  'https://securegw-stage.paytm.in',
+  'https://*.paytm.com',
+  'https://*.paytmpayments.com',
+];
 const TURNSTILE = 'https://challenges.cloudflare.com';
 
 /* Next.js injects inline bootstrap scripts, and a nonce would force every page

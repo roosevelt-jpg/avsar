@@ -249,6 +249,94 @@ export function ConversionSettingsForm({ initial }: { initial: SiteSettings['con
   );
 }
 
+/** Settings › VSL: paid-traffic funnel at /[locale]/go. */
+export function VslSettingsForm({ initial }: { initial: SiteSettings['vsl'] }) {
+  const [vsl, setVsl] = useState(initial);
+  const saver = useSettingsSaver('vsl');
+
+  function setHighlight(index: number, value: string) {
+    setVsl({ ...vsl, highlights: vsl.highlights.map((line, i) => (i === index ? value : line)) });
+  }
+
+  return (
+    <div className="flex flex-col gap-5">
+      <Section title="Copy" lead="Headline and proof lines on the /go funnel. Keep it short: visitors arrive from ads and WhatsApp.">
+        <Field label="Eyebrow"><input className={INPUT} value={vsl.eyebrow} onChange={(e) => setVsl({ ...vsl, eyebrow: e.target.value })} /></Field>
+        <Field label="Headline"><textarea className={INPUT} rows={2} value={vsl.headline} onChange={(e) => setVsl({ ...vsl, headline: e.target.value })} /></Field>
+        <Field label="Supporting line"><textarea className={INPUT} rows={3} value={vsl.subhead} onChange={(e) => setVsl({ ...vsl, subhead: e.target.value })} /></Field>
+        <div className="mt-2 flex flex-col gap-2">
+          <p className="m-0 text-[13px] font-medium text-ink-2">Highlights</p>
+          {vsl.highlights.map((line, index) => (
+            <input key={index} className={INPUT} value={line} onChange={(e) => setHighlight(index, e.target.value)} />
+          ))}
+          <div className="flex gap-2">
+            <button
+              type="button"
+              className="text-[13px] text-accent"
+              disabled={vsl.highlights.length >= 6}
+              onClick={() => setVsl({ ...vsl, highlights: [...vsl.highlights, ''] })}
+            >
+              Add line
+            </button>
+            {vsl.highlights.length > 1 ? (
+              <button
+                type="button"
+                className="text-[13px] text-muted"
+                onClick={() => setVsl({ ...vsl, highlights: vsl.highlights.slice(0, -1) })}
+              >
+                Remove last
+              </button>
+            ) : null}
+          </div>
+        </div>
+      </Section>
+
+      <Section
+        title="Video"
+        lead="YouTube or an uploaded MP4. Leave blank to use the Applications film, then /video/intro.mp4."
+      >
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Field label="Video URL">
+            <input
+              className={INPUT}
+              value={vsl.videoUrl}
+              placeholder="https://www.youtube.com/watch?v=... or /video/intro.mp4"
+              onChange={(e) => setVsl({ ...vsl, videoUrl: e.target.value })}
+            />
+          </Field>
+          <Field label="Poster image">
+            <input
+              className={INPUT}
+              value={vsl.videoPoster}
+              placeholder="/video/hero-poster.jpg"
+              onChange={(e) => setVsl({ ...vsl, videoPoster: e.target.value })}
+            />
+          </Field>
+        </div>
+        <Field label="Video title (accessibility)">
+          <input className={INPUT} value={vsl.videoTitle} onChange={(e) => setVsl({ ...vsl, videoTitle: e.target.value })} />
+        </Field>
+      </Section>
+
+      <Section title="Buttons" lead="Primary and sticky send visitors to sign-up (ad params kept). Secondary opens the jobs board.">
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Field label="Primary CTA">
+            <input className={INPUT} value={vsl.primaryCtaLabel} onChange={(e) => setVsl({ ...vsl, primaryCtaLabel: e.target.value })} />
+          </Field>
+          <Field label="Sticky bar CTA">
+            <input className={INPUT} value={vsl.stickyCtaLabel} onChange={(e) => setVsl({ ...vsl, stickyCtaLabel: e.target.value })} />
+          </Field>
+          <Field label="Secondary link">
+            <input className={INPUT} value={vsl.secondaryCtaLabel} onChange={(e) => setVsl({ ...vsl, secondaryCtaLabel: e.target.value })} />
+          </Field>
+        </div>
+      </Section>
+
+      <SaveBar onSave={() => saver.save(vsl)} state={saver.state} busy={saver.busy} />
+    </div>
+  );
+}
+
 /** Settings › Applications: who can apply, and how. Needs jobs.publish. */
 export function ApplicationSettings({ initial }: { initial: SiteSettings['applications'] }) {
   const [applications, setApplications] = useState(initial);

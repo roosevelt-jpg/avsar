@@ -181,6 +181,7 @@ export const RAIL_CURRENCIES: Record<string, readonly ChargeCurrency[]> = {
   eximpe: ['INR'],
   cashfree: ['INR'],
   razorpay: ['INR'],
+  paytm: ['INR'],
   viva: ['EUR'],
   dodo: ['EUR', 'INR'],
   stripe: ['EUR', 'INR'],

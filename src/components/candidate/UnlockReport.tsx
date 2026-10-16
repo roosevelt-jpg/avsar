@@ -7,6 +7,8 @@ import { IndicativePrice } from '@/components/candidate/IndicativePrice';
 import { PackagePaywallCopy } from '@/components/candidate/PackagePaywallCopy';
 import { loadEximpe } from '@/lib/payments/eximpe-client';
 import { loadCashfree } from '@/lib/payments/cashfree-client';
+import { openRazorpayCheckout } from '@/lib/payments/razorpay-client';
+import { openPaytmCheckout, parsePaytmClientToken } from '@/lib/payments/paytm-client';
 import type { HiringSettings, PricingSettings } from '@/lib/company/config';
 import type { ConversionSettings } from '@/lib/cms/settings';
 import { siteText } from '@/lib/cms/localize';
@@ -99,6 +101,30 @@ export function UnlockReport({
           redirectTarget: '_self',
         });
         if (result.error) throw new Error(result.error.message ?? 'checkout_failed');
+        return;
+      }
+
+      if (provider === 'razorpay' && data.clientToken) {
+        try {
+          await openRazorpayCheckout({
+            orderId: data.clientToken,
+            name: s.unlockEyebrow,
+            description: siteText(locale, s.unlockTitle),
+          });
+        } catch (err) {
+          if (err instanceof Error && err.message === 'razorpay_dismissed') {
+            setBusy(false);
+            return;
+          }
+          throw err;
+        }
+        return;
+      }
+
+      if (provider === 'paytm' && data.clientToken) {
+        const payload = parsePaytmClientToken(data.clientToken);
+        if (!payload) throw new Error('paytm_token_invalid');
+        await openPaytmCheckout(payload, providerMode);
         return;
       }
 

@@ -191,15 +191,12 @@ export default async function DashboardPage({
             methods={availablePaymentMethods()}
             provider={getPaymentProvider().name}
             country={(await headers()).get('x-vercel-ip-country')}
-            providerMode={
-              getPaymentProvider().name === 'eximpe'
-                ? process.env.EXIMPE_ENV === 'production'
-                  ? 'production'
-                  : 'sandbox'
-                : process.env.CASHFREE_ENV === 'production'
-                  ? 'production'
-                  : 'sandbox'
-            }
+            providerMode={(() => {
+              const name = getPaymentProvider().name;
+              if (name === 'eximpe') return process.env.EXIMPE_ENV === 'production' ? 'production' : 'sandbox';
+              if (name === 'paytm') return process.env.PAYTM_ENV === 'production' ? 'production' : 'sandbox';
+              return process.env.CASHFREE_ENV === 'production' ? 'production' : 'sandbox';
+            })()}
           />
         )}
         {/* Until the test is finished there is no report to unlock and nothing

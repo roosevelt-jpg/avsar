@@ -19,6 +19,8 @@
  *  - **Razorpay**, as a domestic Indian rail. Cheapest of the three, and needs
  *    an Indian entity. Worth switching to if one exists anyway for the
  *    Emigration Act recruiting-agent registration.
+ *  - **Paytm**, another domestic Indian rail (UPI, cards, wallet). Merchant
+ *    MID and key from the Paytm dashboard; same INR charge currency as Razorpay.
  *  - **Dodo Payments**, a merchant of record, and the rail that exists because
  *    the others refused. It is the seller, not us: it collects rupees in India
  *    under its own licences, carries the tax, and settles euros here. That is
@@ -74,7 +76,7 @@ export type WebhookResult = {
 };
 
 export interface PaymentProvider {
-  readonly name: 'stripe' | 'razorpay' | 'cashfree' | 'eximpe' | 'viva' | 'dodo' | 'ngenius';
+  readonly name: 'stripe' | 'razorpay' | 'paytm' | 'cashfree' | 'eximpe' | 'viva' | 'dodo' | 'ngenius';
   isConfigured(): boolean;
   createCheckout(request: CheckoutRequest): Promise<CheckoutSession>;
   /**
