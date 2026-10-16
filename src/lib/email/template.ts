@@ -34,6 +34,8 @@ function escape(value: string): string {
     .replace(/"/g, '&quot;');
 }
 
+export type EmailSocial = { label: string; url: string };
+
 export type EmailLayout = {
   /** The line the inbox shows beside the subject. */
   preheader: string;
@@ -53,7 +55,18 @@ export type EmailLayout = {
   brand: EmailBrand;
 };
 
-export type EmailBrand = { name: string; slogan: string; legalName: string; jurisdiction: string; supportEmail: string };
+export type EmailBrand = {
+  name: string;
+  slogan: string;
+  legalName: string;
+  jurisdiction: string;
+  supportEmail: string;
+  /** Registered / office address for the footer. */
+  address: string;
+  phone: string;
+  website: string;
+  socials: EmailSocial[];
+};
 
 export function renderEmail(layout: EmailLayout): string {
   const { preheader, heading, paragraphs, action, fallbackNote, closing, unsubscribe, origin, brand } =
@@ -92,6 +105,25 @@ export function renderEmail(layout: EmailLayout): string {
         .join('')}</td></tr></table>`
     : '';
 
+  const socialLinks = brand.socials
+    .map(
+      (social) =>
+        `<a href="${escape(social.url)}" style="color:${MUTED};text-decoration:underline;margin-right:12px;">${escape(social.label)}</a>`,
+    )
+    .join('');
+
+  const addressBlock = [
+    brand.address ? escape(brand.address) : '',
+    brand.phone
+      ? `<a href="tel:${escape(brand.phone.replace(/\s/g, ''))}" style="color:${MUTED};" dir="ltr">${escape(brand.phone)}</a>`
+      : '',
+    brand.website
+      ? `<a href="${escape(brand.website)}" style="color:${MUTED};">${escape(brand.website.replace(/^https?:\/\//, ''))}</a>`
+      : '',
+  ]
+    .filter(Boolean)
+    .join('<br>');
+
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -101,36 +133,43 @@ export function renderEmail(layout: EmailLayout): string {
 <meta name="supported-color-schemes" content="light">
 <title>${escape(heading)}</title>
 </head>
-<body style="margin:0;padding:0;background-color:${PAPER};">
+<body style="margin:0;padding:0;background-color:${PAPER};width:100%;-webkit-text-size-adjust:100%;">
 <div style="display:none;font-size:1px;color:${PAPER};line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">${escape(preheader)}</div>
 
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:${PAPER};">
-<tr><td align="center" style="padding:28px 16px 40px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:${PAPER};width:100%;">
+<tr><td align="center" style="padding:28px 12px 40px;">
 
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;font-family:${FONT};">
 
-<tr><td bgcolor="${INK}" style="background-color:${INK};border-radius:20px 20px 0 0;padding:26px 32px;">
-<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
-<td style="padding-right:12px;vertical-align:middle;"><img src="${origin}/brand/email-mark.png" width="63" height="36" alt="" style="display:block;border:0;"></td>
-<td style="vertical-align:middle;font-family:${FONT};font-size:20px;font-weight:600;color:${PAPER};letter-spacing:-0.02em;">${escape(brand.name)}</td>
+<tr><td bgcolor="${INK}" style="background-color:${INK};border-radius:20px 20px 0 0;padding:22px 24px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+<td style="padding-right:14px;vertical-align:middle;width:72px;">
+<img src="${escape(origin)}/brand/email-mark.png" width="63" height="36" alt="${escape(brand.name)}" style="display:block;border:0;width:63px;height:36px;max-width:100%;">
+</td>
+<td style="vertical-align:middle;font-family:${FONT};font-size:18px;line-height:1.25;font-weight:600;color:${PAPER};letter-spacing:-0.02em;">
+${escape(brand.name)}${brand.slogan ? `<br><span style="display:inline-block;margin-top:4px;font-size:12px;font-weight:400;color:#C8C5BE;letter-spacing:0;">${escape(brand.slogan)}</span>` : ''}
+</td>
 </tr></table>
 </td></tr>
 
-<tr><td bgcolor="${SURFACE}" style="background-color:${SURFACE};padding:36px 32px 32px;border-left:1px solid ${LINE};border-right:1px solid ${LINE};">
-<h1 style="margin:0 0 18px;font-size:25px;line-height:1.25;font-weight:600;color:${INK};letter-spacing:-0.02em;">${escape(heading)}</h1>
+<tr><td bgcolor="${SURFACE}" style="background-color:${SURFACE};padding:28px 24px 28px;border-left:1px solid ${LINE};border-right:1px solid ${LINE};">
+<h1 style="margin:0 0 18px;font-size:22px;line-height:1.25;font-weight:600;color:${INK};letter-spacing:-0.02em;">${escape(heading)}</h1>
 ${body}${button}${fallback}${tail}
 </td></tr>
 
-<tr><td bgcolor="${SURFACE}" style="background-color:${SURFACE};padding:0 32px 28px;border-left:1px solid ${LINE};border-right:1px solid ${LINE};border-bottom:1px solid ${LINE};border-radius:0 0 20px 20px;">
+<tr><td bgcolor="${SURFACE}" style="background-color:${SURFACE};padding:0 24px 28px;border-left:1px solid ${LINE};border-right:1px solid ${LINE};border-bottom:1px solid ${LINE};border-radius:0 0 20px 20px;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top:1px solid ${LINE};">
-<tr><td style="padding-top:20px;font-size:12px;line-height:1.6;color:${MUTED};">
-<strong style="color:${INK};font-weight:600;">${escape(brand.name)}</strong> &middot; ${escape(brand.slogan)}<br>
-${escape(brand.legalName)}, ${escape(brand.jurisdiction)}<br>
-<a href="mailto:${escape(brand.supportEmail)}" style="color:${MUTED};">${escape(brand.supportEmail)}</a>${
-    unsubscribe
-      ? `<br><br><a href="${escape(unsubscribe.url)}" style="color:${MUTED};">${escape(unsubscribe.label)}</a>`
-      : ''
-  }
+<tr><td style="padding-top:20px;font-size:12px;line-height:1.65;color:${MUTED};">
+<strong style="color:${INK};font-weight:600;">${escape(brand.name)}</strong>${brand.slogan ? ` &middot; ${escape(brand.slogan)}` : ''}<br>
+${escape(brand.legalName)}${brand.jurisdiction ? `, ${escape(brand.jurisdiction)}` : ''}<br>
+${addressBlock ? `${addressBlock}<br>` : ''}
+<a href="mailto:${escape(brand.supportEmail)}" style="color:${MUTED};">${escape(brand.supportEmail)}</a>
+${socialLinks ? `<br><br>${socialLinks}` : ''}
+${
+  unsubscribe
+    ? `<br><br><a href="${escape(unsubscribe.url)}" style="color:${MUTED};">${escape(unsubscribe.label)}</a>`
+    : ''
+}
 </td></tr></table>
 </td></tr>
 

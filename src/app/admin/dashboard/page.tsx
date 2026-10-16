@@ -3,6 +3,7 @@ import { AdminButton, AdminHeading, AdminShell, Pill } from '@/components/employ
 import { StatCard } from '@/components/admin/analytics/StatCard';
 import { TrendChart } from '@/components/admin/analytics/TrendChart';
 import { Funnel } from '@/components/admin/analytics/Funnel';
+import { ConversionFunnel } from '@/components/admin/analytics/ConversionFunnel';
 import { BarList } from '@/components/admin/analytics/BarList';
 import { LiveUpdates } from '@/components/admin/analytics/LiveUpdates';
 import { listApplicationsForConsole, listUpcomingInterviews, type AdminApplicationRow, type UpcomingInterview } from '@/lib/applications/data';
@@ -42,6 +43,7 @@ export default async function ConsoleDashboard({ searchParams }: { searchParams:
   const showApps = can(access, 'applications.view');
   const showMoney = can(access, 'payments.view');
   const showJobs = can(access, 'jobs.view');
+  const showCandidates = can(access, 'candidates.view');
 
   const [analytics, recent, interviews] = await Promise.all([
     getAnalytics(range),
@@ -170,6 +172,14 @@ export default async function ConsoleDashboard({ searchParams }: { searchParams:
           </Panel>
         )}
       </div>
+
+      {showCandidates && (
+        <div className="mt-4">
+          <Panel title="Conversion" note="People who registered in this period">
+            <ConversionFunnel stages={analytics.conversion} />
+          </Panel>
+        </div>
+      )}
 
       {showApps && interviews.length > 0 && (
         <div className="mt-4">

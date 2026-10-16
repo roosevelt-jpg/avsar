@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { getSessionCandidate } from '@/lib/auth';
 import { normalisePhone } from '@/lib/leads/phone';
 import { LEAD_TOPIC_LABELS } from '@/lib/leads/types';
-import { notifyStaff } from '@/lib/notifications/staff';
+import { emailStaff, notifyStaff } from '@/lib/notifications/staff';
 import { log, requestIdOf } from '@/lib/observability/log';
 import { anonymousActor, withIdempotency } from '@/lib/security/idempotency';
 import { clientIp, rateLimit, rateLimitedResponse, RATE_LIMITS } from '@/lib/security/rate-limit';
@@ -101,12 +101,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'save_failed' }, { status: 500 });
     }
 
+    const title = `${LEAD_TOPIC_LABELS[input.topic]}: ${input.company || input.fullName}`;
     await notifyStaff({
       permission: 'leads.manage',
       kind: `lead.${input.topic}`,
-      title: `${LEAD_TOPIC_LABELS[input.topic]}: ${input.company || input.fullName}`,
+      title,
       body: input.message.slice(0, 160),
       href: `/admin/inbox/${data.id}`,
+    });
+    await emailStaff({
+      subject: title,
+      line: input.message.slice(0, 280),
+      href: `/admin/inbox/${data.id}`,
+      actionLabel: 'Open in inbox',
+      origin: new URL(request.url).origin,
     });
 
     return NextResponse.json({ status: 'received' }, { status: 201 });

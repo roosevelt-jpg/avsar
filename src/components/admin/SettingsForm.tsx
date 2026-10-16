@@ -105,6 +105,150 @@ export function NavigationSettings({ initial }: { initial: SiteSettings['navigat
   );
 }
 
+/** Settings › Conversion: trust lines, deliverables, offer and pricing copy. */
+export function ConversionSettingsForm({ initial }: { initial: SiteSettings['conversion'] }) {
+  const [conversion, setConversion] = useState(initial);
+  const saver = useSettingsSaver('conversion');
+
+  function setTrust(index: number, value: string) {
+    setConversion({ ...conversion, trustLines: conversion.trustLines.map((line, i) => (i === index ? value : line)) });
+  }
+  function setDeliverable(index: number, next: Partial<{ title: string; timing: string }>) {
+    setConversion({
+      ...conversion,
+      deliverables: conversion.deliverables.map((item, i) => (i === index ? { ...item, ...next } : item)),
+    });
+  }
+  function setFeature(index: number, value: string) {
+    setConversion({ ...conversion, pricingFeatures: conversion.pricingFeatures.map((f, i) => (i === index ? value : f)) });
+  }
+
+  return (
+    <div className="flex flex-col gap-5">
+      <Section title="Trust lines beside payment" lead="Shown next to every package checkout. Three short facts beat a long disclaimer.">
+        <ul className="m-0 flex list-none flex-col gap-2 p-0">
+          {conversion.trustLines.map((line, index) => (
+            <li key={index}>
+              <Field label={`Line ${index + 1}`}>
+                <textarea className={INPUT} rows={2} value={line} onChange={(e) => setTrust(index, e.target.value)} />
+              </Field>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-2 flex gap-2">
+          <button
+            type="button"
+            disabled={conversion.trustLines.length >= 5}
+            onClick={() => setConversion({ ...conversion, trustLines: [...conversion.trustLines, ''] })}
+            className="cursor-pointer rounded-full border border-dashed border-line-strong bg-transparent px-3 py-1.5 text-[13px] disabled:opacity-40"
+          >
+            + Add line
+          </button>
+          {conversion.trustLines.length > 1 ? (
+            <button
+              type="button"
+              onClick={() => setConversion({ ...conversion, trustLines: conversion.trustLines.slice(0, -1) })}
+              className="cursor-pointer rounded-full border border-line bg-surface px-3 py-1.5 text-[13px]"
+            >
+              Remove last
+            </button>
+          ) : null}
+        </div>
+      </Section>
+
+      <Section title="Package deliverables" lead="What the buyer gets, and when. Price and report timing come from Company & pricing.">
+        <ul className="m-0 flex list-none flex-col gap-3 p-0">
+          {conversion.deliverables.map((item, index) => (
+            <li key={index} className="grid gap-2 rounded-[12px] bg-paper p-3 sm:grid-cols-2">
+              <Field label="Title"><input className={INPUT} value={item.title} onChange={(e) => setDeliverable(index, { title: e.target.value })} /></Field>
+              <Field label="Timing / detail"><textarea className={INPUT} rows={2} value={item.timing} onChange={(e) => setDeliverable(index, { timing: e.target.value })} /></Field>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-2 flex gap-2">
+          <button
+            type="button"
+            disabled={conversion.deliverables.length >= 6}
+            onClick={() => setConversion({ ...conversion, deliverables: [...conversion.deliverables, { title: '', timing: '' }] })}
+            className="cursor-pointer rounded-full border border-dashed border-line-strong bg-transparent px-3 py-1.5 text-[13px] disabled:opacity-40"
+          >
+            + Add deliverable
+          </button>
+          {conversion.deliverables.length > 1 ? (
+            <button
+              type="button"
+              onClick={() => setConversion({ ...conversion, deliverables: conversion.deliverables.slice(0, -1) })}
+              className="cursor-pointer rounded-full border border-line bg-surface px-3 py-1.5 text-[13px]"
+            >
+              Remove last
+            </button>
+          ) : null}
+        </div>
+      </Section>
+
+      <Section title="After the assessment" lead="Shown when someone finishes the test and has not paid yet.">
+        <div className="grid gap-3">
+          <Field label="Heading"><input className={INPUT} value={conversion.offerHeading} onChange={(e) => setConversion({ ...conversion, offerHeading: e.target.value })} /></Field>
+          <Field label="Body"><textarea className={INPUT} rows={4} value={conversion.offerBody} onChange={(e) => setConversion({ ...conversion, offerBody: e.target.value })} /></Field>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Field label="Primary button"><input className={INPUT} value={conversion.offerPrimaryLabel} onChange={(e) => setConversion({ ...conversion, offerPrimaryLabel: e.target.value })} /></Field>
+            <Field label="Secondary button"><input className={INPUT} value={conversion.offerSecondaryLabel} onChange={(e) => setConversion({ ...conversion, offerSecondaryLabel: e.target.value })} /></Field>
+          </div>
+          <Field label="Sticky mobile button (unpaid after assessment)">
+            <input className={INPUT} value={conversion.stickyCtaLabel} onChange={(e) => setConversion({ ...conversion, stickyCtaLabel: e.target.value })} />
+          </Field>
+        </div>
+      </Section>
+
+      <Section title="Pricing page" lead="Candidate column on /pricing. Employer and partner cards stay in the page code.">
+        <Field label="Lead"><textarea className={INPUT} rows={3} value={conversion.pricingLead} onChange={(e) => setConversion({ ...conversion, pricingLead: e.target.value })} /></Field>
+        <ul className="m-0 mt-3 flex list-none flex-col gap-2 p-0">
+          {conversion.pricingFeatures.map((feature, index) => (
+            <li key={index}>
+              <Field label={`Feature ${index + 1}`}>
+                <input className={INPUT} value={feature} onChange={(e) => setFeature(index, e.target.value)} />
+              </Field>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-2 flex gap-2">
+          <button
+            type="button"
+            disabled={conversion.pricingFeatures.length >= 10}
+            onClick={() => setConversion({ ...conversion, pricingFeatures: [...conversion.pricingFeatures, ''] })}
+            className="cursor-pointer rounded-full border border-dashed border-line-strong bg-transparent px-3 py-1.5 text-[13px] disabled:opacity-40"
+          >
+            + Add feature
+          </button>
+          {conversion.pricingFeatures.length > 1 ? (
+            <button
+              type="button"
+              onClick={() => setConversion({ ...conversion, pricingFeatures: conversion.pricingFeatures.slice(0, -1) })}
+              className="cursor-pointer rounded-full border border-line bg-surface px-3 py-1.5 text-[13px]"
+            >
+              Remove last
+            </button>
+          ) : null}
+        </div>
+        <label className="mt-4 flex items-start gap-2 text-[14px]">
+          <input
+            type="checkbox"
+            className="mt-1"
+            checked={conversion.mentionPackageInJobAlerts}
+            onChange={(e) => setConversion({ ...conversion, mentionPackageInJobAlerts: e.target.checked })}
+          />
+          <span>
+            Mention the package on weekly job alerts for unpaid candidates
+            <span className="block text-[13px] text-muted">One soft line only. Newsletter digests never get it.</span>
+          </span>
+        </label>
+      </Section>
+
+      <SaveBar onSave={() => saver.save(conversion)} state={saver.state} busy={saver.busy} />
+    </div>
+  );
+}
+
 /** Settings › Applications: who can apply, and how. Needs jobs.publish. */
 export function ApplicationSettings({ initial }: { initial: SiteSettings['applications'] }) {
   const [applications, setApplications] = useState(initial);

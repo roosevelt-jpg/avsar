@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { getMailer, unsubscribeToken } from '@/lib/email';
 import { renderReminder } from '@/lib/email/reminder';
+import { SECTION_ORDER } from '@/lib/assessment/items';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -13,6 +14,10 @@ export const maxDuration = 60;
  * Someone who registered is the top of the funnel, not litter: they gave a
  * name, a number and an address, and they did it unprompted. Three reminders,
  * then nothing.
+ *
+ * Stage is chosen from what they have actually done: profile, assessment, or
+ * optional package. Assessed-but-unpaid people get the package template, never
+ * "take the assessment" again.
  *
  * The count lives on the row rather than in this function, so a retried or
  * overlapping run cannot send a fourth. It is incremented for every candidate
@@ -71,6 +76,29 @@ async function run(request: Request) {
   }
 
   const rows = (data ?? []) as Row[];
+  const ids = rows.map((row) => row.id);
+
+  /* One round-trip for who has finished every section, so we do not send
+     "take the assessment" to people who already have. */
+  const assessed = new Set<string>();
+  if (ids.length > 0) {
+    const { data: attempts } = await admin
+      .from('assessment_attempts')
+      .select('candidate_id, section, submitted_at')
+      .in('candidate_id', ids)
+      .not('submitted_at', 'is', null);
+    const byCandidate = new Map<string, Set<string>>();
+    for (const row of attempts ?? []) {
+      const id = String(row.candidate_id);
+      const set = byCandidate.get(id) ?? new Set();
+      set.add(String(row.section));
+      byCandidate.set(id, set);
+    }
+    for (const [id, sections] of byCandidate) {
+      if (SECTION_ORDER.every((section) => sections.has(section))) assessed.add(id);
+    }
+  }
+
   const mailer = getMailer();
   const origin = new URL(request.url).origin;
 
@@ -87,7 +115,16 @@ async function run(request: Request) {
     }
 
     const unsubscribe = `${origin}/api/unsubscribe?c=${row.id}&t=${unsubscribeToken(row.id)}`;
-    const { subject, text, html } = await renderReminder(row, origin, unsubscribe);
+    const { subject, text, html } = await renderReminder(
+      {
+        full_name: row.full_name,
+        locale: row.locale,
+        profile_completed_at: row.profile_completed_at,
+        assessment_complete: assessed.has(row.id),
+      },
+      origin,
+      unsubscribe,
+    );
 
     const result = await mailer.send({
       to: row.email,

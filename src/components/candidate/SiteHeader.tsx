@@ -46,13 +46,13 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
         </div>
       ) : null}
 
-      <header className="sticky top-0 z-40 border-b border-line bg-paper/85 px-[clamp(20px,4cqi,56px)] py-[14px] backdrop-blur-md">
+      <header className="sticky top-0 z-40 border-b border-line bg-paper/85 px-[clamp(12px,4cqi,56px)] py-[12px] backdrop-blur-md sm:py-[14px]">
         {/* Nothing in the bar may wrap: a two-line "Visa & relocation" doubles
             the header height. The full menu appears only from xl, where six
             links, the toggles and the button fit on one line; below that the
             menu button carries them. */}
-        <div className="mx-auto flex w-full max-w-[1280px] items-center justify-between gap-6 whitespace-nowrap">
-          <Wordmark href={localePath(locale, '/')} size={26} />
+        <div className="mx-auto flex w-full max-w-[1280px] items-center justify-between gap-3 whitespace-nowrap sm:gap-6">
+          <Wordmark href={localePath(locale, '/')} size={22} />
 
           <nav aria-label="Main" className={`hidden min-w-0 items-center gap-[clamp(12px,1.3vw,20px)] text-[14.5px] text-ink-2 ${wide}`}>
             {navigation.items.map((item) => (

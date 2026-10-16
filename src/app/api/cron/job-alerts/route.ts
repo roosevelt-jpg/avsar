@@ -6,6 +6,8 @@ import { composeEmail } from '@/lib/email/compose';
 import { localePath } from '@/lib/i18n';
 import { positionLabel } from '@/lib/data/positions';
 import { formatSalary, jobFromRow, type Job } from '@/lib/jobs/types';
+import { getSiteSettings } from '@/lib/cms/data';
+import { formatFee } from '@/lib/company/config';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -39,6 +41,7 @@ type CandidateRow = {
   locale: string | null;
   position: string;
   job_alert_sent_at: string | null;
+  payment_status: string | null;
 };
 
 type SubscriberRow = {
@@ -90,13 +93,17 @@ async function run(request: Request) {
   const mailer = getMailer();
   const origin = new URL(request.url).origin;
   const gapBefore = new Date(Date.now() - MIN_GAP_MS).toISOString();
+  const settings = await getSiteSettings();
+  const packageSoftLine = settings.conversion.mentionPackageInJobAlerts
+    ? `Optional career package (${formatFee(settings.pricing)}): report, CV, preliminary legal review and recommendations. It does not change shortlist chances.`
+    : null;
   let sent = 0;
   const alertedEmails = new Set<string>();
 
   /* ---------- Registered candidates (role-matched) ---------- */
   const { data: candidateRows, error: candidatesError } = await admin
     .from('candidates')
-    .select('id, full_name, email, locale, position, job_alert_sent_at')
+    .select('id, full_name, email, locale, position, job_alert_sent_at, payment_status')
     .in('position', [...byPosition.keys()])
     .is('unsubscribed_at', null)
     .not('email_verified_at', 'is', null)
@@ -126,7 +133,12 @@ async function run(request: Request) {
     const email = await composeEmail(
       'job_alerts',
       { first_name: first, role, count: String(jobs.length), jobs_heading: heading, jobs: lines.join('\n\n') },
-      { origin, actionUrl: allJobs, unsubscribe: { label: 'Stop job alerts', url: unsubscribe } },
+      {
+        origin,
+        actionUrl: allJobs,
+        extra: packageSoftLine && candidate.payment_status !== 'paid' ? [packageSoftLine] : undefined,
+        unsubscribe: { label: 'Stop job alerts', url: unsubscribe },
+      },
     );
     const result = await mailer.send({ to: candidate.email, ...email, unsubscribeUrl: unsubscribe });
     if (!result.sent) continue;

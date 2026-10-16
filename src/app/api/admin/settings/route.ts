@@ -111,6 +111,21 @@ const schemas = {
       EMAIL_IDS.map((id) => [id, z.object({ subject: text(200).min(1), heading: text(200).min(1), body: text(4000).min(1), action: text(60) })]),
     ) as Record<EmailId, z.ZodObject<{ subject: z.ZodString; heading: z.ZodString; body: z.ZodString; action: z.ZodString }>>,
   ),
+  conversion: z.object({
+    trustLines: z.array(text(280).min(1)).min(1).max(5),
+    deliverables: z
+      .array(z.object({ title: text(80).min(1), timing: text(400).min(1) }))
+      .min(1)
+      .max(6),
+    offerHeading: text(120).min(1),
+    offerBody: text(800).min(1),
+    offerPrimaryLabel: text(60).min(1),
+    offerSecondaryLabel: text(60).min(1),
+    stickyCtaLabel: text(60).min(1),
+    pricingLead: text(600).min(1),
+    pricingFeatures: z.array(text(160).min(1)).min(1).max(10),
+    mentionPackageInJobAlerts: z.boolean(),
+  }),
 } as const;
 
 const bodySchema = z.object({ key: z.enum(SETTINGS_KEYS), value: z.unknown() });

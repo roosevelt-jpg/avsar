@@ -33,7 +33,8 @@ export async function GET(request: Request) {
               full_name: 'Rohit Sharma',
               locale,
               profile_completed_at:
-                url.searchParams.get('stage') === 'assessment' ? new Date().toISOString() : null,
+                url.searchParams.get('stage') === 'profile' ? null : new Date().toISOString(),
+              assessment_complete: url.searchParams.get('stage') === 'package',
             },
             origin,
             `${origin}/api/unsubscribe?c=preview&t=preview`,

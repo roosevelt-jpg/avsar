@@ -242,7 +242,7 @@ export async function AdminShell({
   ];
 
   return (
-    <div className="avsar-root min-h-screen bg-console lg:grid lg:grid-cols-[264px_minmax(0,1fr)]">
+    <div className="avsar-root min-h-screen max-w-[100vw] overflow-x-clip bg-console lg:grid lg:grid-cols-[264px_minmax(0,1fr)]">
       <aside className="hidden border-e border-line bg-surface lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col lg:overflow-y-auto">
         <div className="px-5 pt-5 pb-5">
           <Wordmark href={isStaff ? '/admin/dashboard' : '/admin'} suffix={suffix ?? (isStaff ? 'console' : 'talent pool')} accent="employer" size={22} />
@@ -252,25 +252,28 @@ export async function AdminShell({
         </div>
       </aside>
 
-      <div className="min-w-0">
-        <header className="sticky top-0 z-30 flex items-center justify-between gap-4 border-b border-line bg-surface/95 px-[clamp(20px,3cqi,40px)] py-3 backdrop-blur">
-          <div className="flex items-center gap-3 lg:hidden">
+      <div className="min-w-0 max-w-full">
+        <header className="sticky top-0 z-30 flex items-center justify-between gap-2 border-b border-line bg-surface/95 px-[clamp(12px,3cqi,40px)] py-3 backdrop-blur sm:gap-4">
+          <div className="flex min-w-0 items-center gap-2 sm:gap-3 lg:hidden">
             <details className="relative">
               <summary className="grid size-10 cursor-pointer list-none place-items-center rounded-full border border-line-strong bg-surface [&::-webkit-details-marker]:hidden" aria-label="Menu">
                 <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
                   <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
                 </svg>
               </summary>
-              <div className="absolute start-0 top-12 z-40 max-h-[80vh] w-[280px] overflow-y-auto rounded-[18px] border border-line bg-paper p-3 shadow-[0_24px_60px_-24px_rgba(27,26,23,0.4)]">
+              <div className="absolute start-0 top-12 z-40 max-h-[80vh] w-[min(88vw,300px)] overflow-y-auto rounded-[18px] border border-line bg-paper p-3 shadow-[0_24px_60px_-24px_rgba(27,26,23,0.4)]">
+                <div className="mb-3 md:hidden">
+                  <ConsoleSearch pages={searchPages} targets={searchTargets} live={Boolean(access)} />
+                </div>
                 <NavList groups={groups} current={current} />
               </div>
             </details>
-            <Wordmark href={isStaff ? '/admin/dashboard' : '/admin'} accent="employer" size={20} />
+            <Wordmark href={isStaff ? '/admin/dashboard' : '/admin'} accent="employer" size={18} />
           </div>
           <div className="hidden min-w-0 flex-1 md:block">
             <ConsoleSearch pages={searchPages} targets={searchTargets} live={Boolean(access)} />
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
             <div className="hidden pe-2 xl:block">
               <HeaderClock />
             </div>
@@ -295,7 +298,7 @@ export async function AdminShell({
           </div>
         </header>
 
-        <main className="px-[clamp(20px,3cqi,40px)] py-[clamp(24px,3cqi,40px)]">{children}</main>
+        <main className="min-w-0 px-[clamp(12px,3cqi,40px)] py-[clamp(20px,3cqi,40px)]">{children}</main>
       </div>
     </div>
   );

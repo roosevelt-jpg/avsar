@@ -96,6 +96,13 @@ describe('analytics aggregate', () => {
     candidates: [],
     payments: [],
     live: { openJobs: 0, awaitingReview: 0, interviewsActive: 0, offersOpen: 0 },
+    conversion: [
+      { key: 'registered', label: 'Registered', value: 0 },
+      { key: 'profile', label: 'Profile complete', value: 0 },
+      { key: 'assessed', label: 'Assessment complete', value: 0 },
+      { key: 'paid', label: 'Package paid', value: 0 },
+      { key: 'applied', label: 'Applied to a job', value: 0 },
+    ],
     ...overrides,
   });
 

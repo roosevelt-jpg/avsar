@@ -34,10 +34,14 @@ export const EMAIL_IDS = [
   'interview_booked',
   'job_alerts',
   'newsletter_jobs',
+  'reminder_package',
+  'payment_received',
   'legal_review_ready',
   'document_reupload',
   'lead_reply',
   'employer_shortlist',
+  'employer_unlock',
+  'employer_job_live',
   'staff_alert',
 ] as const;
 export type EmailId = (typeof EMAIL_IDS)[number];
@@ -55,10 +59,14 @@ export const EMAIL_META: EmailTemplateMeta[] = [
   { id: 'interview_booked', label: 'Interview booked', audience: 'Candidates', description: 'Sent when a recruiter books an interview and leaves "notify the candidate" on.', placeholders: ['first_name', 'job_title', 'reference', 'when', 'how', 'recruiter_note', 'join_link'] },
   { id: 'job_alerts', label: 'Weekly job alert', audience: 'Candidates', description: 'Weekly list of new jobs for the role a candidate chose. {{jobs}} is the list, one job per paragraph.', placeholders: ['first_name', 'role', 'count', 'jobs_heading', 'jobs'] },
   { id: 'newsletter_jobs', label: 'New jobs by email (footer)', audience: 'Leads', description: 'Weekly digest for people who left their email in the site footer. No role filter. {{jobs}} is the list, one job per paragraph.', placeholders: ['count', 'jobs_heading', 'jobs'] },
+  { id: 'reminder_package', label: 'Reminder: career package', audience: 'Candidates', description: 'Sent to people who finished the free assessment and have not bought the package. {{price}} is the formatted fee.', placeholders: ['first_name', 'price'] },
+  { id: 'payment_received', label: 'Package payment received', audience: 'Candidates', description: 'Receipt after a successful package payment. {{price}} is the formatted fee.', placeholders: ['first_name', 'price'] },
   { id: 'legal_review_ready', label: 'Legal review delivered', audience: 'Candidates', description: 'Sent when staff deliver a package buyer’s preliminary legal review.', placeholders: ['first_name'] },
   { id: 'document_reupload', label: 'Document needs re-uploading', audience: 'Candidates', description: 'Sent when staff reject a visa document.', placeholders: ['first_name', 'document', 'reason'] },
   { id: 'lead_reply', label: 'Reply to a contact message', audience: 'Leads', description: 'Wraps a recruiter’s reply from the inbox. {{message}} is what the recruiter typed.', placeholders: ['first_name', 'message'] },
   { id: 'employer_shortlist', label: 'Candidates shortlisted', audience: 'Employers', description: 'Sent to an employer when candidates are put forward for their vacancies.', placeholders: ['count', 'headline', 'vacancies'] },
+  { id: 'employer_unlock', label: 'Profile unlock decision', audience: 'Employers', description: 'Sent when staff approve or decline a request to see a candidate’s full name. {{decision}} is approved or declined.', placeholders: ['decision', 'headline', 'detail'] },
+  { id: 'employer_job_live', label: 'Vacancy published', audience: 'Employers', description: 'Sent when a vacancy they requested (or own) goes live. {{job_title}} and {{city}} name the posting.', placeholders: ['job_title', 'city'] },
   { id: 'staff_alert', label: 'Staff alert', audience: 'Staff', description: 'New applications, payments and vacancy requests, sent to the staff alert addresses.', placeholders: ['subject', 'line', 'action_label'] },
 ];
 
@@ -105,6 +113,18 @@ export const DEFAULT_EMAILS: EmailSettings = {
     body: 'New jobs opened this week on {{site_name}}. Applying is free.\n\n{{jobs}}',
     action: 'See all jobs',
   },
+  reminder_package: {
+    subject: '{{first_name}}, your career package is still available',
+    heading: 'Your assessment is done',
+    body: 'Hello {{first_name}},\n\nYou finished the free assessment and you are in our candidate database. The optional career package ({{price}}) adds a written report, a CV you can use anywhere, a preliminary legal document check, and career recommendations.\n\nIt does not change your shortlist chances and does not guarantee a job or a visa. You can buy it from your dashboard whenever you like.',
+    action: 'See the package',
+  },
+  payment_received: {
+    subject: 'Payment received: career package',
+    heading: 'Thank you for your payment',
+    body: 'Hello {{first_name}},\n\nWe received {{price}} for the Professional Assessment and Career Preparation Package. Your report, CV tools and preliminary legal review are available on your dashboard.\n\nKeep this email as your receipt. If anything looks wrong, reply to this message.',
+    action: 'Open my dashboard',
+  },
   legal_review_ready: {
     subject: 'Your preliminary legal review is ready',
     heading: 'Your legal review is ready',
@@ -127,6 +147,18 @@ export const DEFAULT_EMAILS: EmailSettings = {
     subject: '{{headline}}',
     heading: '{{headline}}',
     body: 'Our recruiters have put forward new candidates for your vacancies:\n\n{{vacancies}}\n\nTheir profiles are on your Applicants page. To arrange an interview, reply to your recruiter and quote the reference.',
+    action: 'See applicants',
+  },
+  employer_unlock: {
+    subject: '{{headline}}',
+    heading: '{{headline}}',
+    body: '{{detail}}\n\nSign in to see the applicants list. Full names stay masked until a request is approved.',
+    action: 'Open applicants',
+  },
+  employer_job_live: {
+    subject: 'Your vacancy is live: {{job_title}}',
+    heading: 'Your vacancy is live',
+    body: '{{job_title}} in {{city}} is now published on the candidate site. Applicants will appear on your Applicants page as they are shortlisted.',
     action: 'See applicants',
   },
   staff_alert: {

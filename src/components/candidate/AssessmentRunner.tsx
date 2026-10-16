@@ -179,7 +179,8 @@ export function AssessmentRunner({
       if (body?.nextSection) {
         router.push(localePath(locale, `/assessment?section=${body.nextSection}`));
       } else {
-        router.push(localePath(locale, '/dashboard'));
+        /* ?offer=1 opens the post-assessment package panel on the dashboard. */
+        router.push(localePath(locale, '/dashboard?offer=1'));
       }
     } catch (error) {
       console.error('[assessment] submit failed', error);

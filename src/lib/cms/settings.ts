@@ -83,9 +83,31 @@ export type SiteSettings = {
   hiring: HiringSettings;
   cohort: CohortSettings;
   emails: EmailSettings;
+  /**
+   * Conversion copy: trust lines, package deliverables, post-assessment offer,
+   * sticky CTA and pricing features. Price and odds stay under company/hiring;
+   * this section is the wording beside them.
+   */
+  conversion: ConversionSettings;
 };
 
-export const SETTINGS_KEYS = ['general', 'announcement', 'navigation', 'footer', 'applications', 'seo', 'company', 'pricing', 'hiring', 'cohort', 'emails'] as const;
+export type ConversionDeliverable = { title: string; timing: string };
+
+export type ConversionSettings = {
+  trustLines: string[];
+  deliverables: ConversionDeliverable[];
+  offerHeading: string;
+  offerBody: string;
+  offerPrimaryLabel: string;
+  offerSecondaryLabel: string;
+  stickyCtaLabel: string;
+  pricingLead: string;
+  pricingFeatures: string[];
+  /** Soft package line on role-matched job alerts for unpaid candidates. */
+  mentionPackageInJobAlerts: boolean;
+};
+
+export const SETTINGS_KEYS = ['general', 'announcement', 'navigation', 'footer', 'applications', 'seo', 'company', 'pricing', 'hiring', 'cohort', 'emails', 'conversion'] as const;
 
 /** Sections that change the legal entity, the price or the selection rule. */
 export const COMPANY_KEYS = ['company', 'pricing', 'hiring', 'cohort'] as const;
@@ -217,6 +239,48 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   hiring: DEFAULT_HIRING,
   cohort: DEFAULT_COHORT,
   emails: DEFAULT_EMAILS,
+  conversion: {
+    trustLines: [
+      'You never pay to be hired. The employer pays our fee.',
+      'The only money we take is the optional career package, on this website, with a receipt.',
+      'Buying the package does not change your shortlist chances and does not guarantee a job or a visa.',
+    ],
+    deliverables: [
+      {
+        title: 'Skills and English report',
+        timing: 'Ready as soon as you pay. Your strengths, what to improve, and how your score sits against the shortlist threshold.',
+      },
+      {
+        title: 'Professionally prepared CV',
+        timing: 'Built from your profile and assessment. You can download it and use it anywhere, not only with us.',
+      },
+      {
+        title: 'Preliminary legal document review',
+        timing: 'Our legal team reviews the documents you upload for a Portuguese work visa. Preliminary only: not permission to work, and not a visa decision.',
+      },
+      {
+        title: 'Career recommendations',
+        timing: 'Individual advice for your role and interviews, delivered with the pack.',
+      },
+    ],
+    offerHeading: 'Your assessment is complete',
+    offerBody:
+      'You are in our candidate database for free. The optional career package adds a written report, a CV you can use anywhere, a preliminary legal document check, and career recommendations. It does not move you up a shortlist.',
+    offerPrimaryLabel: 'See the package',
+    offerSecondaryLabel: 'Browse jobs first',
+    stickyCtaLabel: 'Get the career package',
+    pricingLead:
+      'Joining the database is free after the assessment. The career package is optional preparation: report, CV, preliminary legal review and recommendations. It gives no priority and does not guarantee an interview, a job or a visa.',
+    pricingFeatures: [
+      'Personal skills and English report',
+      'Professionally prepared CV you can use anywhere',
+      'Preliminary legal review of your documents for Portugal',
+      'Individual career recommendations for your role',
+      'Optional: not required to join the database or to apply',
+      'No shortlist priority from buying',
+    ],
+    mentionPackageInJobAlerts: true,
+  },
 };
 
 /**
@@ -244,6 +308,30 @@ export function mergeSettings(rows: { key: string; value: unknown }[]): SiteSett
   }
   for (const id of Object.keys(DEFAULT_EMAILS) as (keyof EmailSettings)[]) {
     out.emails[id] = { ...DEFAULT_EMAILS[id], ...nested('emails', id) };
+  }
+  /* Arrays in conversion replace wholesale when saved; if an older row has
+     none, keep the defaults so a fresh deploy is never blank. */
+  const storedConversion = stored.conversion as Partial<ConversionSettings> | undefined;
+  if (storedConversion) {
+    out.conversion = {
+      ...DEFAULT_SETTINGS.conversion,
+      ...storedConversion,
+      trustLines:
+        Array.isArray(storedConversion.trustLines) && storedConversion.trustLines.length > 0
+          ? storedConversion.trustLines.map(String).slice(0, 5)
+          : DEFAULT_SETTINGS.conversion.trustLines,
+      deliverables:
+        Array.isArray(storedConversion.deliverables) && storedConversion.deliverables.length > 0
+          ? storedConversion.deliverables
+              .filter((d): d is ConversionDeliverable => Boolean(d && typeof d === 'object'))
+              .map((d) => ({ title: String(d.title ?? ''), timing: String(d.timing ?? '') }))
+              .slice(0, 6)
+          : DEFAULT_SETTINGS.conversion.deliverables,
+      pricingFeatures:
+        Array.isArray(storedConversion.pricingFeatures) && storedConversion.pricingFeatures.length > 0
+          ? storedConversion.pricingFeatures.map(String).slice(0, 10)
+          : DEFAULT_SETTINGS.conversion.pricingFeatures,
+    };
   }
   return out;
 }

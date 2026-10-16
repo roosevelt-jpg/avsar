@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { audit } from '@/lib/audit';
 import { logDataAccess } from '@/lib/privacy/log';
+import { notifyEmployerOfUnlock } from '@/lib/employer/notify';
 import { apiPermission } from '@/lib/rbac/server';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 
@@ -38,5 +39,12 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     await logDataAccess(guard.userId, String(data.candidate_id), 'employer.profile_unlock', { employer: data.employer_id, request: id });
   }
   await audit(guard.userId, `unlock.${parsed.data.decision}`, `candidate:${String(data.candidate_id)}`, { employer: data.employer_id, request: id });
+  if (data.employer_id) {
+    await notifyEmployerOfUnlock({
+      employerId: String(data.employer_id),
+      decision: parsed.data.decision,
+      origin: new URL(request.url).origin,
+    });
+  }
   return NextResponse.json({ status: parsed.data.decision });
 }

@@ -4,12 +4,28 @@ import { renderEmail, type EmailBrand } from './template';
 import { fillTemplate, paragraphsOf, type EmailId } from './templates';
 
 export function emailBrand(settings: SiteSettings): EmailBrand {
+  const socials = (
+    [
+      ['Instagram', settings.general.socials.instagram],
+      ['Facebook', settings.general.socials.facebook],
+      ['LinkedIn', settings.general.socials.linkedin],
+      ['YouTube', settings.general.socials.youtube],
+    ] as const
+  )
+    .filter(([, url]) => Boolean(url))
+    .map(([label, url]) => ({ label, url }));
+
   return {
     name: settings.general.siteName,
     slogan: settings.general.tagline,
     legalName: settings.company.legalName,
     jurisdiction: settings.company.jurisdiction,
     supportEmail: settings.general.supportEmail,
+    /* Prefer the registered address; fall back to the public office lines. */
+    address: settings.company.registeredAddress || settings.general.officeAddress.split('\n')[0] || '',
+    phone: settings.general.supportPhone || settings.company.phone,
+    website: settings.company.website,
+    socials,
   };
 }
 
@@ -48,13 +64,22 @@ export async function composeEmail(
   const label = fillTemplate(template.action, all).trim();
   const action = label && options.actionUrl ? { label, url: options.actionUrl } : undefined;
 
+  const brand = emailBrand(settings);
   const text = [
     paragraphs.join('\n\n'),
     ...(action ? [`${action.label}: ${action.url}`] : []),
     ...(options.closing?.length ? [options.closing.join('\n')] : []),
     ...(options.unsubscribe ? [`${options.unsubscribe.label}: ${options.unsubscribe.url}`] : []),
-    settings.general.siteName,
-  ].join('\n\n');
+    brand.name,
+    brand.legalName,
+    brand.address,
+    brand.phone,
+    brand.supportEmail,
+    brand.website,
+    ...brand.socials.map((social) => `${social.label}: ${social.url}`),
+  ]
+    .filter(Boolean)
+    .join('\n\n');
 
   return {
     subject,
@@ -68,7 +93,7 @@ export async function composeEmail(
       closing: options.closing,
       unsubscribe: options.unsubscribe,
       origin: options.origin,
-      brand: emailBrand(settings),
+      brand,
     }),
   };
 }

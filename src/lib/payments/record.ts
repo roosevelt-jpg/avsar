@@ -1,5 +1,10 @@
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { emailStaff, notifyStaff } from '@/lib/notifications/staff';
+import { getMailer } from '@/lib/email';
+import { composeEmail } from '@/lib/email/compose';
+import { getSiteSettings } from '@/lib/cms/data';
+import { formatFee } from '@/lib/company/config';
+import { localePath } from '@/lib/i18n';
 import type { PaymentStatus } from './types';
 
 /**
@@ -68,7 +73,7 @@ export async function recordPayment(input: {
     .update({ payment_status: 'paid' })
     .eq('id', payment.candidate_id)
     .neq('payment_status', 'paid')
-    .select('id, full_name');
+    .select('id, full_name, email, locale');
 
   if (unlockError) console.error('[payments] candidate unlock failed', unlockError);
 
@@ -88,5 +93,24 @@ export async function recordPayment(input: {
       href: '/admin/legal-reviews',
       actionLabel: 'Open legal reviews',
     });
+
+    /* Receipt to the buyer. Only on the first unlock, so a double webhook
+       does not send two receipts. */
+    const to = typeof first.email === 'string' ? first.email : '';
+    if (to) {
+      try {
+        const settings = await getSiteSettings();
+        const origin = process.env.SITE_ORIGIN ?? 'https://recruitment.smithandadams.com';
+        const locale = typeof first.locale === 'string' && first.locale ? first.locale : 'en';
+        const email = await composeEmail(
+          'payment_received',
+          { first_name: name.split(' ')[0] || name, price: formatFee(settings.pricing) },
+          { origin, actionUrl: `${origin}${localePath(locale, '/dashboard')}` },
+        );
+        await getMailer().send({ to, ...email });
+      } catch (error) {
+        console.error('[payments] buyer receipt failed', error);
+      }
+    }
   }
 }

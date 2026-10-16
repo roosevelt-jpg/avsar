@@ -4,10 +4,14 @@ import { useState } from 'react';
 import { Mono } from '@/components/ui/Mono';
 import { IDEMPOTENCY_HEADER, useIdempotencyKey } from '@/components/security/useIdempotencyKey';
 import { IndicativePrice } from '@/components/candidate/IndicativePrice';
+import { PackagePaywallCopy } from '@/components/candidate/PackagePaywallCopy';
 import { loadEximpe } from '@/lib/payments/eximpe-client';
 import { loadCashfree } from '@/lib/payments/cashfree-client';
-import type { PricingSettings } from '@/lib/company/config';
+import type { HiringSettings, PricingSettings } from '@/lib/company/config';
+import type { ConversionSettings } from '@/lib/cms/settings';
+import { siteText } from '@/lib/cms/localize';
 import { fill, type Dictionary } from '@/lib/i18n';
+import type { Locale } from '@/lib/i18n';
 import type { PaymentMethodHint, PaymentProvider } from '@/lib/payments/types';
 
 /**
@@ -28,20 +32,24 @@ const METHOD_LABELS: Record<PaymentMethodHint, string> = {
 
 export function UnlockReport({
   t,
+  locale,
   price,
   methods,
   provider,
   providerMode,
   country,
   pricing,
+  conversion,
+  hiring,
 }: {
   t: Dictionary;
+  locale: Locale;
   /** Formatted, from the server, so it matches every other place it appears. */
   price: string;
   pricing: PricingSettings;
+  conversion: ConversionSettings;
+  hiring: HiringSettings;
   methods: PaymentMethodHint[];
-  /* Taken from the interface rather than copied. The list was duplicated here
-     and went stale the moment a fifth rail was added. */
   provider: PaymentProvider['name'];
   providerMode: 'sandbox' | 'production';
   /** From `x-vercel-ip-country`, read on the server. Display only. */
@@ -52,6 +60,7 @@ export function UnlockReport({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const idempotency = useIdempotencyKey();
+  const shortlistLabel = `${(hiring.shortlistMinScore / 10).toFixed(hiring.shortlistMinScore % 10 === 0 ? 0 : 1)} out of 10`;
 
   async function pay() {
     setBusy(true);
@@ -115,15 +124,17 @@ export function UnlockReport({
   }
 
   return (
-    <section className="mb-8 rounded-[16px] border border-accent bg-accent-tint p-[clamp(20px,3cqi,32px)]">
+    <section id="package" className="mb-8 scroll-mt-24 rounded-[16px] border border-accent bg-accent-tint p-[clamp(20px,3cqi,32px)]">
       <Mono className="text-accent-deep">{s.unlockEyebrow}</Mono>
       <h2 className="mt-2.5 mb-2 text-[clamp(20px,2.6cqi,26px)] font-semibold leading-[1.15]">
-        {s.unlockTitle}
+        {siteText(locale, s.unlockTitle)}
       </h2>
       <p className="m-0 max-w-[62ch] text-[15px] leading-[1.6] text-ink-2">
         {fill(s.unlockBody, { price })}
       </p>
       <IndicativePrice t={t} country={country} pricing={pricing} />
+
+      <PackagePaywallCopy locale={locale} conversion={conversion} hiring={hiring} shortlistLabel={shortlistLabel} />
 
       <div role="radiogroup" aria-label={s.unlockTitle} className="mt-5 flex flex-wrap gap-2.5">
         {methods.map((option) => {
@@ -152,8 +163,6 @@ export function UnlockReport({
       >
         {fill(s.unlockCta, { price })}
       </button>
-
-      <p className="mt-4 mb-0 max-w-[62ch] text-[13px] leading-[1.6] text-muted">{s.unlockFine}</p>
 
       {/* A card-only rail abroad is an international payment for an Indian card,
           and many banks switch that off by default. Saying so first saves a

@@ -41,6 +41,8 @@ export async function LiveFunnelBlock({ data, locale }: { data: BlockData; local
             per100: siteText(locale, 'Out of every 100 people who finish the test'),
             basedOn: siteText(locale, 'based on {{finished}} people so far'),
             live: siteText(locale, 'Live'),
+            sampleProgress: siteText(locale, '{{finished}} of {{min_sample}} finished tests'),
+            awaitingRates: siteText(locale, 'Live rates appear here once enough people have finished the test.'),
           }}
         />
       </div>

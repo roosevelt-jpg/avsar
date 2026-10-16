@@ -11,6 +11,8 @@ import { ApplicationStats } from '@/components/candidate/ApplicationStats';
 import { JourneyStatus } from '@/components/candidate/JourneyStatus';
 import { VerifyEmailBanner } from '@/components/candidate/VerifyEmailBanner';
 import { UnlockReport } from '@/components/candidate/UnlockReport';
+import { PackageOfferBanner } from '@/components/candidate/PackageOfferBanner';
+import { StickyPackageCta } from '@/components/candidate/StickyPackageCta';
 import { availablePaymentMethods, getPaymentProvider } from '@/lib/payments';
 import { getSiteSettings } from '@/lib/cms/data';
 import { formatFee } from '@/lib/company/config';
@@ -19,7 +21,7 @@ import { CareerPack } from '@/components/candidate/CareerPack';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import type { CareerPack as Pack } from '@/lib/cv/coach-schema';
 import { fill, getDictionary, isLocale, localePath } from '@/lib/i18n';
-import { requireCandidate } from '@/lib/auth';
+import { canReceiveReport, requireCandidate } from '@/lib/auth';
 import { getServerSupabase } from '@/lib/supabase/server';
 import { sectorLabel, SECTOR_SLUGS, type SectorSlug } from '@/lib/data/sectors';
 import { englishBand, skillBand } from '@/lib/report/bands';
@@ -44,11 +46,19 @@ type DashboardReport = {
   breakdown: { label: string; score: number }[];
 };
 
-export default async function DashboardPage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function DashboardPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ offer?: string }>;
+}) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const t = getDictionary(locale);
   const d = t.dash;
+  const query = await searchParams;
+  const showOffer = query.offer === '1';
 
   let r: DashboardReport | null = null;
   let pack: Pack | null = null;
@@ -156,8 +166,16 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
     <>
       <DashboardNav locale={locale} current="overview" />
 
-      <main className="px-[clamp(20px,4cqi,56px)] py-[clamp(32px,5cqi,64px)]">
+      <main
+        className={`px-[clamp(16px,4cqi,56px)] py-[clamp(28px,5cqi,64px)] ${
+          status.awaitingPayment ? 'pb-28 md:pb-[clamp(28px,5cqi,64px)]' : ''
+        }`}
+      >
         {unverifiedEmail && <VerifyEmailBanner email={unverifiedEmail} t={t} />}
+
+        {status.awaitingPayment && showOffer ? (
+          <PackageOfferBanner locale={locale} conversion={settings.conversion} fee={fee} />
+        ) : null}
 
         {/* The assessment is done and the fee is outstanding. This is the only
             place the fee is asked for, and it sits above the report so the
@@ -165,8 +183,11 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
         {status.awaitingPayment && (
           <UnlockReport
             t={t}
+            locale={locale}
             price={fee}
             pricing={settings.pricing}
+            conversion={settings.conversion}
+            hiring={settings.hiring}
             methods={availablePaymentMethods()}
             provider={getPaymentProvider().name}
             country={(await headers()).get('x-vercel-ip-country')}
@@ -287,12 +308,14 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
           <h1 className="m-0 text-[clamp(28px,4cqi,48px)] font-semibold leading-[1.1] tracking-[-0.03em]">
             {reportReady ? d.title : d.pending}
           </h1>
-          <Link
-            href={localePath(locale, '/dashboard/report.pdf')}
-            className="t-colors rounded-[12px] border border-line-strong bg-surface px-4 py-2.5 text-[14px] no-underline hover:border-ink"
-          >
-            {d.download}
-          </Link>
+          {canReceiveReport(candidate) ? (
+            <Link
+              href={localePath(locale, '/dashboard/report.pdf')}
+              className="t-colors rounded-[12px] border border-line-strong bg-surface px-4 py-2.5 text-[14px] no-underline hover:border-ink"
+            >
+              {d.download}
+            </Link>
+          ) : null}
         </div>
 
         {!reportReady && (
@@ -354,9 +377,11 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
         {/* The part of the fee the candidate keeps, whether or not they are
             ever placed. It sits above the visibility switch because it is the
             thing they came back for. */}
-        {(
+        {/* Generate is paid-gated on the API; the button must match or unpaid
+            candidates hit a 402 after pressing Build. */}
+        {(status.paid || pack) && (
           <div className="mt-12">
-            <CareerPack pack={pack} canGenerate={status.reportReady} locale={locale} />
+            <CareerPack pack={pack} canGenerate={status.paid && status.reportReady} locale={locale} />
           </div>
         )}
 
@@ -421,6 +446,13 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
           />
         </div>
       </main>
+
+      {status.awaitingPayment ? (
+        <StickyPackageCta
+          href="#package"
+          label={settings.conversion.stickyCtaLabel}
+        />
+      ) : null}
     </>
   );
 }

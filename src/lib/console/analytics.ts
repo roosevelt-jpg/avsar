@@ -43,6 +43,8 @@ export type Kpi = {
 
 export type DailyPoint = { date: string; applications: number; signups: number; payments: number };
 
+export type ConversionStage = { key: string; label: string; value: number };
+
 export type Analytics = {
   range: RangeDays;
   generatedAt: string;
@@ -50,6 +52,11 @@ export type Analytics = {
   daily: DailyPoint[];
   /** How many applications in the range reached each stage (cumulative). */
   funnel: { stage: ApplicationStatus; reached: number }[];
+  /**
+   * Candidate conversion for signups in the range: registered → profile →
+   * assessed → package paid → applied. Counts are of people, not events.
+   */
+  conversion: ConversionStage[];
   topJobs: { id: string; label: string; value: number }[];
   topRoles: { label: string; value: number }[];
   origins: { label: string; value: number }[];
@@ -96,7 +103,7 @@ function stateOf(cityState: string | null): string {
 
 type AppRow = { id: string; job_id: string; status: ApplicationStatus; created_at: string; candidates: { position: string | null; city_state: string | null } | null; job_postings: { title: string; city: string } | null };
 type EventRow = { application_id: string; created_at: string; to_status: string | null; from_status: string | null };
-type CandidateRow = { created_at: string };
+type CandidateRow = { id?: string; created_at: string; profile_completed_at?: string | null; payment_status?: string | null };
 type PaymentRow = { paid_at: string | null; amount_paise: number; method_hint: string | null; provider: string };
 
 export async function getAnalytics(range: RangeDays): Promise<Analytics> {
@@ -110,7 +117,7 @@ export async function getAnalytics(range: RangeDays): Promise<Analytics> {
 
   const one = <T,>(value: unknown) => (Array.isArray(value) ? value[0] : value) as T | null;
 
-  const [appsRes, candidatesRes, paymentsRes, jobsRes, liveRes] = await Promise.all([
+  const [appsRes, candidatesRes, paymentsRes, jobsRes, liveRes, cohortRes] = await Promise.all([
     admin
       .from('applications')
       .select('id, job_id, status, created_at, candidates (position, city_state), job_postings (title, city)')
@@ -125,6 +132,12 @@ export async function getAnalytics(range: RangeDays): Promise<Analytics> {
       .limit(50000),
     admin.from('job_postings').select('id', { count: 'exact', head: true }).eq('status', 'published'),
     admin.from('applications').select('status').in('status', ['submitted', 'interview', 'offer']).limit(50000),
+    /* Conversion strip: only the people who signed up in this range. */
+    admin
+      .from('candidates')
+      .select('id, created_at, profile_completed_at, payment_status')
+      .gte('created_at', start.toISOString())
+      .limit(50000),
   ]);
 
   const apps: AppRow[] = (appsRes.data ?? []).map((raw) => {
@@ -163,8 +176,29 @@ export async function getAnalytics(range: RangeDays): Promise<Analytics> {
     if (row.status === 'offer') live.offersOpen++;
   }
 
+  const cohort = (cohortRes.data ?? []) as CandidateRow[];
+  const cohortIds = cohort.map((c) => c.id).filter((id): id is string => Boolean(id));
+  const assessedIds = new Set<string>();
+  const appliedIds = new Set<string>();
+  if (cohortIds.length > 0) {
+    const [{ data: reports }, { data: appRows }] = await Promise.all([
+      admin.from('reports').select('candidate_id').in('candidate_id', cohortIds),
+      admin.from('applications').select('candidate_id').in('candidate_id', cohortIds),
+    ]);
+    for (const row of reports ?? []) assessedIds.add(String(row.candidate_id));
+    for (const row of appRows ?? []) appliedIds.add(String(row.candidate_id));
+  }
+
+  const conversion: ConversionStage[] = [
+    { key: 'registered', label: 'Registered', value: cohort.length },
+    { key: 'profile', label: 'Profile complete', value: cohort.filter((c) => c.profile_completed_at).length },
+    { key: 'assessed', label: 'Assessment complete', value: assessedIds.size },
+    { key: 'paid', label: 'Package paid', value: cohort.filter((c) => c.payment_status === 'paid').length },
+    { key: 'applied', label: 'Applied to a job', value: appliedIds.size },
+  ];
+
   const currency = (await getSiteSettings()).pricing.chargeCurrency;
-  return aggregate({ range, now, start, apps, currentApps, prevApps, events, candidates, payments, live, currency });
+  return aggregate({ range, now, start, apps, currentApps, prevApps, events, candidates, payments, live, currency, conversion });
 }
 
 export function aggregate(input: {
@@ -179,8 +213,9 @@ export function aggregate(input: {
   candidates: CandidateRow[];
   payments: PaymentRow[];
   live: Analytics['live'];
+  conversion: ConversionStage[];
 }): Analytics {
-  const { range, now, start, currentApps, prevApps, events, candidates, payments, live } = input;
+  const { range, now, start, currentApps, prevApps, events, candidates, payments, live, conversion } = input;
   const days = emptyDays(range, now);
   const index = new Map(days.map((d, i) => [d, i]));
   const series = { applications: days.map(() => 0), signups: days.map(() => 0), payments: days.map(() => 0), revenue: days.map(() => 0) };
@@ -271,6 +306,7 @@ export function aggregate(input: {
     kpis,
     daily: days.map((date, i) => ({ date, applications: series.applications[i]!, signups: series.signups[i]!, payments: series.payments[i]! })),
     funnel,
+    conversion,
     topJobs: [...jobs.entries()].map(([id, j]) => ({ id, ...j })).sort((a, b) => b.value - a.value).slice(0, 6),
     topRoles: topN(roles, 6),
     origins: topN(origins, 8),
@@ -300,6 +336,13 @@ function emptyAnalytics(range: RangeDays, now: Date): Analytics {
     ],
     daily: days.map((date) => ({ date, applications: 0, signups: 0, payments: 0 })),
     funnel: PIPELINE.map((stage) => ({ stage, reached: 0 })),
+    conversion: [
+      { key: 'registered', label: 'Registered', value: 0 },
+      { key: 'profile', label: 'Profile complete', value: 0 },
+      { key: 'assessed', label: 'Assessment complete', value: 0 },
+      { key: 'paid', label: 'Package paid', value: 0 },
+      { key: 'applied', label: 'Applied to a job', value: 0 },
+    ],
     topJobs: [],
     topRoles: [],
     origins: [],

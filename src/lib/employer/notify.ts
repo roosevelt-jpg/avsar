@@ -1,5 +1,5 @@
 import { getMailer } from '@/lib/email';
-import { composeEmail } from '@/lib/email/compose';
+import { composeEmail, type ComposedEmail } from '@/lib/email/compose';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 
 type Row = {
@@ -7,6 +7,32 @@ type Row = {
   reference: string;
   job_postings: { title: string; city: string; employer_id: string | null } | { title: string; city: string; employer_id: string | null }[] | null;
 };
+
+/** Auth emails for every user linked to an employer, via the service role. */
+async function employerEmails(employerId: string): Promise<string[]> {
+  const admin = getAdminSupabase();
+  if (!admin) return [];
+  const { data: contacts } = await admin.from('employer_users').select('auth_user_id').eq('employer_id', employerId);
+  const emails: string[] = [];
+  for (const contact of contacts ?? []) {
+    const { data: user } = await admin.auth.admin.getUserById(String(contact.auth_user_id));
+    if (user.user?.email) emails.push(user.user.email);
+  }
+  return emails;
+}
+
+async function sendToEmployer(
+  employerId: string,
+  build: () => Promise<ComposedEmail>,
+): Promise<void> {
+  const emails = await employerEmails(employerId);
+  if (emails.length === 0) return;
+  const mailer = getMailer();
+  const email = await build();
+  for (const to of emails) {
+    await mailer.send({ to, ...email });
+  }
+}
 
 /**
  * Tells an employer that candidates were put forward for their vacancies.
@@ -45,26 +71,64 @@ export async function notifyEmployersOfShortlist(applicationIds: string[], origi
 
     const url = `${origin}/admin/applicants`;
     for (const [employerId, lines] of byEmployer) {
-      const { data: contacts } = await admin.from('employer_users').select('auth_user_id').eq('employer_id', employerId);
-      const emails: string[] = [];
-      for (const contact of contacts ?? []) {
-        const { data: user } = await admin.auth.admin.getUserById(String(contact.auth_user_id));
-        if (user.user?.email) emails.push(user.user.email);
-      }
-      if (emails.length === 0) continue;
-
       const count = lines.length;
       const headline = count === 1 ? 'A candidate has been shortlisted for you' : `${count} candidates have been shortlisted for you`;
-      const email = await composeEmail(
-        'employer_shortlist',
-        { count: String(count), headline, vacancies: lines.join('\n\n') },
-        { origin, actionUrl: url },
+      await sendToEmployer(employerId, () =>
+        composeEmail(
+          'employer_shortlist',
+          { count: String(count), headline, vacancies: lines.join('\n\n') },
+          { origin, actionUrl: url },
+        ),
       );
-      for (const to of emails) {
-        await getMailer().send({ to, ...email });
-      }
     }
   } catch (error) {
-    console.error('[employer-notify] failed', error);
+    console.error('[employer-notify] shortlist failed', error);
+  }
+}
+
+/** Approve or decline of a profile-unlock request. Never throws. */
+export async function notifyEmployerOfUnlock(input: {
+  employerId: string;
+  decision: 'approved' | 'declined';
+  origin: string;
+}): Promise<void> {
+  try {
+    const headline =
+      input.decision === 'approved'
+        ? 'Profile unlock approved'
+        : 'Profile unlock declined';
+    const detail =
+      input.decision === 'approved'
+        ? 'Your request to see a candidate’s full name was approved. Open Applicants to continue.'
+        : 'Your request to see a candidate’s full name was declined. The profile stays masked.';
+    await sendToEmployer(input.employerId, () =>
+      composeEmail(
+        'employer_unlock',
+        { decision: input.decision, headline, detail },
+        { origin: input.origin, actionUrl: `${input.origin}/admin/applicants` },
+      ),
+    );
+  } catch (error) {
+    console.error('[employer-notify] unlock failed', error);
+  }
+}
+
+/** Vacancy they own or requested is now published. Never throws. */
+export async function notifyEmployerJobLive(input: {
+  employerId: string;
+  jobTitle: string;
+  city: string;
+  origin: string;
+}): Promise<void> {
+  try {
+    await sendToEmployer(input.employerId, () =>
+      composeEmail(
+        'employer_job_live',
+        { job_title: input.jobTitle, city: input.city },
+        { origin: input.origin, actionUrl: `${input.origin}/admin/applicants` },
+      ),
+    );
+  } catch (error) {
+    console.error('[employer-notify] job live failed', error);
   }
 }

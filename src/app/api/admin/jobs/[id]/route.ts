@@ -6,6 +6,7 @@ import { getAdminSupabase } from '@/lib/supabase/admin';
 import { jobInputSchema, jobStatusSchema } from '@/lib/jobs/schema';
 import { jobToRow, type JobInput } from '@/lib/jobs/types';
 import { audit } from '@/lib/audit';
+import { notifyEmployerJobLive } from '@/lib/employer/notify';
 
 export const runtime = 'nodejs';
 
@@ -39,6 +40,12 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   const admin = getAdminSupabase();
   if (!admin) return NextResponse.json({ error: 'storage_unconfigured' }, { status: 503 });
 
+  const { data: before } = await admin
+    .from('job_postings')
+    .select('status, title, city, employer_id')
+    .eq('id', id)
+    .maybeSingle();
+
   const { error } = await admin.from('job_postings').update(update).eq('id', id);
   if (error) {
     if (error.code === '23505') return NextResponse.json({ error: 'slug_taken' }, { status: 409 });
@@ -48,6 +55,21 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
   await audit(guard.userId, body.data.status ? `job.${body.data.status}` : 'job.update', `job:${id}`);
   revalidatePath('/', 'layout');
+
+  /* First time a linked employer vacancy goes live, tell their contacts. */
+  if (
+    body.data.status === 'published' &&
+    before?.status !== 'published' &&
+    before?.employer_id
+  ) {
+    await notifyEmployerJobLive({
+      employerId: String(before.employer_id),
+      jobTitle: String(body.data.job ? (update.title ?? before.title) : before.title),
+      city: String(body.data.job ? (update.city ?? before.city) : before.city),
+      origin: new URL(request.url).origin,
+    });
+  }
+
   return NextResponse.json({ id });
 }
 

@@ -8,6 +8,7 @@ export const SETTINGS_TABS: { href: string; label: string; permission: Permissio
   { href: '/admin/settings/seo', label: 'Search & sharing', permission: 'settings.manage' },
   { href: '/admin/settings/applications', label: 'Applications', permission: 'jobs.publish' },
   { href: '/admin/settings/emails', label: 'Emails', permission: 'settings.manage' },
+  { href: '/admin/settings/conversion', label: 'Conversion & package', permission: 'settings.manage' },
   { href: '/admin/settings/company', label: 'Company & pricing', permission: 'company.manage' },
   { href: '/admin/settings/integrations', label: 'Integrations', permission: 'integrations.manage' },
 ];

@@ -1,9 +1,10 @@
 import { renderToBuffer } from '@react-pdf/renderer';
 import { ReportDocument, type ReportData } from '@/lib/report/ReportDocument';
-import { canReceiveReport, getSessionCandidate, getSessionStaff } from '@/lib/auth';
+import { canReceiveReport, getSessionCandidate } from '@/lib/auth';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { sectorLabel, SECTOR_SLUGS, type SectorSlug } from '@/lib/data/sectors';
 import { getSiteSettings } from '@/lib/cms/data';
+import { can, getStaffAccess } from '@/lib/rbac/server';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -22,17 +23,18 @@ export const maxDuration = 60;
  * report is delivered to that address, and it names them, their score and
  * their rank against the cohort.
  *
- * Staff can fetch any, with `?candidate=`, because reviewing a report is their
- * job.
+ * Staff with candidates.view can fetch any, with `?candidate=`, because
+ * reviewing a report is their job.
  */
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const requested = url.searchParams.get('candidate');
 
-  const staff = await getSessionStaff();
-  const candidate = staff ? null : await getSessionCandidate();
+  const access = await getStaffAccess();
+  const staffOk = can(access, 'candidates.view');
+  const candidate = staffOk ? null : await getSessionCandidate();
 
-  if (!staff && !candidate) {
+  if (!staffOk && !candidate) {
     return new Response('Unauthorized', { status: 401 });
   }
 
@@ -42,7 +44,7 @@ export async function GET(request: Request) {
     return new Response('Email address not verified', { status: 403 });
   }
 
-  const candidateId = staff ? requested : candidate?.id;
+  const candidateId = staffOk ? requested : candidate?.id;
   if (!candidateId) return new Response('Not found', { status: 404 });
 
   const admin = getAdminSupabase();

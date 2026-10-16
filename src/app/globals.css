@@ -205,6 +205,9 @@ textarea {
 /* The prototype sizes everything against the page container, not the
    viewport, so every clamp() below can keep using cqi units. */
 .avsar-root {
+  max-width: 100%;
+  overflow-x: clip;
+
   container-type: inline-size;
   background: var(--color-paper);
   min-height: 100vh;
@@ -250,6 +253,17 @@ textarea {
 .scroll-x {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+}
+
+/* Stop wide tables, motion layers and absolute chips from creating a page-level
+   horizontal scroll on phones. Inner .scroll-x regions still scroll. */
+html {
+  overflow-x: clip;
+}
+body {
+  overflow-x: clip;
+  max-width: 100%;
 }
 
 /* --------------------------------------------------------------------------
