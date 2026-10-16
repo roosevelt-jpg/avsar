@@ -25,11 +25,19 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm test
-      # Webpack: Turbopack + many next/font/google faces is flaky in CI.
       - run: npm run build
+      # Hand the production build to e2e so it does not rebuild. A second
+      # Turbopack build on the same runner pool intermittently fails on
+      # next/font/google with many Indic faces.
+      - uses: actions/upload-artifact@v4
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        with:
+          name: next-build
+          path: .next
+          retention-days: 1
 
-  # Browser tests are slower, so they run on main only. Playwright builds and
-  # starts the app itself in demo mode (see playwright.config.ts).
+  # Browser tests are slower, so they run on main only. Playwright starts the
+  # app from the check job's .next (see playwright.config.ts).
   e2e:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: check
@@ -42,6 +50,10 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: next-build
+          path: .next
       - run: npx playwright install --with-deps chromium
       - run: npm run e2e
         env:
