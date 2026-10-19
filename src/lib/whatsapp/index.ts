@@ -26,6 +26,14 @@ export const WHATSAPP_TEMPLATES = {
   /** {{1}} first name, {{2}} one line from the recruiter. Sent only to people who
       wrote to us and ticked "WhatsApp is fine" (or whose import says so). */
   lead_follow_up: 2,
+  /** {{1}} first name, {{2}} score out of 10, {{3}} shortlist line (e.g. "above 7.0" or "below") */
+  score_ready: 3,
+  /** {{1}} first name, {{2}} package price */
+  package_offer: 2,
+  /** {{1}} first name, {{2}} receipt number */
+  payment_received: 2,
+  /** {{1}} first name */
+  legal_review_ready: 1,
 } as const;
 
 export type WhatsAppTemplate = keyof typeof WHATSAPP_TEMPLATES;

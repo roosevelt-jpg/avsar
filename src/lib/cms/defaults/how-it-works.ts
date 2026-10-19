@@ -82,7 +82,7 @@ export const HOW_IT_WORKS: DefaultPage = {
         columns: '3',
         items: [
           { icon: 'check', title: 'Applying and the database: free', body: 'Creating a profile, taking the assessment, joining our recruitment database and applying to jobs are free, always.' },
-          { icon: 'rupee', title: 'Career package: {{fee_inr}}', body: 'Optional, and gives no priority. Your full skills and English report, a professionally prepared CV, a preliminary legal review of your documents, and career recommendations. Paid once on this website, with a receipt.' },
+          { icon: 'rupee', title: 'Career package: {{fee_inr}}', body: 'Optional, and gives no priority. Led by a preliminary legal review of your documents for Portugal, then your full skills and English report, a professionally prepared CV, and career recommendations. Paid once on this website, with a receipt.' },
           { icon: 'briefcase', title: 'Placement: ₹0 for you', body: 'When you are hired, the employer pays our fee. You never pay a placement or "visa processing" fee to us.' },
         ],
       },

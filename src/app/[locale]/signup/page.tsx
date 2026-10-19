@@ -27,7 +27,7 @@ export default async function SignupPage({
   if (!isLocale(locale)) notFound();
   const query = await searchParams;
   const t = getDictionary(locale);
-  const { company, pricing, applications } = await getSiteSettings();
+  const { company, pricing, applications, general } = await getSiteSettings();
 
   /* Position carried over from the landing page's selector. */
   const initialPosition: PositionSlug = positionBySlug(query.position ?? '')
@@ -61,7 +61,7 @@ export default async function SignupPage({
           />
         </AuthPanel>
         <div className="flex w-full flex-col gap-4 lg:w-[340px] lg:shrink-0">
-          <OrderSummary t={t} pricing={pricing} />
+          <OrderSummary t={t} pricing={pricing} company={company} whatsapp={general.whatsapp} />
           {applications.filmUrl && applications.filmLabel ? (
             <div className="flex justify-center">
               <FilmButton src={applications.filmUrl} label={siteText(locale, applications.filmLabel)} />

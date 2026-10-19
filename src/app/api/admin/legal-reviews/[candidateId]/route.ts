@@ -6,6 +6,7 @@ import { composeEmail } from '@/lib/email/compose';
 import { localePath } from '@/lib/i18n';
 import { apiPermission } from '@/lib/rbac/server';
 import { getAdminSupabase } from '@/lib/supabase/admin';
+import { sendWhatsApp } from '@/lib/whatsapp';
 
 export const runtime = 'nodejs';
 
@@ -76,19 +77,27 @@ export async function PUT(request: Request, { params }: { params: Promise<{ cand
 
   await audit(guard.userId, deliver ? 'legal_review.deliver' : 'legal_review.save', `candidate:${candidateId}`);
 
-  if (deliver && candidate.email) {
-    const origin = new URL(request.url).origin;
-    const url = `${origin}${localePath(String(candidate.locale ?? 'en'), '/dashboard')}`;
-    try {
-      const email = await composeEmail(
-        'legal_review_ready',
-        { first_name: String(candidate.full_name ?? '').split(' ')[0] || 'there' },
-        { origin, actionUrl: url },
-      );
-      await getMailer().send({ to: String(candidate.email), ...email });
-    } catch (mailError) {
-      console.error('[legal-review] delivery email failed', mailError);
+  if (deliver) {
+    const firstName = String(candidate.full_name ?? '').split(' ')[0] || 'there';
+    if (candidate.email) {
+      const origin = new URL(request.url).origin;
+      const url = `${origin}${localePath(String(candidate.locale ?? 'en'), '/dashboard')}`;
+      try {
+        const email = await composeEmail(
+          'legal_review_ready',
+          { first_name: firstName },
+          { origin, actionUrl: url },
+        );
+        await getMailer().send({ to: String(candidate.email), ...email });
+      } catch (mailError) {
+        console.error('[legal-review] delivery email failed', mailError);
+      }
     }
+    await sendWhatsApp({
+      candidateId,
+      template: 'legal_review_ready',
+      params: [firstName],
+    });
   }
 
   return NextResponse.json({ status: deliver ? 'delivered' : 'draft' });

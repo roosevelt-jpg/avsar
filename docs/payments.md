@@ -1,61 +1,50 @@
 # Payments
 
-## 15 October 2026: owner's choice, Network International on the UAE company
+## Production default: EximPe + INR (UPI)
 
-The owner questionnaire names Magnati and Network International as the
-acquirers, with the merchant account held by the UAE company and payouts in
-AED. Network International is built as `src/lib/payments/ngenius.ts`:
-
-```
-PAYMENT_PROVIDER=ngenius
-NEXT_PUBLIC_CHARGE_CURRENCY=AED
-NGENIUS_API_KEY=...          # from the N-Genius portal, already base64
-NGENIUS_OUTLET_REF=...
-NGENIUS_ENV=production       # sandbox until then
-NGENIUS_WEBHOOK_HEADER=x-webhook-secret
-NGENIUS_WEBHOOK_SECRET=...   # the same header and value set on the webhook in the portal
-```
-
-- Hosted payment page (redirect). The return lands on `/api/payments/return?ref=...`
-  and the order is read back from the API; the browser's `ref` is only a question.
-- Webhook URL: `https://<domain>/api/payments/webhook`. The custom header is checked,
-  then the order is fetched from the API, so a forged body cannot mark anything paid.
-- Price: `ASSESSMENT_FEE.aed` (AED 105, about ₹2,400). Confirm with finance.
-- **Cards only. No UPI.** An Indian card pays this as an international transaction,
-  and many Indian debit cards have that switched off. The unlock box says so. If
-  conversion suffers, keep EximPe or Cashfree as the UPI rail for India.
-- **Licence check.** The UAE legal name on the questionnaire is SMTADM REAL ESTATE.
-  An acquirer reviews whether the licensed activity covers what is sold (an online
-  assessment and career-preparation package). Cashfree stalled on exactly this.
-- Magnati has no adapter yet: no API documentation or credentials were supplied.
-
-## October 2026: UAE company, UPI, one setting
-
-The recruitment company is in the UAE and candidates pay from India. The
-configuration for that is:
+Indian candidates convert when they can pay with UPI. The code default and the
+recommended live configuration is:
 
 ```
 PAYMENT_PROVIDER=eximpe
 NEXT_PUBLIC_CHARGE_CURRENCY=INR
 ```
 
-The fee is then charged in rupees by UPI, RuPay or Indian net banking, and
-settles to the UAE company under EximPe's RBI PA-CB import authorisation. The
-charge currency, the fee in each currency and VAT are set in Settings › Company
-& pricing; checkout refuses to start (`payment_misconfigured`) if the currency
-does not match what the rail can charge (`RAIL_CURRENCIES` in
+Unset `PAYMENT_PROVIDER` also selects EximPe. The fee is charged in rupees by
+UPI, RuPay or Indian net banking, and settles to the UAE company under EximPe's
+RBI PA-CB import authorisation. Charge currency, fee and VAT are set in
+Settings › Company & pricing; checkout refuses (`payment_misconfigured`) if the
+currency does not match what the rail can charge (`RAIL_CURRENCIES` in
 `src/lib/company/config.ts`) or the fee is zero.
 
 When the seller changes, update it in Settings › Company & pricing.
 See `docs/v2-platform.md`, "Before launch".
 
+## Fallback: Network International (cards only, AED)
+
+The owner questionnaire also named Network International. That adapter is
+`src/lib/payments/ngenius.ts` and remains available when UPI is not the priority:
+
+```
+PAYMENT_PROVIDER=ngenius
+NEXT_PUBLIC_CHARGE_CURRENCY=AED
+NGENIUS_API_KEY=...
+NGENIUS_OUTLET_REF=...
+NGENIUS_ENV=production
+NGENIUS_WEBHOOK_HEADER=x-webhook-secret
+NGENIUS_WEBHOOK_SECRET=...
+```
+
+- **Cards only. No UPI.** Many Indian debit cards block international online
+  payments; the unlock box says so.
+- Magnati has no adapter yet.
+
 ---
 
 ## The decision
 
-Stripe is the default rail (`PAYMENT_PROVIDER=stripe`). A domestic Indian rail
-sits behind the same interface and is switched on with
-`PAYMENT_PROVIDER=razorpay`.
+EximPe is the default rail. Razorpay / Cashfree / Paytm sit behind the same
+interface for an India-registered merchant if needed.
 
 Everything above `src/lib/payments/types.ts` is rail-agnostic, so adding or
 swapping a provider does not touch the sign-up flow.

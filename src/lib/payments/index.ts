@@ -11,9 +11,9 @@ import type { PaymentMethodHint, PaymentProvider } from './types';
 /**
  * Which rail collects from candidates.
  *
- * The commercial set for this deployment is Stripe, Razorpay and Paytm
- * (credentials in Settings › Integrations). Other rails stay wired for
- * fallback. Only one provider is active via PAYMENT_PROVIDER.
+ * Production default is EximPe (INR + UPI) so Indian candidates can pay without
+ * international-card friction. Credentials live in Settings › Integrations.
+ * Other rails stay wired; only one is active via PAYMENT_PROVIDER.
  */
 export function getPaymentProvider(): PaymentProvider {
   switch (process.env.PAYMENT_PROVIDER) {
@@ -23,16 +23,17 @@ export function getPaymentProvider(): PaymentProvider {
       return dodoProvider;
     case 'viva':
       return vivaProvider;
-    case 'eximpe':
-      return eximpeProvider;
     case 'cashfree':
       return cashfreeProvider;
     case 'razorpay':
       return razorpayProvider;
     case 'paytm':
       return paytmProvider;
-    default:
+    case 'stripe':
       return stripeProvider;
+    case 'eximpe':
+    default:
+      return eximpeProvider;
   }
 }
 

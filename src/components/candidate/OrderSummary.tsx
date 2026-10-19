@@ -1,11 +1,23 @@
 import { Mono } from '@/components/ui/Mono';
-import { formatMoney, priceBreakdown, type PricingSettings } from '@/lib/company/config';
+import { formatMoney, priceBreakdown, type CompanySettings, type PricingSettings } from '@/lib/company/config';
 import { fill, type Dictionary } from '@/lib/i18n';
 
-export function OrderSummary({ t, pricing }: { t: Dictionary; pricing: PricingSettings }) {
+export function OrderSummary({
+  t,
+  pricing,
+  company,
+  whatsapp,
+}: {
+  t: Dictionary;
+  pricing: PricingSettings;
+  company?: CompanySettings;
+  whatsapp?: string;
+}) {
   const price = priceBreakdown(pricing);
   const formatPrice = (minor: number) => formatMoney(minor, price.currency);
   const s = t.signup;
+  const seller = company?.tradingAs || company?.legalName;
+  const digits = (whatsapp ?? '').replace(/[^\d]/g, '');
 
   return (
     <aside className="h-fit w-full rounded-[28px] border border-line bg-surface/80 p-[clamp(20px,2.4cqi,26px)] shadow-[0_24px_60px_-28px_rgba(27,26,23,0.35)] backdrop-blur-md lg:w-[340px] lg:shrink-0">
@@ -55,6 +67,23 @@ export function OrderSummary({ t, pricing }: { t: Dictionary; pricing: PricingSe
       <p className="m-0 border-t border-line-soft pt-4 text-[12px] leading-[1.5] text-muted">
         {s.summaryNote}
       </p>
+      {seller ? (
+        <p className="m-0 mt-3 border-t border-line-soft pt-3 text-[12px] leading-[1.5] text-muted">
+          Paid to {seller}
+          {company?.registeredAddress ? `. ${company.registeredAddress}` : ''}. Receipt by email.
+          Never cash or WhatsApp transfer.
+          {digits ? (
+            <>
+              {' '}
+              Support:{' '}
+              <a href={`https://wa.me/${digits}`} className="prose-link" target="_blank" rel="noreferrer">
+                WhatsApp
+              </a>
+              .
+            </>
+          ) : null}
+        </p>
+      ) : null}
     </aside>
   );
 }

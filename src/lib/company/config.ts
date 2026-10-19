@@ -88,6 +88,8 @@ export type HiringSettings = {
   responseDays: number;
   contractYears: number;
   reportWithinDays: number;
+  /** Working days after documents are uploaded to deliver the preliminary legal review. */
+  legalReviewWithinDays: number;
   profileMonths: number;
   /**
    * Which wording a candidate agreed to, stored with their consent. Change it
@@ -141,11 +143,15 @@ export const DEFAULT_COMPANY: CompanySettings = {
 };
 
 /* Deployments that set the currency in the environment before it moved to the
-   console keep charging the same currency until somebody saves this page. */
+   console keep charging the same currency until somebody saves this page.
+   Fresh installs default to INR so UPI rails (EximPe) match without a save. */
 const LEGACY_CURRENCY = process.env.NEXT_PUBLIC_CHARGE_CURRENCY;
 
 export const DEFAULT_PRICING: PricingSettings = {
-  chargeCurrency: LEGACY_CURRENCY === 'INR' || LEGACY_CURRENCY === 'AED' ? LEGACY_CURRENCY : 'EUR',
+  chargeCurrency:
+    LEGACY_CURRENCY === 'EUR' || LEGACY_CURRENCY === 'AED' || LEGACY_CURRENCY === 'INR'
+      ? LEGACY_CURRENCY
+      : 'INR',
   feeMinor: { INR: 240_000, EUR: 2_500, AED: 10_500 },
   vatBasisPoints: 0,
   indicativeRates: { INR: 95, PHP: 65, NPR: 152, BDT: 128, PKR: 305, LKR: 345, AED: 4.1, EGP: 54, KES: 148, NGN: 1750, USD: 1.1, GBP: 0.85 },
@@ -162,6 +168,7 @@ export const DEFAULT_HIRING: HiringSettings = {
   responseDays: 15,
   contractYears: 5,
   reportWithinDays: 7,
+  legalReviewWithinDays: 10,
   profileMonths: 12,
   consentVersion: 'v7-2026-10',
 };

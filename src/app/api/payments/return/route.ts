@@ -44,6 +44,7 @@ export async function GET(request: Request) {
 
   if (!transactionId) return NextResponse.redirect(new URL(dashboard, url.origin));
 
+  let confirmedPaid = false;
   try {
     const result = await getPaymentProvider().confirmSession(transactionId);
 
@@ -59,6 +60,7 @@ export async function GET(request: Request) {
         paymentId: result.paymentId,
         status: 'paid',
       });
+      confirmedPaid = true;
     }
   } catch (error) {
     /*
@@ -69,7 +71,9 @@ export async function GET(request: Request) {
     console.error('[payments] return confirmation failed', error);
   }
 
-  return NextResponse.redirect(new URL(dashboard, url.origin));
+  /* ?paid=1 highlights the family-share next step once; it is not proof of payment. */
+  const dest = confirmedPaid ? `${dashboard}?paid=1#family-share` : dashboard;
+  return NextResponse.redirect(new URL(dest, url.origin));
 }
 
 /**

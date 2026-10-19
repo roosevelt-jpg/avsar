@@ -57,9 +57,9 @@ Buying the package is not required to join the database or to take part in recru
 ## What we undertake to do
 
 - Deliver the assessment online, at a time you choose.
-- Deliver your skills report within {{report_days}} days of you completing the assessment.
+- Deliver the preliminary legal review within {{legal_review_days}} working days of a complete document upload (passport or ID and any other documents asked for on your dashboard).
+- Deliver your skills report within {{report_days}} days of payment (often sooner after you complete the assessment).
 - Deliver your CV and career recommendations on request once your report is ready. They are built only from information you have given us; nothing is added that you cannot support.
-- Deliver the preliminary legal review once you have uploaded your passport or ID and any other documents asked for on your dashboard.
 - Give you a decision on your application within {{response_days}} days, either way.
 - Keep your profile in the recruitment database, free of charge, for as long as you choose to remain visible and within the retention period in the privacy policy.
 

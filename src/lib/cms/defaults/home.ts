@@ -87,7 +87,7 @@ export const HOME: DefaultPage = {
         intro: 'Six steps, and you always know which one you are on. Your dashboard shows it, and we message you when it moves.',
         items: [
           { title: 'Create your profile', body: 'Name, phone, email and a password. Two minutes, no documents needed yet.', meta: '2 minutes', image: '/walkthrough/register.jpg' },
-          { title: 'Take the skills test', body: 'Skills and English questions for your trade, on your phone, in up to 90 minutes. Free. Finishing puts you in our recruitment database, and a score above {{shortlist_score}} out of 10 qualifies you for the shortlist. An optional career package ({{fee_inr}}) adds your full report, a professional CV, a preliminary legal review of your documents and career advice.', meta: 'Free', image: '/walkthrough/assessment.jpg' },
+          { title: 'Take the skills test', body: 'Skills and English questions for your trade, on your phone, in up to 90 minutes. Free. Finishing puts you in our recruitment database, and a score above {{shortlist_score}} out of 10 qualifies you for the shortlist. An optional career package ({{fee_inr}}) starts with a preliminary legal check of your documents, then your full report, a professional CV and career advice.', meta: 'Free', image: '/walkthrough/assessment.jpg' },
           { title: 'Apply to jobs', body: 'Pick a job and press apply. Answer two or three short questions about your experience. Your test result goes with your application.', meta: 'Free', image: '' },
           { title: 'Talk to us, then the employer', body: 'A recruiter calls you first. Shortlisted candidates interview with the employer on Zoom.', meta: 'Zoom', image: '/walkthrough/call.jpg' },
           { title: 'Offer, contract and visa', body: 'You receive the offer letter and contract to read before you sign. Then the independent immigration lawyers we work with prepare your visa file with you, and we pay the visa costs and your flight.', meta: 'We guide you', image: '/walkthrough/letter.jpg' },
@@ -161,6 +161,16 @@ export const HOME: DefaultPage = {
       },
     ],
     [
+      'candidate_stories',
+      {
+        eyebrow: 'From people who made the move',
+        title: 'In their own words',
+        intro:
+          'Only stories written by candidates we placed and approved by our team appear here. Nothing is invented.',
+        limit: 3,
+      },
+    ],
+    [
       'faq',
       {
         eyebrow: 'Questions',
@@ -168,7 +178,7 @@ export const HOME: DefaultPage = {
         intro: '',
         items: [
           { question: 'Is it free to apply?', answer: 'Yes. Creating a profile and applying to jobs is free. There is no placement fee for candidates: the employer pays us when they hire.' },
-          { question: 'Do I have to pay anything?', answer: 'No. The skills test, the recruitment database and applying are free. The optional career package ({{fee_inr}}) gives you your full report, a professional CV, a preliminary legal review of your documents and career advice. It gives no priority in selection.' },
+          { question: 'Do I have to pay anything?', answer: 'No. The skills test, the recruitment database and applying are free. The optional career package ({{fee_inr}}) gives you a preliminary legal review of your documents, your full report, a professional CV and career advice. It gives no priority in selection.' },
           { question: 'Do I need to speak Portuguese?', answer: 'No. Most of the jobs we recruit for need basic English. Many employers offer Portuguese lessons once you arrive.' },
           { question: 'How long does it take?', answer: 'You hear back within {{response_days}} days of applying. From offer to arrival usually takes three to six months, mostly waiting for the visa.' },
           { question: 'Someone on WhatsApp asked me for money for a job here. Is that you?', answer: 'No. We never ask for money by WhatsApp, bank transfer or cash. Read [how to stay safe](/stay-safe) and report it to us.' },

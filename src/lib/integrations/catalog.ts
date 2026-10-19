@@ -38,13 +38,14 @@ export const INTEGRATIONS: IntegrationGroup[] = [
         id: 'payments',
         name: 'Active payment rail',
         description:
-          'Which provider takes the package payment. Only one is live at a time. Set up Stripe, Razorpay and Paytm below in advance; switch this when the merchant account is approved.',
+          'Which provider takes the package payment. Only one is live at a time. Production default for India is EximPe (INR + UPI). Leave unset to use EximPe. N-Genius is cards-only AED.',
         fields: [
           {
             name: 'PAYMENT_PROVIDER',
             label: 'Provider',
             secret: false,
-            options: ['stripe', 'razorpay', 'paytm', 'ngenius', 'eximpe', 'cashfree', 'viva', 'dodo'],
+            options: ['eximpe', 'razorpay', 'paytm', 'cashfree', 'ngenius', 'stripe', 'viva', 'dodo'],
+            hint: 'eximpe for UPI from India; ngenius for AED cards only',
           },
         ],
       },

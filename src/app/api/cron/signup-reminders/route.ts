@@ -2,8 +2,11 @@ import { refreshIntegrations } from '@/lib/integrations/runtime';
 import { NextResponse } from 'next/server';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { getMailer, unsubscribeToken } from '@/lib/email';
-import { renderReminder } from '@/lib/email/reminder';
+import { reminderStage, renderReminder } from '@/lib/email/reminder';
 import { SECTION_ORDER } from '@/lib/assessment/items';
+import { getSiteSettings } from '@/lib/cms/data';
+import { formatFee } from '@/lib/company/config';
+import { sendWhatsApp } from '@/lib/whatsapp';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -101,6 +104,8 @@ async function run(request: Request) {
 
   const mailer = getMailer();
   const origin = new URL(request.url).origin;
+  const settings = await getSiteSettings();
+  const packagePrice = formatFee(settings.pricing).replace(/[\u2066\u2069]/g, '');
 
   let sent = 0;
   let skipped = 0;
@@ -114,13 +119,19 @@ async function run(request: Request) {
       continue;
     }
 
+    const assessmentComplete = assessed.has(row.id);
+    const stage = reminderStage({
+      profile_completed_at: row.profile_completed_at,
+      assessment_complete: assessmentComplete,
+    });
+
     const unsubscribe = `${origin}/api/unsubscribe?c=${row.id}&t=${unsubscribeToken(row.id)}`;
     const { subject, text, html } = await renderReminder(
       {
         full_name: row.full_name,
         locale: row.locale,
         profile_completed_at: row.profile_completed_at,
-        assessment_complete: assessed.has(row.id),
+        assessment_complete: assessmentComplete,
       },
       origin,
       unsubscribe,
@@ -134,9 +145,23 @@ async function run(request: Request) {
       unsubscribeUrl: unsubscribe,
     });
 
+    /* Package stage also nudges on WhatsApp when opted in. Count as contacted
+       if either channel accepted, so we do not burn three emails then three WAs. */
+    let contacted = result.sent;
+    if (stage === 'package') {
+      const firstName = (row.full_name.split(' ')[0] || row.full_name).trim() || 'there';
+      await sendWhatsApp({
+        candidateId: row.id,
+        template: 'package_offer',
+        params: [firstName, packagePrice],
+      });
+      /* sendWhatsApp is fire-and-forget on opt-in; treat email success as enough. */
+      contacted = result.sent;
+    }
+
     /* Only a send that was accepted is counted. A refused one is retried next
        run rather than quietly using up one of the three. */
-    if (!result.sent) continue;
+    if (!contacted) continue;
 
     const { error: markError } = await admin
       .from('candidates')

@@ -95,6 +95,7 @@ const schemas = {
     responseDays: z.number().int().min(1).max(120),
     contractYears: z.number().int().min(1).max(10),
     reportWithinDays: z.number().int().min(1).max(60),
+    legalReviewWithinDays: z.number().int().min(1).max(90),
     profileMonths: z.number().int().min(1).max(60),
     consentVersion: z.string().trim().regex(/^[a-z0-9.-]{2,30}$/i),
   }).refine((value) => value.outcomeHired <= value.outcomeShortlisted, { message: 'hired_exceeds_shortlisted', path: ['outcomeHired'] }),

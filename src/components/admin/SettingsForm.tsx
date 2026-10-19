@@ -125,7 +125,10 @@ export function ConversionSettingsForm({ initial }: { initial: SiteSettings['con
 
   return (
     <div className="flex flex-col gap-5">
-      <Section title="Trust lines beside payment" lead="Shown next to every package checkout. Three short facts beat a long disclaimer.">
+      <Section
+        title="Trust lines beside payment"
+        lead="Shown next to every package checkout. Three short facts beat a long disclaimer. For real testimonials (video or written), use docs/testimonials-script.md — never invent quotes in CMS."
+      >
         <ul className="m-0 flex list-none flex-col gap-2 p-0">
           {conversion.trustLines.map((line, index) => (
             <li key={index}>

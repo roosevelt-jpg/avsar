@@ -304,37 +304,40 @@ export const DEFAULT_SETTINGS: SiteSettings = {
       'You never pay to be hired. The employer pays our fee.',
       'The only money we take is the optional career package, on this website, with a receipt.',
       'Buying the package does not change your shortlist chances and does not guarantee a job or a visa.',
+      'Pay by UPI on this site. Never cash, never WhatsApp, never an agent.',
     ],
     deliverables: [
       {
+        title: 'Preliminary legal document review',
+        timing:
+          'Our legal team reviews the passport or ID and other documents you upload for a Portuguese work visa, usually within {{legal_review_days}} working days of a complete upload. Preliminary only: not permission to work, and not a visa decision.',
+      },
+      {
         title: 'Skills and English report',
-        timing: 'Ready as soon as you pay. Your strengths, what to improve, and how your score sits against the shortlist threshold.',
+        timing:
+          'Your strengths, what to improve, and how your score sits against the shortlist threshold. Delivered within {{report_days}} days of payment (often sooner).',
       },
       {
         title: 'Professionally prepared CV',
         timing: 'Built from your profile and assessment. You can download it and use it anywhere, not only with us.',
       },
       {
-        title: 'Preliminary legal document review',
-        timing: 'Our legal team reviews the documents you upload for a Portuguese work visa. Preliminary only: not permission to work, and not a visa decision.',
-      },
-      {
         title: 'Career recommendations',
         timing: 'Individual advice for your role and interviews, delivered with the pack.',
       },
     ],
-    offerHeading: 'Your assessment is complete',
+    offerHeading: 'Will your papers work for Portugal?',
     offerBody:
-      'You are in our candidate database for free. The optional career package adds a written report, a CV you can use anywhere, a preliminary legal document check, and career recommendations. It does not move you up a shortlist.',
+      'You are in our candidate database for free. The optional career package starts with a preliminary legal check of your documents, then your full skills report, a CV you can use anywhere, and career recommendations. It does not move you up a shortlist.',
     offerPrimaryLabel: 'See the package',
     offerSecondaryLabel: 'Browse jobs first',
     stickyCtaLabel: 'Get the career package',
     pricingLead:
-      'Joining the database is free after the assessment. The career package is optional preparation: report, CV, preliminary legal review and recommendations. It gives no priority and does not guarantee an interview, a job or a visa.',
+      'Joining the database is free after the assessment. The career package is optional preparation led by a preliminary legal document review, then report, CV and recommendations. It gives no priority and does not guarantee an interview, a job or a visa.',
     pricingFeatures: [
+      'Preliminary legal review of your documents for Portugal',
       'Personal skills and English report',
       'Professionally prepared CV you can use anywhere',
-      'Preliminary legal review of your documents for Portugal',
       'Individual career recommendations for your role',
       'Optional: not required to join the database or to apply',
       'No shortlist priority from buying',

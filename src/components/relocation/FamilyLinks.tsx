@@ -58,7 +58,17 @@ export function FamilyLinks({ links }: { links: FamilyLink[] }) {
         <div className="mt-4 rounded-[12px] border border-line bg-paper p-4">
           <p className="m-0 text-[14px] font-medium">Copy this link now. For your safety it is not shown again.</p>
           <p className="mt-2 mb-0 break-all font-mono text-[13px]">{created}</p>
-          <button type="button" onClick={() => void navigator.clipboard?.writeText(created)} className="mt-2 cursor-pointer rounded-full border border-line-strong bg-surface px-3 py-1.5 text-[13px]">Copy</button>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <button type="button" onClick={() => void navigator.clipboard?.writeText(created)} className="cursor-pointer rounded-full border border-line-strong bg-surface px-3 py-1.5 text-[13px]">Copy</button>
+            <a
+              href={`https://wa.me/?text=${encodeURIComponent(`My Portugal move progress: ${created}`)}`}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex rounded-full border border-line-strong bg-surface px-3 py-1.5 text-[13px] text-ink no-underline"
+            >
+              Share on WhatsApp
+            </a>
+          </div>
         </div>
       )}
 

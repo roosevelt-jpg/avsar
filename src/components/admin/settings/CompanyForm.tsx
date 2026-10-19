@@ -165,6 +165,7 @@ export function CompanyForm(props: Props) {
           </Field>
           <Field label="Working days to an answer"><NumberInput value={hiring.responseDays} min={1} max={120} onChange={(v) => setHiring({ ...hiring, responseDays: v })} /></Field>
           <Field label="Days to deliver the report"><NumberInput value={hiring.reportWithinDays} min={1} max={60} onChange={(v) => setHiring({ ...hiring, reportWithinDays: v })} /></Field>
+          <Field label="Days to deliver the legal review"><NumberInput value={hiring.legalReviewWithinDays ?? 10} min={1} max={90} onChange={(v) => setHiring({ ...hiring, legalReviewWithinDays: v })} /></Field>
           <Field label="Months a profile stays listed"><NumberInput value={hiring.profileMonths} min={1} max={60} onChange={(v) => setHiring({ ...hiring, profileMonths: v })} /></Field>
           <Field label="Typical contract length (years)"><NumberInput value={hiring.contractYears} min={1} max={10} onChange={(v) => setHiring({ ...hiring, contractYears: v })} /></Field>
           <Field label="Terms version" help="Move it whenever the terms, refund policy or selection rules change in substance. Stored with every consent.">

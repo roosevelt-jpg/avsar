@@ -5,6 +5,7 @@ import { Mono } from '@/components/ui/Mono';
 import { SiteHeader } from '@/components/candidate/SiteHeader';
 import { FaqAccordion } from '@/components/candidate/FaqAccordion';
 import { PackagePaywallCopy } from '@/components/candidate/PackagePaywallCopy';
+import { CandidateStoriesBlock } from '@/components/cms/blocks/Media';
 import { fill, getDictionary, isLocale, localePath } from '@/lib/i18n';
 import { getSiteSettings } from '@/lib/cms/data';
 import { formatFee, formatIndicative, formatMoney } from '@/lib/company/config';
@@ -74,7 +75,7 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
     [
       tx('What is the career package?'),
       tx(
-        'An optional preparation pack: a personal skills and English report, a professionally prepared CV, a preliminary legal review of your documents for Portugal, and career recommendations. It is not needed to join the database or to apply, it gives no priority, and it does not guarantee an interview, a job or a visa.',
+        'An optional preparation pack led by a preliminary legal review of your documents for Portugal, then a personal skills and English report, a professionally prepared CV, and career recommendations. It is not needed to join the database or to apply, it gives no priority, and it does not guarantee an interview, a job or a visa.',
       ),
     ],
     [
@@ -162,6 +163,18 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
             shortlistLabel={shortlistLabel}
           />
         </section>
+
+        <div className="mt-12">
+          <CandidateStoriesBlock
+            locale={locale}
+            data={{
+              eyebrow: 'From people who made the move',
+              title: 'In their own words',
+              intro: 'Only stories written by candidates we placed and approved by our team. Nothing is invented.',
+              limit: 3,
+            }}
+          />
+        </div>
 
         <section className="mt-[clamp(48px,7cqi,96px)] max-w-[840px]">
           <h2 className="m-0 mb-7 text-[clamp(26px,3.6cqi,44px)] font-semibold leading-[1.1] tracking-[-0.03em]">

@@ -1,5 +1,6 @@
 import { siteText } from '@/lib/cms/localize';
 import type { ConversionSettings } from '@/lib/cms/settings';
+import { applyTokens } from '@/lib/cms/tokens';
 import type { HiringSettings } from '@/lib/company/config';
 import type { Locale } from '@/lib/i18n';
 
@@ -20,6 +21,10 @@ export function PackagePaywallCopy({
   shortlistLabel: string;
 }) {
   const t = (english: string) => siteText(locale, english);
+  const sla = {
+    report_days: String(hiring.reportWithinDays),
+    legal_review_days: String(hiring.legalReviewWithinDays),
+  };
 
   return (
     <div className="mt-5 flex flex-col gap-5">
@@ -27,8 +32,8 @@ export function PackagePaywallCopy({
         <ul className="m-0 grid list-none gap-3 p-0 sm:grid-cols-2">
           {conversion.deliverables.map((item) => (
             <li key={item.title} className="rounded-[14px] border border-line bg-surface/80 p-3.5">
-              <p className="m-0 text-[14px] font-semibold text-ink">{t(item.title)}</p>
-              <p className="m-0 mt-1.5 text-[13px] leading-[1.55] text-ink-2">{t(item.timing)}</p>
+              <p className="m-0 text-[14px] font-semibold text-ink">{t(applyTokens(item.title, sla))}</p>
+              <p className="m-0 mt-1.5 text-[13px] leading-[1.55] text-ink-2">{t(applyTokens(item.timing, sla))}</p>
             </li>
           ))}
         </ul>

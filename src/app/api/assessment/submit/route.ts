@@ -7,6 +7,9 @@ import { SECTION_ORDER } from '@/lib/assessment/items';
 import { buildReport } from '@/lib/assessment/report';
 import type { AnswerMap, Weights } from '@/lib/assessment/scoring';
 import { SECTOR_SLUGS, type SectorSlug } from '@/lib/data/sectors';
+import { getSiteSettings } from '@/lib/cms/data';
+import { formatFee } from '@/lib/company/config';
+import { sendWhatsApp } from '@/lib/whatsapp';
 
 export const runtime = 'nodejs';
 
@@ -125,6 +128,32 @@ export async function POST(request: Request) {
     p_candidate_id: candidate.id,
   });
   if (rankError) console.error('[submit] percentile refresh failed', rankError);
+
+  /* Opt-in WhatsApp: score teaser + soft package offer. Never blocks the response. */
+  try {
+    const settings = await getSiteSettings();
+    const firstName = (candidate.fullName.split(' ')[0] || candidate.fullName).trim() || 'there';
+    const scoreOutOf10 = (report.overall_score / 10).toFixed(report.overall_score % 10 === 0 ? 0 : 1);
+    const threshold = settings.hiring.shortlistMinScore / 10;
+    const shortlistLine =
+      report.overall_score >= settings.hiring.shortlistMinScore
+        ? `above ${threshold} — shortlist eligible if you meet the role`
+        : `below ${threshold} — applying is still free`;
+    await sendWhatsApp({
+      candidateId: candidate.id,
+      template: 'score_ready',
+      params: [firstName, scoreOutOf10, shortlistLine],
+    });
+    if (candidate.paymentStatus !== 'paid') {
+      await sendWhatsApp({
+        candidateId: candidate.id,
+        template: 'package_offer',
+        params: [firstName, formatFee(settings.pricing).replace(/[\u2066\u2069]/g, '')],
+      });
+    }
+  } catch (error) {
+    console.error('[submit] whatsapp failed', error);
+  }
 
   return NextResponse.json({ submitted: true, nextSection: null, reportReady: true });
 }

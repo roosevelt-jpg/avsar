@@ -14,6 +14,10 @@ import { VerifyEmailBanner } from '@/components/candidate/VerifyEmailBanner';
 import { UnlockReport } from '@/components/candidate/UnlockReport';
 import { PackageOfferBanner } from '@/components/candidate/PackageOfferBanner';
 import { StickyPackageCta } from '@/components/candidate/StickyPackageCta';
+import { ReportPreview } from '@/components/candidate/ReportPreview';
+import { DemandStrip } from '@/components/candidate/DemandStrip';
+import { OfferScroll } from '@/components/candidate/OfferScroll';
+import { FamilyLinks } from '@/components/relocation/FamilyLinks';
 import { availablePaymentMethods, getPaymentProvider } from '@/lib/payments';
 import { getSiteSettings } from '@/lib/cms/data';
 import { formatFee } from '@/lib/company/config';
@@ -27,11 +31,15 @@ import { getServerSupabase } from '@/lib/supabase/server';
 import { sectorLabel, SECTOR_SLUGS, type SectorSlug } from '@/lib/data/sectors';
 import { englishBand, skillBand } from '@/lib/report/bands';
 import { listSavedJobs } from '@/lib/jobs/saved';
+import { listPublishedJobs } from '@/lib/jobs/data';
 import { formatSalary } from '@/lib/jobs/types';
 import { interviewTimes } from '@/lib/interviews/time';
 import { deliveredReviewFor } from '@/lib/legal/review';
 import { backgroundFor, EMPTY_BACKGROUND } from '@/lib/candidate/background';
 import { BackgroundForm } from '@/components/candidate/BackgroundForm';
+import { getCandidateRelocation } from '@/lib/relocation/data';
+import { getFunnelStats } from '@/lib/stats/funnel';
+import { siteText } from '@/lib/cms/localize';
 
 export const metadata = privateMetadata('Your dashboard');
 
@@ -52,7 +60,7 @@ export default async function DashboardPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ offer?: string }>;
+  searchParams: Promise<{ offer?: string; paid?: string }>;
 }) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
@@ -60,6 +68,7 @@ export default async function DashboardPage({
   const d = t.dash;
   const query = await searchParams;
   const showOffer = query.offer === '1';
+  const justPaid = Boolean(query.paid);
 
   let r: DashboardReport | null = null;
   let pack: Pack | null = null;
@@ -140,12 +149,17 @@ export default async function DashboardPage({
 
   /* Applications sit at the top: for most candidates "where is my
      application?" is the reason they signed in. */
-  const [applications, savedJobs, legalReview, background] = await Promise.all([
+  const [applications, savedJobs, legalReview, background, relocation, publishedJobs, funnel] = await Promise.all([
     listCandidateApplications(candidateId),
     listSavedJobs(candidateId),
     deliveredReviewFor(candidateId),
     backgroundFor(candidateId),
+    getCandidateRelocation(candidateId),
+    listPublishedJobs({ pageSize: 6 }),
+    getFunnelStats(),
   ]);
+  const openJobs = publishedJobs.jobs;
+  const tx = (english: string) => siteText(locale, english);
   const nextInterview = applications
     .flatMap((application) => application.interviews.map((interview) => ({ interview, application })))
     .sort((a, b) => a.interview.startsAt.localeCompare(b.interview.startsAt))[0];
@@ -176,11 +190,49 @@ export default async function DashboardPage({
       >
         {unverifiedEmail && <VerifyEmailBanner email={unverifiedEmail} t={t} />}
 
+        <OfferScroll active={status.awaitingPayment && showOffer} />
+
+        {justPaid && status.paid ? (
+          <section
+            id="family-share"
+            className="mb-6 scroll-mt-24 rounded-[20px] border border-accent bg-accent-tint p-[clamp(18px,2.5cqi,24px)]"
+          >
+            <h2 className="m-0 text-[20px] font-semibold tracking-[-0.02em]">
+              {tx('Payment received. Share progress with family')}
+            </h2>
+            <p className="m-0 mt-2 max-w-[62ch] text-[15px] leading-[1.6] text-ink-2">
+              {tx(
+                'Create a private link so your family can see your job, city and visa steps — without salary, employer name or documents. Scroll to the family section below.',
+              )}
+            </p>
+            <a href="#family" className="t-colors mt-4 inline-flex rounded-full bg-ink px-4 py-2.5 text-[14px] font-medium text-paper no-underline hover:bg-ink-hover">
+              {tx('Create a family link')}
+            </a>
+          </section>
+        ) : null}
+
         {status.awaitingPayment && showOffer ? (
           <div className="mb-6">
             <PackageOfferBanner locale={locale} conversion={settings.conversion} fee={fee} />
           </div>
         ) : null}
+
+        {status.awaitingPayment && reportReady && r ? (
+          <ReportPreview
+            locale={locale}
+            overall={r.overall}
+            breakdown={r.breakdown}
+            shortlistMin={settings.hiring.shortlistMinScore}
+            price={fee}
+          />
+        ) : null}
+
+        <DemandStrip
+          locale={locale}
+          jobCount={publishedJobs.total ?? openJobs.length}
+          titles={openJobs.slice(0, 3).map((job) => job.title)}
+          funnel={funnel}
+        />
 
         <DashboardNextStep
           locale={locale}
@@ -197,10 +249,11 @@ export default async function DashboardPage({
               : null
           }
           applicationCount={applications.length}
+          familyLinkCount={relocation.familyLinks.filter((link) => !link.revokedAt).length}
+          highlightFamily={justPaid && status.paid}
         />
 
-        {/* Fee ask sits under the next-step hero so the score context is still
-            visible while they decide; one payment CTA on the page. */}
+        {/* Fee ask after the free score preview so they buy clarity, not a guess. */}
         {status.awaitingPayment && (
           <div className="motion-rise mt-8" style={{ ['--delay' as string]: '80ms' }}>
             <UnlockReport
@@ -210,6 +263,9 @@ export default async function DashboardPage({
               pricing={settings.pricing}
               conversion={settings.conversion}
               hiring={settings.hiring}
+              company={settings.company}
+              whatsapp={settings.general.whatsapp}
+              supportEmail={settings.general.supportEmail || settings.company.supportEmail}
               methods={availablePaymentMethods()}
               provider={getPaymentProvider().name}
               country={(await headers()).get('x-vercel-ip-country')}
@@ -391,6 +447,21 @@ export default async function DashboardPage({
             <CareerPack pack={pack} canGenerate={status.paid && status.reportReady} locale={locale} />
           </div>
         )}
+
+        {status.paid ? (
+          <div id="family" className="mt-12 scroll-mt-24">
+            <FamilyLinks links={relocation.familyLinks} />
+            {relocation.placed ? (
+              <p className="m-0 mt-4 text-[14px] leading-[1.6] text-ink-2">
+                {tx('Arrived and working?')}{' '}
+                <Link href={localePath(locale, '/dashboard/relocation')} className="prose-link">
+                  {tx('Share your story for the site')}
+                </Link>
+                {tx(' — only with your written consent, in your own words.')}
+              </p>
+            ) : null}
+          </div>
+        ) : null}
 
         {(legalReview || status.paid) && (
           <section className="mt-12 border-t border-line pt-10">

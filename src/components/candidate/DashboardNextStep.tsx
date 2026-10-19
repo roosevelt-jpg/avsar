@@ -29,6 +29,8 @@ export function DashboardNextStep({
   shortlistMin,
   nextInterview,
   applicationCount,
+  familyLinkCount = 0,
+  highlightFamily = false,
 }: {
   locale: Locale;
   status: CandidateStatus;
@@ -37,8 +39,21 @@ export function DashboardNextStep({
   shortlistMin: number;
   nextInterview: { title: string; when: string } | null;
   applicationCount: number;
+  /** Active family progress links; used to nudge share after purchase. */
+  familyLinkCount?: number;
+  /** True right after payment return (?paid=). */
+  highlightFamily?: boolean;
 }) {
-  const step = pickStep({ locale, status, fee, shortlistMin, nextInterview, applicationCount });
+  const step = pickStep({
+    locale,
+    status,
+    fee,
+    shortlistMin,
+    nextInterview,
+    applicationCount,
+    familyLinkCount,
+    highlightFamily,
+  });
 
   return (
     <section className="motion-rise relative overflow-hidden rounded-[28px] border border-line/80 bg-surface">
@@ -97,6 +112,8 @@ function pickStep({
   shortlistMin,
   nextInterview,
   applicationCount,
+  familyLinkCount,
+  highlightFamily,
 }: {
   locale: Locale;
   status: CandidateStatus;
@@ -104,6 +121,8 @@ function pickStep({
   shortlistMin: number;
   nextInterview: { title: string; when: string } | null;
   applicationCount: number;
+  familyLinkCount: number;
+  highlightFamily: boolean;
 }): NextStep {
   if (nextInterview) {
     return {
@@ -147,8 +166,8 @@ function pickStep({
   if (status.awaitingPayment) {
     return {
       eyebrow: 'Optional career package',
-      title: 'Unlock your full report',
-      body: `Your test is done. The package (${fee}) unlocks the detailed report, CV coach and legal review. Applying and joining the database stay free.`,
+      title: 'Will your papers work for Portugal?',
+      body: `Your test is done and you are in the database for free. The package (${fee}) starts with a preliminary legal check of your documents, then your full report and CV. It gives no shortlist priority.`,
       href: '#package',
       cta: 'See what is included',
       image: '/illustrations/payment.jpg',
@@ -177,6 +196,19 @@ function pickStep({
       cta: 'Open Your move',
       image: '/illustrations/visa.jpg',
       imageAlt: '3D illustration of visa documents',
+    };
+  }
+
+  /* Only right after checkout return (?paid=), so we do not displace "apply" forever. */
+  if (status.paid && highlightFamily && familyLinkCount === 0) {
+    return {
+      eyebrow: 'Share with family',
+      title: 'Let family follow your progress',
+      body: 'A private link shows your job, city and visa steps — not salary, employer or documents. You can switch it off any time.',
+      href: '#family',
+      cta: 'Create a family link',
+      image: '/illustrations/visa.jpg',
+      imageAlt: '3D illustration of sharing progress with family',
     };
   }
 

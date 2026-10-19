@@ -5,6 +5,7 @@ import { composeEmail } from '@/lib/email/compose';
 import { getSiteSettings } from '@/lib/cms/data';
 import { formatFee } from '@/lib/company/config';
 import { localePath } from '@/lib/i18n';
+import { sendWhatsApp } from '@/lib/whatsapp';
 import type { PaymentStatus } from './types';
 
 /**
@@ -56,7 +57,7 @@ export async function recordPayment(input: {
 
   const { data: payment } = await supabase
     .from('payments')
-    .select('candidate_id')
+    .select('candidate_id, receipt_no')
     .eq('provider_order_id', input.orderId)
     .maybeSingle();
 
@@ -80,6 +81,8 @@ export async function recordPayment(input: {
   const first = unlocked?.[0];
   if (first) {
     const name = String(first.full_name ?? 'A candidate');
+    const firstName = name.split(' ')[0] || name;
+    const receipt = String(payment.receipt_no ?? input.orderId);
     await notifyStaff({
       permission: 'relocation.manage',
       kind: 'payment.received',
@@ -104,7 +107,7 @@ export async function recordPayment(input: {
         const locale = typeof first.locale === 'string' && first.locale ? first.locale : 'en';
         const email = await composeEmail(
           'payment_received',
-          { first_name: name.split(' ')[0] || name, price: formatFee(settings.pricing) },
+          { first_name: firstName, price: formatFee(settings.pricing) },
           { origin, actionUrl: `${origin}${localePath(locale, '/dashboard')}` },
         );
         await getMailer().send({ to, ...email });
@@ -112,5 +115,11 @@ export async function recordPayment(input: {
         console.error('[payments] buyer receipt failed', error);
       }
     }
+
+    await sendWhatsApp({
+      candidateId: String(first.id),
+      template: 'payment_received',
+      params: [firstName, receipt],
+    });
   }
 }

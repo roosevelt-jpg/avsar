@@ -4,12 +4,13 @@ import { useState } from 'react';
 import { Mono } from '@/components/ui/Mono';
 import { IDEMPOTENCY_HEADER, useIdempotencyKey } from '@/components/security/useIdempotencyKey';
 import { IndicativePrice } from '@/components/candidate/IndicativePrice';
+import { CheckoutTrust } from '@/components/candidate/CheckoutTrust';
 import { PackagePaywallCopy } from '@/components/candidate/PackagePaywallCopy';
 import { loadEximpe } from '@/lib/payments/eximpe-client';
 import { loadCashfree } from '@/lib/payments/cashfree-client';
 import { openRazorpayCheckout } from '@/lib/payments/razorpay-client';
 import { openPaytmCheckout, parsePaytmClientToken } from '@/lib/payments/paytm-client';
-import type { HiringSettings, PricingSettings } from '@/lib/company/config';
+import type { CompanySettings, HiringSettings, PricingSettings } from '@/lib/company/config';
 import type { ConversionSettings } from '@/lib/cms/settings';
 import { siteText } from '@/lib/cms/localize';
 import { fill, type Dictionary } from '@/lib/i18n';
@@ -43,6 +44,9 @@ export function UnlockReport({
   pricing,
   conversion,
   hiring,
+  company,
+  whatsapp,
+  supportEmail,
 }: {
   t: Dictionary;
   locale: Locale;
@@ -51,6 +55,9 @@ export function UnlockReport({
   pricing: PricingSettings;
   conversion: ConversionSettings;
   hiring: HiringSettings;
+  company: CompanySettings;
+  whatsapp: string;
+  supportEmail: string;
   methods: PaymentMethodHint[];
   provider: PaymentProvider['name'];
   providerMode: 'sandbox' | 'production';
@@ -199,6 +206,8 @@ export function UnlockReport({
           card is declined, turn on international online payments in your bank app and try again.
         </p>
       )}
+
+      <CheckoutTrust locale={locale} company={company} whatsapp={whatsapp} supportEmail={supportEmail} />
 
       {error && <p className="mt-3 mb-0 text-[14px] text-accent-deep">{error}</p>}
     </section>
