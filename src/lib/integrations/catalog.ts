@@ -53,7 +53,7 @@ export const INTEGRATIONS: IntegrationGroup[] = [
         id: 'stripe',
         name: 'Stripe',
         description:
-          'International cards (and UPI only on an India-registered Stripe account). Create a webhook for checkout.session.completed pointing at /api/payments/webhook.',
+          'International cards (and UPI only on an India-registered Stripe account). Create a webhook for checkout.session.completed that posts to this site’s payments return endpoint (path ending in payments/webhook).',
         docs: 'https://dashboard.stripe.com/apikeys',
         fields: [
           { name: 'STRIPE_SECRET_KEY', label: 'Secret key', secret: true, hint: 'sk_live_… or sk_test_…' },
@@ -70,7 +70,7 @@ export const INTEGRATIONS: IntegrationGroup[] = [
         id: 'razorpay',
         name: 'Razorpay',
         description:
-          'UPI, cards and net banking for Indian payers (needs an Indian merchant entity). Also set NEXT_PUBLIC_RAZORPAY_KEY_ID in the hosting environment to the same Key ID, then point the webhook at /api/payments/webhook.',
+          'UPI, cards and net banking for Indian payers (needs an Indian merchant entity). Also set NEXT_PUBLIC_RAZORPAY_KEY_ID in the hosting environment to the same Key ID, then point the provider webhook at this site’s payments webhook path.',
         docs: 'https://dashboard.razorpay.com/app/keys',
         fields: [
           { name: 'RAZORPAY_KEY_ID', label: 'Key ID', secret: false, hint: 'rzp_live_… or rzp_test_…' },
@@ -82,7 +82,7 @@ export const INTEGRATIONS: IntegrationGroup[] = [
         id: 'paytm',
         name: 'Paytm',
         description:
-          'UPI, cards, Paytm wallet and net banking for Indian payers. Keys come from the Paytm business dashboard (API Keys). Webhook/callback: /api/payments/webhook and the return URL set in the adapter.',
+          'UPI, cards, Paytm wallet and net banking for Indian payers. Keys come from the Paytm business dashboard (API Keys). Point the provider webhook and return URL at this site’s payments webhook and return paths.',
         docs: 'https://dashboard.paytmpayments.com/next/apikeys',
         fields: [
           { name: 'PAYTM_MID', label: 'Merchant ID (MID)', secret: false },
@@ -105,7 +105,7 @@ export const INTEGRATIONS: IntegrationGroup[] = [
       {
         id: 'ngenius',
         name: 'Network International (N-Genius)',
-        description: 'Card payments in AED to the UAE company. Set the webhook in the N-Genius portal to /api/payments/webhook with a custom header carrying the webhook secret.',
+        description: 'Card payments in AED to the UAE company. In the N-Genius portal, point the webhook at this site’s payments webhook path and send the secret in a custom header.',
         docs: 'https://docs.ngenius-payments.com',
         fields: [
           { name: 'NGENIUS_API_KEY', label: 'API key', secret: true },

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Mono } from '@/components/ui/Mono';
 import { Wordmark } from '@/components/ui/Wordmark';
 import { AccountMenu } from '@/components/auth/AccountMenu';
+import { CalibrateItemsButton } from '@/components/admin/CalibrateItemsButton';
 import { requirePermission } from '@/lib/rbac/server';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { ITEM_BANK } from '@/lib/assessment/items';
@@ -74,9 +75,11 @@ export default async function ItemCalibrationPage() {
           only weighted once {MIN_RESPONSES} people have answered them.
         </p>
 
-        <p className="mt-0 mb-8 text-[14px] text-muted">
-          {stats.length} items with responses, {calibrated} past the floor of{' '}
-          {MIN_RESPONSES}. Recompute with <code>POST /api/assessment/calibrate</code>.
+        <p className="mt-0 mb-8 flex flex-wrap items-center gap-x-3 gap-y-2 text-[14px] text-muted">
+          <span>
+            {stats.length} items with responses, {calibrated} past the floor of {MIN_RESPONSES}.
+          </span>
+          <CalibrateItemsButton />
         </p>
 
         {suspects.length > 0 && (
