@@ -1,0 +1,21 @@
+{
+  "regions": ["fra1"],
+  "crons": [
+    {
+      "path": "/api/cron/retention",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/signup-reminders",
+      "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron/job-alerts",
+      "schedule": "0 4 * * 1"
+    },
+    {
+      "path": "/api/cron/relocation",
+      "schedule": "30 3 * * *"
+    }
+  ]
+}

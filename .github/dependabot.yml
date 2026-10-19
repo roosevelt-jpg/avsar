@@ -1,0 +1,30 @@
+# Weekly dependency updates. Minor and patch updates are grouped into one pull
+# request per ecosystem so they can be reviewed and merged together; majors
+# arrive one at a time because each can break something (Next.js especially:
+# read node_modules/next/dist/docs before merging a major).
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:00'
+      timezone: Asia/Dubai
+    open-pull-requests-limit: 5
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+    labels: [dependencies]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:00'
+      timezone: Asia/Dubai
+    groups:
+      actions:
+        patterns: ['*']
+    labels: [dependencies]

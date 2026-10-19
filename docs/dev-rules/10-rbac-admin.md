@@ -1,0 +1,24 @@
+---
+description: RBAC and console conventions for admin pages and admin API routes
+globs: src/app/admin/**,src/app/api/admin/**,src/lib/rbac/**,src/components/admin/**,src/components/employer/AdminShell.tsx
+---
+
+- Check permissions, never role names. Permission keys live in `src/lib/rbac/permissions.ts`
+  and the `permissions` table (migration 0014).
+- Console page:
+  ```ts
+  const access = await requirePermission('jobs.view', '/admin/jobs');
+  // show actions conditionally with can(access, 'jobs.edit')
+  ```
+- Console API:
+  ```ts
+  const guard = await apiPermission('jobs.edit');
+  if (guard instanceof NextResponse) return guard;
+  const admin = getAdminSupabase();
+  if (!admin) return NextResponse.json({ error: 'not_configured' }, { status: 503 });
+  ```
+- Validate every body with zod; return `{ error: 'snake_case_code' }` with a proper status.
+- Every write calls `audit(guard.userId, 'area.verb', 'subject:id', detail)`.
+- Wrap pages in `<AdminShell current="/admin/..." isStaff>`; add new pages to `STAFF_NAV`
+  in AdminShell with their permission so the link only shows to people who can open it.
+- Nobody can change their own role, and the last active super_admin cannot be removed.

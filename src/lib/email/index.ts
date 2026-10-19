@@ -1,0 +1,251 @@
+import crypto from 'node:crypto';
+import { getSiteSettings } from '@/lib/cms/data';
+import { refreshIntegrations } from '@/lib/integrations/runtime';
+
+/**
+ * Outbound email over Resend (or no-op when unconfigured).
+ *
+ * Branded transactional mail — welcome, verification, password reset,
+ * reminders, application updates — all go through here. Supabase's built-in
+ * sender is not used for those; tokens are minted with the service role and
+ * the HTML is ours (logo, address, socials from Settings).
+ *
+ * Deliberately behind an interface with a no-op default, the same shape as the
+ * payment providers. An unconfigured deployment logs what it would have sent
+ * and sends nothing, rather than failing a cron run or, worse, half-sending a
+ * batch and losing track of which half.
+ */
+
+export type Message = {
+  to: string;
+  subject: string;
+  /** Always present. The branded version is an addition, never a replacement:
+      a client that refuses HTML still gets a message that reads. */
+  text: string;
+  html?: string;
+  /** Appears as List-Unsubscribe, so a mail client can offer it directly. */
+  unsubscribeUrl?: string;
+};
+
+/**
+ * Where a reply goes.
+ *
+ * Mail is sent from the verified sending subdomain, which has no mailbox
+ * behind it. Someone who answers a reminder about their own application is
+ * doing the right thing, and the answer must not disappear into a subdomain
+ * nobody reads, so every message is addressed back to the monitored inbox.
+ */
+async function replyTo(): Promise<string> {
+  return (await getSiteSettings()).general.supportEmail;
+}
+
+export type Mailer = {
+  name: string;
+  send(message: Message): Promise<{ sent: boolean }>;
+};
+
+/**
+ * Resend, over its HTTP API.
+ *
+ * One key, which doubles as the SMTP password Supabase uses for the auth mail,
+ * so there is a single credential to rotate rather than two systems drifting
+ * apart.
+ */
+function resendMailer(apiKey: string, from: string): Mailer {
+  return {
+    name: 'resend',
+    async send(message) {
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${apiKey}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          from,
+          to: [message.to],
+          reply_to: await replyTo(),
+          subject: message.subject,
+          text: message.text,
+          ...(message.html ? { html: message.html } : {}),
+          ...(message.unsubscribeUrl
+            ? {
+                headers: {
+                  'List-Unsubscribe': `<${message.unsubscribeUrl}>`,
+                  'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+                },
+              }
+            : {}),
+        }),
+      });
+
+      if (!response.ok) {
+        /* The body carries the reason, and the reasons are specific: an
+           unverified domain, a sandbox sender, a rate limit. Logging the status
+           alone would turn all of them into the same mystery. */
+        console.error('[email] resend rejected', response.status, await response.text());
+        return { sent: false };
+      }
+      return { sent: true };
+    },
+  };
+}
+
+/** Logs and discards. What an unconfigured environment gets. */
+const noopMailer: Mailer = {
+  name: 'noop',
+  async send(message) {
+    console.warn('[email] no mailer configured, not sending:', message.subject, '->', message.to);
+    return { sent: false };
+  },
+};
+
+/**
+ * Amazon SES, over the v4-signed HTTPS API rather than the SDK.
+ *
+ * The SDK is large, and this needs one call. Signing it by hand keeps the
+ * deployment small and avoids pinning a dependency that moves faster than this
+ * code will.
+ */
+function sesMailer(region: string, accessKey: string, secretKey: string, from: string): Mailer {
+  const host = `email.${region}.amazonaws.com`;
+
+  return {
+    name: 'ses',
+    async send(message) {
+      const body = JSON.stringify({
+        FromEmailAddress: from,
+        Destination: { ToAddresses: [message.to] },
+        ReplyToAddresses: [await replyTo()],
+        Content: {
+          Simple: {
+            Subject: { Data: message.subject, Charset: 'UTF-8' },
+            Body: {
+              Text: { Data: message.text, Charset: 'UTF-8' },
+              ...(message.html ? { Html: { Data: message.html, Charset: 'UTF-8' } } : {}),
+            },
+          },
+        },
+        ...(message.unsubscribeUrl
+          ? {
+              /* Both headers, because a client that honours only the one-click
+                 form will otherwise show nothing. */
+              Headers: [
+                { Name: 'List-Unsubscribe', Value: `<${message.unsubscribeUrl}>` },
+                { Name: 'List-Unsubscribe-Post', Value: 'List-Unsubscribe=One-Click' },
+              ],
+            }
+          : {}),
+      });
+
+      const path = '/v2/email/outbound-emails';
+      const now = new Date();
+      const amzDate = now.toISOString().replace(/[:-]|\.\d{3}/g, '');
+      const dateStamp = amzDate.slice(0, 8);
+
+      const payloadHash = crypto.createHash('sha256').update(body).digest('hex');
+      const canonicalHeaders = `content-type:application/json\nhost:${host}\nx-amz-date:${amzDate}\n`;
+      const signedHeaders = 'content-type;host;x-amz-date';
+      const canonicalRequest = [
+        'POST',
+        path,
+        '',
+        canonicalHeaders,
+        signedHeaders,
+        payloadHash,
+      ].join('\n');
+
+      const scope = `${dateStamp}/${region}/ses/aws4_request`;
+      const toSign = [
+        'AWS4-HMAC-SHA256',
+        amzDate,
+        scope,
+        crypto.createHash('sha256').update(canonicalRequest).digest('hex'),
+      ].join('\n');
+
+      const hmac = (key: crypto.BinaryLike | Buffer, data: string) =>
+        crypto.createHmac('sha256', key).update(data).digest();
+
+      const signature = hmac(
+        hmac(hmac(hmac(hmac(`AWS4${secretKey}`, dateStamp), region), 'ses'), 'aws4_request'),
+        toSign,
+      ).toString('hex');
+
+      const response = await fetch(`https://${host}${path}`, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          'x-amz-date': amzDate,
+          authorization: `AWS4-HMAC-SHA256 Credential=${accessKey}/${scope}, SignedHeaders=${signedHeaders}, Signature=${signature}`,
+        },
+        body,
+      });
+
+      if (!response.ok) {
+        console.error('[email] ses rejected', response.status, await response.text());
+        return { sent: false };
+      }
+      return { sent: true };
+    },
+  };
+}
+
+/**
+ * The mailer for the current keys. Sending refreshes the keys saved on the
+ * Integrations page first, so a key changed there is used by the next email
+ * rather than after the next deploy.
+ */
+export function getMailer(): Mailer {
+  const current = pickMailer();
+  return {
+    name: current.name,
+    async send(message) {
+      await refreshIntegrations();
+      return pickMailer().send(message);
+    },
+  };
+}
+
+function pickMailer(): Mailer {
+  const from = process.env.EMAIL_FROM;
+
+  /* Resend first, because it is what the Supabase auth mail goes through, and
+     having both sides of the product send from one provider is worth more than
+     a fractionally cheaper second one. */
+  const resendKey = process.env.RESEND_API_KEY;
+  if (resendKey && from) return resendMailer(resendKey, from);
+
+  const region = process.env.AWS_SES_REGION;
+  const accessKey = process.env.AWS_SES_ACCESS_KEY_ID;
+  const secretKey = process.env.AWS_SES_SECRET_ACCESS_KEY;
+  if (region && accessKey && secretKey && from) {
+    return sesMailer(region, accessKey, secretKey, from);
+  }
+  return noopMailer;
+}
+
+/**
+ * The unsubscribe token.
+ *
+ * Derived from the row id rather than being the id, so a link in an inbox
+ * cannot be edited into someone else's. Same salt as the identity hashes:
+ * one secret to rotate, not two. The kind prefix keeps a candidate id and a
+ * newsletter id from producing the same token if the uuids ever collided.
+ */
+const SALT = process.env.IDENTITY_HASH_SALT ?? 'avsar-dev-salt';
+
+export type UnsubscribeKind = 'candidate' | 'newsletter';
+
+export function unsubscribeToken(id: string, kind: UnsubscribeKind = 'candidate'): string {
+  const prefix = kind === 'newsletter' ? 'unsub:newsletter:' : 'unsub:';
+  return crypto.createHmac('sha256', SALT).update(`${prefix}${id}`).digest('hex').slice(0, 32);
+}
+
+export function unsubscribeMatches(id: string, token: string, kind: UnsubscribeKind = 'candidate'): boolean {
+  const expected = unsubscribeToken(id, kind);
+  /* Constant time, so the endpoint cannot be used to guess a token byte by
+     byte from how long it takes to answer. */
+  const a = Buffer.from(expected);
+  const b = Buffer.from(token);
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}

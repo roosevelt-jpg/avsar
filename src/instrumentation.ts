@@ -1,0 +1,31 @@
+import type { Instrumentation } from 'next';
+
+/* API keys saved in the console are applied once at start-up, so even code
+   paths that never refresh them see the saved values. */
+export async function register() {
+  if (process.env.NEXT_RUNTIME !== 'nodejs') return;
+  const { refreshIntegrations } = await import('@/lib/integrations/runtime');
+  await refreshIntegrations(true);
+}
+
+/* Imported lazily so the Edge build never pulls in node:crypto, and so the
+   Node runtime only loads the reporter when there is an error to report. */
+export const onRequestError: Instrumentation.onRequestError = async (error, request, context) => {
+  if (process.env.NEXT_RUNTIME !== 'nodejs') return;
+  const { captureServerError } = await import('@/lib/monitoring/sentry');
+  const digest =
+    typeof error === 'object' && error !== null && 'digest' in error ? String(error.digest) : undefined;
+  await captureServerError(error, {
+    path: request.path,
+    method: request.method,
+    routePath: context.routePath,
+    routeType: context.routeType,
+    digest,
+    /* Headers are otherwise never sent; this one is an id we generated. */
+    requestId: headerValue(request.headers['x-request-id']),
+  });
+};
+
+function headerValue(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value[0] : value;
+}

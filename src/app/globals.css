@@ -1,0 +1,455 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   S&A Recruitment design tokens - Direction A (primary)
+   Source: design_handoff_avsar_platform/README.md
+   ========================================================================== */
+@theme {
+  /* Surfaces */
+  /* Neutral greys, not cream: the page reads cool and quiet, and the
+     terracotta accent is the only warm colour on it. */
+  --color-paper: #f4f4f5;
+  --color-canvas: #e6e6e8;
+  --color-surface: #ffffff;
+  --color-surface-subtle: #fafafa;
+  --color-surface-hover: #f8f8f9;
+
+  /* Ink */
+  --color-ink: #1b1a17;
+  --color-ink-2: #4a4740;
+  --color-muted: #6b675f;
+
+  /* Lines */
+  --color-line: #e4e4e7;
+  --color-line-strong: #d4d4d8;
+  --color-line-soft: #eeeef0;
+  --color-dark-line: #3a3833;
+  --color-dark-muted: #a8a397;
+  --color-dark-muted-2: #c9c4b8;
+
+  /* Accents */
+  --color-accent: oklch(0.56 0.14 40);
+  --color-accent-deep: oklch(0.46 0.14 40);
+  --color-accent-tint: oklch(0.94 0.03 40);
+  --color-employer: oklch(0.56 0.14 250);
+  /* The terracotta, lifted so it does not go muddy on the ink background. It
+     is the same colour the logo uses on dark. */
+  --color-accent-on-dark: oklch(0.62 0.14 40);
+  --color-employer-deep: oklch(0.46 0.14 250);
+  --color-success: oklch(0.62 0.14 150);
+
+  /* Buttons are bg-ink with text-paper, so they are black with white text in
+     light mode and invert in dark mode. This is their hover. */
+  --color-ink-hover: #3a3833;
+  /* Bands that stay dark in both modes (footer, announcement bar, dark
+     sections), with their own text colour so a theme switch never hides it. */
+  --color-night: #1b1a17;
+  --color-on-night: #f7f5f0;
+
+  /* Soft tile backgrounds for card grids, cycled so neighbouring cards read
+     as separate things without needing borders. */
+  --color-tint-sand: #ededf0;
+  --color-tint-clay: oklch(0.94 0.03 40);
+  --color-tint-sky: oklch(0.95 0.025 250);
+  --color-tint-sage: oklch(0.95 0.03 150);
+
+  /* The console's page background: a cool soft grey, so white cards stand
+     off it without heavy borders. */
+  --color-console: #f1f1f3;
+
+  /* Type. The --font-* variables come from next/font in the root layout. */
+  --font-sans: var(--font-schibsted), var(--font-devanagari), var(--font-bengali), var(--font-tamil), var(--font-telugu), var(--font-malayalam), var(--font-kannada), var(--font-gujarati), var(--font-gurmukhi), var(--font-oriya), var(--font-arabic), ui-sans-serif, system-ui, sans-serif;
+  /* Arabic in the mono stack too: the small uppercase labels carry Arabic in
+     the third locale, and JetBrains Mono has no Arabic glyphs at all. */
+  --font-mono: var(--font-jetbrains), var(--font-arabic), ui-monospace, monospace;
+
+  /* Radius */
+  --radius-card: 16px;
+  --radius-card-lg: 20px;
+  --radius-image: 24px;
+  --radius-band: 28px;
+}
+
+/* --------------------------------------------------------------------------
+   Dark mode. The visitor's choice is a class on <html> ("dark" or "light"),
+   set before paint by the script in the root layout; with no choice the
+   system setting decides. The two blocks hold the same values: light-dark()
+   would say it once, but an unsupported browser would drop every colour.
+   -------------------------------------------------------------------------- */
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root.dark {
+  color-scheme: dark;
+  --color-paper: #161513;
+  --color-canvas: #0f0e0d;
+  --color-surface: #1e1d1a;
+  --color-surface-subtle: #1a1917;
+  --color-surface-hover: #24231f;
+  --color-ink: #f4f2ec;
+  --color-ink-2: #cbc6ba;
+  --color-muted: #9d988c;
+  --color-line: #2f2d29;
+  --color-line-strong: #3d3b36;
+  --color-line-soft: #262521;
+  --color-accent: oklch(0.68 0.14 40);
+  --color-accent-deep: oklch(0.76 0.12 40);
+  --color-accent-tint: oklch(0.28 0.05 40);
+  --color-employer: oklch(0.7 0.13 250);
+  --color-employer-deep: oklch(0.78 0.11 250);
+  --color-ink-hover: #d6d2c8;
+  --color-night: #0a0a09;
+  --color-tint-sand: #221f1a;
+  --color-tint-clay: oklch(0.26 0.04 40);
+  --color-tint-sky: oklch(0.26 0.04 250);
+  --color-tint-sage: oklch(0.26 0.035 150);
+  --color-console: #111110;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    color-scheme: dark;
+    --color-paper: #161513;
+    --color-canvas: #0f0e0d;
+    --color-surface: #1e1d1a;
+    --color-surface-subtle: #1a1917;
+    --color-surface-hover: #24231f;
+    --color-ink: #f4f2ec;
+    --color-ink-2: #cbc6ba;
+    --color-muted: #9d988c;
+    --color-line: #2f2d29;
+    --color-line-strong: #3d3b36;
+    --color-line-soft: #262521;
+    --color-accent: oklch(0.68 0.14 40);
+    --color-accent-deep: oklch(0.76 0.12 40);
+    --color-accent-tint: oklch(0.28 0.05 40);
+    --color-employer: oklch(0.7 0.13 250);
+    --color-employer-deep: oklch(0.78 0.11 250);
+    --color-ink-hover: #d6d2c8;
+    --color-night: #0a0a09;
+    --color-tint-sand: #221f1a;
+    --color-tint-clay: oklch(0.26 0.04 40);
+    --color-tint-sky: oklch(0.26 0.04 250);
+    --color-tint-sage: oklch(0.26 0.035 150);
+    --color-console: #111110;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Direction B tokens, scoped so the two directions never bleed into each
+   other. Applied via [data-variant="b"] on the page root.
+   -------------------------------------------------------------------------- */
+[data-variant="b"] {
+  --b-bg: #f5f6f8;
+  --b-outside: #dfe3ea;
+  --b-ink: #121826;
+  --b-body: #3d4556;
+  --b-muted: #5b6475;
+  --b-line: #cfd5df;
+  --b-azulejo: oklch(0.42 0.13 262);
+  --b-tint: oklch(0.95 0.02 262);
+  --b-radius: 4px;
+  --b-font-heading: var(--font-dm-serif), var(--font-noto-serif-devanagari), ui-serif, Georgia, serif;
+  --b-font-body: var(--font-dm-sans), var(--font-noto-serif-devanagari), ui-sans-serif, system-ui, sans-serif;
+
+  background: var(--b-bg);
+  color: var(--b-ink);
+  font-family: var(--b-font-body);
+}
+
+[data-variant="b"] h1,
+[data-variant="b"] h2,
+[data-variant="b"] h3 {
+  font-family: var(--b-font-heading);
+  font-weight: 400;
+}
+
+/* Direction B's azulejo divider: a 14px checkered blue and white strip. */
+[data-variant="b"] .azulejo-strip {
+  height: 14px;
+  background-image:
+    linear-gradient(45deg, var(--b-azulejo) 25%, transparent 25%, transparent 75%, var(--b-azulejo) 75%),
+    linear-gradient(45deg, var(--b-azulejo) 25%, transparent 25%, transparent 75%, var(--b-azulejo) 75%);
+  background-size: 14px 14px;
+  background-position: 0 0, 7px 7px;
+  background-color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+   Base
+   -------------------------------------------------------------------------- */
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+input,
+select,
+button,
+textarea {
+  font: inherit;
+}
+
+/* The prototype sizes everything against the page container, not the
+   viewport, so every clamp() below can keep using cqi units. */
+.avsar-root {
+  max-width: 100%;
+  overflow-x: clip;
+
+  container-type: inline-size;
+  background: var(--color-paper);
+  min-height: 100vh;
+}
+
+/* Soft wash behind candidate and console dashboards so surfaces sit on
+   atmosphere rather than a flat sheet. No photography here: illustrations
+   are placed intentionally in the UI. */
+.dash-atmosphere {
+  background:
+    radial-gradient(55% 45% at 100% 0%, color-mix(in oklab, var(--color-tint-clay) 70%, transparent) 0%, transparent 55%),
+    radial-gradient(50% 40% at 0% 100%, color-mix(in oklab, var(--color-tint-sky) 55%, transparent) 0%, transparent 50%),
+    var(--color-paper);
+}
+
+.console-atmosphere {
+  background:
+    radial-gradient(60% 40% at 100% -10%, color-mix(in oklab, var(--color-tint-sky) 65%, transparent) 0%, transparent 55%),
+    radial-gradient(45% 35% at -5% 80%, color-mix(in oklab, var(--color-tint-sand) 80%, transparent) 0%, transparent 50%),
+    var(--color-console);
+}
+
+/* Malayalam and Tamil words are long and their glyphs wide: at the 36px
+   minimum the hero heading breaks mid-word on a 360px phone. Below 480px
+   their page headings step down instead. The :lang() selector outranks the
+   utility class, which is the point. */
+@media (max-width: 480px) {
+  :is(:lang(ml), :lang(ta)) h1 {
+    font-size: 28px;
+  }
+}
+
+/* Links follow the prototype: ink with an offset underline, accent on hover. */
+.prose-link {
+  color: var(--color-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.prose-link:hover {
+  color: var(--color-accent);
+}
+
+/* Striped placeholders stand in for photography that does not exist yet. */
+.placeholder-stripes {
+  background: repeating-linear-gradient(135deg, var(--color-line-soft) 0 5px, var(--color-line) 5px 10px);
+}
+
+/* Colour and border transitions only, per the handoff: 150-200ms ease. */
+@media (prefers-reduced-motion: no-preference) {
+  .t-colors {
+    transition:
+      background-color 180ms ease,
+      border-color 180ms ease,
+      color 180ms ease,
+      opacity 180ms ease,
+      transform 200ms ease,
+      box-shadow 200ms ease;
+  }
+
+  /* Quiet entrance for dashboard blocks. Stagger with --delay when needed. */
+  @keyframes avsar-rise {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: none; }
+  }
+  .motion-rise {
+    animation: avsar-rise 520ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    animation-delay: var(--delay, 0ms);
+  }
+
+  .motion-row:hover {
+    transform: translateY(-1px);
+  }
+}
+
+/* Horizontal scroll container for the admin results table on narrow screens. */
+.scroll-x {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+}
+
+/* Stop wide tables, motion layers and absolute chips from creating a page-level
+   horizontal scroll on phones. Inner .scroll-x regions still scroll. */
+html {
+  overflow-x: clip;
+}
+body {
+  overflow-x: clip;
+  max-width: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   Marketing motion. Everything here is decoration: content is fully visible
+   without it, and all of it is off for visitors who ask for reduced motion.
+   -------------------------------------------------------------------------- */
+@keyframes avsar-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(-1.5deg); }
+}
+@keyframes avsar-reveal {
+  from { opacity: 0; transform: translateY(28px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes avsar-caret {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .motion-float {
+    animation: avsar-float 6s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  /* Scroll-driven, so it costs no JavaScript. Browsers without scroll
+     timelines simply show the content in place. */
+  @supports (animation-timeline: view()) {
+    .motion-reveal {
+      animation: avsar-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 22%;
+    }
+  }
+
+  /* A slight 3D tilt on hover, for pointers that can hover. */
+  @media (hover: hover) {
+    .motion-tilt {
+      transition: transform 420ms cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 420ms ease;
+      transform: perspective(900px) rotateX(0) rotateY(0);
+    }
+    .motion-tilt:hover {
+      transform: perspective(900px) rotateX(5deg) rotateY(-5deg) translateY(-6px);
+      box-shadow: 0 30px 60px -30px rgba(27, 26, 23, 0.35);
+    }
+  }
+
+  .type-caret::after {
+    content: '';
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    margin-inline-start: 2px;
+    vertical-align: -0.12em;
+    background: currentColor;
+    animation: avsar-caret 1s steps(1) infinite;
+  }
+  /* The hero route map: dashes travel from India towards Portugal. */
+  .motion-route {
+    animation: avsar-route 2.4s linear infinite;
+  }
+
+  /* Pointer-following tilt for InteractiveCard; the angles come from JS. */
+  @media (hover: hover) {
+    .interactive-card {
+      transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+      transition: transform 500ms cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 400ms ease, border-color 300ms ease;
+    }
+    .interactive-card:hover {
+      transition: transform 120ms linear, box-shadow 400ms ease, border-color 300ms ease;
+      box-shadow: 0 34px 70px -34px rgba(27, 26, 23, 0.4);
+    }
+  }
+
+  /* A soft ring pulsing out of a dot. */
+  .motion-ping::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: inherit;
+    animation: avsar-ping 2.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+
+  /* A line that draws itself as its card scrolls into view. */
+  @supports (animation-timeline: view()) {
+    .motion-fill {
+      transform-origin: left center;
+      animation: avsar-fill linear both;
+      animation-timeline: view();
+      animation-range: entry 30% cover 40%;
+    }
+    [dir='rtl'] .motion-fill {
+      transform-origin: right center;
+    }
+  }
+}
+
+@keyframes avsar-ping {
+  0% { transform: scale(1); opacity: 0.55; }
+  80%, 100% { transform: scale(3); opacity: 0; }
+}
+@keyframes avsar-fill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* The spotlight under the pointer. Outside the motion query: it is a colour
+   change, not movement. */
+.interactive-card {
+  position: relative;
+  isolation: isolate;
+}
+.interactive-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 0%), color-mix(in oklab, var(--color-accent) 14%, transparent), transparent 60%);
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+.interactive-card:hover::before {
+  opacity: 1;
+}
+
+@keyframes avsar-route {
+  to { stroke-dashoffset: -28; }
+}
+
+/* The 3D illustrations are rendered on cream. Multiplying drops that cream
+   into whatever tile they sit on; in dark mode they keep their own card. */
+.illustration {
+  mix-blend-mode: multiply;
+}
+:root.dark .illustration {
+  mix-blend-mode: normal;
+  border-radius: 20px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) .illustration {
+    mix-blend-mode: normal;
+    border-radius: 20px;
+  }
+}
+
+/* Visually hidden, still announced by screen readers. */
+.sr-only-focusable:not(:focus):not(:focus-within) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

@@ -1,0 +1,20 @@
+node_modules
+.next
+out
+.env
+.env.local
+.DS_Store
+*.tsbuildinfo
+next-env.d.ts
+.vercel
+.env*.local
+
+# Local archives and scan copies of the project; not source.
+/avsar-platform.zip
+/avsar-platform/
+test-results
+playwright-report
+
+# Local IDE folders (not part of the product).
+.cursor/
+.claude/
