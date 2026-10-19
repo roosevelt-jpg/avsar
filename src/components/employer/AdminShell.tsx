@@ -133,7 +133,7 @@ const EMPLOYER_NAV: Group[] = [
     icon: 'candidates',
     pinned: true,
     items: [
-      { href: '/admin', label: 'Search talent' },
+      { href: '/admin/employer', label: 'Search talent' },
       { href: '/admin/shortlists', label: 'Shortlists' },
       { href: '/admin/bench', label: 'Ready to travel' },
     ],
@@ -237,7 +237,11 @@ export async function AdminShell({
      plus the free-text searches this person may run. */
   const searchPages: SearchPage[] = groups.flatMap((group) => group.items.map((item) => ({ href: item.href, label: item.label, group: group.label })));
   const searchTargets: SearchTarget[] = [
-    ...(!access || can(access, 'candidates.view') ? [{ label: 'Search talent', base: '/admin?q=' }] : []),
+    ...(!access || can(access, 'candidates.view')
+      ? [{ label: 'Search talent', base: isStaff ? '/admin?q=' : '/admin/employer?q=' }]
+      : !isStaff
+        ? [{ label: 'Search talent', base: '/admin/employer?q=' }]
+        : []),
     ...(access && can(access, 'applications.view') ? [{ label: 'Search applications', base: '/admin/applications?q=' }] : []),
   ];
 
@@ -245,7 +249,12 @@ export async function AdminShell({
     <div className="avsar-root min-h-screen max-w-[100vw] overflow-x-clip bg-console lg:grid lg:grid-cols-[264px_minmax(0,1fr)]">
       <aside className="hidden border-e border-line bg-surface lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col lg:overflow-y-auto">
         <div className="px-5 pt-5 pb-5">
-          <Wordmark href={isStaff ? '/admin/dashboard' : '/admin'} suffix={suffix ?? (isStaff ? 'console' : 'talent pool')} accent="employer" size={22} />
+          <Wordmark
+            href={isStaff ? '/admin/dashboard' : '/admin/employer'}
+            suffix={suffix ?? (isStaff ? 'console' : 'talent pool')}
+            accent="employer"
+            size={22}
+          />
         </div>
         <div className="flex-1 px-2.5 pb-6">
           <NavList groups={groups} current={current} />
@@ -268,7 +277,7 @@ export async function AdminShell({
                 <NavList groups={groups} current={current} />
               </div>
             </details>
-            <Wordmark href={isStaff ? '/admin/dashboard' : '/admin'} accent="employer" size={18} />
+            <Wordmark href={isStaff ? '/admin/dashboard' : '/admin/employer'} accent="employer" size={18} />
           </div>
           <div className="hidden min-w-0 flex-1 md:block">
             <ConsoleSearch pages={searchPages} targets={searchTargets} live={Boolean(access)} />

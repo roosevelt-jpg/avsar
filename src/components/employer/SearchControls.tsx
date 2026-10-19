@@ -14,10 +14,13 @@ export function SearchControls({
   query,
   sector,
   minEnglish,
+  basePath = '/admin',
 }: {
   query: string;
   sector?: SectorSlug;
   minEnglish: string;
+  /** Staff search stays on `/admin`; employers use `/admin/employer`. */
+  basePath?: '/admin' | '/admin/employer';
 }) {
   const router = useRouter();
   const params = useSearchParams();
@@ -31,7 +34,7 @@ export function SearchControls({
       else search.set(key, item);
     }
     search.delete('page');
-    startTransition(() => router.push(`/admin?${search.toString()}`));
+    startTransition(() => router.push(`${basePath}?${search.toString()}`));
   }
 
   return (

@@ -39,7 +39,7 @@ export default async function GoFunnelPage({
       video={video}
       signupHref={signupHref}
       homeHref={localePath(locale, '/')}
-      signInHref={localePath(locale, '/signin')}
+      signInHref={localePath(locale, '/applicant/signin')}
       signInLabel={t.signIn}
     />
   );

@@ -14,7 +14,7 @@ export function EmployerSearchBox() {
   const [pending, startTransition] = useTransition();
 
   const search = (value: string) =>
-    startTransition(() => router.push(`/admin?q=${encodeURIComponent(value)}`));
+    startTransition(() => router.push(`/admin/employer?q=${encodeURIComponent(value)}`));
 
   return (
     <div className="w-full max-w-[720px]">

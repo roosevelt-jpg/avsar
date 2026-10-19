@@ -12,7 +12,11 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return staticPageMetadata('signin', locale);
 }
 
-/** The single entry point, for candidates, employers and staff alike. */
+/**
+ * Shared sign-in for any audience. Candidates are steered to
+ * `/applicant/signin` from the site chrome; this URL stays for old links,
+ * staff, and employers.
+ */
 export default async function SignInPage({
   params,
   searchParams,

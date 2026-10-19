@@ -8,16 +8,17 @@ import { getBrowserSupabase } from '@/lib/supabase/browser';
 import { fill, type Dictionary, type Locale, localePath } from '@/lib/i18n';
 
 /**
- * One sign-in page for all three audiences.
+ * Sign-in form used by the shared `/signin` page and by audience-specific
+ * routes such as `/applicant/signin`.
  *
- * Both mechanisms live on the same page rather than the page asking for an
+ * Both mechanisms live on the same form rather than the page asking for an
  * email first and then choosing. Choosing would mean the page revealing whether
  * an address belongs to staff before anyone has proved who they are, which
  * turns sign-in into a directory of who works here.
  *
- * Candidates use the code, because they registered once and come back weeks
- * later. Employers and staff use a password, because they are a known set on
- * their own devices where a password manager beats a code round trip.
+ * Candidates often use a code, because they registered once and come back
+ * weeks later; they also have a password from registration. Employers and
+ * staff use a password.
  *
  * Where each one lands is decided server side by `/auth/route`, from the
  * session, never from anything this form sends.
@@ -26,10 +27,13 @@ export function SignInForm({
   locale,
   t,
   next,
+  note,
 }: {
   locale: Locale;
   t: Dictionary;
   next?: string;
+  /** Overrides the shared staff/employer note on dedicated audience pages. */
+  note?: string;
 }) {
   const router = useRouter();
   const a = t.auth;
@@ -164,7 +168,7 @@ export function SignInForm({
         </>
       ) : (
         <>
-          <p className="mt-3 mb-7 text-[16px] leading-[1.6] text-ink-2">{a.staffNote}</p>
+          <p className="mt-3 mb-7 text-[16px] leading-[1.6] text-ink-2">{note ?? a.staffNote}</p>
 
           <label className="block">
             <span className="mb-2 block text-[15px] font-medium">{a.emailLabel}</span>

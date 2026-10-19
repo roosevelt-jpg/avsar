@@ -21,7 +21,8 @@ const GROUPS: { title: string; note: string; rows: [string, string, string][] }[
       ['/', '01 Landing', 'hero selector, fee breakdown, odds disclosure'],
       ['/hi', '01 Landing, Hindi', 'same page, full Hindi dictionary'],
       ['/signup', '03 Sign-up + pay', '3 steps, order summary, mandatory consent'],
-      ['/signin', 'Sign in (all roles)', 'password for staff and employers, code for candidates'],
+      ['/applicant/signin', 'Applicant sign in', 'password or emailed code → dashboard'],
+      ['/signin', 'Sign in (all roles)', 'shared form for staff, employers and candidates'],
       ['/assessment', '04 Assessment', 'server timer, autosave, A-D keys'],
       ['/profile', 'Profile', 'CV upload or manual entry, ATS-style fields'],
       ['/dashboard', '05 Dashboard', 'real journey status, report, visibility switch'],
@@ -41,7 +42,7 @@ const GROUPS: { title: string; note: string; rows: [string, string, string][] }[
     note: 'Blue accent.',
     rows: [
       ['/employers', '02 Employer landing', 'plain-language pitch, live assessed count'],
-      ['/admin', '06 Talent search', 'parsed query, filters in the URL, pagination'],
+      ['/admin/employer', '06 Employer talent search', 'parsed query, filters in the URL, pagination'],
       ['/admin/cvs', 'CV queue', 'trigger the AI read, then open a review'],
     ],
   },

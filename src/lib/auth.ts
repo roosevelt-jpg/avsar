@@ -119,7 +119,7 @@ export async function requireCandidate(
   const viewer = await getViewer();
   if (viewer.role !== 'anonymous') redirect(homeFor(viewer, locale));
 
-  redirect(localePath(locale, `/signin?next=${encodeURIComponent(returnTo)}`));
+  redirect(localePath(locale, `/applicant/signin?next=${encodeURIComponent(returnTo)}`));
 }
 
 export type StaffUser = { userId: string; email: string; role: string };
@@ -284,7 +284,7 @@ export function homeFor(viewer: Viewer, locale: Locale): string {
     case 'staff':
       return '/admin/dashboard';
     case 'employer':
-      return '/admin';
+      return '/admin/employer';
     case 'candidate':
       /* Profile, then assessment, then pay. The dashboard is where an unpaid
          candidate who has finished is sent, because that is where the fee is

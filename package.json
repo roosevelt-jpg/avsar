@@ -10,7 +10,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "seed:employer": "node --env-file=.env.local scripts/seed-local-employer.mjs",
+    "seed:applicant": "node --env-file=.env.local scripts/seed-local-applicant.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.128.0",

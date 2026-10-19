@@ -84,7 +84,7 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
       title: label('getStarted'),
       links: [
         { href: page('/signup'), label: label('createProfile') },
-        { href: page('/signin'), label: label('signIn') },
+        { href: page('/applicant/signin'), label: label('signIn') },
         { href: page('/pricing'), label: label('pricing') },
         { href: page('/employers'), label: label('hire') },
       ],

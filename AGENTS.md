@@ -108,7 +108,9 @@ supabase/migrations/                   schema, in order. 0014 = RBAC, jobs, appl
  0026 = avatars bucket; 0027 = staff reads tied to permissions, not is_staff()
 docs/ops/                              backup/restore, incident runbook, SLOs, secrets inventory
 docs/owner-answers.md                  owner questionnaire decisions and open items for the lawyer
-supabase/seed/                         sample job drafts, the two super admins (run after the migrations)
+supabase/seed/                         sample job drafts, the two super admins (run after the migrations);
+                                       local employer login: npm run seed:employer (see seed/local_employer.md);
+                                       local applicant login: npm run seed:applicant (see seed/local_applicant.md)
 ```
 
 ## Rules that keep this safe

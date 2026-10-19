@@ -20,6 +20,7 @@ export default async function AuthRoutePage({
   const locale: Locale = rawLocale && isLocale(rawLocale) ? rawLocale : defaultLocale;
 
   const viewer = await getViewer();
+  /* Shared form: this router serves every role after a successful sign-in. */
   if (viewer.role === 'anonymous') redirect(localePath(locale, '/signin'));
 
   redirect(resolveDestination(viewer, next, locale));

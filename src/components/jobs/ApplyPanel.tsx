@@ -73,7 +73,7 @@ export function ApplyPanel({
   const idempotency = useIdempotencyKey();
 
   const next = localePath(locale, `/jobs/${job.slug}`);
-  const signInHref = localePath(locale, `/signin?next=${encodeURIComponent(next)}`);
+  const signInHref = localePath(locale, `/applicant/signin?next=${encodeURIComponent(next)}`);
 
   function missingRequired(): boolean {
     return job.questions.some((q) => q.required && !answers[q.id]?.trim());

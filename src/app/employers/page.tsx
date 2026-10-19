@@ -33,7 +33,7 @@ export default async function EmployerLanding() {
       <header className="flex flex-wrap items-center justify-between gap-4 border-b border-line px-[clamp(20px,4cqi,56px)] py-[18px]">
         <Wordmark href="/employers" suffix="for employers" accent="employer" />
         <nav className="flex flex-wrap gap-[clamp(12px,2.4cqi,28px)] text-[15px] text-ink-2">
-          <Link href="/admin" className="no-underline hover:text-employer t-colors">
+          <Link href="/admin/employer" className="no-underline hover:text-employer t-colors">
             Talent pool
           </Link>
           <Link href="/employers#how" className="no-underline hover:text-employer t-colors">

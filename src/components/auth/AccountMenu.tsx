@@ -28,7 +28,7 @@ export async function AccountMenu({
       /* An icon on phones: "Sign in" runs to fourteen characters in Malayalam
          and Tamil, which pushed the menu button off a 360px screen. The word
          stays as the accessible name and returns from the sm breakpoint. */
-      <Link href={localePath(locale, '/signin')} title={t.signIn} className="inline-flex items-center px-2.5 py-2 text-[15px] no-underline text-ink">
+      <Link href={localePath(locale, '/applicant/signin')} title={t.signIn} className="inline-flex items-center px-2.5 py-2 text-[15px] no-underline text-ink">
         <svg viewBox="0 0 24 24" className="size-5 sm:hidden" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
           <circle cx="12" cy="8" r="3.5" />
           <path d="M5 19.5c1.2-3.3 3.9-5 7-5s5.8 1.7 7 5" strokeLinecap="round" />
@@ -46,7 +46,7 @@ export async function AccountMenu({
     links.push({ href: '/admin', label: 'Talent pool' });
   } else if (viewer.role === 'employer') {
     who = viewer.employer.name || 'Employer';
-    links.push({ href: '/admin', label: 'Talent pool' });
+    links.push({ href: '/admin/employer', label: 'Talent pool' });
   } else if (viewer.role === 'candidate') {
     who = viewer.candidate.fullName.split(' ')[0] ?? '';
     links.push({ href: localePath(locale, '/dashboard'), label: t.dash.navOverview });

@@ -99,7 +99,7 @@ export async function POST(request: Request) {
    */
   const origin = new URL(request.url).origin;
   const { error: inviteError } = await admin.auth.resetPasswordForEmail(email, {
-    redirectTo: `${origin}/auth/callback?next=${encodeURIComponent('/admin')}`,
+    redirectTo: `${origin}/auth/callback?next=${encodeURIComponent('/admin/employer')}`,
   });
 
   return NextResponse.json({

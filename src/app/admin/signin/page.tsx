@@ -10,6 +10,8 @@ export default async function LegacyStaffSignIn({
   searchParams: Promise<{ next?: string }>;
 }) {
   const { next } = await searchParams;
-  const target = next && next.startsWith('/') && !next.startsWith('//') ? next : '/admin';
+  /* Default to the staff dashboard; employers arriving without `next` are
+     sent there by resolveDestination after sign-in based on role. */
+  const target = next && next.startsWith('/') && !next.startsWith('//') ? next : '/admin/dashboard';
   redirect(localePath('en', `/signin?next=${encodeURIComponent(target)}`));
 }
