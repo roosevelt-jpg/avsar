@@ -78,10 +78,14 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
       : [];
 
   return (
-    <HeroStage slides={slides}>
-      {str(data, 'eyebrow') ? (
-        <p className="m-0 mb-5 text-[13px] font-medium text-[#c45c1a]">{str(data, 'eyebrow')}</p>
-      ) : null}
+    <HeroStage
+      slides={slides}
+      lead={
+        str(data, 'eyebrow') ? (
+          <p className="m-0 text-[13px] font-medium text-[#f08a2f]">{str(data, 'eyebrow')}</p>
+        ) : null
+      }
+    >
       <Heading className="m-0 text-balance break-words text-[clamp(36px,5.4cqi,68px)] font-semibold leading-[1.02] tracking-[-0.045em]">
         {str(data, 'title')}
       </Heading>
@@ -131,7 +135,7 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
 
       {proof.length > 0 && (
         <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-line pt-6">
-          <span className="inline-flex items-center gap-2 font-mono text-[12px] uppercase tracking-[0.12em] text-accent">
+          <span className="inline-flex items-center gap-2 font-mono text-[12px] uppercase tracking-[0.12em] text-[#f08a2f]">
             <span aria-hidden className="size-[7px] animate-pulse rounded-full bg-success" />
             {siteText(locale, 'Live')}
           </span>

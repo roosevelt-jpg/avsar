@@ -71,7 +71,7 @@ export function WhatsAppDesk({ phone, hours, copy }: { phone: string; hours: str
     <>
       <button
         type="button"
-        className="btn-gradient fixed bottom-5 end-5 z-50 inline-flex items-center gap-2 px-4 py-3 text-[15px] font-semibold text-white"
+        className="btn-gradient fixed bottom-5 end-5 z-50 inline-flex items-center gap-2 rounded-[16px] px-4 py-3 text-[15px] font-semibold"
         onClick={() => dialog.current?.showModal()}
       >
         <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
@@ -89,12 +89,12 @@ export function WhatsAppDesk({ phone, hours, copy }: { phone: string; hours: str
           if (event.target === event.currentTarget) event.currentTarget.close();
         }}
       >
-        <div className="flex items-start justify-between gap-3 border-b border-line px-5 py-4">
+        <div className="flex shrink-0 items-start justify-between gap-3 border-b border-line px-4 py-3">
           <div>
             <p id="wa-desk-title" className="m-0 text-[17px] font-semibold text-ink">
               {copy.title}
             </p>
-            <p className="m-0 mt-1 text-[13px] leading-[1.45] text-ink-2">{copy.intro}</p>
+            <p className="m-0 mt-1 line-clamp-2 text-[12px] leading-[1.4] text-ink-2">{copy.intro}</p>
           </div>
           <form method="dialog">
             <button type="submit" className="grid size-9 place-items-center rounded-full border border-line text-ink" aria-label={copy.close}>
@@ -104,7 +104,7 @@ export function WhatsAppDesk({ phone, hours, copy }: { phone: string; hours: str
         </div>
 
         {desk ? (
-          <div className="px-5 py-4">
+          <div className="wa-panel-body px-4 py-3">
             <button type="button" className="mb-3 text-[13px] font-semibold text-accent-deep" onClick={() => setDeskId(null)}>
               {copy.allDesks}
             </button>
@@ -116,14 +116,14 @@ export function WhatsAppDesk({ phone, hours, copy }: { phone: string; hours: str
               href={thread}
               target="_blank"
               rel="noreferrer"
-              className="btn-gradient mt-4 flex justify-center rounded-[16px] px-4 py-3 text-[15px] font-semibold text-white no-underline"
+              className="btn-gradient mt-4 flex justify-center rounded-[16px] px-4 py-3 text-[15px] font-semibold no-underline"
             >
               {copy.continue}
             </a>
           </div>
         ) : (
-          <>
-          <div className="border-b border-line px-4 py-4">
+          <div className="wa-panel-body">
+          <div className="border-b border-line px-4 py-3">
             {turns.map((turn, index) => (
               <p key={index} className={`m-0 mb-3 text-[14px] leading-[1.5] ${turn.role === 'user' ? 'text-ink' : 'text-ink-2'}`}>
                 {turn.text}
@@ -142,7 +142,7 @@ export function WhatsAppDesk({ phone, hours, copy }: { phone: string; hours: str
                 maxLength={500}
                 className="min-w-0 flex-1 rounded-[8px] border border-line bg-surface px-3 py-2 text-[14px]"
               />
-              <button type="submit" disabled={pending} className="btn-gradient rounded-[8px] px-3 py-2 text-[14px] font-semibold text-white disabled:opacity-50">
+              <button type="submit" disabled={pending} className="btn-gradient rounded-[8px] px-3 py-2 text-[14px] font-semibold disabled:opacity-50">
                 {copy.send}
               </button>
             </form>
@@ -166,10 +166,10 @@ export function WhatsAppDesk({ phone, hours, copy }: { phone: string; hours: str
               </li>
             ))}
           </ul>
-          </>
+          </div>
         )}
 
-        <p className="m-0 border-t border-line px-5 py-3 text-[12px] leading-[1.45] text-muted">
+        <p className="m-0 shrink-0 border-t border-line px-4 py-2.5 text-[12px] leading-[1.4] text-muted">
           {hours ? <span className="block">{hours}</span> : null}
           <span dir="ltr" className="mt-1 block font-mono">
             {phone}

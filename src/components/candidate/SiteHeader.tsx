@@ -57,16 +57,20 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
   return (
     <>
       {announcement.enabled && announcement.text ? (
-        <div className="bg-[#d7ebf7] px-[clamp(20px,4cqi,56px)] py-2.5 text-center text-[13px] font-medium leading-[1.45] text-[#c45c1a]">
-          <span>{announcement.text}</span>
-          {announcement.href && announcement.linkLabel ? (
-            <>
-              {' '}
-              <Link href={localHref(locale, announcement.href)} className="font-semibold text-[#1c1410] underline underline-offset-[3px]">
-                {announcement.linkLabel}
-              </Link>
-            </>
-          ) : null}
+        <div className="announce-bar">
+          <div className="announce-track">
+            {[0, 1].map((copy) => (
+              <p key={copy} className="announce-item" aria-hidden={copy === 1 ? true : undefined}>
+                <span className="announce-dot" aria-hidden />
+                <span>{announcement.text}</span>
+                {announcement.href && announcement.linkLabel ? (
+                  <Link href={localHref(locale, announcement.href)} className="font-semibold text-[#16324f] underline underline-offset-[3px]">
+                    {announcement.linkLabel}
+                  </Link>
+                ) : null}
+              </p>
+            ))}
+          </div>
         </div>
       ) : null}
 
@@ -98,7 +102,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
             {showCta ? (
               <Link
                 href={localHref(locale, navigation.headerCta.href)}
-                className="t-colors hidden rounded-[2px] bg-[#f4f8fb] px-4 py-2 text-[14px] font-semibold text-[#16324f] no-underline md:inline-flex"
+                className="btn-gradient t-colors hidden rounded-[14px] px-4 py-2 text-[14px] font-semibold no-underline md:inline-flex"
               >
                 {ctaLabel(navigation.headerCta, locale)}
               </Link>
@@ -137,7 +141,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
                 {showCta ? (
                   <Link
                     href={localHref(locale, navigation.headerCta.href)}
-                    className="mt-3 flex justify-center rounded-[2px] bg-[#16324f] px-4 py-3 text-[15px] font-semibold text-[#f4f8fb] no-underline"
+                    className="btn-gradient mt-3 flex justify-center rounded-[14px] px-4 py-3 text-[15px] font-semibold no-underline"
                   >
                     {ctaLabel(navigation.headerCta, locale)}
                   </Link>

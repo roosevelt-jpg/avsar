@@ -60,7 +60,7 @@ export function StepsBlock({ data }: Props) {
               <p className="m-0 mt-2 max-w-[52ch] text-[16px] leading-[1.6] text-ink-2">{str(item, 'body')}</p>
               {str(item, 'meta') ? <p className="m-0 mt-3 text-[13px] text-muted">{str(item, 'meta')}</p> : null}
             </div>
-            <div className="relative aspect-[16/10] overflow-hidden bg-canvas">
+            <div className={`photo-card relative aspect-[16/10] bg-canvas ${index % 2 === 1 ? 'photo-card-alt' : ''}`}>
               <CmsImage src={stepPhoto(str(item, 'image'), index)} alt="" sizes="(max-width: 768px) 100vw, 280px" />
             </div>
           </li>
@@ -96,7 +96,7 @@ function StepsTimeline({ data }: { data: BlockData }) {
                 <p className="m-0 mt-3 max-w-[46ch] text-[16px] leading-[1.65] text-ink-2">{str(item, 'body')}</p>
               </div>
               {stepPhoto(str(item, 'image'), index) ? (
-                <div className={`relative aspect-[16/10] overflow-hidden bg-canvas ${flip ? 'md:order-1' : ''}`}>
+                <div className={`photo-card relative aspect-[16/10] bg-canvas ${flip ? 'photo-card-alt md:order-1' : ''}`}>
                   <CmsImage src={stepPhoto(str(item, 'image'), index)} alt="" sizes="(max-width: 768px) 100vw, 50vw" />
                 </div>
               ) : null}
@@ -129,7 +129,7 @@ export function FeaturesBlock({ data, locale }: Props) {
               className="row-span-4 grid grid-rows-subgrid gap-y-0 border-t border-line pt-6"
             >
               {image ? (
-                <div className="relative mb-5 aspect-[16/10] overflow-hidden bg-canvas">
+                <div className={`photo-card relative mb-5 aspect-[16/10] bg-canvas ${index % 2 === 1 ? 'photo-card-alt' : ''}`}>
                   <CmsImage src={scenePhoto(image, index)} alt="" sizes="(max-width: 768px) 100vw, 33vw" />
                 </div>
               ) : (
@@ -203,7 +203,7 @@ export function SplitBlock({ data, locale }: Props) {
         </div>
         {frames.length ? (
           <div className={left ? 'lg:order-1' : ''}>
-            <div className="relative aspect-[4/3] overflow-hidden bg-canvas">
+            <div className="photo-card relative aspect-[4/3] bg-canvas">
               <FrameCycle frames={frames} alt={str(data, 'imageAlt')} />
             </div>
           </div>

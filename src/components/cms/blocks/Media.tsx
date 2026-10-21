@@ -33,7 +33,7 @@ export function GalleryBlock({ data }: Props) {
         {list.map((item, index) => (
           <li key={index} className={index % 5 === 0 ? 'col-span-2 md:col-span-1 md:row-span-2' : ''}>
             <figure className="m-0">
-              <div className={`relative overflow-hidden rounded-[18px] bg-canvas ${index % 5 === 0 ? 'aspect-[4/3] md:aspect-[3/4]' : 'aspect-[4/3]'}`}>
+              <div className={`photo-card relative bg-canvas ${index % 2 === 1 ? 'photo-card-alt' : ''} ${index % 5 === 0 ? 'aspect-[4/3] md:aspect-[3/4]' : 'aspect-[4/3]'}`}>
                 <CmsImage src={str(item, 'image')} alt={str(item, 'alt')} sizes="(max-width: 768px) 50vw, 33vw" />
               </div>
               {str(item, 'caption') ? <figcaption className="mt-2 text-[13px] text-muted">{str(item, 'caption')}</figcaption> : null}

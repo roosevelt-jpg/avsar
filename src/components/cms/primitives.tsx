@@ -57,7 +57,7 @@ export function SectionHeading({
        words are wider than a phone. */
     <div className={`mb-[clamp(28px,4cqi,48px)] min-w-0 break-words ${align === 'center' ? 'mx-auto text-center' : ''} max-w-[760px]`}>
       {eyebrow ? (
-        <p className={`m-0 mb-3 font-mono text-[12px] uppercase tracking-[0.14em] ${dark ? 'text-accent-on-dark' : 'text-accent'}`}>
+        <p className={`m-0 mb-3 font-mono text-[12px] uppercase tracking-[0.14em] ${dark ? 'text-[#f6c49a]' : 'text-[#f08a2f]'}`}>
           {eyebrow}
         </p>
       ) : null}
@@ -72,9 +72,9 @@ export function SectionHeading({
 }
 
 const BUTTON = {
-  /* The filled action is the recruitment blue. "dark" is the quieter
-     second button, for when two actions sit side by side. */
-  primary: 'btn-gradient text-white border-transparent',
+  /* The filled action is orange, with the footer navy as the letters.
+     "dark" is the quieter second button, for when two actions sit side by side. */
+  primary: 'btn-gradient border-transparent',
   dark: 'bg-ink text-paper hover:bg-ink-hover border-transparent',
   light: 'bg-surface text-ink border-line-strong hover:border-ink',
   ghostDark: 'bg-transparent text-on-night border-dark-line hover:border-on-night',

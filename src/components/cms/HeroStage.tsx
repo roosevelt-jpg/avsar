@@ -17,7 +17,7 @@ const DWELL_MS = 6500;
  * The homepage opener. The film or photograph sits flat beside the words.
  * Hover, a pause control, or a reduced-motion setting holds the current frame.
  */
-export function HeroStage({ slides, children }: { slides: HeroSlide[]; children: ReactNode }) {
+export function HeroStage({ slides, lead, children }: { slides: HeroSlide[]; lead?: ReactNode; children: ReactNode }) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [reduce, setReduce] = useState(false);
@@ -58,12 +58,14 @@ export function HeroStage({ slides, children }: { slides: HeroSlide[]; children:
         ) : null}
       </div>
 
-      <div className="relative mx-auto grid w-full max-w-[1200px] grid-cols-1 items-center gap-[clamp(28px,4cqi,64px)] lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
+      <div className="relative mx-auto w-full max-w-[1200px]">
+        {lead ? <div className="mb-4">{lead}</div> : null}
+        <div className="grid grid-cols-1 items-start gap-[clamp(28px,4cqi,64px)] lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
         <div className="min-w-0">{children}</div>
 
         {current ? (
           <div>
-            <div className="relative aspect-[4/5] overflow-hidden bg-night sm:aspect-[4/3] lg:aspect-[5/4]">
+            <div className="photo-card relative aspect-[4/5] bg-night sm:aspect-[4/3] lg:aspect-[5/4]">
               {slides.map((slide, slideIndex) => {
                 const active = slideIndex === index;
                 const showImage = slide.kind === 'image' || broken[slideIndex];
@@ -132,6 +134,7 @@ export function HeroStage({ slides, children }: { slides: HeroSlide[]; children:
             ) : null}
           </div>
         ) : null}
+        </div>
       </div>
     </section>
   );

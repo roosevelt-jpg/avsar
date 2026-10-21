@@ -304,15 +304,16 @@ textarea {
   letter-spacing: 0.08em;
 }
 
-/* One solid action. A warm line is the only accent, so the button does not
-   look like a colour sample. */
+/* The action is orange. The letters are the same navy as the footer, so a
+   button on the header, the page, or the footer still reads as one control. */
 .btn-gradient {
-  background: #16324f;
-  box-shadow: inset 0 -2px 0 #e7b48a;
-  transition: background-color 180ms ease;
+  background: #f08a2f;
+  color: #16324f;
+  box-shadow: 0 14px 28px -18px rgba(240, 138, 47, 0.9);
+  transition: background-color 180ms ease, transform 180ms ease;
 }
 .btn-gradient:hover {
-  background: #1c4064;
+  background: #e0781c;
 }
 
 .chip-gradient {
@@ -341,23 +342,42 @@ textarea {
   background: #fbfcfe;
 }
 
-/* A photograph standing in space. The tilt is the anamorphic read; hover
-   settles it so the picture can be looked at straight. */
+/* Photographs stay flat. The corner cut is what makes a card look finished:
+   one corner is tighter, the others are round, and a soft shadow sits under it. */
+.photo-card {
+  overflow: hidden;
+  border-start-start-radius: 36px;
+  border-start-end-radius: 36px;
+  border-end-start-radius: 36px;
+  border-end-end-radius: 14px;
+  box-shadow: 18px 28px 48px -28px rgba(22, 50, 79, 0.45);
+}
+.photo-card-alt {
+  border-start-start-radius: 16px;
+  border-start-end-radius: 36px;
+  border-end-start-radius: 36px;
+  border-end-end-radius: 36px;
+}
 .anamorphic-stage {
-  perspective: 1400px;
-  padding: 16px 0 8px;
+  perspective: none;
+  padding: 8px 0;
 }
 .anamorphic-frame {
   width: 100%;
   margin: 0;
-  border-radius: 2px;
-  transform: none;
-  box-shadow: none;
+  overflow: hidden;
+  border-start-start-radius: 36px;
+  border-start-end-radius: 36px;
+  border-end-start-radius: 36px;
+  border-end-end-radius: 14px;
+  box-shadow: 18px 28px 48px -28px rgba(22, 50, 79, 0.45);
 }
 .anamorphic-mini {
-  border-radius: 2px;
-  transform: none;
-  box-shadow: none;
+  border-start-start-radius: 22px;
+  border-start-end-radius: 22px;
+  border-end-start-radius: 22px;
+  border-end-end-radius: 8px;
+  box-shadow: 12px 18px 28px -18px rgba(22, 50, 79, 0.4);
 }
 
 .shop-header::after {
@@ -410,19 +430,64 @@ textarea {
   animation-play-state: paused;
 }
 
-.wa-panel {
-  width: min(400px, calc(100vw - 24px));
-  max-height: min(640px, calc(100vh - 32px));
-  margin-top: auto;
-  margin-bottom: 88px;
-  margin-inline-start: auto;
-  margin-inline-end: 16px;
+/* The safety line travels, and a dot blinks so the bar is not a static strip.
+   Hover or keyboard focus holds it still so the link can be used. */
+.announce-bar {
+  overflow: hidden;
+  background: #d7ebf7;
+  color: #c45c1a;
+}
+.announce-track {
+  display: flex;
+  width: max-content;
+}
+.announce-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 10px 56px;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+.announce-dot {
+  width: 8px;
+  height: 8px;
+  flex: none;
+  border-radius: 999px;
+  background: #f08a2f;
+}
+.announce-bar:hover .announce-track,
+.announce-bar:focus-within .announce-track {
+  animation-play-state: paused;
+}
+
+/* Sit above the button, short enough that the title stays on screen.
+   The middle scrolls; the title and the hours stay put. */
+dialog.wa-panel[open] {
+  position: fixed;
+  inset-inline: auto 16px;
+  inset-block: auto 88px;
+  width: min(360px, calc(100vw - 32px));
+  height: fit-content;
+  max-height: min(420px, calc(100dvh - 120px));
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   padding: 0;
   border: 0;
-  border-radius: 2px;
+  border-radius: 18px 18px 6px 18px;
   background: #fbfcfe;
   color: var(--color-ink);
   box-shadow: 0 24px 60px -28px rgba(22, 50, 79, 0.45);
+}
+.wa-panel-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
 }
 .wa-panel::backdrop {
   background: rgba(28, 20, 16, 0.46);
@@ -431,9 +496,18 @@ textarea {
 @media (prefers-reduced-motion: reduce) {
   .anamorphic-frame,
   .anamorphic-mini,
-  .hero-bleed {
+  .hero-bleed,
+  .announce-track,
+  .announce-dot {
     transform: none;
     animation: none;
+  }
+  .announce-track {
+    width: 100%;
+    justify-content: center;
+  }
+  .announce-item[aria-hidden='true'] {
+    display: none;
   }
 }
 
@@ -547,8 +621,25 @@ body {
   0%, 49% { opacity: 1; }
   50%, 100% { opacity: 0; }
 }
+@keyframes announce-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes announce-blink {
+  0%, 44% { opacity: 1; }
+  45%, 100% { opacity: 0.2; }
+}
 
 @media (prefers-reduced-motion: no-preference) {
+  .announce-track {
+    animation: announce-marquee 28s linear infinite;
+  }
+  [dir='rtl'] .announce-track {
+    animation-direction: reverse;
+  }
+  .announce-dot {
+    animation: announce-blink 1.15s steps(1, end) infinite;
+  }
   .hero-bleed {
     animation: hero-bleed 16s ease-in-out infinite alternate;
   }
