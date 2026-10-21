@@ -21,14 +21,14 @@ export function LocaleToggle({ locale }: { locale: Locale }) {
     <details className="group relative">
       <summary
         aria-label="Language"
-        className="t-colors flex cursor-pointer list-none items-center gap-1 rounded-full border border-line-strong bg-surface px-2.5 py-[5px] text-[13px] text-ink [&::-webkit-details-marker]:hidden"
+        className="t-colors flex cursor-pointer list-none items-center gap-1 rounded-full border border-[#d5e2ee] bg-[#eef4fa] px-2.5 py-[5px] text-[13px] !text-[#16324f] [&::-webkit-details-marker]:hidden"
       >
         <span lang={locale}>{localeLabels[locale]}</span>
         <svg viewBox="0 0 24 24" className="size-3.5 text-muted group-open:rotate-180" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
           <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </summary>
-      <ul className="absolute end-0 z-50 m-0 mt-2 max-h-[min(70vh,420px)] w-[220px] list-none overflow-auto rounded-[16px] border border-line bg-surface p-1.5 shadow-[0_24px_60px_-24px_rgba(27,26,23,0.45)]">
+      <ul className="absolute end-0 z-50 m-0 mt-2 max-h-[min(70vh,420px)] w-[220px] list-none overflow-auto rounded-[16px] border border-[#d5e2ee] bg-[#eef4fa] p-1.5 shadow-[0_24px_60px_-24px_rgba(22,50,79,0.45)]">
         {locales.map((code) => {
           const active = code === locale;
           return (
@@ -40,7 +40,7 @@ export function LocaleToggle({ locale }: { locale: Locale }) {
                 aria-current={active ? 'true' : undefined}
                 onClick={() => rememberLocale(code)}
                 className={`t-colors flex items-center justify-between gap-3 rounded-[12px] px-3 py-2 text-[15px] no-underline ${
-                  active ? 'bg-ink text-paper' : 'text-ink hover:bg-paper'
+                  active ? 'bg-[#16324f] !text-[#f4f8fb]' : '!text-[#16324f] hover:bg-[#dce7f2]'
                 }`}
               >
                 <span>{localeNames[code]}</span>

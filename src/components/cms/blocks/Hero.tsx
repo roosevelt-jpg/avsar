@@ -78,7 +78,7 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
     <HeroStage slides={slides}>
       {str(data, 'eyebrow') ? (
         <p className="m-0 mb-5 inline-flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.16em] text-accent-deep">
-          <span aria-hidden className="h-[3px] w-10 rounded-full bg-[linear-gradient(90deg,#d4532c,#e8a23a,#0f8f78)]" />
+          <span aria-hidden className="h-[3px] w-10 rounded-full bg-[linear-gradient(90deg,#16324f,#3c8fd4,#7eb6e8)]" />
           {str(data, 'eyebrow')}
         </p>
       ) : null}
@@ -148,7 +148,7 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
           {stats.map((stat, index) => (
             <div key={index} className="blue-card min-w-0 px-5 py-4 text-start">
               <dt className="sr-only">{str(stat, 'label')}</dt>
-              <dd className="m-0 bg-[linear-gradient(100deg,#d4532c,#e8a23a_55%,#0f8f78)] bg-clip-text text-[26px] font-semibold tracking-[-0.03em] text-transparent">
+              <dd className="m-0 bg-[linear-gradient(100deg,#16324f,#3c8fd4_55%,#7eb6e8)] bg-clip-text text-[26px] font-semibold tracking-[-0.03em] text-transparent">
                 {str(stat, 'value')}
               </dd>
               <dd className="m-0 mt-1 text-[13px] leading-[1.4] text-ink-2 [overflow-wrap:anywhere]">{str(stat, 'label')}</dd>

@@ -75,8 +75,6 @@ const BUTTON = {
   /* The filled action is the recruitment blue. "dark" is the quieter
      second button, for when two actions sit side by side. */
   primary: 'btn-gradient text-white border-transparent',
-  /* The page closer and other quiet bands. The warm gradient is the hero action. */
-  teal: 'bg-[#0c7c68] text-white border-transparent hover:bg-[#0a6858]',
   dark: 'bg-ink text-paper hover:bg-ink-hover border-transparent',
   light: 'bg-surface text-ink border-line-strong hover:border-ink',
   ghostDark: 'bg-transparent text-on-night border-dark-line hover:border-on-night',

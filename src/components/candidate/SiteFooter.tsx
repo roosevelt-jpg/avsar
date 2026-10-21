@@ -39,18 +39,18 @@ type FooterLink = { href: string; label: string; external?: boolean };
 function FooterColumn({ title, links }: { title: string; links: FooterLink[] }) {
   return (
     <div className="min-w-0">
-      <h2 className="m-0 mb-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0c7c68]">{title}</h2>
+      <h2 className="m-0 mb-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#9ecae6]">{title}</h2>
       <ul className="m-0 flex list-none flex-col gap-2.5 p-0 text-[15px]">
         {links.map((item) =>
           item.external ? (
             <li key={item.href}>
-              <a href={item.href} target="_blank" rel="noopener noreferrer" className="t-colors text-ink-2 no-underline hover:text-[#0c7c68]">
+              <a href={item.href} target="_blank" rel="noopener noreferrer" className="t-colors text-[#e4eef5] no-underline hover:text-white">
                 {item.label}
               </a>
             </li>
           ) : (
             <li key={item.href}>
-              <Link href={item.href} className="t-colors text-ink-2 no-underline hover:text-[#0c7c68]">
+              <Link href={item.href} className="t-colors text-[#e4eef5] no-underline hover:text-white">
                 {item.label}
               </Link>
             </li>
@@ -116,22 +116,21 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
   ];
 
   return (
-    /* A pale teal field, not the dark band. The orange action sat on that
-       navy and the two colours cancelled each other. Teal is the only
-       strong colour down here, so the page buttons stay the warm ones. */
-    <footer className="bg-[#e7f3ef] px-[clamp(20px,4cqi,56px)] py-[clamp(28px,4cqi,48px)] text-ink-2">
+    /* Same blue as the header. The panel stays open so the blue is the
+       background, not a card sitting on top of it. */
+    <footer className="bg-[#16324f] px-[clamp(20px,4cqi,56px)] py-[clamp(28px,4cqi,48px)] text-[#e4eef5]">
       <div className="mx-auto max-w-[1280px]">
-        <div className="rounded-[28px] border border-[#d5ebe4] bg-surface px-[clamp(20px,3cqi,40px)] py-[clamp(28px,4cqi,40px)] shadow-[0_24px_50px_-36px_rgba(12,80,68,0.45)]">
-          <div className="flex flex-col items-start justify-between gap-6 border-b border-line pb-8 lg:flex-row lg:items-end">
+        <div>
+          <div className="flex flex-col items-start justify-between gap-6 border-b border-[#2a4a66] pb-8 lg:flex-row lg:items-end">
             <div className="max-w-[560px]">
-              <Wordmark href={localePath(locale, '/')} size={30} />
-              <p className="m-0 mt-4 text-[16px] leading-[1.6] text-ink-2">{settings.footer.blurb}</p>
+              <Wordmark href={localePath(locale, '/')} tone="dark" size={30} />
+              <p className="m-0 mt-4 text-[16px] leading-[1.6] text-[#e4eef5]">{settings.footer.blurb}</p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
               {cta.href && ctaLabel ? (
                 <Link
                   href={localHref(locale, cta.href)}
-                  className="t-colors inline-flex items-center gap-2 rounded-full bg-[#0c7c68] px-6 py-3 text-[15px] font-semibold text-white no-underline hover:bg-[#0a6858]"
+                  className="btn-gradient t-colors inline-flex items-center gap-2 rounded-full px-6 py-3 text-[15px] font-semibold text-white no-underline"
                 >
                   {ctaLabel}
                   <span aria-hidden className="rtl:-scale-x-100">→</span>
@@ -142,7 +141,7 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
                   href={whatsappHref(settings.general.whatsapp)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="t-colors inline-flex items-center rounded-full border border-[#b7ddd4] bg-white px-6 py-3 text-[15px] font-semibold text-[#0c7c68] no-underline hover:border-[#0c7c68]"
+                  className="t-colors inline-flex items-center rounded-full border border-[#2a4a66] px-6 py-3 text-[15px] font-semibold text-[#f4f8fb] no-underline hover:border-[#f4f8fb]"
                 >
                   {label('whatsapp')}
                 </a>
@@ -156,18 +155,18 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
             ))}
           </div>
 
-          <div className="flex flex-col gap-5 border-t border-line pt-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-5 border-t border-[#2a4a66] pt-6 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex min-w-0 flex-col gap-1.5 text-[14px]">
-              <p className="m-0 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0c7c68]">{label('contact')}</p>
+              <p className="m-0 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#9ecae6]">{label('contact')}</p>
               {settings.general.whatsapp && (
-                <a href={whatsappHref(settings.general.whatsapp)} target="_blank" rel="noopener noreferrer" dir="ltr" className="t-colors text-ink no-underline hover:text-[#0c7c68]">
+                <a href={whatsappHref(settings.general.whatsapp)} target="_blank" rel="noopener noreferrer" dir="ltr" className="t-colors text-[#e4eef5] no-underline hover:text-white">
                   WhatsApp {settings.general.whatsapp}
                 </a>
               )}
-              <a href={`mailto:${settings.general.supportEmail}`} className="t-colors break-all text-ink no-underline hover:text-[#0c7c68]">
+              <a href={`mailto:${settings.general.supportEmail}`} className="t-colors break-all text-[#e4eef5] no-underline hover:text-white">
                 {settings.general.supportEmail}
               </a>
-              <p className="m-0 text-[13px] text-muted">{settings.general.officeHours}</p>
+              <p className="m-0 text-[13px] text-[#b7c9d8]">{settings.general.officeHours}</p>
             </div>
             {socials.length > 0 && (
               <ul className="m-0 flex list-none flex-wrap gap-2.5 p-0">
@@ -179,7 +178,7 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
                       rel="noopener noreferrer"
                       aria-label={name}
                       title={name}
-                      className="t-colors grid size-10 place-items-center rounded-full border border-[#b7ddd4] bg-white text-[#0c7c68] hover:bg-[#0c7c68] hover:text-white"
+                      className="t-colors grid size-10 place-items-center rounded-full border border-[#2a4a66] text-[#e4eef5] hover:border-[#f4f8fb] hover:text-white"
                     >
                       <svg viewBox="0 0 24 24" className="size-[18px]" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                         {SOCIAL_ICONS[name] ?? <circle cx="12" cy="12" r="8" />}
@@ -191,7 +190,7 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
             )}
           </div>
 
-          <div className="mt-6 border-t border-line pt-6">
+          <div className="mt-6 border-t border-[#2a4a66] pt-6">
             <FooterSubscribe
               locale={locale}
               labels={{
@@ -213,7 +212,7 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
           bank statement. Payment providers' compliance reviews look for it
           here too.
         */}
-        <div className="flex flex-col gap-1 px-1 pt-6 text-[12.5px] leading-[1.7] text-muted">
+        <div className="flex flex-col gap-1 px-1 pt-6 text-[12.5px] leading-[1.7] text-[#b7c9d8]">
           <p className="m-0">
             {company.legalName} · {company.registrationLabel} {company.registrationNumber} · {company.registeredAddress}
           </p>
@@ -222,7 +221,7 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
             {company.phone && (
               <>
                 {' '}
-                <a href={`tel:${company.phone.replace(/\s/g, '')}`} dir="ltr" className="t-colors text-ink-2 hover:text-[#0c7c68]">
+                <a href={`tel:${company.phone.replace(/\s/g, '')}`} dir="ltr" className="t-colors text-[#e4eef5] hover:text-white">
                   {company.phone}
                 </a>
               </>
@@ -230,7 +229,7 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
             {company.supportEmail && (
               <>
                 {' · '}
-                <a href={`mailto:${company.supportEmail}`} className="t-colors text-ink-2 hover:text-[#0c7c68]">
+                <a href={`mailto:${company.supportEmail}`} className="t-colors text-[#e4eef5] hover:text-white">
                   {company.supportEmail}
                 </a>
               </>
@@ -259,18 +258,18 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
           <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
             {company.parentBrand && (
               <a href={company.website || undefined} target="_blank" rel="noopener noreferrer" className="t-colors opacity-80 hover:opacity-100">
-                <Image src="/smith-adams-group-ink-640.png" alt={`${company.parentBrand} Group`} width={640} height={136} className="h-auto w-[140px]" />
+                <Image src="/smith-adams-group-light-320.png" alt={`${company.parentBrand} Group`} width={320} height={68} className="h-auto w-[140px]" />
               </a>
             )}
-            <p className="m-0 text-[13px] text-muted">{t.footerLegal}</p>
+            <p className="m-0 text-[13px] text-[#b7c9d8]">{t.footerLegal}</p>
           </div>
           <nav aria-label="Legal" className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[13px]">
             {legal.map((item) => (
-              <Link key={item.href} href={item.href} className="t-colors text-ink-2 no-underline hover:text-[#0c7c68]">
+              <Link key={item.href} href={item.href} className="t-colors text-[#e4eef5] no-underline hover:text-white">
                 {item.label}
               </Link>
             ))}
-            {settings.general.tagline ? <span className="text-muted">{settings.general.tagline}</span> : null}
+            {settings.general.tagline ? <span className="text-[#b7c9d8]">{settings.general.tagline}</span> : null}
           </nav>
         </div>
       </div>

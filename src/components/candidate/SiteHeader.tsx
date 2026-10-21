@@ -48,25 +48,25 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
         </div>
       ) : null}
 
-      <header className="shop-header sticky top-0 z-40 bg-paper/90 px-[clamp(12px,4cqi,56px)] py-[12px] text-ink backdrop-blur-md sm:py-[14px]">
+      <header className="shop-header sticky top-0 z-40 bg-[#16324f] px-[clamp(12px,4cqi,56px)] py-[12px] text-[#f4f8fb] backdrop-blur-md sm:py-[14px] [&_.text-ink]:text-[#f4f8fb] [&_.text-ink-2]:text-[#e4eef5]">
         {/* Nothing in the bar may wrap: a two-line "Visa & relocation" doubles
             the header height. The full menu appears only from xl, where six
             links, the toggles and the button fit on one line; below that the
             menu button carries them. */}
         <div className="mx-auto flex w-full max-w-[1280px] items-center justify-between gap-3 whitespace-nowrap sm:gap-6">
-          <Wordmark href={localePath(locale, '/')} size={22} />
+          <Wordmark href={localePath(locale, '/')} tone="dark" size={22} />
 
           <MarketNav
             items={navigation.items.map((item) => ({ href: localHref(locale, item.href), label: navLabel(item, locale) }))}
             className={`hidden min-w-0 items-center gap-[clamp(12px,1.3vw,20px)] text-[14.5px] font-medium ${wide}`}
-            linkClassName="t-colors no-underline hover:text-ink"
+            linkClassName="t-colors no-underline hover:text-white"
           />
 
           <div className="flex shrink-0 items-center gap-3 [&>*]:shrink-0">
             <a
               href={`tel:${general.supportPhone.replace(/\s/g, '')}`}
               dir="ltr"
-              className="t-colors hidden whitespace-nowrap font-mono text-[13px] tabular-nums text-ink-2 no-underline hover:text-accent 2xl:inline"
+              className="t-colors hidden whitespace-nowrap font-mono text-[13px] tabular-nums text-dark-muted-2 no-underline hover:text-white 2xl:inline"
             >
               {general.supportPhone}
             </a>
@@ -94,7 +94,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
                   <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
                 </svg>
               </summary>
-              <div className="absolute end-0 top-12 w-[min(86vw,320px)] rounded-[20px] border border-line bg-surface p-3 shadow-[0_24px_60px_-24px_rgba(27,26,23,0.4)]">
+              <div className="absolute end-0 top-12 w-[min(86vw,320px)] rounded-[20px] border border-[#d5e2ee] bg-[#eef4fa] p-3 text-[#16324f] shadow-[0_24px_60px_-24px_rgba(22,50,79,0.4)] [&_.text-ink]:!text-[#16324f] [&_.text-ink-2]:!text-[#3d5168]">
                 <nav aria-label="Mobile" className="flex flex-col">
                   {navigation.items.map((item) => (
                     <Link

@@ -31,9 +31,9 @@ export function FooterSubscribe({ locale, labels }: { locale: Locale; labels: La
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="m-0 text-[15px] font-semibold text-ink">{labels.title}</p>
+      <p className="m-0 text-[15px] font-semibold text-[#f4f8fb]">{labels.title}</p>
       {state === 'done' ? (
-        <p role="status" className="m-0 text-[14px] text-ink">
+        <p role="status" className="m-0 text-[14px] text-[#f4f8fb]">
           {labels.done}
         </p>
       ) : (
@@ -51,24 +51,24 @@ export function FooterSubscribe({ locale, labels }: { locale: Locale; labels: La
             inputMode="email"
             dir="ltr"
             placeholder={labels.placeholder}
-            className="min-w-0 flex-1 rounded-full border border-line bg-white px-5 py-3 text-[14px] text-ink placeholder:text-muted focus:border-[#0c7c68] focus:outline-none"
+            className="min-w-0 flex-1 rounded-full border border-[#2a4a66] bg-white/10 px-5 py-3 text-[14px] text-[#f4f8fb] placeholder:text-[#b7c9d8] focus:border-[#9ecae6] focus:outline-none"
           />
           <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
           <button
             type="submit"
             disabled={state === 'sending'}
-            className="t-colors rounded-full bg-[#0c7c68] px-6 py-3 text-[14px] font-semibold text-white hover:bg-[#0a6858] disabled:opacity-60"
+            className="btn-gradient t-colors rounded-full px-6 py-3 text-[14px] font-semibold text-white disabled:opacity-60"
           >
             {labels.button}
           </button>
         </form>
       )}
       {state === 'error' ? (
-        <p role="alert" className="m-0 text-[12.5px] text-ink">
+        <p role="alert" className="m-0 text-[12.5px] text-[#f4f8fb]">
           {labels.error}
         </p>
       ) : null}
-      <p className="m-0 text-[12.5px] leading-[1.6] text-muted">{labels.note}</p>
+      <p className="m-0 text-[12.5px] leading-[1.6] text-[#b7c9d8]">{labels.note}</p>
     </div>
   );
 }

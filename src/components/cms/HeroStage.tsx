@@ -113,7 +113,7 @@ export function HeroStage({ slides, children }: { slides: HeroSlide[]; children:
                       role="tab"
                       aria-selected={slideIndex === index}
                       aria-label={slide.caption || `Slide ${slideIndex + 1}`}
-                      className={`h-1.5 rounded-full transition-all duration-300 ${slideIndex === index ? 'w-8 bg-[linear-gradient(90deg,#d4532c,#e8a23a,#0f8f78)]' : 'w-2.5 bg-line-strong'}`}
+                      className={`h-1.5 rounded-full transition-all duration-300 ${slideIndex === index ? 'w-8 bg-[linear-gradient(90deg,#16324f,#3c8fd4,#7eb6e8)]' : 'w-2.5 bg-line-strong'}`}
                       onClick={() => setIndex(slideIndex)}
                     />
                   ))}

@@ -233,21 +233,20 @@ export function SplitBlock({ data, locale }: Props) {
   );
 }
 
-/* The closer stays on the pale field. An orange button on a dark band
-   disappeared into it, which is the same problem as the old footer. */
+/* A transparent blue closer, the same family as the header and the footer. */
 export function CtaBlock({ data, locale }: Props) {
   const primary = link(data, 'primary');
   const secondary = link(data, 'secondary');
   return (
     <section className="px-[clamp(20px,4cqi,56px)] pt-[clamp(24px,4cqi,48px)]">
-      <div className="mx-auto w-full max-w-[1200px] rounded-[28px] border border-[#d5ebe4] bg-[#f4fbf8] px-[clamp(24px,5cqi,56px)] py-[clamp(32px,5cqi,56px)]">
+      <div className="mx-auto w-full max-w-[1200px] rounded-[28px] border border-line bg-[rgba(22,50,79,0.08)] px-[clamp(24px,5cqi,56px)] py-[clamp(32px,5cqi,56px)]">
         <div className="flex flex-wrap items-end justify-between gap-8">
           <div className="max-w-[640px]">
             <h2 className="m-0 text-balance text-[clamp(28px,3.8cqi,46px)] font-semibold leading-[1.06] tracking-[-0.03em] text-ink">{str(data, 'title')}</h2>
             {str(data, 'body') ? <p className="m-0 mt-4 text-[17px] leading-[1.6] text-ink-2">{str(data, 'body')}</p> : null}
           </div>
           <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
-            {primary && <CmsButton href={primary.href} label={primary.label} locale={locale} variant="teal" size="lg" />}
+            {primary && <CmsButton href={primary.href} label={primary.label} locale={locale} variant="primary" size="lg" />}
             {secondary && <CmsTextLink href={secondary.href} label={secondary.label} locale={locale} />}
           </div>
         </div>
