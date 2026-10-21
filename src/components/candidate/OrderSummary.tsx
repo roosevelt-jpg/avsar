@@ -1,31 +1,36 @@
 import { Mono } from '@/components/ui/Mono';
-import { formatMoney, priceBreakdown, type CompanySettings, type PricingSettings } from '@/lib/company/config';
-import { fill, type Dictionary } from '@/lib/i18n';
+import { siteText } from '@/lib/cms/localize';
+import type { CompanySettings } from '@/lib/company/config';
+import type { Locale } from '@/lib/i18n';
 
+/**
+ * Signup is free. The first price is on the dashboard, after the rewritten CV
+ * and the score, so this panel names what costs nothing and does not quote a fee.
+ */
 export function OrderSummary({
-  t,
-  pricing,
+  locale,
   company,
   whatsapp,
 }: {
-  t: Dictionary;
-  pricing: PricingSettings;
+  locale: Locale;
   company?: CompanySettings;
   whatsapp?: string;
 }) {
-  const price = priceBreakdown(pricing);
-  const formatPrice = (minor: number) => formatMoney(minor, price.currency);
-  const s = t.signup;
-  const seller = company?.tradingAs || company?.legalName;
+  const t = (english: string) => siteText(locale, english);
   const digits = (whatsapp ?? '').replace(/[^\d]/g, '');
+  const lines = [
+    t('Account, rewritten CV, test and score'),
+    t('Applying, and interviews with us and with the employer'),
+    t('After a successful offer: contract, housing, the flight and legal support'),
+  ];
 
   return (
     <aside className="h-fit w-full rounded-[28px] border border-line bg-surface/80 p-[clamp(20px,2.4cqi,26px)] shadow-[0_24px_60px_-28px_rgba(27,26,23,0.35)] backdrop-blur-md lg:w-[340px] lg:shrink-0">
-      <Mono className="text-muted">{s.summaryTitle}</Mono>
-      <p className="mt-3 mb-4 text-[17px] font-semibold">{s.summaryItem}</p>
+      <Mono className="text-muted">{t('Free to join')}</Mono>
+      <p className="mt-3 mb-4 text-[17px] font-semibold">{t('You do not pay to open an account.')}</p>
 
-      <ul className="m-0 flex list-none flex-col gap-2.5 border-b border-line-soft p-0 pb-5">
-        {s.summaryIncludes.map((line) => (
+      <ul className="m-0 flex list-none flex-col gap-2.5 p-0">
+        {lines.map((line) => (
           <li key={line} className="flex items-start gap-2.5 text-[14px] leading-[1.5] text-ink-2">
             <span
               aria-hidden
@@ -38,50 +43,18 @@ export function OrderSummary({
         ))}
       </ul>
 
-      <dl className="m-0 flex flex-col gap-2.5 py-5 text-[14px]">
-        {/*
-          The net and VAT rows only exist when there is VAT to show. The seller
-          is Portuguese and the supply to a candidate outside the EU is outside
-          the scope of EU VAT, so the rate is 0 and a breakdown would print
-          "VAT: EUR 0" above a net line identical to the total. One honest total
-          beats three rows that invite the question of why one of them is zero.
-        */}
-        {price.vatMinor > 0 && (
-          <>
-            <div className="flex justify-between">
-              <dt className="text-ink-2">{s.summaryEarly}</dt>
-              <dd className="m-0 font-mono">{formatPrice(price.netMinor)}</dd>
-            </div>
-            <div className="flex justify-between">
-              <dt className="text-ink-2">{fill(s.summaryVat, { rate: pricing.vatBasisPoints / 100 })}</dt>
-              <dd className="m-0 font-mono">{formatPrice(price.vatMinor)}</dd>
-            </div>
-          </>
+      <p className="m-0 mt-4 border-t border-line-soft pt-4 text-[12px] leading-[1.5] text-muted">
+        {t(
+          'The only prices are the skills report and the visa-requirements list. You see them after your score, not here. The employer pays the placement fee.',
         )}
-        <div className="mt-1.5 flex justify-between border-t border-line-soft pt-3.5 text-[17px] font-semibold">
-          <dt>{s.summaryTotal}</dt>
-          <dd className="m-0 font-mono">{formatPrice(price.totalMinor)}</dd>
-        </div>
-      </dl>
-
-      <p className="m-0 border-t border-line-soft pt-4 text-[12px] leading-[1.5] text-muted">
-        {s.summaryNote}
       </p>
-      {seller ? (
-        <p className="m-0 mt-3 border-t border-line-soft pt-3 text-[12px] leading-[1.5] text-muted">
-          Paid to {seller}
-          {company?.registeredAddress ? `. ${company.registeredAddress}` : ''}. Receipt by email.
-          Never cash or WhatsApp transfer.
-          {digits ? (
-            <>
-              {' '}
-              Support:{' '}
-              <a href={`https://wa.me/${digits}`} className="prose-link" target="_blank" rel="noreferrer">
-                WhatsApp
-              </a>
-              .
-            </>
-          ) : null}
+      {digits ? (
+        <p className="m-0 mt-3 text-[12px] leading-[1.5] text-muted">
+          {t('Questions')}:{' '}
+          <a href={`https://wa.me/${digits}`} className="prose-link" target="_blank" rel="noreferrer">
+            WhatsApp
+          </a>
+          {company?.phone ? ` · ${company.phone}` : ''}.
         </p>
       ) : null}
     </aside>

@@ -7,11 +7,38 @@ import {
   INDICATIVE_CURRENCIES,
   formatFee,
   formatIndicative,
+  formatProductFee,
   type ChargeCurrency,
 } from '@/lib/company/config';
 import { Field, INPUT, MoneyInput, NumberInput, SaveBar, Section, useSettingsSaver } from './ui';
 
 type Props = Pick<SiteSettings, 'company' | 'pricing' | 'hiring' | 'cohort'> & { provider: string; railCurrencies: readonly string[] };
+
+function PriceCurrencies({
+  label,
+  help,
+  value,
+  onChange,
+}: {
+  label: string;
+  help: string;
+  value: Record<ChargeCurrency, number>;
+  onChange: (next: Record<ChargeCurrency, number>) => void;
+}) {
+  return (
+    <div className="mt-5">
+      <h3 className="m-0 text-[15px] font-semibold">{label}</h3>
+      <p className="m-0 mt-1 text-[13px] text-muted">{help}</p>
+      <div className="mt-3 grid gap-3 sm:grid-cols-3">
+        {CHARGE_CURRENCIES.map((code) => (
+          <Field key={code} label={code}>
+            <MoneyInput currency={code} minor={value[code]} onChange={(minor) => onChange({ ...value, [code]: minor })} />
+          </Field>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 /**
  * Settings › Company & pricing. Super admins only; every save is audited with
@@ -107,8 +134,8 @@ export function CompanyForm(props: Props) {
       </Section>
 
       <Section
-        title="Package price"
-        lead="What a candidate pays for the optional career preparation package. The checkout, the pages and the emails all read this one price."
+        title="Report prices"
+        lead="A candidate pays only for the skills report, the visa-requirements list, or both together. The account, the rewritten CV, the test and the score stay free. Checkout reads these figures; it never trusts a price sent by the browser."
       >
         <div className="grid gap-3 sm:grid-cols-2">
           <Field label="Charge currency" help={`Must match the active payment rail${props.provider ? ` (${props.provider}: ${props.railCurrencies.join(', ')})` : ''}.`}>
@@ -127,16 +154,33 @@ export function CompanyForm(props: Props) {
             The active payment rail cannot charge {pricing.chargeCurrency}. Checkout will refuse payments until the two match.
           </p>
         )}
-        <div className="mt-3 grid gap-3 sm:grid-cols-3">
-          {CHARGE_CURRENCIES.map((code) => (
-            <Field key={code} label={`Price in ${code}`}>
-              <MoneyInput currency={code} minor={pricing.feeMinor[code]} onChange={(minor) => setPricing({ ...pricing, feeMinor: { ...pricing.feeMinor, [code]: minor } })} />
-            </Field>
-          ))}
-        </div>
+        <PriceCurrencies
+          label="Skills report"
+          help="The PDF. The score on the dashboard is free."
+          value={pricing.skillsReportFeeMinor}
+          onChange={(next) => setPricing({ ...pricing, skillsReportFeeMinor: next })}
+        />
+        <PriceCurrencies
+          label="Visa requirements"
+          help="What is missing, document by document. Not a visa decision."
+          value={pricing.visaRequirementsFeeMinor}
+          onChange={(next) => setPricing({ ...pricing, visaRequirementsFeeMinor: next })}
+        />
+        <PriceCurrencies
+          label="Both together"
+          help="Offered at the skills-report step, instead of the two prices added up."
+          value={pricing.bundleFeeMinor}
+          onChange={(next) => setPricing({ ...pricing, bundleFeeMinor: next })}
+        />
+        <PriceCurrencies
+          label="Bought separately"
+          help="The higher figure pages show beside the bundle. Checkout does not charge this on its own."
+          value={pricing.feeMinor}
+          onChange={(next) => setPricing({ ...pricing, feeMinor: next })}
+        />
         <p className="m-0 mt-3 text-[13px] text-ink-2">
-          Candidates will be charged <strong>{formatFee(pricing)}</strong>
-          {pricing.chargeCurrency !== 'INR' ? <> (shown as about {formatIndicative(pricing, 'INR')})</> : null}.
+          Both together: <strong>{formatProductFee(pricing, 'bundle')}</strong>. Bought apart they add up to <strong>{formatFee(pricing)}</strong>
+          {pricing.chargeCurrency !== 'INR' ? <> (about {formatIndicative(pricing, 'INR')} for that higher total)</> : null}.
         </p>
 
         <details className="mt-4">

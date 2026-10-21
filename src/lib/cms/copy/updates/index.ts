@@ -12,6 +12,7 @@ import pa from './pa.json';
 import ta from './ta.json';
 import te from './te.json';
 import ur from './ur.json';
+import { coverageUpdates } from './coverage';
 import { interfaceUpdates } from './interface';
 
 /**
@@ -25,5 +26,8 @@ import { interfaceUpdates } from './interface';
 const pages: Record<Exclude<Locale, 'en'>, Record<string, string>> = { hi, bn, mr, te, ta, ur, gu, kn, or, ml, pa, as, ar };
 
 export const updates = Object.fromEntries(
-  Object.entries(pages).map(([locale, copy]) => [locale, { ...copy, ...interfaceUpdates[locale as Exclude<Locale, 'en'>] }]),
+  Object.entries(pages).map(([locale, copy]) => [
+    locale,
+    { ...copy, ...coverageUpdates[locale as Exclude<Locale, 'en'>], ...interfaceUpdates[locale as Exclude<Locale, 'en'>] },
+  ]),
 ) as Record<Exclude<Locale, 'en'>, Record<string, string>>;

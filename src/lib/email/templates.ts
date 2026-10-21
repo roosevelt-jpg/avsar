@@ -65,8 +65,8 @@ export const EMAIL_META: EmailTemplateMeta[] = [
   { id: 'interview_booked', label: 'Interview booked', audience: 'Candidates', description: 'Sent when a recruiter books an interview and leaves "notify the candidate" on.', placeholders: ['first_name', 'job_title', 'reference', 'when', 'how', 'recruiter_note', 'join_link'] },
   { id: 'job_alerts', label: 'Weekly job alert', audience: 'Candidates', description: 'Weekly list of new jobs for the role a candidate chose. {{jobs}} is the list, one job per paragraph.', placeholders: ['first_name', 'role', 'count', 'jobs_heading', 'jobs'] },
   { id: 'newsletter_jobs', label: 'New jobs by email (footer)', audience: 'Leads', description: 'Weekly digest for people who left their email in the site footer. No role filter. {{jobs}} is the list, one job per paragraph.', placeholders: ['count', 'jobs_heading', 'jobs'] },
-  { id: 'reminder_package', label: 'Reminder: career package', audience: 'Candidates', description: 'Sent to people who finished the free assessment and have not bought the package. {{price}} is the formatted fee.', placeholders: ['first_name', 'price'] },
-  { id: 'payment_received', label: 'Package payment received', audience: 'Candidates', description: 'Receipt after a successful package payment. {{price}} is the formatted fee.', placeholders: ['first_name', 'price'] },
+  { id: 'reminder_package', label: 'Reminder: the two reports', audience: 'Candidates', description: 'Sent to people who finished the free assessment and have not bought both reports. {{price}} is the bundle price.', placeholders: ['first_name', 'price'] },
+  { id: 'payment_received', label: 'Report payment received', audience: 'Candidates', description: 'Receipt after a successful report payment. {{price}} is the amount paid.', placeholders: ['first_name', 'price'] },
   { id: 'legal_review_ready', label: 'Legal review delivered', audience: 'Candidates', description: 'Sent when staff deliver a package buyer’s preliminary legal review.', placeholders: ['first_name'] },
   { id: 'document_reupload', label: 'Document needs re-uploading', audience: 'Candidates', description: 'Sent when staff reject a visa document.', placeholders: ['first_name', 'document', 'reason'] },
   { id: 'lead_reply', label: 'Reply to a contact message', audience: 'Leads', description: 'Wraps a recruiter’s reply from the inbox. {{message}} is what the recruiter typed.', placeholders: ['first_name', 'message'] },
@@ -86,7 +86,7 @@ export const DEFAULT_EMAILS: EmailSettings = {
   welcome_candidate: {
     subject: 'Welcome to {{site_name}}',
     heading: 'Your account is ready',
-    body: 'Hello {{first_name}},\n\nWelcome to {{site_name}}. Your account is open.\n\nNext: finish your profile, take the free skills test, then apply to jobs from your dashboard. Applying and joining our database are free. The career package is optional.\n\nIf you have questions, reply to this email or write to {{support_email}}.',
+    body: 'Hello {{first_name}},\n\nWelcome to {{site_name}}. Your account is open.\n\nNext: finish your profile so we can rewrite your CV, take the free skills test, and read your score. Applying is free. The skills report and the visa-requirements list are optional, and you only see those prices after your score.\n\nIf you have questions, reply to this email or write to {{support_email}}.',
     action: 'Go to my dashboard',
   },
   welcome_employer: {
@@ -138,15 +138,15 @@ export const DEFAULT_EMAILS: EmailSettings = {
     action: 'See all jobs',
   },
   reminder_package: {
-    subject: '{{first_name}}, your career package is still available',
-    heading: 'Your assessment is done',
-    body: 'Hello {{first_name}},\n\nYou finished the free assessment and you are in our candidate database. The optional career package ({{price}}) adds a written report, a CV you can use anywhere, a preliminary legal document check, and career recommendations.\n\nIt does not change your shortlist chances and does not guarantee a job or a visa. You can buy it from your dashboard whenever you like.',
-    action: 'See the package',
+    subject: '{{first_name}}, the two reports are still available',
+    heading: 'Your score is ready',
+    body: 'Hello {{first_name}},\n\nYou finished the free assessment and you are in our candidate database. Your rewritten CV and your score stay free. If you want them, the skills report and the visa-requirements list together are {{price}}.\n\nBuying either does not change your shortlist chances and does not guarantee a job or a visa. You can buy from your dashboard whenever you like.',
+    action: 'See the two prices',
   },
   payment_received: {
-    subject: 'Payment received: career package',
+    subject: 'Payment received',
     heading: 'Thank you for your payment',
-    body: 'Hello {{first_name}},\n\nWe received {{price}} for the Professional Assessment and Career Preparation Package. Your report, CV tools and preliminary legal review are available on your dashboard.\n\nKeep this email as your receipt. If anything looks wrong, reply to this message.',
+    body: 'Hello {{first_name}},\n\nWe received {{price}}. The document you bought is on your dashboard.\n\nKeep this email as your receipt. If anything looks wrong, reply to this message.',
     action: 'Open my dashboard',
   },
   legal_review_ready: {

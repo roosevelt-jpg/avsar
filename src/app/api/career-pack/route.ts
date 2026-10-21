@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getSessionCandidate, hasPaid } from '@/lib/auth';
+import { getSessionCandidate } from '@/lib/auth';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { isAiConfigured } from '@/lib/cv/client';
 import { generateCareerPack, unsupportedBullets, withoutUnsupported } from '@/lib/cv/coach';
@@ -16,19 +16,15 @@ const MAX_GENERATIONS = 3;
 /**
  * Builds the candidate's career pack.
  *
- * Triggered by the candidate, once their report exists. Generated on request
- * rather than automatically with the report: not everyone opens it, and a model
- * pass per candidate across a cohort is the largest single cost in the product.
+ * Free, and available once the profile has something to rewrite. The owner's
+ * path puts the rewritten CV before the test and before any price, so a
+ * missing assessment is not a reason to refuse: the model is told there is
+ * no score yet and must not invent one. Generated on request rather than
+ * for every profile, because a model pass is the largest single cost here.
  */
 export async function POST() {
   const candidate = await getSessionCandidate();
   if (!candidate) return NextResponse.json({ error: 'unauthenticated' }, { status: 401 });
-
-  /* Checked before anything else that costs money. Generating a pack is a model
-     pass over the whole profile, and it is one of the things the fee buys. */
-  if (!hasPaid(candidate)) {
-    return NextResponse.json({ error: 'payment_required' }, { status: 402 });
-  }
 
   if (!isAiConfigured()) return NextResponse.json({ error: 'ai_unconfigured' }, { status: 503 });
 
@@ -50,10 +46,6 @@ export async function POST() {
     .select('overall_score, english_cefr, skills_score, experience_score, breakdown')
     .eq('candidate_id', candidate.id)
     .maybeSingle();
-
-  /* The pack reads the assessment result, so it cannot be built before one
-     exists. Saying so is better than producing generic advice. */
-  if (!report) return NextResponse.json({ error: 'report_not_ready' }, { status: 409 });
 
   /* Prefer the parsed CV when there is one; otherwise the profile they typed. */
   const { data: assessment } = await admin
@@ -119,13 +111,16 @@ export async function POST() {
       position: candidate.position ?? '',
       locale: candidate.locale,
       profile,
-      report: {
-        overall: report.overall_score as number,
-        english: report.english_cefr as string,
-        skills: report.skills_score as number,
-        experience: report.experience_score as number,
-        breakdown: (report.breakdown as { label: string; score: number }[]) ?? [],
-      },
+      assessed: Boolean(report),
+      report: report
+        ? {
+            overall: report.overall_score as number,
+            english: report.english_cefr as string,
+            skills: report.skills_score as number,
+            experience: report.experience_score as number,
+            breakdown: (report.breakdown as { label: string; score: number }[]) ?? [],
+          }
+        : { overall: 0, english: '', skills: 0, experience: 0, breakdown: [] },
     });
 
     const flagged = unsupportedBullets(result.pack, profile);

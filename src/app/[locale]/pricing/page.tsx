@@ -8,7 +8,7 @@ import { PackagePaywallCopy } from '@/components/candidate/PackagePaywallCopy';
 import { CandidateStoriesBlock } from '@/components/cms/blocks/Media';
 import { fill, getDictionary, isLocale, localePath } from '@/lib/i18n';
 import { getSiteSettings } from '@/lib/cms/data';
-import { formatFee, formatIndicative, formatMoney } from '@/lib/company/config';
+import { formatFee, formatMoney, formatProductFee } from '@/lib/company/config';
 import { siteText } from '@/lib/cms/localize';
 import { getSessionCandidate } from '@/lib/auth';
 import { getCandidateStatus } from '@/lib/candidate/status';
@@ -37,13 +37,17 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
         : { label: p.startCta, href: localePath(locale, '/signup') };
 
   const shortlistLabel = `${(hiring.shortlistMinScore / 10).toFixed(hiring.shortlistMinScore % 10 === 0 ? 0 : 1)} out of 10`;
+  const skills = formatProductFee(pricing, 'skills_report');
+  const visa = formatProductFee(pricing, 'visa_requirements');
+  const bundle = formatProductFee(pricing, 'bundle');
+  const separate = formatFee(pricing);
 
   const plans = [
     {
       eyebrow: p.candidates,
-      price: formatIndicative(pricing),
-      period: p.candidatesPeriod,
-      note: `${tx(conversion.pricingLead)} ${fill(t.feeIndicative, { charged: formatFee(pricing) })}`,
+      price: bundle,
+      period: tx('both together'),
+      note: `${tx('Skills report')} ${skills}. ${tx('Visa requirements')} ${visa}. ${tx('Bought separately')} ${separate}.`,
       features: conversion.pricingFeatures.map(tx),
       cta: candidateCta,
       dark: true,
@@ -73,10 +77,13 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
 
   const faq = [
     [
-      tx('What is the career package?'),
-      tx(
-        'An optional preparation pack led by a preliminary legal review of your documents for Portugal, then a personal skills and English report, a professionally prepared CV, and career recommendations. It is not needed to join the database or to apply, it gives no priority, and it does not guarantee an interview, a job or a visa.',
-      ),
+      tx('What can I pay for?'),
+      fill(tx('A skills report PDF ({skills}) and a list of what is missing for the visa ({visa}). Both together are {bundle}, instead of {separate}. The account, the rewritten CV, the test, your score and applying are free. Buying either report gives no priority and does not guarantee an interview, a job or a visa.'), {
+        skills,
+        visa,
+        bundle,
+        separate,
+      }),
     ],
     [
       tx('Do I pay a placement fee if I am hired?'),
@@ -85,12 +92,12 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
     [
       tx('When do I pay?'),
       tx(
-        'Only after you finish the free assessment, if you choose the package. Applying and joining the database stay free either way.',
+        'Only if you choose to, after you have read your rewritten CV and seen your score. You pay on this website for the skills report, the visa-requirements list, or both together.',
       ),
     ],
     [
       tx('Can I get a refund?'),
-      tx('Yes, in full within 14 days if you have not yet downloaded anything from the package. See the refund policy.'),
+      tx('Yes. Within 14 days you can have back the amount you paid, if you have not downloaded that paid document. Downloading the free CV does not affect the refund.'),
     ],
   ] as const;
 
@@ -155,7 +162,7 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
         </ul>
 
         <section className="mt-10 rounded-[24px] border border-line bg-surface p-[clamp(20px,3cqi,32px)]">
-          <h2 className="m-0 text-[20px] font-semibold tracking-[-0.02em]">{tx('What the package includes')}</h2>
+          <h2 className="m-0 text-[20px] font-semibold tracking-[-0.02em]">{tx('What the two reports include')}</h2>
           <PackagePaywallCopy
             locale={locale}
             conversion={conversion}

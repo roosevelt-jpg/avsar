@@ -1,4 +1,3 @@
-import { headers } from 'next/headers';
 import { privateMetadata } from '@/lib/seo';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -22,13 +21,13 @@ import { OfferScroll } from '@/components/candidate/OfferScroll';
 import { FamilyLinks } from '@/components/relocation/FamilyLinks';
 import { availablePaymentMethods, getPaymentProvider } from '@/lib/payments';
 import { getSiteSettings } from '@/lib/cms/data';
-import { formatFee } from '@/lib/company/config';
+import { formatFee, formatProductFee } from '@/lib/company/config';
 import { getCandidateStatus, type CandidateStatus } from '@/lib/candidate/status';
 import { CareerPack } from '@/components/candidate/CareerPack';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import type { CareerPack as Pack } from '@/lib/cv/coach-schema';
 import { fill, getDictionary, isLocale, localePath } from '@/lib/i18n';
-import { canReceiveReport, requireCandidate } from '@/lib/auth';
+import { requireCandidate } from '@/lib/auth';
 import { getServerSupabase } from '@/lib/supabase/server';
 import { sectorLabel, SECTOR_SLUGS, type SectorSlug } from '@/lib/data/sectors';
 import { englishBand, skillBand } from '@/lib/report/bands';
@@ -77,7 +76,12 @@ export default async function DashboardPage({
   let pack: Pack | null = null;
   let whatsappOptIn = false;
   const settings = await getSiteSettings();
-  const fee = formatFee(settings.pricing);
+  const prices = {
+    skills: formatProductFee(settings.pricing, 'skills_report'),
+    visa: formatProductFee(settings.pricing, 'visa_requirements'),
+    bundle: formatProductFee(settings.pricing, 'bundle'),
+    separate: formatFee(settings.pricing),
+  };
 
   const candidate = await requireCandidate(locale, localePath(locale, '/dashboard'));
   const candidateId = candidate.id;
@@ -220,7 +224,7 @@ export default async function DashboardPage({
 
         {status.awaitingPayment && showOffer ? (
           <div className="mb-6">
-            <PackageOfferBanner locale={locale} conversion={settings.conversion} fee={fee} />
+            <PackageOfferBanner locale={locale} conversion={settings.conversion} fee={prices.bundle} />
           </div>
         ) : null}
 
@@ -232,7 +236,8 @@ export default async function DashboardPage({
             overall={r.overall}
             breakdown={r.breakdown}
             shortlistMin={settings.hiring.shortlistMinScore}
-            price={fee}
+            price={prices.skills}
+            bundle={prices.bundle}
           />
         ) : null}
 
@@ -247,7 +252,7 @@ export default async function DashboardPage({
           locale={locale}
           status={status}
           firstName={firstName}
-          fee={fee}
+          prices={prices}
           shortlistMin={settings.hiring.shortlistMinScore}
           nextInterview={
             nextInterview
@@ -268,8 +273,8 @@ export default async function DashboardPage({
             <UnlockReport
               t={t}
               locale={locale}
-              price={fee}
-              pricing={settings.pricing}
+              prices={prices}
+              owns={{ skills: status.ownsSkills, visa: status.ownsVisa }}
               conversion={settings.conversion}
               hiring={settings.hiring}
               company={settings.company}
@@ -278,7 +283,6 @@ export default async function DashboardPage({
               preferUpi={paymentCancelled}
               methods={availablePaymentMethods()}
               provider={getPaymentProvider().name}
-              country={(await headers()).get('x-vercel-ip-country')}
               providerMode={(() => {
                 const name = getPaymentProvider().name;
                 if (name === 'eximpe') return process.env.EXIMPE_ENV === 'production' ? 'production' : 'sandbox';
@@ -390,7 +394,7 @@ export default async function DashboardPage({
                 </h2>
               </div>
               <div className="flex flex-wrap gap-2">
-                {canReceiveReport(candidate) ? (
+                {status.ownsSkills && candidate.emailConfirmed ? (
                   <Link
                     href={localePath(locale, '/dashboard/report.pdf')}
                     className="t-colors rounded-full border border-line-strong bg-surface px-4 py-2.5 text-[14px] no-underline hover:border-ink"
@@ -470,9 +474,13 @@ export default async function DashboardPage({
           </section>
         </div>
 
-        {(status.paid || pack) && (
-          <div className="mt-12">
-            <CareerPack pack={pack} canGenerate={status.paid && status.reportReady} locale={locale} />
+        {(status.profileComplete || status.cvUploaded || pack) && (
+          <div id="cv" className="mt-12 scroll-mt-24">
+            <CareerPack
+              pack={pack}
+              canGenerate={status.profileComplete || status.cvUploaded || status.reportReady}
+              locale={locale}
+            />
           </div>
         )}
 
@@ -491,7 +499,7 @@ export default async function DashboardPage({
           </div>
         ) : null}
 
-        {(legalReview || status.paid) && (
+        {(legalReview || status.ownsVisa) && (
           <section className="mt-12 border-t border-line pt-10">
             <div className="flex flex-wrap items-end justify-between gap-3">
               <h2 className="m-0 text-[22px] font-semibold tracking-[-0.02em]">Preliminary legal review</h2>

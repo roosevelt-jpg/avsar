@@ -47,11 +47,11 @@ export const FAQ: DefaultPage = {
         title: 'Fees and payments',
         intro: '',
         items: [
-          { question: 'Is applying free?', answer: 'Yes, always. So are the skills test and joining our recruitment database.' },
+          { question: 'Is applying free?', answer: 'Yes, always. So are the rewritten CV, the skills test, your score and joining our recruitment database.' },
           { question: 'Do I pay a placement fee if I am hired?', answer: 'No. The employer pays our fee. If anyone asks you to pay for a job offer, a visa "slot" or "processing", it is not us. [Report it](/stay-safe).' },
-          { question: 'What is the career package?', answer: 'The optional Professional Assessment and Career Preparation Package costs {{fee_inr}}. It starts with a preliminary legal review of your documents for Portugal by our legal team, then a personal skills and English report, a professionally prepared CV you can use anywhere, and individual career recommendations. Every buyer gets all four. It is not needed to join the database or to apply, it gives no priority, and it does not guarantee an interview, a job or a visa.' },
+          { question: 'What can I pay for?', answer: 'Two documents, and only if you want them. The skills report PDF is {{skills_fee}}. The visa-requirements list, document by document, is {{visa_fee}}. Both together are {{bundle_fee}} instead of {{fee_inr}}. The account, the rewritten CV, the test, the score and applying are free. Buying either does not change the shortlist, and neither is a job or a visa.' },
           { question: 'How can I pay?', answer: 'On this website only, with a receipt by email. When UPI is available (EximPe or another Indian rail), you can pay by UPI, RuPay or net banking. Card is also offered. Never cash, never WhatsApp, never an agent. If you only see card and it is declined, turn on international online payments in your bank app and try again.' },
-          { question: 'Can I get a refund?', answer: 'Yes, in full within 14 days if you have not yet downloaded anything from the package. See the [refund policy](/refund-policy).' },
+          { question: 'Can I get a refund?', answer: 'Yes, in full within 14 days if you have not yet downloaded the document you paid for. Downloading the free CV does not affect the refund. See the [refund policy](/refund-policy).' },
           { question: 'Who pays for the flight, visa and police certificate?', answer: 'We do, once you are selected: your flight, the visa fee, the police clearance certificate, immigration fees and taxes, and legal advice. Before selection, getting a passport is your own cost.' },
         ],
       },
@@ -64,7 +64,7 @@ export const FAQ: DefaultPage = {
         intro: '',
         items: [
           { question: 'What is in the assessment?', answer: 'Questions about the work itself, your experience, and your English, in sections you can pause between. It takes up to 90 minutes in total on your phone, and it is free.' },
-          { question: 'How do I get on the shortlist?', answer: 'Score above {{shortlist_score}} out of 10 in the assessment and meet the essential requirements of the role. Buying the career package plays no part.' },
+          { question: 'How do I get on the shortlist?', answer: 'Score above {{shortlist_score}} out of 10 in the assessment and meet the essential requirements of the role. Buying a report plays no part.' },
           { question: 'Is a job guaranteed?', answer: 'No. Hiring depends on the vacancies open, the interview and the required checks, and visa decisions are made only by the authorities. Historically, about {{shortlist_hired}} of every {{shortlist_size}} shortlisted candidates have been hired. That is out of those shortlisted, not everyone who applies, and past results are not a promise. See the [selection rules](/selection-rules).' },
           { question: 'How are interviews done?', answer: 'On Zoom. We tell you the time in Indian time and how to prepare.' },
           { question: 'How long until I hear back?', answer: 'Within {{response_days}} days of applying you get an answer, yes or no.' },

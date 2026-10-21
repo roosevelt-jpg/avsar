@@ -1,6 +1,6 @@
 import { renderToBuffer } from '@react-pdf/renderer';
 import { CvDocument, type CvData, type CvTemplate } from '@/lib/report/CvDocument';
-import { getSessionCandidate, hasPaid } from '@/lib/auth';
+import { getSessionCandidate } from '@/lib/auth';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { positionLabel } from '@/lib/data/positions';
 import type { CareerPack } from '@/lib/cv/coach-schema';
@@ -27,10 +27,7 @@ export async function GET(request: Request) {
   const candidate = await getSessionCandidate();
   if (!candidate) return new Response('Unauthorized', { status: 401 });
 
-  /* 402 and not 404: they have a CV, and saying so is how they learn there is
-     something to unlock rather than something broken. */
-  if (!hasPaid(candidate)) return new Response('Payment required', { status: 402 });
-
+  /* The rewritten CV is free. It exists once they have asked for it. */
   const admin = getAdminSupabase();
   if (!admin) return new Response('Storage not configured', { status: 503 });
 

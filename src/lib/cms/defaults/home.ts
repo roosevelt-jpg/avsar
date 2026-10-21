@@ -63,7 +63,7 @@ export const HOME: DefaultPage = {
       {
         items: [
           { icon: 'shield', title: 'Verified employers', body: 'Every job is confirmed with the Portuguese employer before it goes live.' },
-          { icon: 'rupee', title: 'Free to apply', body: 'The test and applying are free. The optional career package is paid on this site only. Never cash, never WhatsApp.' },
+          { icon: 'rupee', title: 'Free to apply', body: 'The test, the rewritten CV and applying are free. The only payments are the skills report and the visa-requirements list, on this site only. Never cash, never WhatsApp.' },
           { icon: 'document', title: 'Legal contracts', body: 'A Portuguese employment contract, with salary paid 14 times a year.' },
           { icon: 'plane', title: 'Visa and arrival', body: 'We build your visa file with you and meet you when you land.' },
         ],
@@ -86,11 +86,11 @@ export const HOME: DefaultPage = {
         title: 'From your phone in India to your first day in Portugal',
         intro: 'Six steps, and you always know which one you are on. Your dashboard shows it, and we message you when it moves.',
         items: [
-          { title: 'Create your profile', body: 'Name, phone, email and a password. Two minutes, no documents needed yet.', meta: '2 minutes', image: '/photos/steps/profile.jpg' },
-          { title: 'Take the skills test', body: 'Skills and English questions for your trade, on your phone, in up to 90 minutes. Free. Finishing puts you in our recruitment database, and a score above {{shortlist_score}} out of 10 qualifies you for the shortlist. An optional career package ({{fee_inr}}) starts with a preliminary legal check of your documents, then your full report, a professional CV and career advice.', meta: 'Free', image: '/photos/steps/test.jpg' },
-          { title: 'Apply to jobs', body: 'Pick a job and press apply. Answer two or three short questions about your experience. Your test result goes with your application.', meta: 'Free', image: '/photos/steps/apply.jpg' },
-          { title: 'Talk to us, then the employer', body: 'A recruiter calls you first. Shortlisted candidates interview with the employer on Zoom.', meta: 'Zoom', image: '/photos/steps/interview.jpg' },
-          { title: 'Offer, contract and visa', body: 'You receive the offer letter and contract to read before you sign. Then the independent immigration lawyers we work with prepare your visa file with you, and we pay the visa costs and your flight.', meta: 'We guide you', image: '/photos/steps/visa.jpg' },
+          { title: 'Create your profile', body: 'Name, phone, email and a password. Two minutes. You can come back and change the account and the CV. No documents needed yet.', meta: '2 minutes', image: '/photos/steps/profile.jpg' },
+          { title: 'Fill in your CV and take the test', body: 'We rewrite your CV from what you wrote. Then you sit the skills and English questions, up to 90 minutes, and you see your score. Both are free. A score above {{shortlist_score}} out of 10 qualifies you for the shortlist. The skills report PDF ({{skills_fee}}) and the visa-requirements list ({{visa_fee}}) are the only things you pay for. Both together are {{bundle_fee}} instead of {{fee_inr}}.', meta: 'Free', image: '/photos/steps/test.jpg' },
+          { title: 'Apply to jobs', body: 'Pick a job and press apply. Free. Your score goes with the application. Interviews, on Zoom with our team and then the employer, are free too.', meta: 'Free', image: '/photos/steps/apply.jpg' },
+          { title: 'Talk to us, then the employer', body: 'A recruiter calls you first. Shortlisted candidates interview with the employer on Zoom. Free, and only after that is there an offer to consider.', meta: 'Free', image: '/photos/steps/interview.jpg' },
+          { title: 'After a successful offer', body: 'A contract, housing, the flight and legal support come after a successful offer, not before. We pay the visa costs and your flight. The employer pays the placement fee. You never do.', meta: 'After an offer', image: '/photos/steps/visa.jpg' },
           { title: 'Fly and start work', body: 'Housing and meals are included. We help with your tax number, bank account and registration in the first weeks.', meta: 'Welcome', image: '/photos/steps/arrival.jpg' },
         ],
         layout: 'timeline',
@@ -110,7 +110,7 @@ export const HOME: DefaultPage = {
         eyebrow: 'If you are selected',
         title: 'What a job through us includes',
         body:
-          'Every offer is a real Portuguese employment contract with the same rights as a Portuguese worker: minimum wage or above, paid leave, social security and public healthcare.\n\nWe stay with you after the offer, not just until it.',
+          'Every offer is a real Portuguese employment contract with the same rights as a Portuguese worker: minimum wage or above, paid leave, social security and public healthcare.\n\nWe stay with you after the offer, not just until it.\n\nYou only pay for two documents, and both are separate from the job. The skills report ({{skills_fee}}) and the visa-requirements list ({{visa_fee}}) are {{bundle_fee}} together instead of {{fee_inr}}. The rewritten CV and your score are free. Each paid file carries our mark. The visa list is not a visa decision, and paying does not change the shortlist.',
         bullets: [
           'Employment contract, typically for {{contract_years}} years with renewal',
           'Salary paid 14 times a year, as Portuguese law requires',
@@ -160,7 +160,7 @@ export const HOME: DefaultPage = {
           { icon: 'phone', title: 'Works on any phone', body: 'Light pages that load on mobile data. Apply, upload and track from the same phone.', image: '/illustrations/skills-test.jpg' },
           { icon: 'chat', title: 'A real person on WhatsApp', body: 'Questions answered by our team on {{whatsapp}}, in English or Hindi.', image: '/illustrations/chat.jpg' },
           { icon: 'clock', title: 'Track every step', body: 'Your dashboard shows each application, what stage it is at and what happens next.', image: '/illustrations/track-steps.jpg' },
-          { icon: 'rupee', title: 'Only one optional payment', body: 'The test, the database and applying are free. The optional career package is paid on this website, with a receipt. Nothing else, ever.', link: { label: 'What the package includes', href: '/pricing' }, image: '/illustrations/payment.jpg' },
+          { icon: 'rupee', title: 'You only pay for two reports', body: 'The account, the rewritten CV, the test, the score and applying are free. The skills report ({{skills_fee}}) and the visa-requirements list ({{visa_fee}}) are optional. Both together are {{bundle_fee}} instead of {{fee_inr}}, paid on this website, with a receipt.', link: { label: 'What you can buy', href: '/pricing' }, image: '/illustrations/payment.jpg' },
           { icon: 'globe', title: 'In your language', body: 'The site works in English, Hindi, Malayalam, Tamil, Urdu and the other major languages of India. Switch language from the menu at the top.', image: '/illustrations/language.jpg' },
           { icon: 'check', title: 'Honest odds', body: 'A score above {{shortlist_score}} out of 10 qualifies you for the shortlist. The live figures above show how many people get there and how many are hired.', link: { label: 'How we select', href: '/selection-rules' }, image: '/illustrations/honest-odds.jpg' },
         ],
@@ -184,7 +184,7 @@ export const HOME: DefaultPage = {
         intro: '',
         items: [
           { question: 'Is it free to apply?', answer: 'Yes. Creating a profile and applying to jobs is free. There is no placement fee for candidates: the employer pays us when they hire.' },
-          { question: 'Do I have to pay anything?', answer: 'No. The skills test, the recruitment database and applying are free. The optional career package ({{fee_inr}}) gives you a preliminary legal review of your documents, your full report, a professional CV and career advice. It gives no priority in selection.' },
+          { question: 'Do I have to pay anything?', answer: 'The account, the rewritten CV, the skills test, your score and applying are free. You can buy a skills report PDF ({{skills_fee}}) and a list of what is missing for the visa ({{visa_fee}}). Both together are {{bundle_fee}} instead of {{fee_inr}}. Neither changes the shortlist. The employer pays the placement fee.' },
           { question: 'Do I need to speak Portuguese?', answer: 'No. Most of the jobs we recruit for need basic English. Many employers offer Portuguese lessons once you arrive.' },
           { question: 'How long does it take?', answer: 'You hear back within {{response_days}} days of applying. From offer to arrival usually takes three to six months, mostly waiting for the visa.' },
           { question: 'Someone on WhatsApp asked me for money for a job here. Is that you?', answer: 'No. We never ask for money by WhatsApp, bank transfer or cash. Read [how to stay safe](/stay-safe) and report it to us.' },

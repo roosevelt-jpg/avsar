@@ -33,7 +33,7 @@ export const STAY_SAFE: DefaultPage = {
         tone: 'warning',
         title: 'We will never ask you for money outside this website',
         body:
-          'Not on WhatsApp, not by bank transfer to a personal account, not in cash, and not through an "agent". The only payment we take is the optional career package of {{fee_inr}}, on this website, with a receipt.',
+          'Not on WhatsApp, not by bank transfer to a personal account, not in cash, and not through an "agent". The only payments we take are the skills report ({{skills_fee}}) and the visa-requirements list ({{visa_fee}}), or both together for {{bundle_fee}}, on this website, with a receipt.',
       },
     ],
     [

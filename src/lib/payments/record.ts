@@ -3,7 +3,8 @@ import { emailStaff, notifyStaff } from '@/lib/notifications/staff';
 import { getMailer } from '@/lib/email';
 import { composeEmail } from '@/lib/email/compose';
 import { getSiteSettings } from '@/lib/cms/data';
-import { formatFee } from '@/lib/company/config';
+import { asPaidProduct, formatMoney, productGrants } from '@/lib/company/config';
+import { candidateEntitlements } from '@/lib/payments/entitlements';
 import { localePath } from '@/lib/i18n';
 import { sendWhatsApp } from '@/lib/whatsapp';
 import type { PaymentStatus } from './types';
@@ -33,93 +34,108 @@ export async function recordPayment(input: {
 
   const paid = input.status === 'paid';
 
-  const update: Record<string, unknown> = {
-    provider_payment_id: input.paymentId,
-    status: input.status,
-  };
-  /*
-    Only a success sets the timestamp. A later failed notification for a payment
-    that did succeed must not erase the record of when it did: the previous
-    version set paid_at to null on every non-paid result, so one stray event
-    could undo a real payment.
-  */
-  if (paid) update.paid_at = new Date().toISOString();
-
   /* A late "pending" or "failed" event for an order that has already been
-     paid must leave the paid status alone, not just the timestamp. */
-  let query = supabase.from('payments').update(update).eq('provider_order_id', input.orderId);
-  if (!paid) query = query.neq('status', 'paid');
-  const { error } = await query;
-
-  if (error) console.error('[payments] row update failed', error);
-
-  if (!paid) return;
-
-  const { data: payment } = await supabase
-    .from('payments')
-    .select('candidate_id, receipt_no')
-    .eq('provider_order_id', input.orderId)
-    .maybeSingle();
-
-  if (!payment?.candidate_id) {
-    /* A paid order with no row is money taken for something we cannot deliver. */
-    console.error('[payments] no payment row for confirmed order', input.orderId);
+     paid must leave the paid status alone. A success is handled below, where
+     the transition itself is what decides who sends the receipt. */
+  if (!paid) {
+    const { error } = await supabase
+      .from('payments')
+      .update({ provider_payment_id: input.paymentId, status: input.status })
+      .eq('provider_order_id', input.orderId)
+      .neq('status', 'paid');
+    if (error) console.error('[payments] row update failed', error);
     return;
   }
 
-  /* Filtered on "not yet paid" so only the first of the two callers gets a row
-     back, and staff hear about each payment once rather than twice. */
-  const { data: unlocked, error: unlockError } = await supabase
+  /* The row's own transition is the lock. A skills-only purchase must not
+     flip the candidate to paid, so the old "first candidate update" lock
+     would have swallowed the receipt for that purchase. */
+  const { data: marked, error: markError } = await supabase
+    .from('payments')
+    .update({ provider_payment_id: input.paymentId, status: 'paid', paid_at: new Date().toISOString() })
+    .eq('provider_order_id', input.orderId)
+    .neq('status', 'paid')
+    .select('candidate_id, receipt_no, product, amount_paise');
+
+  if (markError) console.error('[payments] row update failed', markError);
+
+  const payment = marked?.[0];
+  if (!payment?.candidate_id) {
+    if (input.paymentId) {
+      await supabase.from('payments').update({ provider_payment_id: input.paymentId }).eq('provider_order_id', input.orderId);
+    }
+    return;
+  }
+
+  const product = asPaidProduct(payment.product);
+  const grants = productGrants(product);
+  const owns = await candidateEntitlements(String(payment.candidate_id), 'unpaid');
+  if (owns.skills && owns.visa) {
+    const { error: unlockError } = await supabase
+      .from('candidates')
+      .update({ payment_status: 'paid' })
+      .eq('id', payment.candidate_id)
+      .neq('payment_status', 'paid');
+    if (unlockError) console.error('[payments] candidate unlock failed', unlockError);
+  }
+
+  const { data: buyer } = await supabase
     .from('candidates')
-    .update({ payment_status: 'paid' })
+    .select('id, full_name, email, locale')
     .eq('id', payment.candidate_id)
-    .neq('payment_status', 'paid')
-    .select('id, full_name, email, locale');
+    .maybeSingle();
 
-  if (unlockError) console.error('[payments] candidate unlock failed', unlockError);
+  if (!buyer) return;
 
-  const first = unlocked?.[0];
-  if (first) {
-    const name = String(first.full_name ?? 'A candidate');
-    const firstName = name.split(' ')[0] || name;
-    const receipt = String(payment.receipt_no ?? input.orderId);
+  const name = String(buyer.full_name ?? 'A candidate');
+  const firstName = name.split(' ')[0] || name;
+  const receipt = String(payment.receipt_no ?? input.orderId);
+
+  if (grants.visa) {
     await notifyStaff({
       permission: 'relocation.manage',
       kind: 'payment.received',
-      title: `Package bought: ${name}`,
+      title: `Visa requirements bought: ${name}`,
       body: 'A preliminary legal review is now owed.',
       href: '/admin/legal-reviews',
     });
     await emailStaff({
-      subject: `Payment received: ${name}`,
-      line: `${name} bought the Professional Assessment and Career Preparation Package. Their preliminary legal review is now owed.`,
+      subject: `Visa requirements bought: ${name}`,
+      line: `${name} bought the visa-requirements list. Their preliminary legal review is now owed.`,
       href: '/admin/legal-reviews',
       actionLabel: 'Open legal reviews',
     });
-
-    /* Receipt to the buyer. Only on the first unlock, so a double webhook
-       does not send two receipts. */
-    const to = typeof first.email === 'string' ? first.email : '';
-    if (to) {
-      try {
-        const settings = await getSiteSettings();
-        const origin = process.env.SITE_ORIGIN ?? 'https://recruitment.smithandadams.com';
-        const locale = typeof first.locale === 'string' && first.locale ? first.locale : 'en';
-        const email = await composeEmail(
-          'payment_received',
-          { first_name: firstName, price: formatFee(settings.pricing) },
-          { origin, actionUrl: `${origin}${localePath(locale, '/dashboard')}` },
-        );
-        await getMailer().send({ to, ...email });
-      } catch (error) {
-        console.error('[payments] buyer receipt failed', error);
-      }
-    }
-
-    await sendWhatsApp({
-      candidateId: String(first.id),
-      template: 'payment_received',
-      params: [firstName, receipt],
+  } else {
+    await notifyStaff({
+      permission: 'candidates.view',
+      kind: 'payment.received',
+      title: `Skills report bought: ${name}`,
+      body: 'They can download the skills report. The visa list is still unpaid.',
+      href: '/admin/applicants',
     });
   }
+
+  const to = typeof buyer.email === 'string' ? buyer.email : '';
+  if (to) {
+    try {
+      const settings = await getSiteSettings();
+      const origin = process.env.SITE_ORIGIN ?? 'https://recruitment.smithandadams.com';
+      const locale = typeof buyer.locale === 'string' && buyer.locale ? buyer.locale : 'en';
+      const paidMinor = typeof payment.amount_paise === 'number' ? payment.amount_paise : 0;
+      const email = await composeEmail(
+        'payment_received',
+        { first_name: firstName, price: formatMoney(paidMinor, settings.pricing.chargeCurrency) },
+        { origin, actionUrl: `${origin}${localePath(locale, '/dashboard')}` },
+      );
+      await getMailer().send({ to, ...email });
+    } catch (error) {
+      console.error('[payments] buyer receipt failed', error);
+    }
+  }
+
+  await sendWhatsApp({
+    candidateId: String(buyer.id),
+    template: 'payment_received',
+    params: [firstName, receipt],
+  });
 }

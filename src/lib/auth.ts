@@ -84,22 +84,22 @@ export async function getSessionCandidate(): Promise<SessionCandidate | null> {
 }
 
 /**
- * Whether the fee has been paid.
+ * Whether this candidate owns both paid documents.
  *
- * The one gate behind everything the assessment produces: the report, the
- * career pack and the CV. Sitting the assessment is free and seeing the score
- * on screen is free; taking the documents away is what is bought.
+ * Set for a bundle, for an old single package, or when the second report is
+ * bought. A skills-only or visa-only purchase leaves this false, so one
+ * document cannot open the other. The rewritten CV and the on-screen score
+ * are not behind it.
  */
 export function hasPaid(candidate: SessionCandidate): boolean {
   return candidate.paymentStatus === 'paid';
 }
 
 /**
- * Everything the report download needs, in one place so the callers agree.
+ * Legacy helper: both documents, and a proved email.
  *
- * Two conditions, for two different reasons. Paid, because the report is the
- * thing the fee buys. Email proved, because the report is delivered to that
- * address and carries their name, score and rank.
+ * New downloads check the specific document in `candidateEntitlements`. This
+ * remains for callers that still mean "the old package is complete".
  */
 export function canReceiveReport(candidate: SessionCandidate): boolean {
   return hasPaid(candidate) && candidate.emailConfirmed;

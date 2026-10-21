@@ -68,7 +68,7 @@ export default async function ApplicationDetail({ params }: { params: Promise<{ 
                 ['Role', app.candidate.position ? positionLabel(app.candidate.position) : '-'],
                 ['Experience', app.candidateExtra.yearsBand != null ? YEARS[app.candidateExtra.yearsBand] : '-'],
                 ['Passport', app.candidateExtra.hasPassport ? 'Yes' : 'Not yet'],
-                ['Career package', app.candidate.paymentStatus === 'paid' ? 'Bought (deliverables owed)' : 'Not bought'],
+                ['Both reports', app.candidate.paymentStatus === 'paid' ? 'Owned' : 'Not both'],
                 ['Visible to employers', app.candidateExtra.visible ? 'Yes' : 'No (hidden by candidate)'],
                 ['WhatsApp updates', app.candidateExtra.whatsappOptIn ? 'Opted in' : 'Not opted in'],
                 [

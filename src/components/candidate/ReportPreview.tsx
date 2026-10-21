@@ -14,12 +14,14 @@ export function ReportPreview({
   breakdown,
   shortlistMin,
   price,
+  bundle,
 }: {
   locale: Locale;
   overall: number;
   breakdown: { label: string; score: number }[];
   shortlistMin: number;
   price: string;
+  bundle: string;
 }) {
   const t = (english: string) => siteText(locale, english);
   const sorted = [...breakdown].filter((a) => a.label).sort((a, b) => b.score - a.score);
@@ -64,21 +66,25 @@ export function ReportPreview({
         </ul>
       ) : null}
 
-      <div className="relative mt-5 overflow-hidden rounded-[14px] border border-line-soft bg-paper p-4">
-        <p className="m-0 select-none text-[14px] leading-[1.6] text-ink-2 blur-[5px]" aria-hidden>
-          {t(
-            'Full written analysis of your English and trade skills, interview tips matched to your answers, and a professionally prepared CV you can use anywhere. Unlock with the optional career package.',
-          )}
+      {strengths[0] ? (
+        <p className="m-0 mt-4 max-w-[62ch] text-[15px] leading-[1.6] text-ink">
+          {t('Strongest field')}: {strengths[0].label}. {t('The skills report leads with this, so an employer reads it first. The PDF is what you pay for. This score is free.')}
         </p>
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-paper via-paper/70 to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 flex justify-center p-4">
-          <a
-            href="#package"
-            className="pointer-events-auto t-colors inline-flex rounded-full bg-ink px-5 py-2.5 text-[14px] font-semibold text-paper no-underline hover:bg-ink-hover"
-          >
-            {t('Unlock full report and legal check')} · {price}
-          </a>
-        </div>
+      ) : null}
+
+      <div className="mt-5 flex flex-wrap gap-2.5">
+        <a
+          href="#package"
+          className="t-colors inline-flex rounded-full bg-ink px-5 py-2.5 text-[14px] font-semibold text-paper no-underline hover:bg-ink-hover"
+        >
+          {t('Skills report')} · {price}
+        </a>
+        <a
+          href="#package"
+          className="t-colors inline-flex rounded-full border border-line-strong bg-surface px-5 py-2.5 text-[14px] font-semibold text-ink no-underline hover:border-ink"
+        >
+          {t('Both reports')} · {bundle}
+        </a>
       </div>
     </section>
   );

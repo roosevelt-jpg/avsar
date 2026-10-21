@@ -54,7 +54,7 @@ export function PackagePaywallCopy({
 
       <p className="m-0 max-w-[62ch] text-[13px] leading-[1.6] text-muted">
         {t(
-          `Optional. Shortlisting depends on your score (above ${shortlistLabel}) and the role’s requirements, not on buying the package, and buying it gives no priority. It does not guarantee an interview, a job offer or a visa: visa decisions are made only by the authorities.`,
+          `Optional. A score above ${shortlistLabel} is what qualifies you for the shortlist. Buying a report does not change that, and it does not guarantee an interview, a job or a visa. Visa decisions are made only by the authorities.`,
         )}
       </p>
 

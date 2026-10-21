@@ -8,7 +8,7 @@ export const FOOTER_LABELS = {
   getStarted: 'Get started',
   createProfile: 'Create a free profile',
   signIn: 'Sign in',
-  pricing: 'Career package and prices',
+  pricing: 'Report prices',
   hire: 'Hire from India',
   helpSafety: 'Help and safety',
   staySafe: 'Stay safe from fraud',
@@ -44,6 +44,6 @@ export const WHATSAPP_LABELS = {
   visaBody: 'Documents, the visa file, and what happens after an offer.',
   visaText: 'Hello, I have a question about the visa and relocation.',
   payTitle: 'Payments',
-  payBody: 'The optional career package. Payment happens on this website only, never in this chat.',
-  payText: 'Hello, I have a question about the career package. I know payment is only on the website.',
+  payBody: 'The skills report and the visa-requirements list. Payment happens on this website only, never in this chat.',
+  payText: 'Hello, I have a question about the two reports. I know payment is only on the website.',
 } as const;

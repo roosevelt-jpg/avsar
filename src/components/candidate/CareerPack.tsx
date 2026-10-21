@@ -10,9 +10,9 @@ import { CV_TEMPLATES, type CvTemplate } from '@/lib/report/CvDocument';
 /**
  * The career pack, shown to the candidate.
  *
- * This is the part of the fee they keep. It has to read as a document they
- * own rather than as a feature of our platform, because that is what it is:
- * useful to them with any employer, whether or not we ever place them.
+ * Free, and written before any price. It has to read as a document they own
+ * rather than as a feature of our platform: useful with any employer, whether
+ * or not we ever place them.
  */
 export function CareerPack({
   pack,
@@ -42,8 +42,8 @@ export function CareerPack({
     } catch (error) {
       setState('error');
       setMessage(
-        error instanceof Error && error.message === 'report_not_ready'
-          ? 'Your report is not ready yet. This becomes available with it.'
+        error instanceof Error && error.message === 'profile_empty'
+          ? 'Add a job or a skill to your profile first, then we can rewrite the CV.'
           : 'We could not build it just now. Please try again in a moment.',
       );
     }
@@ -52,7 +52,7 @@ export function CareerPack({
   if (!pack) {
     return (
       <section className="rounded-[20px] border border-line bg-surface p-[clamp(22px,2.8cqi,32px)]">
-        <Mono className="text-muted">INCLUDED WITH YOUR ASSESSMENT</Mono>
+        <Mono className="text-muted">FREE</Mono>
         <h2 className="mt-3 mb-3 text-[clamp(21px,2.6cqi,28px)] font-semibold leading-[1.2]">
           Your career pack
         </h2>

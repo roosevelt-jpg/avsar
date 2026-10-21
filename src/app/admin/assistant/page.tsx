@@ -27,8 +27,8 @@ export default async function AssistantNotesPage() {
   return (
     <AdminShell current="/admin/assistant" isStaff>
       <AdminHeading
-        title="Assistant notes"
-        lead="Write what the assistant may say, in the words you would use with a candidate. It answers on the website and on WhatsApp from these public notes and from Site settings. If a question is not covered, it says so. It does not decide a visa, promise a job, or take a payment. Staff-only notes are for the legal review draft and are not shown to visitors."
+        title="Assistant brain"
+        lead="Upload Markdown, or type a note, in the words you would use with a candidate. The website and WhatsApp answer from these public notes, the published FAQ, and Site settings. A question that matches none of them is refused. If the model is unavailable, a matching sentence is quoted instead of guessed. Staff-only notes are for the legal review draft and are not shown to visitors."
       />
       <AssistantNotes notes={notes} />
     </AdminShell>

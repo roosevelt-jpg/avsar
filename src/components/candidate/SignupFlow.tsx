@@ -21,14 +21,11 @@ export function SignupFlow({
   initialPosition,
   /** Set when the browser has come back from Checkout with a confirmed payment. */
   confirmedReceipt,
-  entity,
 }: {
   locale: Locale;
   t: Dictionary;
   initialPosition: PositionSlug;
   confirmedReceipt?: string;
-  /** From Settings › Company & pricing: the names a candidate sees on their statement. */
-  entity: { statementDescriptor: string; tradingAs: string; legalName: string };
 }) {
   const router = useRouter();
   const s = t.signup;
@@ -424,25 +421,9 @@ export function SignupFlow({
           </div>
 
           {/*
-            The disclosure, at the end of signup rather than at a checkout.
-
-            The fee moved to the end of the flow, so a checkout no longer
-            stands between a candidate and ninety minutes of answering. Left
-            where it was, the odds and the placement fee would reach someone
-            only after the work was done, which is the wrong order in which
-            to learn what you are in for.
+            The account is free. The statement name belongs on the pay screen,
+            after the score, where CheckoutTrust already prints it.
           */}
-          {/*
-            The registered company is not the name on the door. Someone who
-            pays S&A Recruitment and then sees an unfamiliar company debit
-            their account reports it as fraud, and a UPI dispute cannot be
-            contested: the money leaves immediately. Cheaper to say it here.
-          */}
-          <p className="m-0 text-[13px] leading-[1.55] text-muted">
-            The charge appears as{' '}
-            <span className="font-mono text-[12px] text-ink-2">{entity.statementDescriptor}</span>{' '}
-            on your statement. {entity.tradingAs} is a trading name of {entity.legalName}.
-          </p>
 
           {/* Mandatory odds disclosure. The button stays disabled until it is checked. */}
           <label className="mt-2 flex cursor-pointer items-start gap-3 rounded-[12px] border border-line bg-surface-subtle p-4">

@@ -5,7 +5,7 @@ import { getMailer, unsubscribeToken } from '@/lib/email';
 import { reminderStage, renderReminder } from '@/lib/email/reminder';
 import { SECTION_ORDER } from '@/lib/assessment/items';
 import { getSiteSettings } from '@/lib/cms/data';
-import { formatFee } from '@/lib/company/config';
+import { formatProductFee } from '@/lib/company/config';
 import { sendWhatsApp } from '@/lib/whatsapp';
 
 export const runtime = 'nodejs';
@@ -105,7 +105,7 @@ async function run(request: Request) {
   const mailer = getMailer();
   const origin = new URL(request.url).origin;
   const settings = await getSiteSettings();
-  const packagePrice = formatFee(settings.pricing).replace(/[\u2066\u2069]/g, '');
+  const packagePrice = formatProductFee(settings.pricing, 'bundle').replace(/[\u2066\u2069]/g, '');
 
   let sent = 0;
   let skipped = 0;

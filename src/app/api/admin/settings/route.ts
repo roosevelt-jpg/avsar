@@ -82,6 +82,9 @@ const schemas = {
   pricing: z.object({
     chargeCurrency: z.enum(CHARGE_CURRENCIES as [ChargeCurrency, ...ChargeCurrency[]]),
     feeMinor: z.object({ INR: minor, EUR: minor, AED: minor }),
+    skillsReportFeeMinor: z.object({ INR: minor, EUR: minor, AED: minor }),
+    visaRequirementsFeeMinor: z.object({ INR: minor, EUR: minor, AED: minor }),
+    bundleFeeMinor: z.object({ INR: minor, EUR: minor, AED: minor }),
     vatBasisPoints: z.number().int().min(0).max(3_000),
     indicativeRates: z.object(Object.fromEntries(INDICATIVE_CURRENCIES.map((c) => [c, z.number().positive().max(100_000)])) as Record<IndicativeCurrency, z.ZodNumber>),
     employerPlacementFeeMinor: minor,

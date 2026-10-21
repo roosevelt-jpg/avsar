@@ -3,18 +3,18 @@
 import { useState } from 'react';
 import { Mono } from '@/components/ui/Mono';
 import { IDEMPOTENCY_HEADER, useIdempotencyKey } from '@/components/security/useIdempotencyKey';
-import { IndicativePrice } from '@/components/candidate/IndicativePrice';
 import { CheckoutTrust } from '@/components/candidate/CheckoutTrust';
 import { PackagePaywallCopy } from '@/components/candidate/PackagePaywallCopy';
 import { loadEximpe } from '@/lib/payments/eximpe-client';
 import { loadCashfree } from '@/lib/payments/cashfree-client';
 import { openRazorpayCheckout } from '@/lib/payments/razorpay-client';
 import { openPaytmCheckout, parsePaytmClientToken } from '@/lib/payments/paytm-client';
-import type { CompanySettings, HiringSettings, PricingSettings } from '@/lib/company/config';
+import type { CompanySettings, HiringSettings } from '@/lib/company/config';
 import type { ConversionSettings } from '@/lib/cms/settings';
 import { siteText } from '@/lib/cms/localize';
 import { fill, type Dictionary } from '@/lib/i18n';
 import type { Locale } from '@/lib/i18n';
+import type { CheckoutProduct } from '@/lib/company/config';
 import type { PaymentMethodHint, PaymentProvider } from '@/lib/payments/types';
 
 /**
@@ -36,12 +36,11 @@ const METHOD_LABELS: Record<PaymentMethodHint, string> = {
 export function UnlockReport({
   t,
   locale,
-  price,
+  prices,
+  owns,
   methods,
   provider,
   providerMode,
-  country,
-  pricing,
   conversion,
   hiring,
   company,
@@ -51,9 +50,9 @@ export function UnlockReport({
 }: {
   t: Dictionary;
   locale: Locale;
-  /** Formatted, from the server, so it matches every other place it appears. */
-  price: string;
-  pricing: PricingSettings;
+  /** Formatted on the server. The browser never decides an amount. */
+  prices: { skills: string; visa: string; bundle: string; separate: string };
+  owns: { skills: boolean; visa: boolean };
   conversion: ConversionSettings;
   hiring: HiringSettings;
   company: CompanySettings;
@@ -64,8 +63,6 @@ export function UnlockReport({
   methods: PaymentMethodHint[];
   provider: PaymentProvider['name'];
   providerMode: 'sandbox' | 'production';
-  /** From `x-vercel-ip-country`, read on the server. Display only. */
-  country?: string | null;
 }) {
   const s = t.status;
   const [method, setMethod] = useState<PaymentMethodHint>(
@@ -74,8 +71,37 @@ export function UnlockReport({
   const digits = whatsapp.replace(/[^\d]/g, '');
   const talkText =
     locale === 'hi'
-      ? 'नमस्ते, मैं मुफ़्त मूल्यांकन पूरा कर चुका/चुकी हूँ और करियर पैकेज खरीदने से पहले बात करना चाहता/चाहती हूँ।'
-      : 'Hello, I finished the free assessment and want to talk before I buy the career package.';
+      ? 'नमस्ते, मैं मुफ़्त मूल्यांकन पूरा कर चुका/चुकी हूँ और रिपोर्ट खरीदने से पहले बात करना चाहता/चाहती हूँ।'
+      : 'Hello, I finished the free assessment and want to talk before I buy a report.';
+  const choices: { id: CheckoutProduct; title: string; price: string; note: string }[] = [
+    !owns.skills && !owns.visa
+      ? {
+          id: 'bundle',
+          title: siteText(locale, 'Both reports'),
+          price: prices.bundle,
+          note: siteText(locale, 'Offered together here, instead of the two prices added up.'),
+        }
+      : null,
+    !owns.skills
+      ? {
+          id: 'skills_report',
+          title: siteText(locale, 'Skills report'),
+          price: prices.skills,
+          note: siteText(locale, 'A PDF that leads with the field you scored highest in, so an employer sees that first.'),
+        }
+      : null,
+    !owns.visa
+      ? {
+          id: 'visa_requirements',
+          title: siteText(locale, 'Visa requirements'),
+          price: prices.visa,
+          note: siteText(locale, 'What is missing for the visa, document by document. Not a visa decision.'),
+        }
+      : null,
+  ].filter((choice): choice is { id: CheckoutProduct; title: string; price: string; note: string } => choice !== null);
+
+  const [product, setProduct] = useState<CheckoutProduct>(choices[0]?.id ?? 'bundle');
+  const selected = choices.find((choice) => choice.id === product) ?? choices[0];
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const idempotency = useIdempotencyKey();
@@ -85,7 +111,7 @@ export function UnlockReport({
     setBusy(true);
     setError('');
     try {
-      const body = JSON.stringify({ method });
+      const body = JSON.stringify({ method, product: selected?.id ?? product });
       const response = await fetch('/api/payments/checkout', {
         method: 'POST',
         headers: { 'content-type': 'application/json', [IDEMPOTENCY_HEADER]: idempotency.current(body) },
@@ -146,7 +172,7 @@ export function UnlockReport({
       }
 
       if (data.redirectUrl) {
-        window.location.href = data.redirectUrl;
+        window.location.assign(data.redirectUrl);
         return;
       }
 
@@ -173,9 +199,42 @@ export function UnlockReport({
         {siteText(locale, s.unlockTitle)}
       </h2>
       <p className="m-0 max-w-[62ch] text-[15px] leading-[1.6] text-ink-2">
-        {fill(s.unlockBody, { price })}
+        {siteText(
+          locale,
+          'You only pay for these documents. The account, the rewritten CV, the test and your score are free. Interviews are free. A contract, housing, the flight and legal support come after a successful offer. The employer pays the placement fee.',
+        )}
       </p>
-      <IndicativePrice t={t} country={country} pricing={pricing} />
+      {!owns.skills && !owns.visa ? (
+        <p className="m-0 mt-2 max-w-[62ch] text-[14px] leading-[1.6] text-ink-2">
+          {siteText(locale, 'Bought separately they add up to')} {prices.separate}.{' '}
+          {siteText(locale, 'Together they are')} {prices.bundle}.
+        </p>
+      ) : null}
+
+      {choices.length > 0 && selected ? (
+        <div role="radiogroup" aria-label={siteText(locale, 'What you are buying')} className="mt-5 flex flex-col gap-2.5">
+          {choices.map((choice) => {
+            const active = choice.id === selected.id;
+            return (
+              <button
+                key={choice.id}
+                type="button"
+                role="radio"
+                aria-checked={active}
+                onClick={() => setProduct(choice.id)}
+                className="t-colors cursor-pointer rounded-[12px] bg-surface px-4 py-3 text-left"
+                style={{ border: active ? '2px solid var(--color-ink)' : '1px solid var(--color-line-strong)' }}
+              >
+                <span className="flex items-baseline justify-between gap-3">
+                  <span className="text-[15px] font-medium">{choice.title}</span>
+                  <span className="font-mono text-[14px]">{choice.price}</span>
+                </span>
+                <span className="mt-1 block text-[13px] leading-[1.5] text-ink-2">{choice.note}</span>
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
 
       <PackagePaywallCopy locale={locale} conversion={conversion} hiring={hiring} shortlistLabel={shortlistLabel} />
 
@@ -205,7 +264,7 @@ export function UnlockReport({
           disabled={busy}
           className="t-colors cursor-pointer rounded-[12px] border-0 bg-ink px-5 py-3 text-[15px] font-medium text-paper hover:bg-ink-hover disabled:opacity-40"
         >
-          {fill(s.unlockCta, { price })}
+          {fill(siteText(locale, 'Pay {price}'), { price: selected?.price ?? '' })}
         </button>
         {digits ? (
           <a

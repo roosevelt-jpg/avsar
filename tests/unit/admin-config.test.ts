@@ -3,7 +3,7 @@ import { canEncrypt, decryptValue, encryptValue } from '@/lib/integrations/crypt
 import { ENVIRONMENT_ONLY, INTEGRATIONS, MANAGED_FIELDS, managedField } from '@/lib/integrations/catalog';
 import { fillTemplate, paragraphsOf, DEFAULT_EMAILS } from '@/lib/email/templates';
 import { DEFAULT_SETTINGS, mergeSettings } from '@/lib/cms/settings';
-import { formatMoney, priceBreakdown, DEFAULT_PRICING, type PricingSettings } from '@/lib/company/config';
+import { formatMoney, priceBreakdown, productFeeMinor, productGrants, DEFAULT_PRICING, type PricingSettings } from '@/lib/company/config';
 
 const MASTER = 'a-test-master-key-that-is-long-enough-0123456789';
 
@@ -90,6 +90,8 @@ describe('settings merge', () => {
     const merged = mergeSettings([{ key: 'pricing', value: { feeMinor: { EUR: 3_000 } } }]);
     expect(merged.pricing.feeMinor.EUR).toBe(3_000);
     expect(merged.pricing.feeMinor.INR).toBe(DEFAULT_PRICING.feeMinor.INR);
+    expect(merged.pricing.skillsReportFeeMinor.EUR).toBe(DEFAULT_PRICING.skillsReportFeeMinor.EUR);
+    expect(merged.pricing.bundleFeeMinor.INR).toBe(DEFAULT_PRICING.bundleFeeMinor.INR);
   });
 
   it('ignores unknown keys', () => {
@@ -109,5 +111,15 @@ describe('pricing from settings', () => {
 
   it('formats rupees with the Indian grouping', () => {
     expect(formatMoney(240_000, 'INR')).toContain('₹2,400');
+  });
+
+  it('prices the two reports below the separate total', () => {
+    const pricing = { ...DEFAULT_PRICING, chargeCurrency: 'EUR' as const };
+    expect(productFeeMinor(pricing, 'skills_report')).toBe(1_000);
+    expect(productFeeMinor(pricing, 'visa_requirements')).toBe(1_500);
+    expect(productFeeMinor(pricing, 'bundle')).toBe(2_000);
+    expect(productFeeMinor(pricing, 'bundle')).toBeLessThan(productFeeMinor(pricing, 'package'));
+    expect(productGrants('skills_report')).toEqual({ skills: true, visa: false });
+    expect(productGrants('package')).toEqual({ skills: true, visa: true });
   });
 });

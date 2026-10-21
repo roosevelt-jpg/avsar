@@ -7,7 +7,7 @@ import { localePath } from '@/lib/i18n';
 import { positionLabel } from '@/lib/data/positions';
 import { formatSalary, jobFromRow, type Job } from '@/lib/jobs/types';
 import { getSiteSettings } from '@/lib/cms/data';
-import { formatFee } from '@/lib/company/config';
+import { formatProductFee } from '@/lib/company/config';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -95,7 +95,7 @@ async function run(request: Request) {
   const gapBefore = new Date(Date.now() - MIN_GAP_MS).toISOString();
   const settings = await getSiteSettings();
   const packageSoftLine = settings.conversion.mentionPackageInJobAlerts
-    ? `Optional career package (${formatFee(settings.pricing)}): report, CV, preliminary legal review and recommendations. It does not change shortlist chances.`
+    ? `Optional reports (${formatProductFee(settings.pricing, 'bundle')} for both): a skills report and a visa-requirements list. The CV and the score are free. Buying does not change shortlist chances.`
     : null;
   let sent = 0;
   const alertedEmails = new Set<string>();

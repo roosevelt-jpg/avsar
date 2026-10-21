@@ -8,7 +8,7 @@ import { buildReport } from '@/lib/assessment/report';
 import type { AnswerMap, Weights } from '@/lib/assessment/scoring';
 import { SECTOR_SLUGS, type SectorSlug } from '@/lib/data/sectors';
 import { getSiteSettings } from '@/lib/cms/data';
-import { formatFee } from '@/lib/company/config';
+import { formatProductFee } from '@/lib/company/config';
 import { sendWhatsApp } from '@/lib/whatsapp';
 
 export const runtime = 'nodejs';
@@ -148,7 +148,7 @@ export async function POST(request: Request) {
       await sendWhatsApp({
         candidateId: candidate.id,
         template: 'package_offer',
-        params: [firstName, formatFee(settings.pricing).replace(/[\u2066\u2069]/g, '')],
+        params: [firstName, formatProductFee(settings.pricing, 'bundle').replace(/[\u2066\u2069]/g, '')],
       });
     }
   } catch (error) {

@@ -1,4 +1,5 @@
 import { SECTION_ORDER, type SectionId } from '@/lib/assessment/items';
+import { candidateEntitlements } from '@/lib/payments/entitlements';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 
 /**
@@ -25,7 +26,13 @@ export type CandidateStatus = {
   nextSection: SectionId | null;
   assessmentComplete: boolean;
   reportReady: boolean;
-  /** Finished the assessment and has not paid: the one state the fee is asked in. */
+  /** Rewritten CV exists. It is free, and it comes before the test on the owner's path. */
+  cvRewritten: boolean;
+  /** Skills-report PDF. A legacy package or a bundle sets this with the visa list. */
+  ownsSkills: boolean;
+  /** Visa-requirements list. Staff owe the review only after this is true. */
+  ownsVisa: boolean;
+  /** Finished the assessment and does not yet own both reports. */
   awaitingPayment: boolean;
   steps: { key: string; state: StepState }[];
 };
@@ -36,18 +43,21 @@ export async function getCandidateStatus(
 ): Promise<CandidateStatus> {
   const admin = getAdminSupabase();
 
-  const paid = paymentStatus === 'paid';
   let sectionsDone: SectionId[] = [];
   let reportReady = false;
   let profileComplete = false;
   let cvUploaded = false;
+  let cvRewritten = false;
+
+  const owns = await candidateEntitlements(candidateId, paymentStatus);
 
   if (admin) {
-    const [attempts, report, profile, documents] = await Promise.all([
+    const [attempts, report, profile, documents, pack] = await Promise.all([
       admin.from('assessment_attempts').select('section, submitted_at').eq('candidate_id', candidateId),
       admin.from('reports').select('candidate_id').eq('candidate_id', candidateId).maybeSingle(),
       admin.from('candidate_profiles').select('completed_at').eq('candidate_id', candidateId).maybeSingle(),
       admin.from('cv_documents').select('id').eq('candidate_id', candidateId).limit(1),
+      admin.from('career_packs').select('candidate_id').eq('candidate_id', candidateId).maybeSingle(),
     ]);
 
     const submitted = new Set(
@@ -57,14 +67,17 @@ export async function getCandidateStatus(
     reportReady = Boolean(report.data);
     profileComplete = Boolean(profile.data?.completed_at);
     cvUploaded = (documents.data ?? []).length > 0;
+    cvRewritten = Boolean(pack.data);
   }
 
   const nextSection = SECTION_ORDER.find((section) => !sectionsDone.includes(section)) ?? null;
   const assessmentComplete = nextSection === null;
-
   const profileDone = profileComplete || cvUploaded;
+  const bothReports = owns.skills && owns.visa;
 
-  /* One ordered list, so the dashboard renders state rather than deciding it. */
+  /* One ordered list, so the dashboard renders state rather than deciding it.
+     Payment stays open until both reports are owned. The score is not a step
+     behind that payment. */
   const steps: { key: string; state: StepState }[] = [
     { key: 'registered', state: 'done' },
     { key: 'profile', state: profileDone ? 'done' : 'current' },
@@ -74,14 +87,14 @@ export async function getCandidateStatus(
     },
     {
       key: 'payment',
-      state: paid ? 'done' : assessmentComplete ? 'current' : 'todo',
+      state: bothReports ? 'done' : assessmentComplete ? 'current' : 'todo',
     },
-    { key: 'report', state: paid && reportReady ? 'done' : paid ? 'current' : 'todo' },
+    { key: 'report', state: owns.skills && reportReady ? 'done' : owns.skills ? 'current' : 'todo' },
     { key: 'selection', state: 'todo' },
   ];
 
   return {
-    paid,
+    paid: bothReports,
     profileComplete,
     cvUploaded,
     sectionsDone,
@@ -89,7 +102,10 @@ export async function getCandidateStatus(
     nextSection,
     assessmentComplete,
     reportReady,
-    awaitingPayment: assessmentComplete && !paid,
+    cvRewritten,
+    ownsSkills: owns.skills,
+    ownsVisa: owns.visa,
+    awaitingPayment: assessmentComplete && !bothReports,
     steps,
   };
 }

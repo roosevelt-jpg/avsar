@@ -1,3 +1,5 @@
+import { replyStaysOnSource } from './match';
+
 /**
  * The last check before a visitor sees an answer.
  *
@@ -15,12 +17,19 @@ export const ASSISTANT_OFF =
 const PROMISE = /guaranteed (job|visa|offer)|you will (get|receive) (the |a )?(visa|job|offer)|visa (is |will be )?(approved|granted)/i;
 const MONEY = /(?:₹|rs\.?|inr|eur|€|aed|\$)\s?\d[\d,]*/gi;
 
+export function containsPromise(text: string): boolean {
+  return PROMISE.test(text);
+}
+
 export function guardReply(input: {
   reply: string;
   covered: boolean;
   usedTitles: string[];
   allowedTitles: string[];
   facts: string;
+  /** When set, an English reply that leaves this text is refused. */
+  question?: string;
+  sourceText?: string;
 }): { reply: string; sources: string[] } {
   const allowed = new Set(input.allowedTitles);
   const sources = input.usedTitles.filter((title) => allowed.has(title));
@@ -32,6 +41,13 @@ export function guardReply(input: {
   const mentioned = reply.match(MONEY) ?? [];
   const facts = input.facts.toLowerCase().replace(/\s/g, '');
   if (mentioned.some((amount) => !facts.includes(amount.toLowerCase().replace(/\s/g, '')))) {
+    return { reply: ASSISTANT_FALLBACK, sources: [] };
+  }
+  if (
+    input.question &&
+    input.sourceText &&
+    !replyStaysOnSource(input.question, reply, input.sourceText)
+  ) {
     return { reply: ASSISTANT_FALLBACK, sources: [] };
   }
   return { reply: reply.slice(0, 1200), sources };

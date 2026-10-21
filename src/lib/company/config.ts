@@ -62,7 +62,10 @@ export type CompanySettings = {
 export type PricingSettings = {
   /** Must match the active payment rail; checkout refuses a mismatch rather than charging the wrong currency. */
   chargeCurrency: ChargeCurrency;
-  /** Package price in minor units (paise, cents, fils), per currency. */
+  /**
+   * What the two reports add up to if bought apart, in minor units.
+   * Shown as the higher price next to the bundle. Not charged on its own.
+   */
   feeMinor: Record<ChargeCurrency, number>;
   /** VAT included in the price, in basis points (500 = 5%). The price shown is always the total. */
   vatBasisPoints: number;
@@ -73,7 +76,25 @@ export type PricingSettings = {
   indicativeRates: Record<IndicativeCurrency, number>;
   /** Placement fee charged to the employer, in euro cents. Candidates never pay it. */
   employerPlacementFeeMinor: number;
+  /**
+   * The skills-report PDF. The owner's sheet prices this at €10. The score
+   * itself is free; this buys the document an employer can read.
+   */
+  skillsReportFeeMinor: Record<ChargeCurrency, number>;
+  /** The visa-requirements list, document by document. The sheet prices this at €15. */
+  visaRequirementsFeeMinor: Record<ChargeCurrency, number>;
+  /**
+   * Both reports bought together at the skills-report step. The sheet prices
+   * this at €20, against the separate total in `feeMinor` (€25).
+   */
+  bundleFeeMinor: Record<ChargeCurrency, number>;
 };
+
+/** What a payment unlocks. `package` is a row written before the two reports were split. */
+export type PaidProduct = 'package' | 'bundle' | 'skills_report' | 'visa_requirements';
+
+export const CHECKOUT_PRODUCTS = ['skills_report', 'visa_requirements', 'bundle'] as const;
+export type CheckoutProduct = (typeof CHECKOUT_PRODUCTS)[number];
 
 export type HiringSettings = {
   /** Assessment score out of 100 a candidate must exceed to be shortlisted. */
@@ -153,6 +174,10 @@ export const DEFAULT_PRICING: PricingSettings = {
       ? LEGACY_CURRENCY
       : 'INR',
   feeMinor: { INR: 240_000, EUR: 2_500, AED: 10_500 },
+  /* €10, €15 and €20, with INR and AED at the same rate as the €25 figure above. */
+  skillsReportFeeMinor: { INR: 96_000, EUR: 1_000, AED: 4_200 },
+  visaRequirementsFeeMinor: { INR: 144_000, EUR: 1_500, AED: 6_300 },
+  bundleFeeMinor: { INR: 192_000, EUR: 2_000, AED: 8_400 },
   vatBasisPoints: 0,
   indicativeRates: { INR: 95, PHP: 65, NPR: 152, BDT: 128, PKR: 305, LKR: 345, AED: 4.1, EGP: 54, KES: 148, NGN: 1750, USD: 1.1, GBP: 0.85 },
   employerPlacementFeeMinor: 100_000,
@@ -165,12 +190,13 @@ export const DEFAULT_HIRING: HiringSettings = {
   outcomeVisible: true,
   outcomeBasis:
     'Historical average reported by Smith & Adams for its recruitment programme: about 10 of every 15 shortlisted candidates hired. Past results, not a prediction for any individual. Hiring depends on available vacancies, interview performance and the required checks; visa decisions are made only by the authorities.',
-  responseDays: 15,
+  /* The sheet, and the terms: an answer in 10 working days, yes or no. */
+  responseDays: 10,
   contractYears: 5,
   reportWithinDays: 7,
   legalReviewWithinDays: 10,
   profileMonths: 12,
-  consentVersion: 'v7-2026-10',
+  consentVersion: 'v8-2026-10',
 };
 
 export const DEFAULT_COHORT: CohortSettings = {
@@ -200,8 +226,8 @@ export function feeMinor(pricing: PricingSettings): number {
 }
 
 /** VAT is inside the total, never added at the till. */
-export function priceBreakdown(pricing: PricingSettings) {
-  const totalMinor = feeMinor(pricing);
+export function priceBreakdown(pricing: PricingSettings, product: PaidProduct = 'package') {
+  const totalMinor = productFeeMinor(pricing, product);
   const netMinor = Math.round(totalMinor / (1 + pricing.vatBasisPoints / 10_000));
   return { netMinor, vatMinor: totalMinor - netMinor, totalMinor, currency: pricing.chargeCurrency };
 }
@@ -220,6 +246,35 @@ export function formatMoney(minor: number, currency: ChargeCurrency | 'USD' | 'G
 
 export function formatFee(pricing: PricingSettings): string {
   return formatMoney(feeMinor(pricing), pricing.chargeCurrency);
+}
+
+export function productFeeMinor(pricing: PricingSettings, product: PaidProduct): number {
+  if (product === 'package') return feeMinor(pricing);
+  const map =
+    product === 'skills_report'
+      ? pricing.skillsReportFeeMinor
+      : product === 'visa_requirements'
+        ? pricing.visaRequirementsFeeMinor
+        : pricing.bundleFeeMinor;
+  return Math.max(0, Math.round(map?.[pricing.chargeCurrency] ?? 0));
+}
+
+export function asPaidProduct(value: unknown): PaidProduct {
+  if (value === 'skills_report' || value === 'visa_requirements' || value === 'bundle' || value === 'package') {
+    return value;
+  }
+  return 'package';
+}
+
+export function formatProductFee(pricing: PricingSettings, product: PaidProduct): string {
+  return formatMoney(productFeeMinor(pricing, product), pricing.chargeCurrency);
+}
+
+/** A bundle or an old package unlocks both documents. A single report unlocks one. */
+export function productGrants(product: PaidProduct): { skills: boolean; visa: boolean } {
+  if (product === 'skills_report') return { skills: true, visa: false };
+  if (product === 'visa_requirements') return { skills: false, visa: true };
+  return { skills: true, visa: true };
 }
 
 export const CURRENCY_SYMBOLS: Record<IndicativeCurrency, string> = {

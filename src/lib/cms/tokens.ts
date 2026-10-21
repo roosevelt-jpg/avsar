@@ -1,4 +1,4 @@
-import { formatFee, formatIndicative, formatMoney } from '@/lib/company/config';
+import { formatFee, formatIndicative, formatMoney, formatProductFee } from '@/lib/company/config';
 import type { SiteSettings } from './settings';
 
 /**
@@ -11,8 +11,11 @@ import type { SiteSettings } from './settings';
  */
 
 export const TOKEN_HELP: { token: string; meaning: string }[] = [
-  { token: '{{fee_inr}}', meaning: 'Career package price (in rupees, or the charged currency with rupees as a guide)' },
-  { token: '{{fee}}', meaning: 'Career package price exactly as charged, e.g. AED 105' },
+  { token: '{{fee_inr}}', meaning: 'The two reports bought separately (the higher price)' },
+  { token: '{{fee}}', meaning: 'That separate total, exactly as charged' },
+  { token: '{{skills_fee}}', meaning: 'Skills report PDF price' },
+  { token: '{{visa_fee}}', meaning: 'Visa-requirements list price' },
+  { token: '{{bundle_fee}}', meaning: 'Both reports bought together' },
   { token: '{{employer_fee}}', meaning: 'Placement fee the employer pays, in euros' },
   { token: '{{response_days}}', meaning: 'Working days to an answer' },
   { token: '{{report_days}}', meaning: 'Days to deliver the package report' },
@@ -55,6 +58,9 @@ export function tokenValues(settings: SiteSettings): Record<string, string> {
        checkout will not show. */
     fee_inr: pricing.chargeCurrency === 'INR' ? fee : `${fee} (about ${formatIndicative(pricing, 'INR')})`,
     fee,
+    skills_fee: formatProductFee(pricing, 'skills_report').replace(/[\u2066\u2069]/g, ''),
+    visa_fee: formatProductFee(pricing, 'visa_requirements').replace(/[\u2066\u2069]/g, ''),
+    bundle_fee: formatProductFee(pricing, 'bundle').replace(/[\u2066\u2069]/g, ''),
     employer_fee: formatMoney(pricing.employerPlacementFeeMinor, 'EUR').replace(/[\u2066\u2069]/g, ''),
     response_days: String(hiring.responseDays),
     report_days: String(hiring.reportWithinDays),

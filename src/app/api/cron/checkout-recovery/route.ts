@@ -1,7 +1,7 @@
 import { refreshIntegrations } from '@/lib/integrations/runtime';
 import { NextResponse } from 'next/server';
 import { getSiteSettings } from '@/lib/cms/data';
-import { formatFee } from '@/lib/company/config';
+import { formatProductFee } from '@/lib/company/config';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { sendWhatsApp } from '@/lib/whatsapp';
 
@@ -69,7 +69,7 @@ async function run(request: Request) {
 
   const done = new Set((already ?? []).map((row) => String(row.candidate_id)));
   const settings = await getSiteSettings();
-  const price = formatFee(settings.pricing).replace(/[\u2066\u2069]/g, '');
+  const price = formatProductFee(settings.pricing, 'bundle').replace(/[\u2066\u2069]/g, '');
 
   let sent = 0;
   for (const [id, firstName] of byCandidate) {

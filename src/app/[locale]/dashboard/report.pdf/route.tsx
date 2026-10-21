@@ -1,6 +1,7 @@
 import { renderToBuffer } from '@react-pdf/renderer';
 import { ReportDocument, type ReportData } from '@/lib/report/ReportDocument';
-import { canReceiveReport, getSessionCandidate } from '@/lib/auth';
+import { getSessionCandidate } from '@/lib/auth';
+import { candidateEntitlements } from '@/lib/payments/entitlements';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { sectorLabel, SECTOR_SLUGS, type SectorSlug } from '@/lib/data/sectors';
 import { getSiteSettings } from '@/lib/cms/data';
@@ -38,10 +39,15 @@ export async function GET(request: Request) {
     return new Response('Unauthorized', { status: 401 });
   }
 
-  if (candidate && !canReceiveReport(candidate)) {
+  if (candidate && !candidate.emailConfirmed) {
     /* 403 and not 404: they have a report, and telling them so is how they
        learn to go and click the link in their email. */
     return new Response('Email address not verified', { status: 403 });
+  }
+
+  if (candidate) {
+    const owns = await candidateEntitlements(candidate.id, candidate.paymentStatus);
+    if (!owns.skills) return new Response('Payment required', { status: 402 });
   }
 
   const candidateId = staffOk ? requested : candidate?.id;

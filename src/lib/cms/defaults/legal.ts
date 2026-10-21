@@ -25,7 +25,7 @@ export const TERMS: DefaultPage = {
   purpose: 'The contract with candidates. Payment providers read it during merchant review.',
   seo: {
     title: 'Terms and conditions',
-    description: 'Who you contract with, what the optional career package includes, what it costs, and what we undertake to do.',
+    description: 'Who you contract with, which two reports you can buy, what is free, and what we undertake to do.',
   },
   blocks: makeBlocks('terms', [
     [
@@ -33,7 +33,7 @@ export const TERMS: DefaultPage = {
       {
         title: 'Terms and conditions',
         updated: '',
-        body: `These terms govern your use of this website, the free recruitment database and the optional package sold on it. By registering you accept them.
+        body: `These terms govern your use of this website, the free recruitment database and the two optional reports sold on it. By registering you accept them.
 
 ## Who you are contracting with
 
@@ -41,25 +41,24 @@ ${ENTITY}
 
 ## What is being sold
 
-Registering, joining our recruitment database and sitting the assessment are free. With your consent, your profile is considered for current and future vacancies within the Smith & Adams group and participating partner companies.
+Registering, joining our recruitment database, filling in your CV, sitting the assessment and seeing your score are free. The rewritten CV is free. With your consent, your profile is considered for current and future vacancies within the Smith & Adams group and participating partner companies.
 
-What is sold is the optional Professional Assessment and Career Preparation Package:
+What can be bought, after the assessment and only if you want it:
 
-- a personalised skills and English assessment report: your strengths, current capabilities and areas to improve;
-- a professionally prepared CV, structured so hiring managers can assess your experience quickly, which you can use for any application;
-- a preliminary legal due diligence report: our legal team reviews the documents you provide and identifies the relevant immigration requirements for Portugal, missing documents and issues needing further assessment. It is a preliminary assessment, not an authorisation to work and not a guarantee of visa eligibility or approval;
-- individual career recommendations: practical guidance on improving your profile and preparing for relevant roles and interviews.
+- a skills report PDF ({{skills_fee}}): your strengths, with the field you scored highest in written first. It is not a decision to hire;
+- a visa-requirements list ({{visa_fee}}): our legal team reviews the documents you provide and sets out what a Portuguese work visa needs, document by document, including what is missing. It is a preliminary assessment, not an authorisation to work and not a guarantee of visa eligibility or approval;
+- both together ({{bundle_fee}}), instead of {{fee}} if the two are bought apart.
 
-Every buyer receives these, whether or not they are later shortlisted or hired. The fee is {{fee}}, charged once, and nothing is added at checkout. The seller is {{legal_name}}, a Smith & Adams group company registered in {{jurisdiction}}. Your bank statement will show {{statement_descriptor}}.
+The rewritten CV and the career recommendations are free. They are built only from information you have given us. The seller is {{legal_name}}, a Smith & Adams group company registered in {{jurisdiction}}. Your bank statement will show {{statement_descriptor}}. Nothing is added at checkout.
 
-Buying the package is not required to join the database or to take part in recruitment. It gives no preferential treatment, and it does not buy or guarantee an interview, a job offer, a visa or a placement in Portugal. Selection depends on available vacancies, employer requirements and your suitability.
+Buying either document is not required to join the database or to take part in recruitment. It gives no preferential treatment, and it does not buy or guarantee an interview, a job offer, a visa or a placement in Portugal. Selection depends on available vacancies, employer requirements and your suitability.
 
 ## What we undertake to do
 
-- Deliver the assessment online, at a time you choose.
-- Deliver the preliminary legal review within {{legal_review_days}} working days of a complete document upload (passport or ID and any other documents asked for on your dashboard).
-- Deliver your skills report within {{report_days}} days of payment (often sooner after you complete the assessment).
-- Deliver your CV and career recommendations on request once your report is ready. They are built only from information you have given us; nothing is added that you cannot support.
+- Deliver the assessment online, at a time you choose, and show you the score. The score is free.
+- Deliver the rewritten CV on request, before any payment, built only from information you have given us.
+- Deliver the skills report PDF within {{report_days}} days of payment for that document.
+- Deliver the visa-requirements list within {{legal_review_days}} working days of a complete document upload, once that list has been bought.
 - Give you a decision on your application within {{response_days}} days, either way.
 - Keep your profile in the recruitment database, free of charge, for as long as you choose to remain visible and within the retention period in the privacy policy.
 
@@ -71,19 +70,19 @@ Buying the package is not required to join the database or to take part in recru
 
 ## Fees you will never pay us
 
-The optional package fee is the only amount {{brand}} charges a candidate. Our placement fee is paid by the employer. Nobody is authorised to ask you for money for a job, a visa, or to move your application forward, and any such request should be reported to us at {{report_email}}.
+The skills report and the visa-requirements list are the only amounts {{brand}} charges a candidate. Interviews are free. A contract, housing, the flight and legal support come after a successful offer and are not charged to you. Our placement fee is paid by the employer. Nobody is authorised to ask you for money for a job, a visa, or to move your application forward, and any such request should be reported to us at {{report_email}}.
 
 ## When the fee is due
 
-After the assessment, not before, and only if you want the package. Registering, completing your profile, sitting the assessment and being in the database cost nothing.
+After the assessment, not before, and only if you want one or both reports. Registering, the rewritten CV, the assessment, the score and applying cost nothing.
 
 ## Cancellation and refunds
 
-Set out in full in the [refund policy](/refund-policy), which forms part of these terms. In short: a full refund within 14 days if you have paid and downloaded nothing, and none after you have downloaded the report, the CV or the career recommendations, because at that point the service has been delivered.
+Set out in full in the [refund policy](/refund-policy), which forms part of these terms. In short: a full refund within 14 days if you have paid and have not downloaded the document that payment bought. Downloading the free CV does not use up that refund.
 
 ## Selection
 
-Selection for a placement in Portugal is not guaranteed. Candidates who score above {{shortlist_score}} out of 10 in the assessment and meet the essential requirements of the role qualify for the recruitment shortlist, whether or not they bought the package. Hiring then depends on available vacancies, interviews and the required checks, and visa decisions are made only by the authorities. The [selection rules](/selection-rules) set out the process and our past results.
+Selection for a placement in Portugal is not guaranteed. Candidates who score above {{shortlist_score}} out of 10 in the assessment and meet the essential requirements of the role qualify for the recruitment shortlist, whether or not they bought a report. Hiring then depends on available vacancies, interviews and the required checks, and visa decisions are made only by the authorities. The [selection rules](/selection-rules) set out the process and our past results.
 
 ## Your information
 
@@ -175,15 +174,15 @@ export const REFUND_POLICY: DefaultPage = {
         updated: '',
         body: `## When you pay
 
-Only if you choose to. Registering, the assessment, your place in the recruitment database and applying to jobs are free. The Professional Assessment and Career Preparation Package is optional, gives no priority in selection, and is payable only when you want it.
+Only if you choose to. Registering, the rewritten CV, the assessment, your score, your place in the recruitment database and applying to jobs are free. The skills report ({{skills_fee}}) and the visa-requirements list ({{visa_fee}}) are optional. Both together are {{bundle_fee}}. Neither gives priority in selection.
 
 ## After you pay
 
-The full report, the professionally prepared CV and the career recommendations are available to download the moment the payment clears. The preliminary legal review is prepared by our legal team once you have uploaded your passport or national ID, and appears on your dashboard when it is ready. The package is not refundable once you have downloaded any part of it, but the legal review is still owed to you.
+The skills report PDF is available to download once that payment clears. The visa-requirements list is prepared by our legal team once you have bought it and uploaded your passport or national ID, and appears on your dashboard when it is ready. A payment is not refundable once you have downloaded the document that payment bought. Downloading the free CV does not affect this. A visa-requirements list that has been paid for is still owed to you.
 
 ## If you have paid and not downloaded anything
 
-Write to us within 14 days and the full {{fee}}, including any VAT component, is refunded to the original payment method. Nothing has been delivered, so there is nothing to argue about.
+Write to us within 14 days and the amount you paid, including any VAT component, is refunded to the original payment method. Nothing has been delivered, so there is nothing to argue about.
 
 ## If we cancel a cohort
 
@@ -209,10 +208,10 @@ export const SELECTION_RULES: DefaultPage = {
   slug: 'selection-rules',
   path: '/selection-rules',
   title: 'Selection rules',
-  purpose: 'How candidates are shortlisted and what the optional package does and does not buy. Linked from the consent checkbox.',
+  purpose: 'How candidates are shortlisted and what the two optional reports do and do not buy. Linked from the consent checkbox.',
   seo: {
     title: 'Selection rules',
-    description: 'How the shortlist is decided, what is free, what the optional package buys and does not buy, and our past results.',
+    description: 'How the shortlist is decided, what is free, what the two reports buy and do not buy, and our past results.',
   },
   blocks: makeBlocks('selection-rules', [
     [
@@ -222,19 +221,19 @@ export const SELECTION_RULES: DefaultPage = {
         updated: '',
         body: `## What is free
 
-Registering, sitting the assessment and joining our recruitment database are free. With your consent, your profile is considered for current and future vacancies within the Smith & Adams group and participating partner companies.
+Registering, the rewritten CV, sitting the assessment, seeing your score and joining our recruitment database are free. Interviews are free. With your consent, your profile is considered for current and future vacancies within the Smith & Adams group and participating partner companies.
 
-## What the optional package buys
+## What the two reports buy
 
-The Professional Assessment and Career Preparation Package: a personal skills and English report, a professionally prepared CV, a preliminary legal review of the documents you provide, and individual career recommendations. Every buyer receives all four, whether or not they are shortlisted or hired.
+A skills report PDF ({{skills_fee}}), which leads with the field you scored highest in. A visa-requirements list ({{visa_fee}}), document by document. Both together are {{bundle_fee}} instead of {{fee}}. You can buy one, or both, or neither.
 
-## What the package does not buy
+## What a report does not buy
 
-It does not buy a job, a visa, a placement in Portugal, or any promise of one. It is not required to join the database or to take part in recruitment, it gives no preferential treatment, and it does not guarantee an interview or a job offer.
+It does not buy a job, a visa, a placement in Portugal, or any promise of one. It is not required to join the database or to take part in recruitment, it gives no preferential treatment, and it does not guarantee an interview or a job offer. A contract, housing, the flight and legal support come after a successful offer, and are not charged to you.
 
 ## How the shortlist is decided
 
-- An assessment score above {{shortlist_score}} out of 10, and the essential requirements of the role. Whether you bought the package plays no part.
+- An assessment score above {{shortlist_score}} out of 10, and the essential requirements of the role. Whether you bought a report plays no part.
 - A call with our recruiters, then a Zoom interview with the employer.
 - Document and right-to-work checks.
 - An offer, which depends on the vacancies open at the time.
@@ -274,10 +273,11 @@ export const DELIVERY: DefaultPage = {
 
 ## What arrives, and when
 
-- **Your skills report: within {{report_days}} days** of completing the assessment. It appears in your dashboard and can be downloaded as a PDF.
-- **Your CV and career recommendations: on request, within minutes**, once your report is ready, from your dashboard.
-- **Your preliminary legal review** once you have uploaded your passport or national ID and the documents your dashboard asks for.
-- **Your database profile** stays available to vetted employers for {{profile_months}} months, free, whether or not you buy the package.
+- **Your score: as soon as you finish the test.** It stays on your dashboard. It is free.
+- **Your rewritten CV: on request, before any payment**, from your dashboard.
+- **Your skills report PDF: within {{report_days}} days** of paying for it.
+- **Your visa-requirements list** once you have paid for it and uploaded your passport or national ID.
+- **Your database profile** stays available to vetted employers for {{profile_months}} months, free, whether or not you buy a report.
 - **A decision on your application: within {{response_days}} days** of your application being complete, whether the answer is yes or no.
 
 ## How you receive it
@@ -335,7 +335,7 @@ ${ENTITY}
 
 ## If anyone asks you for money
 
-Nobody is authorised to charge a candidate anything beyond the optional career package paid on this site. Not an agent, not an intermediary, not anyone claiming to represent us. If it happens, tell us at {{report_email}}. You can do it without giving your name, and it will not affect your application.`,
+Nobody is authorised to charge a candidate anything beyond the skills report and the visa-requirements list paid on this site. Not an agent, not an intermediary, not anyone claiming to represent us. If it happens, tell us at {{report_email}}. You can do it without giving your name, and it will not affect your application.`,
       },
     ],
   ]),

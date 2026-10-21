@@ -1,6 +1,7 @@
 import { renderToBuffer } from '@react-pdf/renderer';
 import { LegalDocument } from '@/lib/report/LegalDocument';
-import { getSessionCandidate, hasPaid } from '@/lib/auth';
+import { getSessionCandidate } from '@/lib/auth';
+import { candidateEntitlements } from '@/lib/payments/entitlements';
 import { getSiteSettings } from '@/lib/cms/data';
 import { deliveredReviewFor } from '@/lib/legal/review';
 
@@ -16,7 +17,8 @@ export const maxDuration = 60;
 export async function GET() {
   const candidate = await getSessionCandidate();
   if (!candidate) return new Response('Unauthorized', { status: 401 });
-  if (!hasPaid(candidate)) return new Response('Payment required', { status: 402 });
+  const owns = await candidateEntitlements(candidate.id, candidate.paymentStatus);
+  if (!owns.visa) return new Response('Payment required', { status: 402 });
 
   const review = await deliveredReviewFor(candidate.id);
   if (!review) return new Response('Legal review not ready', { status: 404 });

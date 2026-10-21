@@ -2,7 +2,7 @@ import { localePath } from '@/lib/i18n';
 import { renderEmail } from '@/lib/email/template';
 import { getSiteSettings } from '@/lib/cms/data';
 import { composeEmail, emailBrand } from '@/lib/email/compose';
-import { formatFee } from '@/lib/company/config';
+import { formatProductFee } from '@/lib/company/config';
 
 /** Only what the message needs, so the preview can build one by hand. */
 export type ReminderRow = {
@@ -95,7 +95,7 @@ export async function renderReminder(
   const stage = reminderStage(row);
   const firstName = row.full_name.split(' ')[0] ?? '';
   const settings = await getSiteSettings();
-  const price = formatFee(settings.pricing);
+  const price = formatProductFee(settings.pricing, 'bundle');
   const url = `${origin}${localePath(row.locale, ACTION_PATH[stage])}`;
 
   if (row.locale !== 'hi') {

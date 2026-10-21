@@ -5,16 +5,22 @@ import { refreshIntegrations } from '@/lib/integrations/runtime';
 import { anthropic, isAiConfigured } from '@/lib/cv/client';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { getServerSupabase } from '@/lib/supabase/server';
-import { ASSISTANT_FALLBACK, ASSISTANT_OFF, guardReply } from './guard';
+import { ASSISTANT_FALLBACK, ASSISTANT_OFF, containsPromise, guardReply } from './guard';
 import { companyFacts } from './facts';
+import { faqPassages } from './faq';
+import { quoteMatch, supportingPassages, type Passage } from './match';
 
 /**
  * One answer for the website and for WhatsApp.
  *
  * The model sees the visitor's question, the recent turns, the site settings,
- * and up to six passages from published public notes. It may not use anything
- * else. guardReply throws the answer away when the citation or a promise
- * does not match what we handed over.
+ * and the notes that actually share the question's words: uploaded documents
+ * and the published FAQ. It may not use anything else. guardReply throws the
+ * answer away when the citation, the wording, or a promise does not match.
+ *
+ * When the model is down or has no key, the same notes are used directly.
+ * One matching sentence is quoted. If nothing matches, or two notes match
+ * equally, the reply says it does not know.
  */
 
 const SYSTEM = `You answer questions for people considering work in Portugal through this recruitment company. You write the way a careful colleague writes a short WhatsApp message: plain, specific, two or three short sentences, no headings, no "certainly", no mention that you are a model.
@@ -44,16 +50,72 @@ export async function answerQuestion(input: {
   const question = input.question.replace(/\s+/g, ' ').trim().slice(0, 500);
   if (question.length < 2) return { reply: ASSISTANT_FALLBACK, sources: [] };
   await refreshIntegrations();
-  if (!isAiConfigured()) return { reply: ASSISTANT_OFF, sources: [] };
 
   const settings = await getSiteSettings();
   const facts = companyFacts(settings, settings.pricing, settings.hiring);
-  const notes = await publicNotes(question);
-  const allowed = [facts, ...notes];
+  const passages = await passagesFor(question, { title: facts.title, content: facts.text }, settings);
+  const fromNotes = quoteFromNotes(question, passages);
 
   const admin = getAdminSupabase();
-  const history = admin ? await recentTurns(admin, input.threadKey) : [];
+  const guarded = await modelOrNotes(question, facts, passages, fromNotes, admin, input.threadKey);
 
+  if (admin) {
+    await admin.from('assistant_messages').insert([
+      { channel: input.channel, thread_key: input.threadKey, role: 'user', body: question, external_id: input.externalId ?? null },
+      { channel: input.channel, thread_key: input.threadKey, role: 'assistant', body: guarded.reply, sources: guarded.sources },
+    ]);
+  }
+
+  return guarded;
+}
+
+async function modelOrNotes(
+  question: string,
+  facts: { title: string; text: string },
+  passages: Passage[],
+  fromNotes: { reply: string; sources: string[] } | null,
+  admin: ReturnType<typeof getAdminSupabase>,
+  threadKey: string,
+): Promise<{ reply: string; sources: string[] }> {
+  if (!isAiConfigured()) return fromNotes ?? { reply: ASSISTANT_OFF, sources: [] };
+  try {
+    const modeled = await answerFromModel(question, facts, passages, admin, threadKey);
+    /* A wandered answer is already replaced with the refusal. A matching
+       sentence from the notes is more useful than that refusal, and it is
+       still the note, not a guess. */
+    if (modeled.reply === ASSISTANT_FALLBACK && fromNotes) return fromNotes;
+    return modeled;
+  } catch (error) {
+    console.error('[assistant] model unavailable', error instanceof Error ? error.message : 'unknown');
+    return fromNotes ?? { reply: ASSISTANT_FALLBACK, sources: [] };
+  }
+}
+
+function quoteFromNotes(question: string, passages: Passage[]): { reply: string; sources: string[] } | null {
+  const quoted = quoteMatch(question, passages);
+  if (!quoted || containsPromise(quoted.content)) return null;
+  return { reply: quoted.content, sources: [quoted.title] };
+}
+
+async function passagesFor(
+  question: string,
+  facts: Passage,
+  settings: Awaited<ReturnType<typeof getSiteSettings>>,
+): Promise<Passage[]> {
+  const [notes, faqs] = await Promise.all([publicNotes(question), faqPassages(settings)]);
+  return [facts, ...notes, ...faqs];
+}
+
+async function answerFromModel(
+  question: string,
+  facts: { title: string; text: string },
+  passages: Passage[],
+  admin: ReturnType<typeof getAdminSupabase>,
+  threadKey: string,
+): Promise<{ reply: string; sources: string[] }> {
+  const notes = supportingPassages(question, passages);
+  const allowed = [{ title: facts.title, content: facts.text }, ...notes];
+  const history = admin ? await recentTurns(admin, threadKey) : [];
   const response = await anthropic().messages.parse({
     model: ASSISTANT_MODEL,
     max_tokens: 600,
@@ -78,30 +140,27 @@ export async function answerQuestion(input: {
   });
 
   const parsed = response.parsed_output;
-  const guarded = parsed
-    ? guardReply({
-        reply: parsed.reply,
-        covered: parsed.covered,
-        usedTitles: parsed.usedTitles,
-        allowedTitles: allowed.map((item) => item.title),
-        facts: facts.text,
-      })
-    : { reply: ASSISTANT_FALLBACK, sources: [] };
-
-  if (admin) {
-    await admin.from('assistant_messages').insert([
-      { channel: input.channel, thread_key: input.threadKey, role: 'user', body: question, external_id: input.externalId ?? null },
-      { channel: input.channel, thread_key: input.threadKey, role: 'assistant', body: guarded.reply, sources: guarded.sources },
-    ]);
-  }
-
-  return guarded;
+  if (!parsed) return { reply: ASSISTANT_FALLBACK, sources: [] };
+  const cited = allowed.filter((item) => parsed.usedTitles.includes(item.title));
+  return guardReply({
+    reply: parsed.reply,
+    covered: parsed.covered,
+    usedTitles: parsed.usedTitles,
+    allowedTitles: allowed.map((item) => item.title),
+    facts: facts.text,
+    question,
+    sourceText: cited.map((item) => item.content).join('\n'),
+  });
 }
 
 async function publicNotes(question: string): Promise<{ title: string; content: string }[]> {
   const supabase = await getServerSupabase();
   if (!supabase) return [];
-  const { data } = await supabase.rpc('search_public_knowledge', { query: question });
+  const { data, error } = await supabase.rpc('search_public_knowledge', { query: question });
+  if (error) {
+    console.error('[assistant] note search failed', error.message);
+    return [];
+  }
   return ((data ?? []) as { title: string; content: string }[]).filter((row) => row.title && row.content);
 }
 

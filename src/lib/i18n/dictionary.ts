@@ -570,7 +570,7 @@ const en: Dictionary = {
     consent:
       'I understand that joining the recruitment database and taking the assessment are free, and that the Professional Assessment and Career Preparation Package is optional and gives no priority. Selection for a Portugal placement is not guaranteed. If I am placed, a placement fee of €1,000 is payable after my job is confirmed and my contract is signed. I have read the',
     consentNoPlacement:
-      'I understand that joining the recruitment database and taking the assessment are free, and that the Professional Assessment and Career Preparation Package is optional and gives no priority. Selection for a Portugal placement is not guaranteed, and I will never be charged a placement fee. I have read the',
+      'I understand that the account, the rewritten CV, the skills test, my score and applying are free. The skills report and the visa-requirements list are optional and give no priority. A job or a visa is not guaranteed, and I will never be charged a placement fee. I have read the',
     consentRules: 'selection rules',
     consentRefund: 'refund policy',
     back: 'Back',
@@ -817,11 +817,11 @@ const en: Dictionary = {
     registered: 'Registered',
     profile: 'Profile and CV',
     assessment: 'Assessment',
-    payment: 'Career package (optional)',
+    payment: 'Reports (optional)',
     report: 'Skills report',
     selection: 'Cohort selection',
-    unlockEyebrow: 'OPTIONAL CAREER PACKAGE',
-    unlockTitle: 'Start with a legal check of your documents for Portugal',
+    unlockEyebrow: 'OPTIONAL REPORTS',
+    unlockTitle: 'You only pay for the two reports',
     unlockBody:
       'Your test is scored and you are in our recruitment database for free. For {price} you receive: a preliminary legal review of your documents for Portugal by our legal team; a personal skills and English report; a professionally prepared CV you can use anywhere; and individual career recommendations. Every buyer receives all four. It gives no shortlist priority.',
     unlockCta: 'Get the package for {price}',
@@ -839,11 +839,11 @@ const en: Dictionary = {
   },
 
   pricing: {
-    title: 'Pricing',
-    lead: 'One fee for candidates. Employers pay only when they hire.',
-    startCta: 'Start assessment',
+    title: 'Report prices',
+    lead: 'Two optional reports. Employers pay only when they hire.',
+    startCta: 'Create a free account',
     candidates: 'CANDIDATES',
-    candidatesPeriod: 'one-time',
+    candidatesPeriod: 'both together',
     candidatesNote: 'One price, charged once, after the assessment.',
     candidatesFeatures: [
       'Full assessment',
@@ -1022,7 +1022,7 @@ const hi: Dictionary = {
     consent:
       'मैं समझता/समझती हूँ कि आकलन देना मुफ़्त है, और शुल्क उसके बाद देना होता है यदि मुझे अपनी स्किल्स रिपोर्ट, नया सीवी और टैलेंट पूल में जगह चाहिए। पुर्तगाल प्लेसमेंट के लिए चयन की गारंटी नहीं है। यदि मुझे नौकरी मिलती है, तो नौकरी पक्की होने और अनुबंध पर हस्ताक्षर के बाद €1,000 की प्लेसमेंट फ़ीस देय होगी। मैंने',
     consentNoPlacement:
-      'मैं समझता/समझती हूँ कि आकलन देना मुफ़्त है, और शुल्क उसके बाद देना होता है यदि मुझे अपनी स्किल्स रिपोर्ट, नया सीवी और टैलेंट पूल में जगह चाहिए। पुर्तगाल प्लेसमेंट के लिए चयन की गारंटी नहीं है। मैंने',
+      'मैं समझता/समझती हूँ कि खाता, दोबारा लिखा CV, स्किल्स टेस्ट, मेरा स्कोर और आवेदन मुफ़्त हैं। स्किल्स रिपोर्ट और वीज़ा आवश्यकताओं की सूची वैकल्पिक हैं और कोई प्राथमिकता नहीं देतीं। नौकरी या वीज़ा की गारंटी नहीं है, और मुझसे प्लेसमेंट फ़ीस नहीं ली जाएगी। मैंने',
     consentRules: 'चयन नियम',
     consentRefund: 'रिफ़ंड नीति',
     back: 'पीछे',
@@ -1261,9 +1261,9 @@ const hi: Dictionary = {
   status: {
     title: 'आप कहाँ हैं',
     registered: 'पंजीकृत',
-    payment: 'आकलन शुल्क',
-    unlockEyebrow: 'वैकल्पिक करियर पैकेज',
-    unlockTitle: 'पुर्तगाल के लिए अपने दस्तावेज़ों की कानूनी जाँच से शुरू करें',
+    payment: 'रिपोर्ट (वैकल्पिक)',
+    unlockEyebrow: 'वैकल्पिक रिपोर्ट',
+    unlockTitle: 'आप केवल दो रिपोर्टों के लिए भुगतान करते हैं',
     unlockBody:
       'आपका टेस्ट अंकित हो चुका है और आप मुफ़्त में हमारे उम्मीदवार डेटाबेस में हैं। {price} में आपको मिलता है: हमारे कानूनी दल द्वारा पुर्तगाल वर्क वीज़ा के लिए दस्तावेज़ों की प्रारंभिक जाँच; व्यक्तिगत स्किल्स और अंग्रेज़ी रिपोर्ट; कहीं भी इस्तेमाल होने वाला पेशेवर CV; और करियर सुझाव। शॉर्टलिस्ट में कोई प्राथमिकता नहीं।',
     unlockCta: '{price} में पैकेज लें',
@@ -1285,11 +1285,11 @@ const hi: Dictionary = {
   },
 
   pricing: {
-    title: 'मूल्य',
-    lead: 'उम्मीदवारों के लिए एक शुल्क। नियोक्ता केवल नियुक्ति पर भुगतान करते हैं।',
-    startCta: 'मूल्यांकन शुरू करें',
+    title: 'रिपोर्ट की कीमतें',
+    lead: 'दो वैकल्पिक रिपोर्ट। नियोक्ता केवल नियुक्ति पर भुगतान करते हैं।',
+    startCta: 'मुफ़्त खाता बनाएँ',
     candidates: 'उम्मीदवार',
-    candidatesPeriod: 'एक बार',
+    candidatesPeriod: 'दोनों साथ',
     candidatesNote: 'एक ही क़ीमत, मूल्यांकन के बाद एक बार।',
     candidatesFeatures: [
       'पूरा मूल्यांकन',

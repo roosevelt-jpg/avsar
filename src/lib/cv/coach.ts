@@ -56,6 +56,8 @@ export type CoachInput = {
   /** Language for the advice. The CV stays in English regardless. */
   locale: string;
   profile: RatingInput;
+  /** False when they have not sat the test. The CV is still rewritten; no score is invented. */
+  assessed: boolean;
   report: {
     overall: number;
     english: string;
@@ -90,12 +92,17 @@ export async function generateCareerPack(input: CoachInput): Promise<CoachResult
               `Candidate: ${input.fullName}`,
               `Applying for: ${positionLabel(input.position)}`,
               '',
-              'Assessment result:',
-              `  Overall ${input.report.overall}/100`,
-              `  English ${input.report.english}`,
-              `  Sector skills ${input.report.skills}/100`,
-              `  Experience ${input.report.experience}/100`,
-              ...input.report.breakdown.map((axis) => `  ${axis.label}: ${axis.score}/100`),
+              input.assessed
+                ? [
+                    'Assessment result:',
+                    `  Overall ${input.report.overall}/100`,
+                    `  English ${input.report.english}`,
+                    `  Sector skills ${input.report.skills}/100`,
+                    `  Experience ${input.report.experience}/100`,
+                    ...input.report.breakdown.map((axis) => `  ${axis.label}: ${axis.score}/100`),
+                    'Do not write a score onto the CV. The CV is their work history, rewritten.',
+                  ].join('\n')
+                : 'Assessment: not taken yet. Do not invent or mention a score. Rewrite the CV from the work history only.',
               '',
               'Their profile and work history, which is the only material you may draw on:',
               JSON.stringify(input.profile, null, 2),

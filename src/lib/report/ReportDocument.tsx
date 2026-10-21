@@ -95,7 +95,16 @@ export type ReportData = {
   reference: string;
 };
 
+function strongestField(breakdown: { label: string; score: number }[]): string | null {
+  return breakdown.reduce<{ label: string; score: number } | null>(
+    (best, axis) => (!best || axis.score > best.score ? axis : best),
+    null,
+  )?.label ?? null;
+}
+
 export function ReportDocument({ data }: { data: ReportData }) {
+  const lead = strongestField(data.breakdown);
+  const axes = [...data.breakdown].sort((a, b) => b.score - a.score);
   return (
     <Document
       title={`S&A Recruitment skills report - ${data.name}`}
@@ -138,7 +147,12 @@ export function ReportDocument({ data }: { data: ReportData }) {
         </View>
 
         <Text style={styles.sectionTitle}>Breakdown</Text>
-        {data.breakdown.map((axis) => (
+        {lead ? (
+          <Text style={styles.sub}>
+            Strongest field: {lead}. This is the part of the report an employer reads first. It is not a decision to hire.
+          </Text>
+        ) : null}
+        {axes.map((axis) => (
           <View key={axis.label} style={styles.axisRow}>
             <View style={styles.axisHead}>
               <Text style={styles.axisLabel}>{axis.label}</Text>

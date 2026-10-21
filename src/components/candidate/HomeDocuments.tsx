@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { canReceiveReport, getSessionCandidate, hasPaid } from '@/lib/auth';
+import { getSessionCandidate } from '@/lib/auth';
+import { candidateEntitlements } from '@/lib/payments/entitlements';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { deliveredReviewFor } from '@/lib/legal/review';
 import { getDictionary, localePath, type Locale } from '@/lib/i18n';
@@ -15,18 +16,20 @@ export async function HomeDocuments({ locale }: { locale: Locale }) {
   const candidate = await getSessionCandidate();
   if (!candidate) return null;
 
-  const paid = hasPaid(candidate);
-  const admin = paid ? getAdminSupabase() : null;
+  const owns = await candidateEntitlements(candidate.id, candidate.paymentStatus);
+  const admin = getAdminSupabase();
   const [{ data: pack }, review] = await Promise.all([
     admin
       ? admin.from('career_packs').select('candidate_id').eq('candidate_id', candidate.id).maybeSingle()
       : Promise.resolve({ data: null }),
-    paid ? deliveredReviewFor(candidate.id) : Promise.resolve(null),
+    owns.visa ? deliveredReviewFor(candidate.id) : Promise.resolve(null),
   ]);
 
   const d = getDictionary(locale).dash;
   const items = [
-    canReceiveReport(candidate) ? { href: localePath(locale, '/dashboard/report.pdf'), label: d.download } : null,
+    owns.skills && candidate.emailConfirmed
+      ? { href: localePath(locale, '/dashboard/report.pdf'), label: d.download }
+      : null,
     pack ? { href: localePath(locale, '/dashboard/cv.pdf'), label: d.downloadCv } : null,
     review ? { href: localePath(locale, '/dashboard/legal.pdf'), label: d.downloadLegal } : null,
   ].filter((item): item is { href: string; label: string } => item !== null);

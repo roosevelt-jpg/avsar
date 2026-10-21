@@ -250,7 +250,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
       },
       pricing: {
         title: 'Pricing',
-        description: 'Joining our candidate database is free. The career preparation package is optional. Employers pay the placement fee.',
+        description: 'Joining our candidate database is free. The skills report and the visa-requirements list are optional. Employers pay the placement fee.',
         ogTitle: '',
         ogImage: '',
       },
@@ -292,7 +292,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     highlights: [
       'Free skills and English test on your phone',
       'Housing, meals and visa costs covered when selected',
-      'You never pay to be hired — only an optional career package on this site',
+      'You never pay to be hired. The only optional prices are the two reports, on this site',
       'WhatsApp support in Hindi or English',
     ],
     primaryCtaLabel: 'Create my free profile',
@@ -302,44 +302,44 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   conversion: {
     trustLines: [
       'You never pay to be hired. The employer pays our fee.',
-      'The only money we take is the optional career package, on this website, with a receipt.',
-      'Buying the package does not change your shortlist chances and does not guarantee a job or a visa.',
+      'The only money we take is for the skills report and the visa-requirements list, on this website, with a receipt.',
+      'Buying either report does not change your shortlist chances and does not guarantee a job or a visa.',
       'Pay by UPI on this site. Never cash, never WhatsApp, never an agent.',
     ],
     deliverables: [
       {
-        title: 'Preliminary legal document review',
+        title: 'Skills report PDF',
         timing:
-          'Our legal team reviews the passport or ID and other documents you upload for a Portuguese work visa, usually within {{legal_review_days}} working days of a complete upload. Preliminary only: not permission to work, and not a visa decision.',
+          'Leads with the field you scored highest in, so that is what an employer reads first. Your score on the dashboard is free. The PDF is the paid document.',
       },
       {
-        title: 'Skills and English report',
+        title: 'Visa requirements, document by document',
         timing:
-          'Your strengths, what to improve, and how your score sits against the shortlist threshold. Delivered within {{report_days}} days of payment (often sooner).',
+          'What a Portuguese work visa needs from you, and what is still missing. Usually within {{legal_review_days}} working days of a complete upload. Not a visa decision.',
       },
       {
-        title: 'Professionally prepared CV',
-        timing: 'Built from your profile and assessment. You can download it and use it anywhere, not only with us.',
+        title: 'Rewritten CV',
+        timing: 'Free, from the experience you entered, before you see a price. You can download it and use it anywhere.',
       },
       {
-        title: 'Career recommendations',
-        timing: 'Individual advice for your role and interviews, delivered with the pack.',
+        title: 'Both reports together',
+        timing: 'Offered at the skills-report step, for less than the two prices added up.',
       },
     ],
-    offerHeading: 'Will your papers work for Portugal?',
+    offerHeading: 'You only pay for the two reports',
     offerBody:
-      'You are in our candidate database for free. The optional career package starts with a preliminary legal check of your documents, then your full skills report, a CV you can use anywhere, and career recommendations. It does not move you up a shortlist.',
-    offerPrimaryLabel: 'See the package',
+      'Your account, rewritten CV, test and score are free, and you are in the database. The skills report and the visa-requirements list are optional. Buying either does not move you up a shortlist.',
+    offerPrimaryLabel: 'See the two prices',
     offerSecondaryLabel: 'Browse jobs first',
-    stickyCtaLabel: 'Get the career package',
+    stickyCtaLabel: 'See the two reports',
     pricingLead:
-      'Joining the database is free after the assessment. The career package is optional preparation led by a preliminary legal document review, then report, CV and recommendations. It gives no priority and does not guarantee an interview, a job or a visa.',
+      'Joining the database is free. You pay only for a skills report and a list of what is missing for the visa, or for both together at the lower price. Neither gives priority, and neither is a job or a visa.',
     pricingFeatures: [
-      'Preliminary legal review of your documents for Portugal',
-      'Personal skills and English report',
-      'Professionally prepared CV you can use anywhere',
-      'Individual career recommendations for your role',
-      'Optional: not required to join the database or to apply',
+      'Skills report PDF, leading with your strongest field',
+      'Visa requirements, document by document',
+      'Both reports together, at the lower price',
+      'Rewritten CV, free, before any price',
+      'Score, account, test and applying stay free',
       'No shortlist priority from buying',
     ],
     mentionPackageInJobAlerts: true,
@@ -363,6 +363,9 @@ export function mergeSettings(rows: { key: string; value: unknown }[]): SiteSett
   const stored = Object.fromEntries(rows.map((row) => [row.key, row.value])) as Partial<Record<string, Record<string, unknown>>>;
   const nested = (key: string, field: string) => (stored[key]?.[field] as object | undefined) ?? {};
   out.pricing.feeMinor = { ...DEFAULT_PRICING.feeMinor, ...nested('pricing', 'feeMinor') };
+  out.pricing.skillsReportFeeMinor = { ...DEFAULT_PRICING.skillsReportFeeMinor, ...nested('pricing', 'skillsReportFeeMinor') };
+  out.pricing.visaRequirementsFeeMinor = { ...DEFAULT_PRICING.visaRequirementsFeeMinor, ...nested('pricing', 'visaRequirementsFeeMinor') };
+  out.pricing.bundleFeeMinor = { ...DEFAULT_PRICING.bundleFeeMinor, ...nested('pricing', 'bundleFeeMinor') };
   out.pricing.indicativeRates = { ...DEFAULT_PRICING.indicativeRates, ...nested('pricing', 'indicativeRates') };
   out.company.partner = { ...DEFAULT_COMPANY.partner, ...nested('company', 'partner') };
   const storedPages = nested('seo', 'pages') as Partial<Record<StaticSeoPage, Partial<PageSeoSettings>>>;

@@ -42,7 +42,7 @@ export async function GET(request: Request) {
   const selected = ids.size ? rows.filter((row) => ids.has(row.id)) : rows;
 
   const csv = toCsv(
-    ['Reference', 'Candidate', 'Email', 'Mobile', 'From', 'Role', 'Job', 'Job city', 'Stage', 'Career package', 'Rating', 'Applied', 'Last move'],
+    ['Reference', 'Candidate', 'Email', 'Mobile', 'From', 'Role', 'Job', 'Job city', 'Stage', 'Both reports', 'Rating', 'Applied', 'Last move'],
     selected.map((row) => [
       row.reference,
       row.candidate.fullName,

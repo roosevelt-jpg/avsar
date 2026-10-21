@@ -36,13 +36,13 @@ export const HOW_IT_WORKS: DefaultPage = {
         items: [
           {
             title: '1. Create your free profile',
-            body: 'Your name, mobile number, email and a password. You can add your CV, a photo and a short voice introduction later from your dashboard. Nothing is needed up front.',
+            body: 'Your name, mobile number, email and a password. You can come back and change the account and the CV. Nothing is needed up front.',
             meta: '2 minutes · free',
             image: '',
           },
           {
-            title: '2. Take the skills and English assessment',
-            body: 'Up to 90 minutes on your phone, in sections you can pause between. It checks job knowledge, experience and English. It is free, and finishing it puts you in our recruitment database. A score above {{shortlist_score}} out of 10, plus the essential requirements of the role, qualifies you for the shortlist.',
+            title: '2. Rewrite your CV, then take the test',
+            body: 'We rewrite your CV from what you wrote. Then the skills and English questions, up to 90 minutes, and you see your score. Both are free. A score above {{shortlist_score}} out of 10, plus the essential requirements of the role, qualifies you for the shortlist.',
             meta: 'On your phone · free',
             image: '/walkthrough/assessment.jpg',
           },
@@ -54,13 +54,13 @@ export const HOW_IT_WORKS: DefaultPage = {
           },
           {
             title: '4. Calls and interviews',
-            body: 'A recruiter calls you to talk about your experience and answer your questions. If you are shortlisted, you interview with the employer on Zoom. We tell you what to expect and how to prepare.',
+            body: 'A recruiter calls you first. If you are shortlisted, you interview with the employer on Zoom. Both calls are free. A contract comes only after a successful offer.',
             meta: 'Within {{response_days}} days',
             image: '/walkthrough/call.jpg',
           },
           {
-            title: '5. Offer, contract and visa',
-            body: 'You receive a written offer and a {{contract_years}}-year employment contract to read before signing. The independent immigration lawyers we work with then prepare your work visa file with you. Once you are selected we pay the visa fee, the police clearance certificate, immigration fees and taxes, and your flight.',
+            title: '5. After a successful offer',
+            body: 'A contract, housing, the flight and legal support come after a successful offer, not before. You receive a written offer and a {{contract_years}}-year employment contract to read before signing. Once you are selected we pay the visa fee, the police clearance certificate, immigration fees and taxes, and your flight. The employer pays the placement fee.',
             meta: '2 to 4 months',
             image: '/walkthrough/letter.jpg',
           },
@@ -81,8 +81,8 @@ export const HOW_IT_WORKS: DefaultPage = {
         intro: 'You should know exactly what you pay, to whom, and why, before you start.',
         columns: '3',
         items: [
-          { icon: 'check', title: 'Applying and the database: free', body: 'Creating a profile, taking the assessment, joining our recruitment database and applying to jobs are free, always.' },
-          { icon: 'rupee', title: 'Career package: {{fee_inr}}', body: 'Optional, and gives no priority. Led by a preliminary legal review of your documents for Portugal, then your full skills and English report, a professionally prepared CV, and career recommendations. Paid once on this website, with a receipt.' },
+          { icon: 'check', title: 'Applying and the database: free', body: 'Creating a profile, the rewritten CV, the assessment, your score, joining our recruitment database and applying to jobs are free, always.' },
+          { icon: 'rupee', title: 'Two reports, if you want them', body: 'The skills report is {{skills_fee}}. The visa-requirements list is {{visa_fee}}. Both together are {{bundle_fee}} instead of {{fee_inr}}. Paid on this website, with a receipt. Buying does not change the shortlist.' },
           { icon: 'briefcase', title: 'Placement: ₹0 for you', body: 'When you are hired, the employer pays our fee. You never pay a placement or "visa processing" fee to us.' },
         ],
       },
@@ -103,7 +103,7 @@ export const HOW_IT_WORKS: DefaultPage = {
         title: 'How the shortlist works, and our past results',
         items: [
           { value: '{{shortlist_score}}/10', label: 'score to beat in the assessment', note: 'plus the role’s essential requirements' },
-          { value: '0', label: 'priority from buying the package', note: 'the shortlist ignores it' },
+          { value: '0', label: 'priority from buying a report', note: 'the shortlist ignores it' },
           { value: '{{shortlist_hired}}/{{shortlist_size}}', label: 'shortlisted candidates hired, historically', note: 'past results, not a promise; most applicants are not shortlisted' },
         ],
       },

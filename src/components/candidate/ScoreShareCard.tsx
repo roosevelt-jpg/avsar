@@ -42,7 +42,7 @@ export function ScoreShareCard({
     ctx.font = '400 32px sans-serif';
     wrap(
       ctx,
-      'Applying stays free. The optional career package does not change shortlist chances.',
+      'Applying stays free. Buying a report does not change shortlist chances.',
       80,
       760,
       920,

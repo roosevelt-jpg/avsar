@@ -27,7 +27,7 @@ export function PackageOfferBanner({
       </h2>
       <p className="m-0 max-w-[62ch] text-[15px] leading-[1.6] text-dark-muted-2">{t(conversion.offerBody)}</p>
       <p className="mt-3 mb-0 text-[14px] text-dark-muted">
-        {t('Package price')}: {fee}
+        {t('Both reports')}: {fee}
       </p>
       <div className="mt-5 flex flex-wrap gap-3">
         <a

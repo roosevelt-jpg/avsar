@@ -2,25 +2,34 @@ import { refreshIntegrations } from '@/lib/integrations/runtime';
 import { localePath } from '@/lib/i18n';
 import { NextResponse } from 'next/server';
 import { getSiteSettings } from '@/lib/cms/data';
-import { RAIL_CURRENCIES, priceBreakdown } from '@/lib/company/config';
+import { CHECKOUT_PRODUCTS, RAIL_CURRENCIES, priceBreakdown, productGrants, type CheckoutProduct } from '@/lib/company/config';
 import { getPaymentProvider, receiptNumber } from '@/lib/payments';
 import { paymentMethodSchema } from '@/lib/validation';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { getSessionCandidate, type SessionCandidate } from '@/lib/auth';
 import { withIdempotency } from '@/lib/security/idempotency';
 import { getCandidateStatus } from '@/lib/candidate/status';
+import { z } from 'zod';
 
 export const runtime = 'nodejs';
 
+const productSchema = z.enum(CHECKOUT_PRODUCTS);
+
+const PRODUCT_LABEL: Record<CheckoutProduct, string> = {
+  skills_report: 'skills report',
+  visa_requirements: 'visa requirements',
+  bundle: 'skills report and visa requirements',
+};
+
 /**
- * Opens checkout for the assessment fee.
+ * Opens checkout for one of the two paid documents, or for both together.
  *
- * Its own route, because the fee is no longer part of signing up. A candidate
- * registers, fills in a profile and sits the assessment for nothing; this is
- * what they call when they want the report, the career pack and the CV.
+ * The account, the rewritten CV, the test and the score are free. This is
+ * the only place a candidate is charged, and only after the assessment, so
+ * they have seen what they are worth before the first price.
  *
- * Which candidate is read from the session. The price is read from the server.
- * Neither has ever come from the request and neither starts now.
+ * Which candidate is read from the session. The price is read from Settings
+ * for the product they asked for. Neither comes from the request.
  */
 export async function POST(request: Request) {
   await refreshIntegrations();
@@ -36,9 +45,11 @@ export async function POST(request: Request) {
 }
 
 async function openCheckout(request: Request, candidate: SessionCandidate): Promise<NextResponse> {
-  const body = (await request.json().catch(() => null)) as { method?: unknown } | null;
+  const body = (await request.json().catch(() => null)) as { method?: unknown; product?: unknown } | null;
   const method = paymentMethodSchema.safeParse(body?.method);
   if (!method.success) return NextResponse.json({ error: 'invalid_method' }, { status: 400 });
+  const product = productSchema.safeParse(body?.product);
+  if (!product.success) return NextResponse.json({ error: 'invalid_product' }, { status: 400 });
 
   /**
    * The fee is asked for after the assessment, so there has to be an assessment.
@@ -53,10 +64,17 @@ async function openCheckout(request: Request, candidate: SessionCandidate): Prom
     return NextResponse.json({ error: 'assessment_incomplete' }, { status: 409 });
   }
 
+  const grants = productGrants(product.data);
+  /* The bundle is the offer when they own neither. Once they own one, they
+     buy the other at its own price rather than paying for both again. */
+  if ((grants.skills && status.ownsSkills) || (grants.visa && status.ownsVisa)) {
+    return NextResponse.json({ error: 'already_paid' }, { status: 409 });
+  }
+
   const supabase = getAdminSupabase();
   const provider = getPaymentProvider();
   const settings = await getSiteSettings();
-  const price = priceBreakdown(settings.pricing);
+  const price = priceBreakdown(settings.pricing, product.data);
   const COHORT = settings.cohort;
 
   /* A price of zero is a settings mistake, never a free package. */
@@ -83,7 +101,7 @@ async function openCheckout(request: Request, candidate: SessionCandidate): Prom
       amountMinor: price.totalMinor,
       currency: price.currency,
       receipt,
-      description: `${settings.general.siteName} career package`,
+      description: `${settings.general.siteName} ${PRODUCT_LABEL[product.data]}`,
       customer: { name: candidate.fullName, email: candidate.email, phone: '' },
       methodHint: method.data,
       /*
@@ -101,6 +119,7 @@ async function openCheckout(request: Request, candidate: SessionCandidate): Prom
         tier: 'standard',
         receipt,
         candidate_id: candidate.id,
+        product: product.data,
         webhook_url: `${origin}/api/payments/webhook`,
       },
     });
@@ -113,12 +132,9 @@ async function openCheckout(request: Request, candidate: SessionCandidate): Prom
      /api/signup: a missing key in a real deployment must not hand out free
      reports. */
   const treatAsPaid = session.simulated && process.env.ALLOW_SIMULATED_PAYMENTS === 'true';
+  const completesBoth = (status.ownsSkills || grants.skills) && (status.ownsVisa || grants.visa);
 
   if (supabase) {
-    if (treatAsPaid) {
-      await supabase.from('candidates').update({ payment_status: 'paid' }).eq('id', candidate.id);
-    }
-
     const { error } = await supabase.from('payments').insert({
       candidate_id: candidate.id,
       cohort_id: COHORT.id,
@@ -128,10 +144,22 @@ async function openCheckout(request: Request, candidate: SessionCandidate): Prom
       net_paise: price.netMinor,
       gst_paise: price.vatMinor,
       method_hint: method.data,
-      status: session.simulated ? 'simulated' : 'created',
+      product: product.data,
+      status: treatAsPaid ? 'paid' : session.simulated ? 'simulated' : 'created',
+      paid_at: treatAsPaid ? new Date().toISOString() : null,
       receipt_no: receipt,
     });
-    if (error) console.error('[checkout] payment insert failed', error);
+    if (error) {
+      console.error('[checkout] payment insert failed', error);
+      return NextResponse.json({ error: 'payment_init_failed' }, { status: 502 });
+    }
+
+    /* Only a purchase that finishes the pair sets payment_status. A single
+       report must leave it unpaid, or the other document would open too.
+       This runs after the row exists, so a failed insert cannot unlock anyone. */
+    if (treatAsPaid && completesBoth) {
+      await supabase.from('candidates').update({ payment_status: 'paid' }).eq('id', candidate.id);
+    }
   }
 
   return NextResponse.json({
