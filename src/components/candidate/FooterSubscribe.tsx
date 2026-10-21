@@ -37,7 +37,7 @@ export function FooterSubscribe({ locale, labels }: { locale: Locale; labels: La
           {labels.done}
         </p>
       ) : (
-        <form onSubmit={submit} className="flex flex-col gap-2 sm:flex-row">
+        <form onSubmit={submit} className="flex flex-col items-start gap-2 sm:flex-row">
           <label className="sr-only" htmlFor="footer-subscribe-email">
             {labels.placeholder}
           </label>
@@ -51,7 +51,7 @@ export function FooterSubscribe({ locale, labels }: { locale: Locale; labels: La
             inputMode="email"
             dir="ltr"
             placeholder={labels.placeholder}
-            className="min-w-0 flex-1 rounded-full border border-[#2a4a66] bg-white/10 px-5 py-3 text-[14px] text-[#f4f8fb] placeholder:text-[#b7c9d8] focus:border-[#9ecae6] focus:outline-none"
+            className="w-full max-w-[220px] rounded-full border border-[#2a4a66] bg-white/10 px-4 py-2.5 text-[14px] text-[#f4f8fb] placeholder:text-[#b7c9d8] focus:border-[#f6c49a] focus:outline-none"
           />
           <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
           <button

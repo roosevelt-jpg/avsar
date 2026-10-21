@@ -13,8 +13,10 @@ import { HeroStage, type HeroSlide } from '../HeroStage';
    showing off; the live odds block further down explains them instead. */
 const LIVE_PROOF_MIN = 50;
 
-function remote(src: string): boolean {
-  return /^https?:/i.test(src);
+/** A file the stage can play. A YouTube link stays on the film button. */
+function playableVideo(src: string): boolean {
+  if (!src) return false;
+  return !/youtube\.com|youtu\.be/i.test(src);
 }
 
 export async function HeroBlock({ data, locale, first }: { data: BlockData; locale: Locale; first: boolean }) {
@@ -31,15 +33,15 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
   const Heading = first ? 'h1' : 'h2';
 
   const slides: HeroSlide[] = [];
-  /* A hosted film can play in the stage. A path like /video/hero-loop.mp4 is
-     not in this repo, so it would be a black first frame. */
-  if (hasMedia && mediaType === 'video' && remote(src)) {
+  /* The stage plays the film the page assigns, including a file in this
+     site. Choice buttons stay links; they are not extra image slides. */
+  if (hasMedia && mediaType === 'video' && playableVideo(src)) {
     slides.push({
       kind: 'video',
       src,
       poster: str(data, 'mediaPoster') || SCENE_PHOTOS[0],
       alt: str(data, 'mediaAlt') || str(data, 'title'),
-      caption: str(data, 'mediaAlt'),
+      caption: '',
     });
   } else if (hasMedia && mediaType === 'image') {
     slides.push({
@@ -48,15 +50,16 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
       alt: str(data, 'mediaAlt') || str(data, 'title'),
       caption: str(data, 'mediaAlt'),
     });
-  }
-  intents.forEach((intent, index) => {
-    slides.push({
-      kind: 'image',
-      src: scenePhoto(str(intent, 'image'), index),
-      alt: str(intent, 'label'),
-      caption: str(intent, 'label'),
+  } else {
+    intents.forEach((intent, index) => {
+      slides.push({
+        kind: 'image',
+        src: scenePhoto(str(intent, 'image'), index),
+        alt: str(intent, 'label'),
+        caption: str(intent, 'label'),
+      });
     });
-  });
+  }
   if (slides.length === 0) {
     SCENE_PHOTOS.forEach((photo) => {
       slides.push({ kind: 'image', src: photo, alt: str(data, 'title'), caption: '' });

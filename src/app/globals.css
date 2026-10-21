@@ -307,10 +307,9 @@ textarea {
   letter-spacing: 0.08em;
 }
 
-/* Lighter blues on the navy, so a button is visible on the header and the
-   footer without turning orange or green. */
+/* Blue into a light orange, so the action is not two blues on the navy. */
 .btn-gradient {
-  background-image: linear-gradient(100deg, #1f5f86 0%, #3c8fd4 46%, #7eb6e8 100%);
+  background-image: linear-gradient(100deg, #16324f 0%, #2d74a8 42%, #f6c49a 100%);
   background-size: 180% 100%;
   background-position: 0% 50%;
   box-shadow: 0 16px 30px -18px rgba(22, 50, 79, 0.8);
@@ -332,19 +331,20 @@ textarea {
   box-shadow: 0 12px 22px -14px rgba(22, 50, 79, 0.7);
 }
 
-/* A see-through blue face. The cream fill was a second palette. */
+/* Light faces. A translucent fill let the dark rim show through, and the
+   navy type disappeared into it. */
 .market .blue-card {
   border-radius: 28px;
   border: 1.5px solid transparent;
   background:
-    linear-gradient(rgba(22, 50, 79, 0.05), rgba(60, 143, 212, 0.12)) padding-box,
-    linear-gradient(135deg, #16324f, #3c8fd4 42%, #9ecae6) border-box;
-  box-shadow: 0 22px 44px -30px rgba(22, 50, 79, 0.4);
+    linear-gradient(#f7fbfe, #e7f3fb) padding-box,
+    linear-gradient(135deg, #9ecae6, #f6c49a) border-box;
+  box-shadow: 0 22px 44px -30px rgba(22, 50, 79, 0.28);
 }
-.market .blue-card.shade-0 { background: linear-gradient(rgba(22, 50, 79, 0.04), rgba(60, 143, 212, 0.14)) padding-box, linear-gradient(145deg, #16324f, #9ecae6) border-box; }
-.market .blue-card.shade-1 { background: linear-gradient(rgba(31, 95, 134, 0.06), rgba(60, 143, 212, 0.1)) padding-box, linear-gradient(160deg, #1f5f86, #d5e6f4) border-box; }
-.market .blue-card.shade-2 { background: linear-gradient(rgba(60, 143, 212, 0.08), rgba(22, 50, 79, 0.04)) padding-box, linear-gradient(145deg, #3c8fd4, #16324f) border-box; }
-.market .blue-card.shade-3 { background: linear-gradient(rgba(22, 50, 79, 0.08), rgba(158, 202, 230, 0.2)) padding-box, linear-gradient(145deg, #9ecae6, #1f5f86) border-box; }
+.market .blue-card.shade-0 { background: linear-gradient(#f8fcfe, #e8f3fb) padding-box, linear-gradient(145deg, #b7d4ea, #f6c49a) border-box; }
+.market .blue-card.shade-1 { background: linear-gradient(#f4f9fd, #e3f0fa) padding-box, linear-gradient(160deg, #9ecae6, #f3d2b0) border-box; }
+.market .blue-card.shade-2 { background: linear-gradient(#f7fbfe, #eaf4fb) padding-box, linear-gradient(145deg, #d5e6f4, #f6c49a) border-box; }
+.market .blue-card.shade-3 { background: linear-gradient(#f3f8fc, #e6f2fb) padding-box, linear-gradient(145deg, #c5ddf0, #f0c09a) border-box; }
 
 /* A photograph standing in space. The tilt is the anamorphic read; hover
    settles it so the picture can be looked at straight. */

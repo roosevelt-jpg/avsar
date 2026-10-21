@@ -35,12 +35,12 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
   return (
     <>
       {announcement.enabled && announcement.text ? (
-        <div className="bg-night px-[clamp(20px,4cqi,56px)] py-2.5 text-center text-[13px] font-medium leading-[1.45] text-on-night">
+        <div className="bg-[#d7ebf7] px-[clamp(20px,4cqi,56px)] py-2.5 text-center text-[13px] font-medium leading-[1.45] text-[#c45c1a]">
           <span>{announcement.text}</span>
           {announcement.href && announcement.linkLabel ? (
             <>
               {' '}
-              <Link href={localHref(locale, announcement.href)} className="font-semibold text-white underline underline-offset-[3px]">
+              <Link href={localHref(locale, announcement.href)} className="font-semibold text-[#1c1410] underline underline-offset-[3px]">
                 {announcement.linkLabel}
               </Link>
             </>

@@ -255,7 +255,7 @@ export const BLOCKS = {
         kind: 'select',
         name: 'layout',
         label: 'Layout',
-        help: 'Timeline hides the pictures and joins the steps with a line',
+        help: 'Both layouts show a picture on each step. Timeline is the tighter grid.',
         options: [
           { value: 'cards', label: 'Cards' },
           { value: 'timeline', label: 'Timeline' },
@@ -325,6 +325,18 @@ export const BLOCKS = {
       { kind: 'media', name: 'image', label: 'Image', accept: 'image' },
       { kind: 'text', name: 'imageAlt', label: 'Image description', max: 200 },
       {
+        kind: 'list',
+        name: 'gallery',
+        label: 'More images',
+        help: 'Shown in turn with the main image. Leave empty for one picture.',
+        itemLabel: 'Image',
+        max: 6,
+        fields: [
+          { kind: 'media', name: 'src', label: 'Image', accept: 'image' },
+          { kind: 'text', name: 'alt', label: 'Description', max: 200 },
+        ],
+      },
+      {
         kind: 'select',
         name: 'imageSide',
         label: 'Image side',
@@ -334,7 +346,7 @@ export const BLOCKS = {
         ],
       },
     ],
-    empty: { eyebrow: '', title: '', body: '', bullets: [], cta: { label: '', href: '' }, image: '', imageAlt: '', imageSide: 'right' },
+    empty: { eyebrow: '', title: '', body: '', bullets: [], cta: { label: '', href: '' }, image: '', imageAlt: '', imageSide: 'right', gallery: [] },
   },
   featured_jobs: {
     label: 'Open jobs',

@@ -1,10 +1,11 @@
 import { items, link, num, str, strList, type BlockData } from '@/lib/cms/blocks';
-import { scenePhoto } from '@/lib/cms/scenes';
+import { scenePhoto, SELECTED_FRAMES, stepPhoto } from '@/lib/cms/scenes';
 import type { Locale } from '@/lib/i18n';
 import { ContactForm } from '@/components/contact/ContactForm';
 import { Markdown } from '../Markdown';
 import { TypeOnView } from '../TypeOnView';
 import { InteractiveCard } from '../InteractiveCard';
+import { FrameCycle } from '../FrameCycle';
 import { CmsButton, CmsImage, CmsTextLink, Icon, Section, SectionHeading } from '../primitives';
 
 type Props = { data: BlockData; locale: Locale };
@@ -58,11 +59,9 @@ export function StepsBlock({ data }: Props) {
       <ol className="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-4 p-0">
         {list.map((item, index) => (
           <li key={index} className="blue-card group flex flex-col overflow-hidden">
-            {str(item, 'image') ? (
-              <div className="relative aspect-[16/10] overflow-hidden bg-canvas">
-                <CmsImage src={scenePhoto(str(item, 'image'), index)} alt="" sizes="(max-width: 768px) 100vw, 33vw" className="transition-transform duration-500 group-hover:scale-[1.03]" />
-              </div>
-            ) : null}
+            <div className="relative aspect-[16/10] overflow-hidden bg-canvas">
+              <CmsImage src={stepPhoto(str(item, 'image'), index)} alt="" sizes="(max-width: 768px) 100vw, 33vw" className="transition-transform duration-500 group-hover:scale-[1.03]" />
+            </div>
             <div className="flex flex-1 flex-col p-6">
               <div className="mb-4 flex items-center justify-between gap-3">
                 <span className="icon-gem grid size-9 place-items-center font-mono text-[13px] font-semibold">
@@ -85,9 +84,9 @@ export function StepsBlock({ data }: Props) {
 }
 
 /**
- * The same steps as a horizontal timeline: a rule with a dot per step, the
- * small label above each title. Pictures are left out on purpose, so six
- * steps fit on one screen of a laptop and read as a sequence, not a gallery.
+ * The same steps as a grid. Each card carries the picture for that step,
+ * so "create your profile" is a phone form and "fly and start work" is the
+ * room, not a repeated kitchen shot.
  */
 function StepsTimeline({ data }: { data: BlockData }) {
   const list = items(data, 'items');
@@ -103,9 +102,9 @@ function StepsTimeline({ data }: { data: BlockData }) {
                even when a translated title wraps onto three lines. */
             <li key={index} className="motion-reveal row-span-3 grid grid-rows-subgrid gap-y-0">
               <InteractiveCard className="blue-card group row-span-3 grid grid-rows-subgrid gap-y-0 overflow-hidden">
-                {str(item, 'image') ? (
+                {stepPhoto(str(item, 'image'), index) ? (
                   <div className="relative aspect-[16/10] overflow-hidden">
-                    <CmsImage src={scenePhoto(str(item, 'image'), index)} alt="" sizes="(max-width: 768px) 100vw, 33vw" className="transition-transform duration-500 group-hover:scale-[1.04]" />
+                    <CmsImage src={stepPhoto(str(item, 'image'), index)} alt="" sizes="(max-width: 768px) 100vw, 33vw" className="transition-transform duration-500 group-hover:scale-[1.04]" />
                     <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-[#1c1410]/70 to-transparent" />
                     <span className="absolute start-4 bottom-3 font-mono text-[12px] font-semibold tracking-[0.14em] text-white">
                       {String(index + 1).padStart(2, '0')}
@@ -192,14 +191,32 @@ export function FeaturesBlock({ data, locale }: Props) {
   );
 }
 
-export function SplitBlock({ data, locale }: Props) {
+function splitFrames(data: BlockData): { src: string; alt: string }[] {
+  const gallery = items(data, 'gallery')
+    .map((item) => ({ src: str(item, 'src'), alt: str(item, 'alt') }))
+    .filter((item) => item.src);
+  if (gallery.length > 1) return gallery;
   const image = str(data, 'image');
+  const replaced =
+    !image ||
+    image.includes('lisbon-rooftops') ||
+    image.startsWith('/photos/lisbon') ||
+    image.startsWith('/photos/kitchen') ||
+    image.startsWith('/walkthrough/') ||
+    image.includes('/illustrations/');
+  if (!replaced) return [{ src: image, alt: str(data, 'imageAlt') }];
+  if (!image) return [];
+  return [...SELECTED_FRAMES];
+}
+
+export function SplitBlock({ data, locale }: Props) {
+  const frames = splitFrames(data);
   const left = str(data, 'imageSide') === 'left';
   const bullets = strList(data, 'bullets');
   const cta = link(data, 'cta');
   return (
     <Section>
-      <div className={`grid grid-cols-1 items-center gap-[clamp(32px,5cqi,72px)] ${image ? 'lg:grid-cols-2' : ''}`}>
+      <div className={`grid grid-cols-1 items-center gap-[clamp(32px,5cqi,72px)] ${frames.length ? 'lg:grid-cols-2' : ''}`}>
         <div className={left ? 'lg:order-2' : ''}>
           <SectionHeading eyebrow={str(data, 'eyebrow')} title={str(data, 'title')} />
           {str(data, 'body') ? <Markdown text={str(data, 'body')} locale={locale} className="-mt-4 text-[17px] text-ink-2" /> : null}
@@ -221,10 +238,10 @@ export function SplitBlock({ data, locale }: Props) {
             </div>
           )}
         </div>
-        {image ? (
+        {frames.length ? (
           <div className={`anamorphic-stage ${left ? 'lg:order-1' : ''}`}>
             <div className="anamorphic-frame relative aspect-[4/3] overflow-hidden bg-canvas">
-              <CmsImage src={scenePhoto(image, 1)} alt={str(data, 'imageAlt')} />
+              <FrameCycle frames={frames} alt={str(data, 'imageAlt')} />
             </div>
           </div>
         ) : null}
