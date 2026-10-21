@@ -71,7 +71,7 @@ export function WhatsAppDesk({ phone, hours, copy }: { phone: string; hours: str
     <>
       <button
         type="button"
-        className="btn-gradient fixed bottom-5 end-5 z-50 inline-flex items-center gap-2 rounded-[16px] px-4 py-3 text-[15px] font-semibold"
+        className="btn-gradient fixed bottom-5 end-5 z-50 inline-flex items-center gap-2 rounded-[16px] px-4 py-3 text-[15px] font-semibold text-white"
         onClick={() => dialog.current?.showModal()}
       >
         <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
@@ -116,7 +116,7 @@ export function WhatsAppDesk({ phone, hours, copy }: { phone: string; hours: str
               href={thread}
               target="_blank"
               rel="noreferrer"
-              className="btn-gradient mt-4 flex justify-center rounded-[16px] px-4 py-3 text-[15px] font-semibold no-underline"
+              className="btn-gradient mt-4 flex justify-center rounded-[16px] px-4 py-3 text-[15px] font-semibold text-white no-underline"
             >
               {copy.continue}
             </a>
@@ -142,7 +142,7 @@ export function WhatsAppDesk({ phone, hours, copy }: { phone: string; hours: str
                 maxLength={500}
                 className="min-w-0 flex-1 rounded-[8px] border border-line bg-surface px-3 py-2 text-[14px]"
               />
-              <button type="submit" disabled={pending} className="btn-gradient rounded-[8px] px-3 py-2 text-[14px] font-semibold disabled:opacity-50">
+              <button type="submit" disabled={pending} className="btn-gradient rounded-[8px] px-3 py-2 text-[14px] font-semibold text-white disabled:opacity-50">
                 {copy.send}
               </button>
             </form>

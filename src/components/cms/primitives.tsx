@@ -72,13 +72,13 @@ export function SectionHeading({
 }
 
 const BUTTON = {
-  /* Every shopfront button is the same terracotta, with the footer navy
-     as the letters. The names stay so older pages can still ask for a variant. */
-  primary: 'btn-gradient border-transparent',
-  dark: 'btn-gradient border-transparent',
-  light: 'btn-gradient border-transparent',
-  ghostDark: 'btn-gradient border-transparent',
-  white: 'btn-gradient border-transparent',
+  /* The filled action is the recruitment blue. "dark" is the quieter
+     second button, for when two actions sit side by side. */
+  primary: 'btn-gradient text-white border-transparent',
+  dark: 'bg-ink text-paper hover:bg-ink-hover border-transparent',
+  light: 'bg-surface text-ink border-line-strong hover:border-ink',
+  ghostDark: 'bg-transparent text-on-night border-dark-line hover:border-on-night',
+  white: 'bg-on-night text-night border-transparent hover:bg-white',
 } as const;
 
 export function CmsButton({

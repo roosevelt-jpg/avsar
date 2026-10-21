@@ -304,28 +304,16 @@ textarea {
   letter-spacing: 0.08em;
 }
 
-/* The action is orange. The letters are the same navy as the footer, so a
-   button on the header, the page, or the footer still reads as one control. */
+/* One solid action. A warm line is the only accent, so the button does not
+   look like a colour sample. */
 .btn-gradient {
-  background: #c96a4b;
-  color: #16324f;
-  box-shadow: 0 14px 28px -18px rgba(201, 106, 75, 0.9);
-  transition: background-color 180ms ease, transform 180ms ease;
+  background: #16324f;
+  color: #f4f8fb;
+  box-shadow: inset 0 -2px 0 #e7b48a;
+  transition: background-color 180ms ease;
 }
 .btn-gradient:hover {
-  background: #b35a3e;
-}
-
-/* Filled actions elsewhere on the public site (sign-in, apply, dashboard)
-   use the same terracotta. The console is outside .avsar-root, so it keeps
-   its own buttons. Letters stay the footer navy. */
-.avsar-root :is(button, a).bg-ink {
-  background-color: #c96a4b;
-  color: #16324f;
-}
-.avsar-root :is(button, a).bg-ink:hover {
-  background-color: #b35a3e;
-  color: #16324f;
+  background: #1c4064;
 }
 
 .chip-gradient {
@@ -407,9 +395,9 @@ textarea {
   min-width: 36px;
   place-items: center;
   border-radius: 999px;
-  border: 0;
-  background: #c96a4b;
-  color: #16324f;
+  border: 1px solid var(--color-line-strong);
+  background: var(--color-surface);
+  color: var(--color-ink);
   font-size: 20px;
   line-height: 1;
 }

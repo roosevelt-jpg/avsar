@@ -68,7 +68,7 @@ export function VideoPlayer({ src, poster, title, autoplay = false }: { src: str
  * film in a native dialog. Closing the dialog unmounts the player, so the
  * sound stops with it.
  */
-export function FilmButton({ src, poster, label }: { src: string; poster?: string; label: string; tone?: 'light' | 'dark' }) {
+export function FilmButton({ src, poster, label, tone = 'light' }: { src: string; poster?: string; label: string; tone?: 'light' | 'dark' }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [open, setOpen] = useState(false);
 
@@ -84,7 +84,9 @@ export function FilmButton({ src, poster, label }: { src: string; poster?: strin
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="btn-gradient t-colors inline-flex cursor-pointer items-center gap-2.5 rounded-[14px] border-0 px-4 py-2.5 text-[15px] font-medium"
+        className={`t-colors inline-flex cursor-pointer items-center gap-2.5 border-0 bg-transparent p-0 text-[15px] font-medium ${
+          tone === 'dark' ? 'text-on-night hover:text-accent-on-dark' : 'text-ink hover:text-accent'
+        }`}
       >
         <span aria-hidden className="grid size-9 place-items-center rounded-full border border-current">
           <PlayIcon className="ms-0.5 size-4" />
