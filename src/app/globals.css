@@ -214,90 +214,120 @@ textarea {
 }
 
 /*
-  Public marketing pages only, matched to the blues on randstad.in:
-  navy #0f1941 for type and bands, #2175d9 for actions, cream #f7f5f0 for
-  the page, and lighter blues for cards. The dashboard, the assessment and
-  the console keep the quiet grey tokens. Repeated under .dark so a theme
-  class on <html> cannot paint the shopfront brown.
+  Public marketing pages only. Warm paper, a display serif, and an ocean
+  gradient that warms to sand at the edge. The dashboard, the assessment
+  and the console keep the quiet grey tokens. Repeated under .dark so a
+  theme class on <html> cannot paint the shopfront brown.
 */
 .market {
-  --color-paper: #f7f5f0;
-  --color-canvas: #e4ebf5;
-  --color-surface: #ffffff;
-  --color-surface-subtle: #f4f7fb;
-  --color-surface-hover: #eef3fa;
-  --color-ink: #0f1941;
-  --color-ink-2: #2c3d68;
-  --color-muted: #5c6d8c;
-  --color-line: #d5deee;
-  --color-line-strong: #b7c6de;
-  --color-line-soft: #e8eef6;
-  --color-dark-line: #24356b;
-  --color-dark-muted: #a9b8d4;
-  --color-dark-muted-2: #d5e0f2;
-  --color-accent: #2175d9;
-  --color-accent-deep: #1859ab;
-  --color-accent-tint: #e7f1fc;
-  --color-accent-on-dark: #7eb6f5;
-  --color-employer: #3860be;
-  --color-employer-deep: #2b4c9a;
-  --color-success: #1f7a4d;
-  --color-ink-hover: #2175d9;
-  --color-night: #0f1941;
-  --color-on-night: #ffffff;
-  --color-tint-sand: #f7f5f0;
-  --color-tint-clay: #d7e6f8;
-  --color-tint-sky: #e7f1fc;
-  --color-tint-sage: #c9daf3;
-  background: var(--color-paper);
+  --color-paper: #f6f3ee;
+  --color-canvas: #e6eef5;
+  --color-surface: #fffcf8;
+  --color-surface-subtle: #f3efe8;
+  --color-surface-hover: #f7f4ee;
+  --color-ink: #16181d;
+  --color-ink-2: #3c4450;
+  --color-muted: #6d665c;
+  --color-line: #e6dfd4;
+  --color-line-strong: #d4cbbd;
+  --color-line-soft: #f0ebe3;
+  --color-dark-line: #2a4a66;
+  --color-dark-muted: #b7c9d8;
+  --color-dark-muted-2: #e4eef5;
+  --color-accent: #1f5f86;
+  --color-accent-deep: #16324f;
+  --color-accent-tint: #e7f2f8;
+  --color-accent-on-dark: #9ecae6;
+  --color-employer: #3c8fd4;
+  --color-employer-deep: #1f5f86;
+  --color-success: #2f7d57;
+  --color-ink-hover: #1f5f86;
+  --color-night: #16324f;
+  --color-on-night: #f7f4ee;
+  --color-tint-sand: #f6f3ee;
+  --color-tint-clay: #f3e6d4;
+  --color-tint-sky: #dceaf5;
+  --color-tint-sage: #e5efe8;
+  background:
+    radial-gradient(70% 40% at 100% -10%, #dceaf5 0%, transparent 55%),
+    var(--color-paper);
   color: var(--color-ink);
   color-scheme: light;
 }
 
 :root.dark .market {
   color-scheme: light;
-  --color-paper: #f7f5f0;
-  --color-canvas: #e4ebf5;
-  --color-surface: #ffffff;
-  --color-surface-subtle: #f4f7fb;
-  --color-surface-hover: #eef3fa;
-  --color-ink: #0f1941;
-  --color-ink-2: #2c3d68;
-  --color-muted: #5c6d8c;
-  --color-line: #d5deee;
-  --color-line-strong: #b7c6de;
-  --color-line-soft: #e8eef6;
-  --color-dark-line: #24356b;
-  --color-dark-muted: #a9b8d4;
-  --color-dark-muted-2: #d5e0f2;
-  --color-accent: #2175d9;
-  --color-accent-deep: #1859ab;
-  --color-accent-tint: #e7f1fc;
-  --color-accent-on-dark: #7eb6f5;
-  --color-employer: #3860be;
-  --color-employer-deep: #2b4c9a;
-  --color-success: #1f7a4d;
-  --color-ink-hover: #2175d9;
-  --color-night: #0f1941;
-  --color-on-night: #ffffff;
-  --color-tint-sand: #f7f5f0;
-  --color-tint-clay: #d7e6f8;
-  --color-tint-sky: #e7f1fc;
-  --color-tint-sage: #c9daf3;
+  --color-paper: #f6f3ee;
+  --color-canvas: #e6eef5;
+  --color-surface: #fffcf8;
+  --color-surface-subtle: #f3efe8;
+  --color-surface-hover: #f7f4ee;
+  --color-ink: #16181d;
+  --color-ink-2: #3c4450;
+  --color-muted: #6d665c;
+  --color-line: #e6dfd4;
+  --color-line-strong: #d4cbbd;
+  --color-line-soft: #f0ebe3;
+  --color-dark-line: #2a4a66;
+  --color-dark-muted: #b7c9d8;
+  --color-dark-muted-2: #e4eef5;
+  --color-accent: #1f5f86;
+  --color-accent-deep: #16324f;
+  --color-accent-tint: #e7f2f8;
+  --color-accent-on-dark: #9ecae6;
+  --color-employer: #3c8fd4;
+  --color-employer-deep: #1f5f86;
+  --color-success: #2f7d57;
+  --color-ink-hover: #1f5f86;
+  --color-night: #16324f;
+  --color-on-night: #f7f4ee;
+  --color-tint-sand: #f6f3ee;
+  --color-tint-clay: #f3e6d4;
+  --color-tint-sky: #dceaf5;
+  --color-tint-sage: #e5efe8;
 }
 
-/* Text cards on the shopfront: a light blue that fades to white, the same
-   idea as Randstad's navy fade on photographs, used where we have no photo. */
-.market .blue-card {
-  border-radius: 8px;
-  border: 1px solid #d5deee;
-  background: linear-gradient(180deg, #d7e6f8 0%, #ffffff 46%);
-  box-shadow: 0 14px 32px -24px rgba(15, 25, 65, 0.55);
+/* Shopfront type is a display serif. Column labels in the footer stay the
+   sans, because a serif at 13px in all caps turns muddy. */
+.market :is(h1, h2) {
+  font-family: var(--font-dm-serif), var(--font-noto-serif-devanagari), var(--font-sans);
+  font-weight: 400;
+  letter-spacing: -0.03em;
 }
-.market .blue-card.shade-0 { background: linear-gradient(180deg, #d7e6f8 0%, #ffffff 48%); }
-.market .blue-card.shade-1 { background: linear-gradient(180deg, #e7f1fc 0%, #ffffff 48%); }
-.market .blue-card.shade-2 { background: linear-gradient(180deg, #c9daf3 0%, #ffffff 52%); }
-.market .blue-card.shade-3 { background: linear-gradient(180deg, #f7f5f0 0%, #ffffff 48%); }
+.market footer h2 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+/* The action is a short gradient, ocean into a warm edge, so a button is
+   not a flat blue rectangle and not a black pill. */
+.btn-gradient {
+  background-image: linear-gradient(115deg, #16324f 0%, #1f5f86 52%, #3c8fd4 100%);
+  box-shadow: 0 14px 28px -18px rgba(22, 50, 79, 0.85);
+}
+.btn-gradient:hover {
+  background-image: linear-gradient(115deg, #1f5f86 0%, #3c8fd4 55%, #c4a574 140%);
+}
+
+/* Cards keep a warm face and a gradient rim, so neighbouring cards are not
+   the same white box with a blue top border. */
+.market .blue-card {
+  border-radius: 22px 22px 22px 8px;
+  border: 1px solid transparent;
+  background:
+    linear-gradient(#fffcf8, #fffcf8) padding-box,
+    linear-gradient(145deg, #c5d8ea, #f6f3ee 42%, #e4d2b4) border-box;
+  box-shadow: 0 18px 40px -28px rgba(22, 50, 79, 0.45);
+}
+.market .blue-card.shade-0 { background: linear-gradient(#fffcf8, #f4f8fb) padding-box, linear-gradient(145deg, #c5d8ea, #f6f3ee 42%, #e4d2b4) border-box; }
+.market .blue-card.shade-1 { background: linear-gradient(#fffcf8, #f7f3ea) padding-box, linear-gradient(160deg, #e4d2b4, #dceaf5) border-box; }
+.market .blue-card.shade-2 { background: linear-gradient(#f7fafc, #fffcf8) padding-box, linear-gradient(145deg, #9ecae6, #f6f3ee) border-box; }
+.market .blue-card.shade-3 { background: linear-gradient(#f6f3ee, #fffcf8) padding-box, linear-gradient(145deg, #d4cbbd, #c5d8ea) border-box; }
+
+.market .motion-tilt:hover {
+  transform: translateY(-4px);
+}
 
 /* Soft wash behind candidate and console dashboards so surfaces sit on
    atmosphere rather than a flat sheet. No photography here: illustrations

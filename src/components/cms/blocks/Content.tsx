@@ -14,17 +14,17 @@ export function TrustBarBlock({ data }: Props) {
   const list = items(data, 'items');
   if (!list.length) return null;
   return (
-    <section className="px-[clamp(20px,4cqi,56px)] py-[clamp(28px,4cqi,48px)]">
-      <ul className="mx-auto m-0 grid w-full max-w-[1200px] list-none grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4 p-0">
+    <section className="px-[clamp(20px,4cqi,56px)] pb-[clamp(8px,2cqi,20px)]">
+      <ul className="mx-auto m-0 grid w-full max-w-[1200px] list-none grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-px overflow-hidden rounded-[28px] bg-[linear-gradient(120deg,#16324f,#1f5f86_58%,#c4a574)] p-0 text-on-night">
         {list.map((item, index) => (
           /* Subgrid rows: a title that wraps in one item pushes every body
              in that row down together, so they stay level in any language. */
-          <li key={index} className={`blue-card shade-${index % 4} motion-reveal row-span-3 grid grid-rows-subgrid gap-y-2 p-5`}>
-            <span className={`grid size-12 place-items-center rounded-[14px] text-white ${TRUST_TONES[index % TRUST_TONES.length]}`}>
+          <li key={index} className="motion-reveal row-span-3 grid grid-rows-subgrid gap-y-2 bg-[#16324f]/25 p-6 backdrop-blur-[2px]">
+            <span className="grid size-12 place-items-center rounded-[14px] bg-white/15 text-white">
               <Icon name={str(item, 'icon')} className="size-6" />
             </span>
             <p className="m-0 self-end text-[16px] font-semibold">{str(item, 'title')}</p>
-            <p className="m-0 text-[14px] leading-[1.5] text-ink-2">{str(item, 'body')}</p>
+            <p className="m-0 text-[14px] leading-[1.5] text-dark-muted-2">{str(item, 'body')}</p>
           </li>
         ))}
       </ul>
@@ -103,25 +103,22 @@ function StepsTimeline({ data }: { data: BlockData }) {
                across the whole row of cards, so the paragraphs start level
                even when a translated title wraps onto three lines. */
             <li key={index} className="motion-reveal row-span-3 grid grid-rows-subgrid gap-y-0">
-              <InteractiveCard className="blue-card group row-span-3 grid grid-rows-subgrid gap-y-0 overflow-hidden p-6">
-                {/* The route line: a faint track, and an accent stroke that
-                    draws across it as the card scrolls into view. */}
-                <div aria-hidden className="relative mb-6 flex items-center">
-                  <span className="motion-ping relative z-10 size-3 shrink-0 rounded-full bg-accent" />
-                  <span className="relative ms-2 h-[2px] flex-1 overflow-hidden rounded-full bg-line">
-                    <span className="motion-fill absolute inset-0 rounded-full bg-accent" />
+              <InteractiveCard className="blue-card group row-span-3 grid grid-rows-subgrid gap-y-0 overflow-hidden">
+                {str(item, 'image') ? (
+                  <div className="relative aspect-[16/10] overflow-hidden">
+                    <CmsImage src={str(item, 'image')} alt="" sizes="(max-width: 768px) 100vw, 33vw" className="transition-transform duration-500 group-hover:scale-[1.04]" />
+                    <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-[#16324f]/70 to-transparent" />
+                    <span className="absolute start-4 bottom-3 font-mono text-[12px] font-semibold tracking-[0.14em] text-white">
+                      {String(index + 1).padStart(2, '0')}
+                    </span>
+                  </div>
+                ) : (
+                  <span className="m-6 grid size-9 w-fit place-items-center rounded-full bg-[linear-gradient(135deg,#16324f,#3c8fd4)] font-mono text-[13px] text-white">
+                    {String(index + 1).padStart(2, '0')}
                   </span>
-                </div>
+                )}
 
-                {/* The big number sits behind the text and slides in on hover. */}
-                <span
-                  aria-hidden
-                  className="pointer-events-none absolute end-4 top-6 select-none text-[72px] font-semibold leading-none tracking-[-0.06em] text-accent/20 transition-transform duration-500 group-hover:-translate-x-2 group-hover:text-accent/40"
-                >
-                  {String(index + 1).padStart(2, '0')}
-                </span>
-
-                <div className="relative">
+                <div className="relative px-6">
                   {meta ? (
                     <span className="inline-flex rounded-full bg-tint-clay px-2.5 py-1 font-mono text-[11px] uppercase tracking-[0.12em] text-accent">
                       {meta}
@@ -131,7 +128,7 @@ function StepsTimeline({ data }: { data: BlockData }) {
                     {str(item, 'title').replace(/^\d+\.\s*/, '')}
                   </h3>
                 </div>
-                <p className="relative m-0 mt-2 text-[15px] leading-[1.6] text-ink-2">{str(item, 'body')}</p>
+                <p className="relative m-0 mt-2 px-6 pb-6 text-[15px] leading-[1.6] text-ink-2">{str(item, 'body')}</p>
               </InteractiveCard>
             </li>
           );
@@ -159,17 +156,21 @@ export function FeaturesBlock({ data, locale }: Props) {
               key={index}
               /* Four subgrid rows (picture, title, text, link), so titles and
                  links line up across a row whatever the text length. */
-              className={`motion-reveal row-span-4 grid grid-rows-subgrid gap-y-0 ${
+              className={`group motion-reveal row-span-4 grid grid-rows-subgrid gap-y-0 overflow-hidden ${
                 tiles
                   ? `blue-card motion-tilt p-7`
                   : 'blue-card t-colors p-6 hover:border-accent'
               }`}
             >
-              {image ? (
-                /* Each card floats on its own beat, so the grid never bobs in unison. */
-                <div className="motion-float relative mx-auto aspect-square w-[min(100%,180px)]" style={{ animationDelay: `${(index % 4) * -1.5}s` }}>
-                  <CmsImage src={image} alt="" sizes="180px" className="illustration" />
+              {image && !image.includes('/illustrations/') ? (
+                <div className="relative -mx-6 -mt-6 mb-2 aspect-[16/9] overflow-hidden">
+                  <CmsImage src={image} alt="" sizes="(max-width: 768px) 100vw, 33vw" className="transition-transform duration-500 group-hover:scale-[1.04]" />
+                  <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-[#16324f]/45 to-transparent" />
                 </div>
+              ) : image ? (
+                <span className={`mb-2 grid h-16 w-16 place-items-center rounded-[16px] text-white ${TRUST_TONES[index % TRUST_TONES.length]}`}>
+                  <Icon name={str(item, 'icon')} className="size-6" />
+                </span>
               ) : (
                 <span className={`grid size-11 place-items-center rounded-[14px] text-white ${tiles ? 'bg-night' : TRUST_TONES[index % TRUST_TONES.length]}`}>
                   <Icon name={str(item, 'icon')} className="size-5" />

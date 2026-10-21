@@ -7,6 +7,7 @@ import { localePath } from '@/lib/i18n/path';
 import { AccountMenu } from '@/components/auth/AccountMenu';
 import { getSiteSettings } from '@/lib/cms/data';
 import { getViewer } from '@/lib/auth';
+import { MarketNav } from '@/components/candidate/MarketNav';
 import { ctaLabel, localHref, navLabel, whatsappHref } from '@/lib/cms/settings';
 
 /**
@@ -46,7 +47,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
         </div>
       ) : null}
 
-      <header className="sticky top-0 z-40 border-b border-line bg-white px-[clamp(12px,4cqi,56px)] py-[12px] text-ink shadow-[0_1px_0_rgba(15,25,65,0.04)] sm:py-[14px]">
+      <header className="sticky top-0 z-40 border-b border-line/80 bg-[#f6f3ee]/90 px-[clamp(12px,4cqi,56px)] py-[12px] text-ink backdrop-blur-md sm:py-[14px]">
         {/* Nothing in the bar may wrap: a two-line "Visa & relocation" doubles
             the header height. The full menu appears only from xl, where six
             links, the toggles and the button fit on one line; below that the
@@ -54,13 +55,11 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
         <div className="mx-auto flex w-full max-w-[1280px] items-center justify-between gap-3 whitespace-nowrap sm:gap-6">
           <Wordmark href={localePath(locale, '/')} size={22} />
 
-          <nav aria-label="Main" className={`hidden min-w-0 items-center gap-[clamp(12px,1.3vw,20px)] text-[14.5px] font-medium text-ink-2 ${wide}`}>
-            {navigation.items.map((item) => (
-              <Link key={item.href} href={localHref(locale, item.href)} className="t-colors no-underline hover:text-accent">
-                {navLabel(item, locale)}
-              </Link>
-            ))}
-          </nav>
+          <MarketNav
+            items={navigation.items.map((item) => ({ href: localHref(locale, item.href), label: navLabel(item, locale) }))}
+            className={`hidden min-w-0 items-center gap-[clamp(12px,1.3vw,20px)] text-[14.5px] font-medium ${wide}`}
+            linkClassName="t-colors no-underline hover:text-ink"
+          />
 
           <div className="flex shrink-0 items-center gap-3 [&>*]:shrink-0">
             <a
@@ -76,7 +75,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
             {showCta ? (
               <Link
                 href={localHref(locale, navigation.headerCta.href)}
-                className="t-colors hidden rounded-[4px] bg-accent px-4 py-2 text-[14px] font-semibold text-white no-underline hover:bg-accent-deep md:inline-flex"
+                className="btn-gradient t-colors hidden rounded-[14px] px-4 py-2 text-[14px] font-semibold text-white no-underline md:inline-flex"
               >
                 {ctaLabel(navigation.headerCta, locale)}
               </Link>
@@ -115,7 +114,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
                 {showCta ? (
                   <Link
                     href={localHref(locale, navigation.headerCta.href)}
-                    className="mt-3 flex justify-center rounded-[4px] bg-accent px-4 py-3 text-[15px] font-semibold text-white no-underline"
+                    className="btn-gradient mt-3 flex justify-center rounded-[14px] px-4 py-3 text-[15px] font-semibold text-white no-underline"
                   >
                     {ctaLabel(navigation.headerCta, locale)}
                   </Link>
@@ -130,7 +129,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
           href={whatsappHref(general.whatsapp)}
           target="_blank"
           rel="noreferrer"
-          className="fixed bottom-5 end-5 z-50 inline-flex items-center gap-2 rounded-[4px] bg-accent px-4 py-3 text-[15px] font-semibold text-white no-underline shadow-[0_12px_30px_-12px_rgba(15,25,65,0.45)]"
+          className="btn-gradient fixed bottom-5 end-5 z-50 inline-flex items-center gap-2 rounded-[14px] px-4 py-3 text-[15px] font-semibold text-white no-underline"
         >
           WhatsApp
         </a>

@@ -51,18 +51,18 @@ export default async function EmployerLanding() {
           <AccountMenu locale="en" tone="employer" />
           <Link
             href="/employers#contact"
-            className="t-colors rounded-[4px] bg-accent px-4 py-2.5 text-[14px] font-semibold text-white no-underline hover:bg-accent-deep"
+            className="btn-gradient t-colors rounded-[14px] px-4 py-2.5 text-[14px] font-semibold text-white no-underline"
           >
             Book a call
           </Link>
         </div>
       </header>
 
-      <section className="relative flex flex-col items-start gap-6 overflow-hidden bg-night px-[clamp(20px,4cqi,56px)] pt-[clamp(48px,9cqi,110px)] pb-[clamp(40px,6cqi,72px)] text-on-night">
+      <section className="relative flex flex-col items-start gap-6 overflow-hidden px-[clamp(20px,4cqi,56px)] pt-[clamp(48px,9cqi,110px)] pb-[clamp(40px,6cqi,72px)]">
         <h1 className="m-0 max-w-[22ch] text-balance text-[clamp(36px,6cqi,72px)] font-semibold leading-[1.04] tracking-[-0.035em]">
           Hire pre-assessed workers from India for your team in Portugal.
         </h1>
-        <p className="m-0 max-w-[60ch] text-[clamp(16px,1.8cqi,19px)] leading-[1.55] text-dark-muted-2">
+        <p className="m-0 max-w-[60ch] text-[clamp(16px,1.8cqi,19px)] leading-[1.55] text-ink-2">
           Search a pool of candidates scored on skills, experience and English. We handle visas,
           relocation, housing and onboarding.
         </p>

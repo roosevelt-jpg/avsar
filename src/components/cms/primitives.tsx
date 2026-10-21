@@ -74,7 +74,7 @@ export function SectionHeading({
 const BUTTON = {
   /* The filled action is the recruitment blue. "dark" is the quieter
      second button, for when two actions sit side by side. */
-  primary: 'bg-accent text-white hover:bg-accent-deep border-transparent',
+  primary: 'btn-gradient text-white border-transparent',
   dark: 'bg-ink text-paper hover:bg-ink-hover border-transparent',
   light: 'bg-surface text-ink border-line-strong hover:border-ink',
   ghostDark: 'bg-transparent text-on-night border-dark-line hover:border-on-night',
@@ -95,7 +95,7 @@ export function CmsButton({
   size?: 'md' | 'lg';
 }) {
   if (!href || !label) return null;
-  const className = `t-colors inline-flex items-center justify-center gap-2 rounded-[4px] border font-medium no-underline ${
+  const className = `t-colors inline-flex items-center justify-center gap-2 rounded-[14px] border font-medium no-underline ${
     size === 'lg' ? 'px-6 py-3.5 text-[16px]' : 'px-5 py-3 text-[15px]'
   } ${BUTTON[variant]}`;
   const resolved = localHref(locale, href);

@@ -129,7 +129,7 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
             {cta.href && ctaLabel ? (
               <Link
                 href={localHref(locale, cta.href)}
-                className="t-colors inline-flex items-center gap-2 rounded-[4px] bg-accent px-6 py-3.5 text-[15px] font-semibold text-white no-underline hover:bg-accent-deep"
+                className="btn-gradient t-colors inline-flex items-center gap-2 rounded-[14px] px-6 py-3.5 text-[15px] font-semibold text-white no-underline"
               >
                 {ctaLabel}
                 <span aria-hidden className="rtl:-scale-x-100">→</span>
