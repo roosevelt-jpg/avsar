@@ -33,7 +33,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
   return (
     <>
       {announcement.enabled && announcement.text ? (
-        <div className="bg-accent px-[clamp(20px,4cqi,56px)] py-2.5 text-center text-[13px] font-medium leading-[1.45] text-white">
+        <div className="bg-night px-[clamp(20px,4cqi,56px)] py-2.5 text-center text-[13px] font-medium leading-[1.45] text-on-night">
           <span>{announcement.text}</span>
           {announcement.href && announcement.linkLabel ? (
             <>
@@ -46,17 +46,17 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
         </div>
       ) : null}
 
-      <header className="sticky top-0 z-40 border-b-4 border-accent bg-night px-[clamp(12px,4cqi,56px)] py-[12px] text-on-night sm:py-[14px]">
+      <header className="sticky top-0 z-40 border-b border-line bg-white px-[clamp(12px,4cqi,56px)] py-[12px] text-ink shadow-[0_1px_0_rgba(15,25,65,0.04)] sm:py-[14px]">
         {/* Nothing in the bar may wrap: a two-line "Visa & relocation" doubles
             the header height. The full menu appears only from xl, where six
             links, the toggles and the button fit on one line; below that the
             menu button carries them. */}
         <div className="mx-auto flex w-full max-w-[1280px] items-center justify-between gap-3 whitespace-nowrap sm:gap-6">
-          <Wordmark href={localePath(locale, '/')} size={22} tone="dark" />
+          <Wordmark href={localePath(locale, '/')} size={22} />
 
-          <nav aria-label="Main" className={`hidden min-w-0 items-center gap-[clamp(12px,1.3vw,20px)] text-[14.5px] font-medium text-on-night ${wide}`}>
+          <nav aria-label="Main" className={`hidden min-w-0 items-center gap-[clamp(12px,1.3vw,20px)] text-[14.5px] font-medium text-ink-2 ${wide}`}>
             {navigation.items.map((item) => (
-              <Link key={item.href} href={localHref(locale, item.href)} className="t-colors no-underline hover:text-accent-on-dark">
+              <Link key={item.href} href={localHref(locale, item.href)} className="t-colors no-underline hover:text-accent">
                 {navLabel(item, locale)}
               </Link>
             ))}
@@ -66,7 +66,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
             <a
               href={`tel:${general.supportPhone.replace(/\s/g, '')}`}
               dir="ltr"
-              className="t-colors hidden whitespace-nowrap font-mono text-[13px] tabular-nums text-on-night no-underline hover:text-accent-on-dark 2xl:inline"
+              className="t-colors hidden whitespace-nowrap font-mono text-[13px] tabular-nums text-ink-2 no-underline hover:text-accent 2xl:inline"
             >
               {general.supportPhone}
             </a>
@@ -76,7 +76,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
             {showCta ? (
               <Link
                 href={localHref(locale, navigation.headerCta.href)}
-                className="t-colors hidden rounded-full bg-accent px-4 py-2 text-[14px] font-semibold text-white no-underline hover:bg-accent-deep md:inline-flex"
+                className="t-colors hidden rounded-[4px] bg-accent px-4 py-2 text-[14px] font-semibold text-white no-underline hover:bg-accent-deep md:inline-flex"
               >
                 {ctaLabel(navigation.headerCta, locale)}
               </Link>
@@ -85,7 +85,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
             <details className={`group relative ${narrow}`}>
               <summary
                 aria-label="Menu"
-                className="grid size-10 cursor-pointer list-none place-items-center rounded-full border border-white/30 bg-white/10 text-on-night [&::-webkit-details-marker]:hidden"
+                className="grid size-10 cursor-pointer list-none place-items-center rounded-[4px] border border-line bg-surface text-ink [&::-webkit-details-marker]:hidden"
               >
                 <svg viewBox="0 0 24 24" className="size-5 group-open:hidden" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
                   <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
@@ -115,7 +115,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
                 {showCta ? (
                   <Link
                     href={localHref(locale, navigation.headerCta.href)}
-                    className="mt-3 flex justify-center rounded-full bg-accent px-4 py-3 text-[15px] font-semibold text-white no-underline"
+                    className="mt-3 flex justify-center rounded-[4px] bg-accent px-4 py-3 text-[15px] font-semibold text-white no-underline"
                   >
                     {ctaLabel(navigation.headerCta, locale)}
                   </Link>
@@ -130,7 +130,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
           href={whatsappHref(general.whatsapp)}
           target="_blank"
           rel="noreferrer"
-          className="fixed bottom-5 end-5 z-50 inline-flex items-center gap-2 rounded-full bg-[#25d366] px-4 py-3 text-[15px] font-semibold text-[#063018] no-underline shadow-[0_12px_30px_-12px_rgba(6,48,24,0.7)]"
+          className="fixed bottom-5 end-5 z-50 inline-flex items-center gap-2 rounded-[4px] bg-accent px-4 py-3 text-[15px] font-semibold text-white no-underline shadow-[0_12px_30px_-12px_rgba(15,25,65,0.45)]"
         >
           WhatsApp
         </a>

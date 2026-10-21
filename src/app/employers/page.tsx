@@ -30,9 +30,9 @@ export default async function EmployerLanding() {
   const { company, pricing } = settings;
   return (
     <div className="avsar-root market">
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b-4 border-accent bg-night px-[clamp(20px,4cqi,56px)] py-[18px] text-on-night">
-        <Wordmark href="/employers" suffix="for employers" accent="employer" tone="dark" />
-        <nav className="flex flex-wrap gap-[clamp(12px,2.4cqi,28px)] text-[15px] font-medium text-on-night">
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-line bg-white px-[clamp(20px,4cqi,56px)] py-[18px] text-ink">
+        <Wordmark href="/employers" suffix="for employers" accent="employer" />
+        <nav className="flex flex-wrap gap-[clamp(12px,2.4cqi,28px)] text-[15px] font-medium text-ink-2">
           <Link href="/admin/employer" className="no-underline hover:text-employer t-colors">
             Talent pool
           </Link>
@@ -51,7 +51,7 @@ export default async function EmployerLanding() {
           <AccountMenu locale="en" tone="employer" />
           <Link
             href="/employers#contact"
-            className="t-colors rounded-full bg-accent px-4 py-2.5 text-[14px] font-semibold text-white no-underline hover:bg-accent-deep"
+            className="t-colors rounded-[4px] bg-accent px-4 py-2.5 text-[14px] font-semibold text-white no-underline hover:bg-accent-deep"
           >
             Book a call
           </Link>

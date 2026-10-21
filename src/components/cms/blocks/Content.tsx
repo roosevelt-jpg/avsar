@@ -8,7 +8,7 @@ import { CmsButton, CmsImage, CmsTextLink, Icon, Section, SectionHeading } from 
 
 type Props = { data: BlockData; locale: Locale };
 
-const TRUST_TONES = ['bg-accent', 'bg-night', 'bg-employer', 'bg-success'] as const;
+const TRUST_TONES = ['bg-accent', 'bg-night', 'bg-employer', 'bg-[#5b92e4]'] as const;
 
 export function TrustBarBlock({ data }: Props) {
   const list = items(data, 'items');
@@ -19,7 +19,7 @@ export function TrustBarBlock({ data }: Props) {
         {list.map((item, index) => (
           /* Subgrid rows: a title that wraps in one item pushes every body
              in that row down together, so they stay level in any language. */
-          <li key={index} className="motion-reveal row-span-3 grid grid-rows-subgrid gap-y-2 rounded-[20px] border border-line bg-surface p-5 shadow-[0_16px_40px_-28px_rgba(12,59,115,0.45)]">
+          <li key={index} className={`blue-card shade-${index % 4} motion-reveal row-span-3 grid grid-rows-subgrid gap-y-2 p-5`}>
             <span className={`grid size-12 place-items-center rounded-[14px] text-white ${TRUST_TONES[index % TRUST_TONES.length]}`}>
               <Icon name={str(item, 'icon')} className="size-6" />
             </span>
@@ -58,7 +58,7 @@ export function StepsBlock({ data }: Props) {
       <SectionHeading eyebrow={str(data, 'eyebrow')} title={str(data, 'title')} intro={str(data, 'intro')} />
       <ol className="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-4 p-0">
         {list.map((item, index) => (
-          <li key={index} className="group flex flex-col overflow-hidden rounded-[22px] border border-line bg-surface">
+          <li key={index} className="blue-card group flex flex-col overflow-hidden">
             {str(item, 'image') ? (
               <div className="relative aspect-[16/10] overflow-hidden bg-canvas">
                 <CmsImage src={str(item, 'image')} alt="" sizes="(max-width: 768px) 100vw, 33vw" className="transition-transform duration-500 group-hover:scale-[1.03]" />
@@ -103,7 +103,7 @@ function StepsTimeline({ data }: { data: BlockData }) {
                across the whole row of cards, so the paragraphs start level
                even when a translated title wraps onto three lines. */
             <li key={index} className="motion-reveal row-span-3 grid grid-rows-subgrid gap-y-0">
-              <InteractiveCard className="group row-span-3 grid grid-rows-subgrid gap-y-0 overflow-hidden rounded-[24px] border border-line border-t-4 border-t-accent bg-surface p-6 shadow-[0_18px_40px_-28px_rgba(12,59,115,0.4)]">
+              <InteractiveCard className="blue-card group row-span-3 grid grid-rows-subgrid gap-y-0 overflow-hidden p-6">
                 {/* The route line: a faint track, and an accent stroke that
                     draws across it as the card scrolls into view. */}
                 <div aria-hidden className="relative mb-6 flex items-center">
@@ -141,8 +141,6 @@ function StepsTimeline({ data }: { data: BlockData }) {
   );
 }
 
-const TILES = ['bg-tint-clay', 'bg-tint-sky', 'bg-tint-sage', 'bg-tint-sand'] as const;
-
 export function FeaturesBlock({ data, locale }: Props) {
   const list = items(data, 'items');
   const columns = num(data, 'columns', 3);
@@ -163,8 +161,8 @@ export function FeaturesBlock({ data, locale }: Props) {
                  links line up across a row whatever the text length. */
               className={`motion-reveal row-span-4 grid grid-rows-subgrid gap-y-0 ${
                 tiles
-                  ? `motion-tilt rounded-[24px] p-7 ${TILES[index % TILES.length]}`
-                  : 't-colors rounded-[20px] border border-line bg-paper p-6 hover:border-line-strong'
+                  ? `blue-card motion-tilt p-7`
+                  : 'blue-card t-colors p-6 hover:border-accent'
               }`}
             >
               {image ? (
@@ -242,7 +240,7 @@ export function CtaBlock({ data, locale }: Props) {
   const secondary = link(data, 'secondary');
   return (
     <section className="px-[clamp(20px,4cqi,56px)] py-[clamp(24px,4cqi,48px)]">
-      <div className="relative mx-auto w-full max-w-[1200px] overflow-hidden rounded-[32px] bg-night px-[clamp(24px,5cqi,72px)] py-[clamp(40px,6cqi,80px)] text-on-night">
+      <div className="relative mx-auto w-full max-w-[1200px] overflow-hidden rounded-[8px] bg-night px-[clamp(24px,5cqi,72px)] py-[clamp(40px,6cqi,80px)] text-on-night">
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0"

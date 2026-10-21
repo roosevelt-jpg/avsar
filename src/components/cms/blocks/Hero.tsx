@@ -13,7 +13,7 @@ import { HeroRouteMap } from '../HeroRouteMap';
    showing off; the live odds block further down explains them instead. */
 const LIVE_PROOF_MIN = 50;
 
-const TILES = ['bg-tint-clay', 'bg-tint-sky', 'bg-tint-sage', 'bg-tint-sand'] as const;
+const SHADES = ['shade-0', 'shade-1', 'shade-2', 'shade-3'] as const;
 
 export async function HeroBlock({ data, locale, first }: { data: BlockData; locale: Locale; first: boolean }) {
   const mediaType = str(data, 'mediaType');
@@ -100,7 +100,7 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
                     <li key={index} className="motion-reveal">
                       <Link
                         href={localHref(locale, str(intent, 'href'))}
-                        className={`motion-tilt group flex h-full flex-col rounded-[22px] border-b-4 border-accent p-4 text-ink no-underline shadow-[0_16px_40px_-24px_rgba(0,0,0,0.45)] ${TILES[index % TILES.length]}`}
+                        className={`blue-card ${SHADES[index % SHADES.length]} motion-tilt group flex h-full flex-col p-4 text-ink no-underline`}
                       >
                         <span className="motion-float relative mx-auto block aspect-square w-[min(100%,132px)]" style={{ animationDelay: `${index * -1.4}s` }}>
                           {str(intent, 'image') ? <CmsImage src={str(intent, 'image')} alt="" sizes="132px" priority={first} className="illustration" /> : null}
@@ -167,7 +167,7 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
           {stats.length > 0 && (
             <dl className={`m-0 mt-10 grid max-w-[640px] grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-3 ${centred ? 'mx-auto' : ''}`}>
               {stats.map((stat, index) => (
-                <div key={index} className="min-w-0 rounded-[16px] border-t-4 border-accent bg-white px-5 py-4 text-start text-night shadow-[0_16px_40px_-24px_rgba(0,0,0,0.55)]">
+                <div key={index} className="min-w-0 rounded-[8px] border-t-4 border-accent bg-white px-5 py-4 text-start text-night shadow-[0_16px_40px_-24px_rgba(15,25,65,0.45)]">
                   <dt className="sr-only">{str(stat, 'label')}</dt>
                   <dd className="m-0 text-[26px] font-semibold tracking-[-0.03em] text-accent-deep">{str(stat, 'value')}</dd>
                   <dd className="m-0 mt-1 text-[13px] leading-[1.4] text-[#3d5470] [overflow-wrap:anywhere]">{str(stat, 'label')}</dd>
@@ -179,7 +179,7 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
 
         {hasMedia && (
           <div
-            className={`relative w-full overflow-hidden rounded-[28px] bg-canvas shadow-[0_30px_80px_-30px_rgba(27,26,23,0.45)] ${
+            className={`relative w-full overflow-hidden rounded-[8px] bg-canvas shadow-[0_30px_80px_-30px_rgba(15,25,65,0.45)] ${
               split ? 'aspect-[4/5] sm:aspect-[4/3] lg:aspect-[4/5]' : 'aspect-[4/3] sm:aspect-[16/8]'
             }`}
           >

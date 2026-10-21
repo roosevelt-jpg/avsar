@@ -56,7 +56,7 @@ export function JobCategoriesBlock({ data, locale }: Props) {
             <li key={position.slug} className="motion-reveal">
               <Link
                 href={localePath(locale, `/jobs?position=${position.slug}`)}
-                className="group relative block aspect-[4/3] overflow-hidden rounded-[18px] bg-canvas no-underline"
+                className="group relative block aspect-[4/3] overflow-hidden rounded-[8px] bg-canvas no-underline"
               >
                 <Image
                   src={positionImage(position.slug, 420)}
