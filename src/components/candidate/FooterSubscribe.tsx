@@ -30,14 +30,14 @@ export function FooterSubscribe({ locale, labels }: { locale: Locale; labels: La
   }
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex w-full max-w-[420px] flex-col items-end gap-3 text-end">
       <p className="m-0 text-[15px] font-semibold text-[#f4f8fb]">{labels.title}</p>
       {state === 'done' ? (
         <p role="status" className="m-0 text-[14px] text-[#f4f8fb]">
           {labels.done}
         </p>
       ) : (
-        <form onSubmit={submit} className="flex flex-col items-start gap-2 sm:flex-row">
+        <form onSubmit={submit} className="flex flex-col items-end gap-2 sm:flex-row">
           <label className="sr-only" htmlFor="footer-subscribe-email">
             {labels.placeholder}
           </label>

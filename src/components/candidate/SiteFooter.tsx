@@ -190,7 +190,7 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
             )}
           </div>
 
-          <div className="mt-6 border-t border-[#2a4a66] pt-6">
+          <div className="mt-6 flex border-t border-[#2a4a66] pt-6 sm:justify-end">
             <FooterSubscribe
               locale={locale}
               labels={{
@@ -254,7 +254,7 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
           The sign-off uses the ink parent mark, because this band is light.
           The light mark was drawn for the old dark footer and would vanish here.
         */}
-        <div className="mt-5 flex flex-col gap-4 px-1 pb-2 md:flex-row md:items-center md:justify-between">
+        <div className="mt-6 flex flex-col gap-4 border-t border-[#2a4a66] px-1 pt-6 pb-2 md:flex-row md:items-center md:justify-between">
           <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
             {company.parentBrand && (
               <a href={company.website || undefined} target="_blank" rel="noopener noreferrer" className="t-colors opacity-80 hover:opacity-100">
