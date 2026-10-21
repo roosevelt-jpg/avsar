@@ -29,10 +29,10 @@ export default async function EmployerLanding() {
   const [settings, assessed] = await Promise.all([getSiteSettings(), assessedCount()]);
   const { company, pricing } = settings;
   return (
-    <div className="avsar-root">
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-line px-[clamp(20px,4cqi,56px)] py-[18px]">
-        <Wordmark href="/employers" suffix="for employers" accent="employer" />
-        <nav className="flex flex-wrap gap-[clamp(12px,2.4cqi,28px)] text-[15px] text-ink-2">
+    <div className="avsar-root market">
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b-4 border-accent bg-night px-[clamp(20px,4cqi,56px)] py-[18px] text-on-night">
+        <Wordmark href="/employers" suffix="for employers" accent="employer" tone="dark" />
+        <nav className="flex flex-wrap gap-[clamp(12px,2.4cqi,28px)] text-[15px] font-medium text-on-night">
           <Link href="/admin/employer" className="no-underline hover:text-employer t-colors">
             Talent pool
           </Link>
@@ -51,23 +51,23 @@ export default async function EmployerLanding() {
           <AccountMenu locale="en" tone="employer" />
           <Link
             href="/employers#contact"
-            className="t-colors rounded-[10px] bg-ink px-4 py-2.5 text-[14px] font-medium text-paper no-underline hover:bg-ink-hover"
+            className="t-colors rounded-full bg-accent px-4 py-2.5 text-[14px] font-semibold text-white no-underline hover:bg-accent-deep"
           >
             Book a call
           </Link>
         </div>
       </header>
 
-      <section className="flex flex-col items-start gap-6 px-[clamp(20px,4cqi,56px)] pt-[clamp(48px,9cqi,110px)] pb-[clamp(40px,6cqi,72px)]">
+      <section className="relative flex flex-col items-start gap-6 overflow-hidden bg-night px-[clamp(20px,4cqi,56px)] pt-[clamp(48px,9cqi,110px)] pb-[clamp(40px,6cqi,72px)] text-on-night">
         <h1 className="m-0 max-w-[22ch] text-balance text-[clamp(36px,6cqi,72px)] font-semibold leading-[1.04] tracking-[-0.035em]">
           Hire pre-assessed workers from India for your team in Portugal.
         </h1>
-        <p className="m-0 max-w-[60ch] text-[clamp(16px,1.8cqi,19px)] leading-[1.55] text-ink-2">
+        <p className="m-0 max-w-[60ch] text-[clamp(16px,1.8cqi,19px)] leading-[1.55] text-dark-muted-2">
           Search a pool of candidates scored on skills, experience and English. We handle visas,
           relocation, housing and onboarding.
         </p>
         {assessed > 0 ? (
-          <Mono className="text-muted">{assessed.toLocaleString('en-GB')} candidates assessed so far</Mono>
+          <Mono className="text-accent-on-dark">{assessed.toLocaleString('en-GB')} candidates assessed so far</Mono>
         ) : null}
         <EmployerSearchBox />
       </section>
@@ -78,8 +78,8 @@ export default async function EmployerLanding() {
         </h2>
         <ol className="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-7 p-0">
           {STEPS.map(([title, body], index) => (
-            <li key={title} className="border-t border-dark-line pt-5">
-              <Mono className="text-dark-muted">{String(index + 1).padStart(2, '0')}</Mono>
+            <li key={title} className="border-t-4 border-accent pt-5">
+              <Mono className="text-accent-on-dark">{String(index + 1).padStart(2, '0')}</Mono>
               <h3 className="mt-3 mb-2 text-[19px] font-semibold leading-[1.3]">{title}</h3>
               <p className="m-0 text-[15px] leading-[1.55] text-dark-muted-2">{body}</p>
             </li>

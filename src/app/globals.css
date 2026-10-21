@@ -213,6 +213,79 @@ textarea {
   min-height: 100vh;
 }
 
+/*
+  Public marketing pages only. Indian recruitment sites are navy, saffron and
+  white, with a coloured action you can see from across the room. The quiet
+  grey tokens stay on the dashboard, the assessment and the console: those
+  are tools, and this is the shopfront. The block is repeated for dark mode
+  because a theme class on <html> would otherwise paint the shopfront brown.
+*/
+.market {
+  --color-paper: #e7f1fb;
+  --color-canvas: #d3e3f6;
+  --color-surface: #ffffff;
+  --color-surface-subtle: #f4f8fd;
+  --color-surface-hover: #f7fbff;
+  --color-ink: #10233f;
+  --color-ink-2: #2a4668;
+  --color-muted: #5c7390;
+  --color-line: #d3e2f3;
+  --color-line-strong: #b7cce6;
+  --color-line-soft: #e8f2fb;
+  --color-dark-line: #1e4d86;
+  --color-dark-muted: #9eb6d4;
+  --color-dark-muted-2: #d5e4f6;
+  --color-accent: #e07a12;
+  --color-accent-deep: #b85e09;
+  --color-accent-tint: #fff3e0;
+  --color-accent-on-dark: #ffb04a;
+  --color-employer: #0c7c8a;
+  --color-employer-deep: #0a6270;
+  --color-success: #0d9a6a;
+  --color-ink-hover: #1d4e89;
+  --color-night: #0c3b73;
+  --color-on-night: #f5f9ff;
+  --color-tint-sand: #e4eef9;
+  --color-tint-clay: #ffe6c2;
+  --color-tint-sky: #d4ebff;
+  --color-tint-sage: #d5f5e8;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  color-scheme: light;
+}
+
+:root.dark .market {
+  color-scheme: light;
+  --color-paper: #e7f1fb;
+  --color-canvas: #d3e3f6;
+  --color-surface: #ffffff;
+  --color-surface-subtle: #f4f8fd;
+  --color-surface-hover: #f7fbff;
+  --color-ink: #10233f;
+  --color-ink-2: #2a4668;
+  --color-muted: #5c7390;
+  --color-line: #d3e2f3;
+  --color-line-strong: #b7cce6;
+  --color-line-soft: #e8f2fb;
+  --color-dark-line: #1e4d86;
+  --color-dark-muted: #9eb6d4;
+  --color-dark-muted-2: #d5e4f6;
+  --color-accent: #e07a12;
+  --color-accent-deep: #b85e09;
+  --color-accent-tint: #fff3e0;
+  --color-accent-on-dark: #ffb04a;
+  --color-employer: #0c7c8a;
+  --color-employer-deep: #0a6270;
+  --color-success: #0d9a6a;
+  --color-ink-hover: #1d4e89;
+  --color-night: #0c3b73;
+  --color-on-night: #f5f9ff;
+  --color-tint-sand: #e4eef9;
+  --color-tint-clay: #ffe6c2;
+  --color-tint-sky: #d4ebff;
+  --color-tint-sage: #d5f5e8;
+}
+
 /* Soft wash behind candidate and console dashboards so surfaces sit on
    atmosphere rather than a flat sheet. No photography here: illustrations
    are placed intentionally in the UI. */

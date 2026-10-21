@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { LocaleFooter } from '@/components/candidate/LocaleFooter';
+import { MarketShell } from '@/components/candidate/MarketShell';
 import { SiteFooter } from '@/components/candidate/SiteFooter';
 import { isLocale, locales, localeDirection } from '@/lib/i18n';
 
@@ -31,10 +32,12 @@ export default async function LocaleLayout({
    */
   return (
     <div lang={locale} dir={localeDirection[locale]} className="avsar-root">
-      {children}
-      <LocaleFooter>
-        <SiteFooter locale={locale} />
-      </LocaleFooter>
+      <MarketShell>
+        {children}
+        <LocaleFooter>
+          <SiteFooter locale={locale} />
+        </LocaleFooter>
+      </MarketShell>
     </div>
   );
 }

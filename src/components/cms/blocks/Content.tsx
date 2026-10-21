@@ -8,21 +8,23 @@ import { CmsButton, CmsImage, CmsTextLink, Icon, Section, SectionHeading } from 
 
 type Props = { data: BlockData; locale: Locale };
 
+const TRUST_TONES = ['bg-accent', 'bg-night', 'bg-employer', 'bg-success'] as const;
+
 export function TrustBarBlock({ data }: Props) {
   const list = items(data, 'items');
   if (!list.length) return null;
   return (
-    <section className="border-y border-line bg-surface px-[clamp(20px,4cqi,56px)] py-[clamp(24px,3cqi,36px)]">
-      <ul className="mx-auto m-0 grid w-full max-w-[1200px] list-none grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-x-8 gap-y-6 p-0">
+    <section className="px-[clamp(20px,4cqi,56px)] py-[clamp(28px,4cqi,48px)]">
+      <ul className="mx-auto m-0 grid w-full max-w-[1200px] list-none grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4 p-0">
         {list.map((item, index) => (
           /* Subgrid rows: a title that wraps in one item pushes every body
              in that row down together, so they stay level in any language. */
-          <li key={index} className="motion-reveal row-span-2 grid grid-cols-[auto_minmax(0,1fr)] grid-rows-subgrid gap-x-3.5 gap-y-1">
-            <span className="row-span-2 mt-0.5 grid size-10 shrink-0 place-items-center rounded-full bg-accent-tint text-accent-deep">
-              <Icon name={str(item, 'icon')} className="size-5" />
+          <li key={index} className="motion-reveal row-span-3 grid grid-rows-subgrid gap-y-2 rounded-[20px] border border-line bg-surface p-5 shadow-[0_16px_40px_-28px_rgba(12,59,115,0.45)]">
+            <span className={`grid size-12 place-items-center rounded-[14px] text-white ${TRUST_TONES[index % TRUST_TONES.length]}`}>
+              <Icon name={str(item, 'icon')} className="size-6" />
             </span>
-            <p className="m-0 self-end text-[15px] font-semibold">{str(item, 'title')}</p>
-            <p className="m-0 text-[14px] leading-[1.5] text-muted">{str(item, 'body')}</p>
+            <p className="m-0 self-end text-[16px] font-semibold">{str(item, 'title')}</p>
+            <p className="m-0 text-[14px] leading-[1.5] text-ink-2">{str(item, 'body')}</p>
           </li>
         ))}
       </ul>
@@ -64,7 +66,7 @@ export function StepsBlock({ data }: Props) {
             ) : null}
             <div className="flex flex-1 flex-col p-6">
               <div className="mb-4 flex items-center justify-between gap-3">
-                <span className="grid size-9 place-items-center rounded-full bg-ink font-mono text-[13px] text-paper">
+                <span className="grid size-9 place-items-center rounded-full bg-accent font-mono text-[13px] font-semibold text-white">
                   {String(index + 1).padStart(2, '0')}
                 </span>
                 {str(item, 'meta') ? (
@@ -101,7 +103,7 @@ function StepsTimeline({ data }: { data: BlockData }) {
                across the whole row of cards, so the paragraphs start level
                even when a translated title wraps onto three lines. */
             <li key={index} className="motion-reveal row-span-3 grid grid-rows-subgrid gap-y-0">
-              <InteractiveCard className="group row-span-3 grid grid-rows-subgrid gap-y-0 overflow-hidden rounded-[24px] border border-line bg-paper p-6 hover:border-accent/40">
+              <InteractiveCard className="group row-span-3 grid grid-rows-subgrid gap-y-0 overflow-hidden rounded-[24px] border border-line border-t-4 border-t-accent bg-surface p-6 shadow-[0_18px_40px_-28px_rgba(12,59,115,0.4)]">
                 {/* The route line: a faint track, and an accent stroke that
                     draws across it as the card scrolls into view. */}
                 <div aria-hidden className="relative mb-6 flex items-center">
@@ -114,7 +116,7 @@ function StepsTimeline({ data }: { data: BlockData }) {
                 {/* The big number sits behind the text and slides in on hover. */}
                 <span
                   aria-hidden
-                  className="pointer-events-none absolute end-4 top-8 select-none text-[88px] font-semibold leading-none tracking-[-0.06em] text-transparent transition-transform duration-500 [-webkit-text-stroke:1.5px_var(--color-line-strong)] group-hover:-translate-x-2 group-hover:[-webkit-text-stroke-color:var(--color-accent)]"
+                  className="pointer-events-none absolute end-4 top-6 select-none text-[72px] font-semibold leading-none tracking-[-0.06em] text-accent/20 transition-transform duration-500 group-hover:-translate-x-2 group-hover:text-accent/40"
                 >
                   {String(index + 1).padStart(2, '0')}
                 </span>
@@ -171,7 +173,7 @@ export function FeaturesBlock({ data, locale }: Props) {
                   <CmsImage src={image} alt="" sizes="180px" className="illustration" />
                 </div>
               ) : (
-                <span className={`grid size-11 place-items-center rounded-[14px] ${tiles ? 'bg-surface text-ink' : 'bg-ink text-paper'}`}>
+                <span className={`grid size-11 place-items-center rounded-[14px] text-white ${tiles ? 'bg-night' : TRUST_TONES[index % TRUST_TONES.length]}`}>
                   <Icon name={str(item, 'icon')} className="size-5" />
                 </span>
               )}
@@ -233,23 +235,30 @@ export function SplitBlock({ data, locale }: Props) {
   );
 }
 
-/* One look for every call-to-action panel, on every page: light grey with a
-   black button. It used to offer dark and terracotta too, and pages drifted
-   apart, so the style is no longer an option in the editor. */
+/* One closing band on every page: navy, with the saffron action. The editor
+   no longer offers a style, so pages cannot drift back to a grey box. */
 export function CtaBlock({ data, locale }: Props) {
   const primary = link(data, 'primary');
   const secondary = link(data, 'secondary');
   return (
     <section className="px-[clamp(20px,4cqi,56px)] py-[clamp(24px,4cqi,48px)]">
-      <div className="mx-auto w-full max-w-[1200px] overflow-hidden rounded-[32px] border border-line bg-tint-sand px-[clamp(24px,5cqi,72px)] py-[clamp(40px,6cqi,80px)] text-ink">
-        <div className="flex flex-wrap items-end justify-between gap-8">
+      <div className="relative mx-auto w-full max-w-[1200px] overflow-hidden rounded-[32px] bg-night px-[clamp(24px,5cqi,72px)] py-[clamp(40px,6cqi,80px)] text-on-night">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              'radial-gradient(40% 80% at 100% 0%, color-mix(in oklab, var(--color-accent) 50%, transparent), transparent 70%)',
+          }}
+        />
+        <div className="relative flex flex-wrap items-end justify-between gap-8">
           <div className="max-w-[640px]">
             <h2 className="m-0 text-balance text-[clamp(28px,3.8cqi,46px)] font-semibold leading-[1.06] tracking-[-0.03em]">{str(data, 'title')}</h2>
-            {str(data, 'body') ? <p className="m-0 mt-4 text-[17px] leading-[1.6] text-ink-2">{str(data, 'body')}</p> : null}
+            {str(data, 'body') ? <p className="m-0 mt-4 text-[17px] leading-[1.6] text-dark-muted-2">{str(data, 'body')}</p> : null}
           </div>
           <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
             {primary && <CmsButton href={primary.href} label={primary.label} locale={locale} variant="primary" size="lg" />}
-            {secondary && <CmsTextLink href={secondary.href} label={secondary.label} locale={locale} />}
+            {secondary && <CmsTextLink href={secondary.href} label={secondary.label} locale={locale} dark />}
           </div>
         </div>
       </div>

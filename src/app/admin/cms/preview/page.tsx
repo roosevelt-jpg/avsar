@@ -19,7 +19,7 @@ export default async function PreviewPage({ searchParams }: { searchParams: Prom
   if (!page) notFound();
 
   return (
-    <div lang={locale} dir={localeDirection[locale]} className="avsar-root">
+    <div lang={locale} dir={localeDirection[locale]} className="avsar-root market">
       <CmsPageView
         page={page}
         locale={locale}

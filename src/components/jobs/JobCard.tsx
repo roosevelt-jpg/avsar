@@ -57,7 +57,7 @@ export function JobCard({ job, locale, priority = false, saved }: { job: Job; lo
         {job.employerDisplay ? <p className="m-0 mt-1 text-[14px] text-ink-2">{job.employerDisplay}</p> : null}
         <p className="m-0 mt-3 line-clamp-2 text-[14px] leading-[1.55] text-muted">{job.summary}</p>
         <div className="mt-auto flex flex-wrap items-center gap-2 pt-4">
-          {salary && <span className="rounded-full bg-ink px-3 py-1 text-[13px] font-medium text-paper">{salary}</span>}
+          {salary && <span className="rounded-full bg-accent px-3 py-1 text-[13px] font-semibold text-white">{salary}</span>}
           <span className="rounded-full border border-line px-3 py-1 text-[13px] text-ink-2">{siteText(locale, HOUSING_LABELS[job.housing])}</span>
           {job.openings > 1 && <span className="rounded-full border border-line px-3 py-1 text-[13px] text-ink-2">{job.openings} {siteText(locale, 'openings')}</span>}
         </div>

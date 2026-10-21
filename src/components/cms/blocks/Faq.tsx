@@ -18,10 +18,10 @@ export function FaqBlock({ data, locale }: { data: BlockData; locale: Locale }) 
         <SectionHeading eyebrow={str(data, 'eyebrow')} title={str(data, 'title')} intro={str(data, 'intro')} />
         <div className="flex flex-col gap-2.5">
           {list.map((item, index) => (
-            <details key={index} className="group rounded-[18px] border border-line bg-surface open:border-line-strong">
+            <details key={index} className="group rounded-[18px] border border-line bg-surface open:border-accent open:shadow-[0_12px_30px_-24px_rgba(224,122,18,0.8)]">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-[16px] font-medium [&::-webkit-details-marker]:hidden">
                 {str(item, 'question')}
-                <span aria-hidden className="grid size-7 shrink-0 place-items-center rounded-full bg-paper text-[18px] leading-none transition-transform group-open:rotate-45">
+                <span aria-hidden className="grid size-7 shrink-0 place-items-center rounded-full bg-accent text-[18px] leading-none text-white transition-transform group-open:rotate-45">
                   +
                 </span>
               </summary>

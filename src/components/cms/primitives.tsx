@@ -72,9 +72,10 @@ export function SectionHeading({
 }
 
 const BUTTON = {
-  /* Every filled button is black with white text (inverted in dark mode).
-     "white" is the one exception, for dark bands, where black would vanish. */
-  primary: 'bg-ink text-paper hover:bg-ink-hover border-transparent',
+  /* Saffron is the action on the shopfront, the way an Indian recruitment
+     site marks "apply" so it is not another black label. "dark" stays for
+     a second action that should not compete with it. */
+  primary: 'bg-accent text-white hover:bg-accent-deep border-transparent',
   dark: 'bg-ink text-paper hover:bg-ink-hover border-transparent',
   light: 'bg-surface text-ink border-line-strong hover:border-ink',
   ghostDark: 'bg-transparent text-on-night border-dark-line hover:border-on-night',
