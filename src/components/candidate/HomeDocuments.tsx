@@ -41,7 +41,7 @@ export async function HomeDocuments({ locale }: { locale: Locale }) {
       <div className="mx-auto flex max-w-[1120px] flex-wrap items-center gap-x-6 gap-y-3 px-5 py-4">
         <p className="m-0 text-[14px] font-medium text-[#16324f]">{d.documents}</p>
         {items.map((item) => (
-          <Link key={item.href} href={item.href} className="text-[14px] text-[#16324f] underline decoration-[#e7b48a] underline-offset-4">
+          <Link key={item.href} href={item.href} className="text-[14px] text-[#16324f] underline decoration-[#c96a4b] underline-offset-4">
             {item.label}
           </Link>
         ))}

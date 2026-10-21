@@ -82,7 +82,7 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
       slides={slides}
       lead={
         str(data, 'eyebrow') ? (
-          <p className="m-0 text-[13px] font-medium text-[#f08a2f]">{str(data, 'eyebrow')}</p>
+          <p className="m-0 text-[13px] font-medium text-[#c96a4b]">{str(data, 'eyebrow')}</p>
         ) : null
       }
     >
@@ -98,14 +98,14 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
           {str(data, 'intentsLabel') ? (
             <p className="m-0 mb-3 text-[13px] font-semibold uppercase tracking-[0.14em] text-muted">{str(data, 'intentsLabel')}</p>
           ) : null}
-          <ul className="m-0 flex list-none flex-wrap gap-2.5 p-0">
+          <ul className="intent-row m-0 flex list-none gap-2.5 p-0">
             {intents.map((intent, index) => (
               <li key={index}>
                 <Link
                   href={localHref(locale, str(intent, 'href'))}
-                  className="t-colors inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3.5 py-2 text-[14px] font-semibold text-ink no-underline hover:border-accent"
+                  className="btn-gradient t-colors inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-[14px] font-semibold no-underline"
                 >
-                  {str(intent, 'icon') ? <Icon name={str(intent, 'icon')} className="size-[18px] text-accent" /> : null}
+                  {str(intent, 'icon') ? <Icon name={str(intent, 'icon')} className="size-[18px]" /> : null}
                   {str(intent, 'label')}
                 </Link>
               </li>
@@ -135,7 +135,7 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
 
       {proof.length > 0 && (
         <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-line pt-6">
-          <span className="inline-flex items-center gap-2 font-mono text-[12px] uppercase tracking-[0.12em] text-[#f08a2f]">
+          <span className="inline-flex items-center gap-2 font-mono text-[12px] uppercase tracking-[0.12em] text-[#c96a4b]">
             <span aria-hidden className="size-[7px] animate-pulse rounded-full bg-success" />
             {siteText(locale, 'Live')}
           </span>

@@ -307,13 +307,25 @@ textarea {
 /* The action is orange. The letters are the same navy as the footer, so a
    button on the header, the page, or the footer still reads as one control. */
 .btn-gradient {
-  background: #f08a2f;
+  background: #c96a4b;
   color: #16324f;
-  box-shadow: 0 14px 28px -18px rgba(240, 138, 47, 0.9);
+  box-shadow: 0 14px 28px -18px rgba(201, 106, 75, 0.9);
   transition: background-color 180ms ease, transform 180ms ease;
 }
 .btn-gradient:hover {
-  background: #e0781c;
+  background: #b35a3e;
+}
+
+/* Filled actions elsewhere on the public site (sign-in, apply, dashboard)
+   use the same terracotta. The console is outside .avsar-root, so it keeps
+   its own buttons. Letters stay the footer navy. */
+.avsar-root :is(button, a).bg-ink {
+  background-color: #c96a4b;
+  color: #16324f;
+}
+.avsar-root :is(button, a).bg-ink:hover {
+  background-color: #b35a3e;
+  color: #16324f;
 }
 
 .chip-gradient {
@@ -386,7 +398,7 @@ textarea {
   inset-inline: 0;
   bottom: 0;
   height: 1px;
-  background: #e7b48a;
+  background: #c96a4b;
 }
 
 .stage-nav {
@@ -395,9 +407,9 @@ textarea {
   min-width: 36px;
   place-items: center;
   border-radius: 999px;
-  border: 1px solid var(--color-line-strong);
-  background: var(--color-surface);
-  color: var(--color-ink);
+  border: 0;
+  background: #c96a4b;
+  color: #16324f;
   font-size: 20px;
   line-height: 1;
 }
@@ -407,6 +419,21 @@ textarea {
 
 .hero-mesh {
   background: transparent;
+}
+/* The four choices sit on one line. The text column is too narrow for them,
+   so on a wide screen the row runs into the space beside it. */
+.intent-row {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
+.intent-row a {
+  white-space: nowrap;
+}
+@media (min-width: 1024px) {
+  .intent-row {
+    width: calc(100% * 2 / 1.05 + clamp(28px, 4cqi, 64px));
+    overflow: visible;
+  }
 }
 .hero-progress-track {
   position: relative;
@@ -435,7 +462,7 @@ textarea {
 .announce-bar {
   overflow: hidden;
   background: #d7ebf7;
-  color: #c45c1a;
+  color: #c96a4b;
 }
 .announce-track {
   display: flex;
@@ -457,7 +484,7 @@ textarea {
   height: 8px;
   flex: none;
   border-radius: 999px;
-  background: #f08a2f;
+  background: #c96a4b;
 }
 .announce-bar:hover .announce-track,
 .announce-bar:focus-within .announce-track {

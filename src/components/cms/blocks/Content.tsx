@@ -55,7 +55,7 @@ export function StepsBlock({ data }: Props) {
         {list.map((item, index) => (
           <li key={index} className="grid grid-cols-1 items-center gap-6 border-b border-line py-8 md:grid-cols-[minmax(0,1fr)_minmax(200px,280px)] md:gap-12">
             <div>
-              <p className="m-0 font-mono text-[12px] tracking-[0.16em] text-[#c45c1a]">{String(index + 1).padStart(2, '0')}</p>
+              <p className="m-0 font-mono text-[12px] tracking-[0.16em] text-[#c96a4b]">{String(index + 1).padStart(2, '0')}</p>
               <h3 className="m-0 mt-3 text-[22px] font-semibold tracking-[-0.02em]">{str(item, 'title').replace(/^\d+\.\s*/, '')}</h3>
               <p className="m-0 mt-2 max-w-[52ch] text-[16px] leading-[1.6] text-ink-2">{str(item, 'body')}</p>
               {str(item, 'meta') ? <p className="m-0 mt-3 text-[13px] text-muted">{str(item, 'meta')}</p> : null}
@@ -88,7 +88,7 @@ function StepsTimeline({ data }: { data: BlockData }) {
           return (
             <li key={index} className="grid grid-cols-1 items-center gap-6 border-b border-line py-8 md:grid-cols-2 md:gap-14 md:py-10">
               <div className={flip ? 'md:order-2' : ''}>
-                <p className="m-0 font-mono text-[12px] tracking-[0.16em] text-[#c45c1a]">{String(index + 1).padStart(2, '0')}</p>
+                <p className="m-0 font-mono text-[12px] tracking-[0.16em] text-[#c96a4b]">{String(index + 1).padStart(2, '0')}</p>
                 {meta ? <p className="m-0 mt-3 text-[13px] text-muted">{meta}</p> : null}
                 <h3 className="m-0 mt-2 text-[clamp(22px,2.2cqi,28px)] font-semibold tracking-[-0.02em]">
                   {str(item, 'title').replace(/^\d+\.\s*/, '')}

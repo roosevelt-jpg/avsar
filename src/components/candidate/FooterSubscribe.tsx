@@ -51,7 +51,7 @@ export function FooterSubscribe({ locale, labels }: { locale: Locale; labels: La
             inputMode="email"
             dir="ltr"
             placeholder={labels.placeholder}
-            className="w-full max-w-[220px] rounded-full border border-[#2a4a66] bg-white/10 px-4 py-2.5 text-[14px] text-[#f4f8fb] placeholder:text-[#b7c9d8] focus:border-[#f6c49a] focus:outline-none"
+            className="w-full max-w-[220px] rounded-full border border-[#2a4a66] bg-white/10 px-4 py-2.5 text-[14px] text-[#f4f8fb] placeholder:text-[#b7c9d8] focus:border-[#c96a4b] focus:outline-none"
           />
           <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
           <button
