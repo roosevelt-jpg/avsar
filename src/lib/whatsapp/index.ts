@@ -34,6 +34,8 @@ export const WHATSAPP_TEMPLATES = {
   payment_received: 2,
   /** {{1}} first name */
   legal_review_ready: 1,
+  /** {{1}} first name, {{2}} package price. One message, the day after checkout was opened and not paid. */
+  checkout_abandoned: 2,
 } as const;
 
 export type WhatsAppTemplate = keyof typeof WHATSAPP_TEMPLATES;

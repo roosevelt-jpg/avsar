@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 export function OfferScroll({ active }: { active: boolean }) {
   useEffect(() => {
     if (!active) return;
-    const el = document.getElementById('package-offer');
+    const el = document.getElementById('payment-failed') ?? document.getElementById('package-offer');
     if (!el) return;
     const id = window.setTimeout(() => {
       el.scrollIntoView({ behavior: 'smooth', block: 'start' });

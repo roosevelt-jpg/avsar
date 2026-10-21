@@ -47,6 +47,7 @@ export function UnlockReport({
   company,
   whatsapp,
   supportEmail,
+  preferUpi = false,
 }: {
   t: Dictionary;
   locale: Locale;
@@ -58,6 +59,8 @@ export function UnlockReport({
   company: CompanySettings;
   whatsapp: string;
   supportEmail: string;
+  /** After a cancelled checkout, UPI is the method most Indian cards were blocking. */
+  preferUpi?: boolean;
   methods: PaymentMethodHint[];
   provider: PaymentProvider['name'];
   providerMode: 'sandbox' | 'production';
@@ -65,7 +68,14 @@ export function UnlockReport({
   country?: string | null;
 }) {
   const s = t.status;
-  const [method, setMethod] = useState<PaymentMethodHint>(methods[0] ?? 'card');
+  const [method, setMethod] = useState<PaymentMethodHint>(
+    preferUpi && methods.includes('upi') ? 'upi' : (methods[0] ?? 'card'),
+  );
+  const digits = whatsapp.replace(/[^\d]/g, '');
+  const talkText =
+    locale === 'hi'
+      ? 'नमस्ते, मैं मुफ़्त मूल्यांकन पूरा कर चुका/चुकी हूँ और करियर पैकेज खरीदने से पहले बात करना चाहता/चाहती हूँ।'
+      : 'Hello, I finished the free assessment and want to talk before I buy the career package.';
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const idempotency = useIdempotencyKey();
@@ -188,14 +198,26 @@ export function UnlockReport({
         })}
       </div>
 
-      <button
-        type="button"
-        onClick={() => void pay()}
-        disabled={busy}
-        className="t-colors mt-5 cursor-pointer rounded-[12px] border-0 bg-ink px-5 py-3 text-[15px] font-medium text-paper hover:bg-ink-hover disabled:opacity-40"
-      >
-        {fill(s.unlockCta, { price })}
-      </button>
+      <div className="mt-5 flex flex-wrap gap-2.5">
+        <button
+          type="button"
+          onClick={() => void pay()}
+          disabled={busy}
+          className="t-colors cursor-pointer rounded-[12px] border-0 bg-ink px-5 py-3 text-[15px] font-medium text-paper hover:bg-ink-hover disabled:opacity-40"
+        >
+          {fill(s.unlockCta, { price })}
+        </button>
+        {digits ? (
+          <a
+            href={`https://wa.me/${digits}?text=${encodeURIComponent(talkText)}`}
+            target="_blank"
+            rel="noreferrer"
+            className="t-colors inline-flex items-center rounded-[12px] border border-line-strong bg-surface px-5 py-3 text-[15px] font-medium text-ink no-underline hover:border-ink"
+          >
+            {siteText(locale, 'Talk before you pay')}
+          </a>
+        ) : null}
+      </div>
 
       {/* A card-only rail abroad is an international payment for an Indian card,
           and many banks switch that off by default. Saying so first saves a

@@ -19,5 +19,6 @@ Approve these in WhatsApp Manager (English, category UTILITY or MARKETING as Met
 | `package_offer` | Hello {{1}}, you finished the free assessment and are in our database. The optional career package ({{2}}) adds a preliminary legal document review, your full report and a CV. No shortlist priority. |
 | `payment_received` | Hello {{1}}, payment received. Receipt {{2}}. Your package deliverables are on your dashboard. |
 | `legal_review_ready` | Hello {{1}}, your preliminary legal document review is ready on your dashboard. |
+| `checkout_abandoned` | Hello {{1}}, your payment for the optional career package ({{2}}) did not finish. You can try again from your dashboard. UPI is accepted. It does not change your shortlist chances. |
 
 Sends only go to candidates with `whatsapp_opt_in_at` set. Without `WHATSAPP_ACCESS_TOKEN` / `WHATSAPP_PHONE_NUMBER_ID`, nothing is sent.

@@ -1,4 +1,5 @@
 import { Mono } from '@/components/ui/Mono';
+import { ScoreShareCard } from '@/components/candidate/ScoreShareCard';
 import { siteText } from '@/lib/cms/localize';
 import type { Locale } from '@/lib/i18n';
 
@@ -38,6 +39,11 @@ export function ReportPreview({
         {t('Score')}: {overallOutOf10} / 10
       </h2>
       <p className="m-0 max-w-[62ch] text-[15px] leading-[1.6] text-ink-2">{shortlistLine}</p>
+      <ScoreShareCard
+        scoreOutOf10={overallOutOf10}
+        above={overall >= shortlistMin}
+        thresholdLabel={`${threshold} out of 10`}
+      />
 
       {strengths.length > 0 ? (
         <ul className="m-0 mt-5 flex list-none flex-col gap-2.5 p-0">

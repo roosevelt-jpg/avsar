@@ -15,6 +15,8 @@ import { UnlockReport } from '@/components/candidate/UnlockReport';
 import { PackageOfferBanner } from '@/components/candidate/PackageOfferBanner';
 import { StickyPackageCta } from '@/components/candidate/StickyPackageCta';
 import { ReportPreview } from '@/components/candidate/ReportPreview';
+import { PaymentFailedNotice } from '@/components/candidate/PaymentFailedNotice';
+import { LegalReviewSample } from '@/components/candidate/LegalReviewSample';
 import { DemandStrip } from '@/components/candidate/DemandStrip';
 import { OfferScroll } from '@/components/candidate/OfferScroll';
 import { FamilyLinks } from '@/components/relocation/FamilyLinks';
@@ -60,7 +62,7 @@ export default async function DashboardPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ offer?: string; paid?: string }>;
+  searchParams: Promise<{ offer?: string; paid?: string; status?: string }>;
 }) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
@@ -69,6 +71,7 @@ export default async function DashboardPage({
   const query = await searchParams;
   const showOffer = query.offer === '1';
   const justPaid = Boolean(query.paid);
+  const paymentCancelled = query.status === 'cancelled';
 
   let r: DashboardReport | null = null;
   let pack: Pack | null = null;
@@ -190,7 +193,11 @@ export default async function DashboardPage({
       >
         {unverifiedEmail && <VerifyEmailBanner email={unverifiedEmail} t={t} />}
 
-        <OfferScroll active={status.awaitingPayment && showOffer} />
+        <OfferScroll active={status.awaitingPayment && (showOffer || paymentCancelled)} />
+
+        {status.awaitingPayment && paymentCancelled ? (
+          <PaymentFailedNotice locale={locale} whatsapp={settings.general.whatsapp} />
+        ) : null}
 
         {justPaid && status.paid ? (
           <section
@@ -216,6 +223,8 @@ export default async function DashboardPage({
             <PackageOfferBanner locale={locale} conversion={settings.conversion} fee={fee} />
           </div>
         ) : null}
+
+        {status.awaitingPayment ? <LegalReviewSample locale={locale} /> : null}
 
         {status.awaitingPayment && reportReady && r ? (
           <ReportPreview
@@ -266,6 +275,7 @@ export default async function DashboardPage({
               company={settings.company}
               whatsapp={settings.general.whatsapp}
               supportEmail={settings.general.supportEmail || settings.company.supportEmail}
+              preferUpi={paymentCancelled}
               methods={availablePaymentMethods()}
               provider={getPaymentProvider().name}
               country={(await headers()).get('x-vercel-ip-country')}
