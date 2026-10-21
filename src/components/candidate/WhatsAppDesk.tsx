@@ -6,35 +6,26 @@ import { useRef, useState } from 'react';
  * The floating WhatsApp control opens a window of desks, then hands the
  * visitor to the company's real WhatsApp number. The desks are topics, not
  * named people: inventing a face and a name would pretend someone works here.
+ *
+ * Copy arrives already translated for the page language, including the draft
+ * that WhatsApp opens with. The button stays "WhatsApp": that is the product name.
  */
-const DESKS = [
-  {
-    id: 'jobs',
-    title: 'Jobs',
-    body: 'Open roles, the free test, and how to apply from your phone.',
-    text: 'Hello, I have a question about jobs in Portugal.',
-  },
-  {
-    id: 'visa',
-    title: 'Visa and relocation',
-    body: 'Documents, the visa file, and what happens after an offer.',
-    text: 'Hello, I have a question about the visa and relocation.',
-  },
-  {
-    id: 'pay',
-    title: 'Payments',
-    body: 'The optional career package. Payment happens on this website only, never in this chat.',
-    text: 'Hello, I have a question about the career package. I know payment is only on the website.',
-  },
-] as const;
+export type WhatsAppDeskCopy = {
+  title: string;
+  intro: string;
+  close: string;
+  allDesks: string;
+  continue: string;
+  desks: { id: 'jobs' | 'visa' | 'pay'; title: string; body: string; text: string }[];
+};
 
-export function WhatsAppDesk({ company, phone, hours }: { company: string; phone: string; hours: string }) {
+export function WhatsAppDesk({ phone, hours, copy }: { phone: string; hours: string; copy: WhatsAppDeskCopy }) {
   const digits = phone.replace(/[^\d]/g, '');
   const dialog = useRef<HTMLDialogElement>(null);
-  const [deskId, setDeskId] = useState<(typeof DESKS)[number]['id'] | null>(null);
+  const [deskId, setDeskId] = useState<WhatsAppDeskCopy['desks'][number]['id'] | null>(null);
   if (!digits) return null;
 
-  const desk = DESKS.find((item) => item.id === deskId) ?? null;
+  const desk = copy.desks.find((item) => item.id === deskId) ?? null;
   const thread = desk ? `https://wa.me/${digits}?text=${encodeURIComponent(desk.text)}` : `https://wa.me/${digits}`;
 
   return (
@@ -62,14 +53,12 @@ export function WhatsAppDesk({ company, phone, hours }: { company: string; phone
         <div className="flex items-start justify-between gap-3 border-b border-line px-5 py-4">
           <div>
             <p id="wa-desk-title" className="m-0 text-[17px] font-semibold text-ink">
-              {company} on WhatsApp
+              {copy.title}
             </p>
-            <p className="m-0 mt-1 text-[13px] leading-[1.45] text-ink-2">
-              Pick a desk. A person on the team replies during office hours. This window does not answer by itself.
-            </p>
+            <p className="m-0 mt-1 text-[13px] leading-[1.45] text-ink-2">{copy.intro}</p>
           </div>
           <form method="dialog">
-            <button type="submit" className="grid size-9 place-items-center rounded-full border border-line text-ink" aria-label="Close">
+            <button type="submit" className="grid size-9 place-items-center rounded-full border border-line text-ink" aria-label={copy.close}>
               ×
             </button>
           </form>
@@ -78,7 +67,7 @@ export function WhatsAppDesk({ company, phone, hours }: { company: string; phone
         {desk ? (
           <div className="px-5 py-4">
             <button type="button" className="mb-3 text-[13px] font-semibold text-accent-deep" onClick={() => setDeskId(null)}>
-              All desks
+              {copy.allDesks}
             </button>
             <div className="rounded-[20px] bg-tint-clay px-4 py-3">
               <p className="m-0 text-[13px] font-semibold uppercase tracking-[0.08em] text-accent-deep">{desk.title}</p>
@@ -90,12 +79,12 @@ export function WhatsAppDesk({ company, phone, hours }: { company: string; phone
               rel="noreferrer"
               className="btn-gradient mt-4 flex justify-center rounded-[16px] px-4 py-3 text-[15px] font-semibold text-white no-underline"
             >
-              Continue on WhatsApp
+              {copy.continue}
             </a>
           </div>
         ) : (
           <ul className="m-0 flex list-none flex-col gap-2 p-4">
-            {DESKS.map((item, index) => (
+            {copy.desks.map((item, index) => (
               <li key={item.id}>
                 <button
                   type="button"

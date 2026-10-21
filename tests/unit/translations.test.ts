@@ -4,7 +4,7 @@ import { DEFAULT_PAGES } from '@/lib/cms/defaults';
 import { LEGAL_PAGES } from '@/lib/cms/defaults/legal';
 import { contentCopy } from '@/lib/cms/copy';
 import { translatableStrings } from '@/lib/cms/localize';
-import { FOOTER_LABELS } from '@/lib/cms/interface-copy';
+import { FOOTER_LABELS, WHATSAPP_LABELS } from '@/lib/cms/interface-copy';
 import { locales } from '@/lib/i18n/path';
 
 /*
@@ -28,6 +28,7 @@ for (const page of DEFAULT_PAGES) {
   translatableStrings(page.title, null, english);
 }
 for (const text of Object.values(FOOTER_LABELS)) english.add(text);
+for (const text of Object.values(WHATSAPP_LABELS)) english.add(text);
 
 const report: Record<string, string[]> = {};
 

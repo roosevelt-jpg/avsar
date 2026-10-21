@@ -8,8 +8,27 @@ import { AccountMenu } from '@/components/auth/AccountMenu';
 import { getSiteSettings } from '@/lib/cms/data';
 import { getViewer } from '@/lib/auth';
 import { MarketNav } from '@/components/candidate/MarketNav';
-import { WhatsAppDesk } from '@/components/candidate/WhatsAppDesk';
+import { WhatsAppDesk, type WhatsAppDeskCopy } from '@/components/candidate/WhatsAppDesk';
+import { WHATSAPP_LABELS } from '@/lib/cms/interface-copy';
+import { siteText } from '@/lib/cms/localize';
 import { ctaLabel, localHref, navLabel } from '@/lib/cms/settings';
+
+/** Window copy for this page's language. The draft on WhatsApp uses the same language. */
+function whatsappCopy(locale: Locale, company: string): WhatsAppDeskCopy {
+  const line = (english: string) => siteText(locale, english).replaceAll('{{company}}', company);
+  return {
+    title: line(WHATSAPP_LABELS.title),
+    intro: line(WHATSAPP_LABELS.intro),
+    close: line(WHATSAPP_LABELS.close),
+    allDesks: line(WHATSAPP_LABELS.allDesks),
+    continue: line(WHATSAPP_LABELS.continue),
+    desks: [
+      { id: 'jobs', title: line(WHATSAPP_LABELS.jobsTitle), body: line(WHATSAPP_LABELS.jobsBody), text: line(WHATSAPP_LABELS.jobsText) },
+      { id: 'visa', title: line(WHATSAPP_LABELS.visaTitle), body: line(WHATSAPP_LABELS.visaBody), text: line(WHATSAPP_LABELS.visaText) },
+      { id: 'pay', title: line(WHATSAPP_LABELS.payTitle), body: line(WHATSAPP_LABELS.payBody), text: line(WHATSAPP_LABELS.payText) },
+    ],
+  };
+}
 
 /**
  * The header on every candidate page.
@@ -125,7 +144,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
           </div>
         </div>
       </header>
-      <WhatsAppDesk company={general.siteName} phone={general.whatsapp} hours={general.officeHours} />
+      <WhatsAppDesk phone={general.whatsapp} hours={general.officeHours} copy={whatsappCopy(locale, general.siteName)} />
     </>
   );
 }

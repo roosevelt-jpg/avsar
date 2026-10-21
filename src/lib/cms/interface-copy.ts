@@ -23,3 +23,24 @@ export const FOOTER_LABELS = {
   subscribeDone: 'Thank you. You are on the list.',
   subscribeError: 'That did not work. Check the address and try again.',
 } as const;
+
+/**
+ * The WhatsApp window. The English sentence is the lookup key, so a Hindi
+ * page shows the Hindi line and the draft message on WhatsApp is Hindi too.
+ */
+export const WHATSAPP_LABELS = {
+  title: '{{company}} on WhatsApp',
+  intro: 'Pick a desk. A person on the team replies during office hours. This window does not answer by itself.',
+  close: 'Close',
+  allDesks: 'All desks',
+  continue: 'Continue on WhatsApp',
+  jobsTitle: 'Jobs',
+  jobsBody: 'Open roles, the free test, and how to apply from your phone.',
+  jobsText: 'Hello, I have a question about jobs in Portugal.',
+  visaTitle: 'Visa and relocation',
+  visaBody: 'Documents, the visa file, and what happens after an offer.',
+  visaText: 'Hello, I have a question about the visa and relocation.',
+  payTitle: 'Payments',
+  payBody: 'The optional career package. Payment happens on this website only, never in this chat.',
+  payText: 'Hello, I have a question about the career package. I know payment is only on the website.',
+} as const;
