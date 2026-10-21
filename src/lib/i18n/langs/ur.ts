@@ -212,6 +212,9 @@ export const ur: Dictionary = {
     pendingNote:
       'جائزہ مکمل کرنے کے بعد مہارت کی رپورٹ اور ٹیلنٹ پول پروفائل 7 دن میں تیار ہوتے ہیں۔ تیار ہونے پر ہم پیغام بھیجیں گے۔',
     download: 'رپورٹ ڈاؤن لوڈ کریں (PDF)',
+    downloadCv: 'CV ڈاؤن لوڈ (PDF)',
+    downloadLegal: 'قانونی جائزہ ڈاؤن لوڈ (PDF)',
+    documents: 'آپ کی تیار دستاویزات',
     overall: 'مجموعی نمبر',
     overallNote: 'کوہارٹ 01 میں سرفہرست {percentile}%',
     englishLabel: 'انگریزی (CEFR)',

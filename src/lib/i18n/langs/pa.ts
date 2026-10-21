@@ -205,6 +205,9 @@ export const pa: Dictionary = {
     pendingNote:
       'ਮੁਲਾਂਕਣ ਪੂਰਾ ਹੋਣ ਤੋਂ ਬਾਅਦ, ਤੁਹਾਡੀ ਹੁਨਰ ਰਿਪੋਰਟ ਅਤੇ ਟੈਲੈਂਟ ਪੂਲ ਪ੍ਰੋਫਾਈਲ 7 ਦਿਨਾਂ ਵਿੱਚ ਤਿਆਰ ਹੋ ਜਾਂਦੀ ਹੈ. ਤਿਆਰ ਹੋਣ ਤੇ ਅਸੀਂ ਸੁਨੇਹਾ ਭੇਜਾਂਗੇ.',
     download: 'ਰਿਪੋਰਟ ਡਾਊਨਲੋਡ ਕਰੋ (PDF)',
+    downloadCv: 'CV ਡਾਊਨਲੋਡ (PDF)',
+    downloadLegal: 'ਕਾਨੂੰਨੀ ਸਮੀਖਿਆ ਡਾਊਨਲੋਡ (PDF)',
+    documents: 'ਤੁਹਾਡੇ ਤਿਆਰ ਦਸਤਾਵੇਜ਼',
     overall: 'ਕੁੱਲ ਸਕੋਰ',
     overallNote: 'ਕੋਹੋਰਟ 01 ਵਿੱਚ ਸਿਖਰਲੇ {percentile}%',
     englishLabel: 'ਅੰਗਰੇਜ਼ੀ (CEFR)',

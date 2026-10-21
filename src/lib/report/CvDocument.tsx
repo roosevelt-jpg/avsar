@@ -1,4 +1,5 @@
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { LogoWatermark } from './Watermark';
 import type { CareerPack } from '@/lib/cv/coach-schema';
 
 /**
@@ -114,6 +115,7 @@ function Standard({ data }: { data: CvData }) {
   const { cv } = data;
   return (
     <Page size="A4" style={base.page}>
+      <LogoWatermark />
       <Text style={base.name}>{data.name}</Text>
       <Text style={base.headline}>{cv.headline}</Text>
       <Text style={base.contact}>
@@ -158,6 +160,7 @@ function Europass({ data }: { data: CvData }) {
   const { cv } = data;
   return (
     <Page size="A4" style={base.page}>
+      <LogoWatermark />
       <View style={eu.band}>
         <Text style={eu.bandName}>{data.name}</Text>
         <Text style={eu.bandRole}>{cv.headline}</Text>
@@ -218,6 +221,7 @@ function Professional({ data }: { data: CvData }) {
   const { cv } = data;
   return (
     <Page size="A4" style={base.page}>
+      <LogoWatermark />
       <Text style={base.name}>{data.name}</Text>
       <Text style={base.headline}>{cv.headline}</Text>
       <View style={pro.rule} />

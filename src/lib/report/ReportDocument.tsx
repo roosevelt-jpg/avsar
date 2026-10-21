@@ -1,4 +1,5 @@
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { LogoWatermark } from './Watermark';
 
 /**
  * The skills report, as a PDF.
@@ -102,6 +103,7 @@ export function ReportDocument({ data }: { data: ReportData }) {
       subject={`${data.cohortName} skills report`}
     >
       <Page size="A4" style={styles.page}>
+        <LogoWatermark />
         <View style={styles.header}>
           <Text style={styles.wordmark}>S&amp;A Recruitment</Text>
           <Text style={styles.eyebrow}>{data.cohortName.toUpperCase()} · SKILLS REPORT</Text>

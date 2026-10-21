@@ -205,6 +205,9 @@ export const te: Dictionary = {
     pendingNote:
       'మూల్యాంకనం పూర్తి చేస్తే 7 రోజుల్లో నైపుణ్యాల రిపోర్ట్ మరియు టాలెంట్ పూల్ ప్రొఫైల్ సిద్ధం అవుతాయి. అయితే సందేశం పంపుతాం.',
     download: 'రిపోర్ట్ డౌన్‌లోడ్ (PDF)',
+    downloadCv: 'CV డౌన్‌లోడ్ (PDF)',
+    downloadLegal: 'న్యాయ సమీక్ష డౌన్‌లోడ్ (PDF)',
+    documents: 'మీ సిద్ధమైన పత్రాలు',
     overall: 'మొత్తం స్కోరు',
     overallNote: 'కోహోర్ట్ 01లో పై {percentile}%',
     englishLabel: 'ఇంగ్లీషు (CEFR)',

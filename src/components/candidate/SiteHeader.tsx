@@ -19,6 +19,9 @@ function whatsappCopy(locale: Locale, company: string): WhatsAppDeskCopy {
   return {
     title: line(WHATSAPP_LABELS.title),
     intro: line(WHATSAPP_LABELS.intro),
+    ask: line(WHATSAPP_LABELS.ask),
+    send: line(WHATSAPP_LABELS.send),
+    fromNotes: line(WHATSAPP_LABELS.fromNotes),
     close: line(WHATSAPP_LABELS.close),
     allDesks: line(WHATSAPP_LABELS.allDesks),
     continue: line(WHATSAPP_LABELS.continue),
@@ -95,7 +98,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
             {showCta ? (
               <Link
                 href={localHref(locale, navigation.headerCta.href)}
-                className="btn-gradient t-colors hidden rounded-[14px] px-4 py-2 text-[14px] font-semibold text-white no-underline md:inline-flex"
+                className="t-colors hidden rounded-[2px] bg-[#f4f8fb] px-4 py-2 text-[14px] font-semibold text-[#16324f] no-underline md:inline-flex"
               >
                 {ctaLabel(navigation.headerCta, locale)}
               </Link>
@@ -134,7 +137,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
                 {showCta ? (
                   <Link
                     href={localHref(locale, navigation.headerCta.href)}
-                    className="btn-gradient mt-3 flex justify-center rounded-[14px] px-4 py-3 text-[15px] font-semibold text-white no-underline"
+                    className="mt-3 flex justify-center rounded-[2px] bg-[#16324f] px-4 py-3 text-[15px] font-semibold text-[#f4f8fb] no-underline"
                   >
                     {ctaLabel(navigation.headerCta, locale)}
                   </Link>

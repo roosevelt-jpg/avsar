@@ -205,6 +205,9 @@ export const gu: Dictionary = {
     pendingNote:
       'મૂલ્યાંકન પૂરું કરો તે પછી, તમારી કુશળતા રિપોર્ટ અને ટેલેન્ટ પૂલ પ્રોફાઇલ 7 દિવસમાં તૈયાર થાય છે. તૈયાર થાય ત્યારે અમે સંદેશ મોકલીશું.',
     download: 'રિપોર્ટ ડાઉનલોડ કરો (PDF)',
+    downloadCv: 'CV ડાઉનલોડ (PDF)',
+    downloadLegal: 'કાનૂની સમીક્ષા ડાઉનલોડ (PDF)',
+    documents: 'તમારા તૈયાર દસ્તાવેજો',
     overall: 'કુલ સ્કોર',
     overallNote: 'કોહોર્ટ 01માં ટોચના {percentile}%',
     englishLabel: 'અંગ્રેજી (CEFR)',

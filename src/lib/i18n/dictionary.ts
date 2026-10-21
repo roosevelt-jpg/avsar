@@ -274,6 +274,9 @@ export type Dictionary = {
     pending: string;
     pendingNote: string;
     download: string;
+    downloadCv: string;
+    downloadLegal: string;
+    documents: string;
     overall: string;
     overallNote: string;
     englishLabel: string;
@@ -657,6 +660,9 @@ const en: Dictionary = {
     pendingNote:
       'Once you complete the assessment, your skills report and talent-pool profile are ready within 7 days. We will message you when it is.',
     download: 'Download report (PDF)',
+    downloadCv: 'Download CV (PDF)',
+    downloadLegal: 'Download legal review (PDF)',
+    documents: 'Your prepared documents',
     overall: 'Overall score',
     overallNote: 'Top {percentile}% of Cohort 01',
     englishLabel: 'English (CEFR)',
@@ -1104,6 +1110,9 @@ const hi: Dictionary = {
     pendingNote:
       'मूल्यांकन पूरा करने के बाद, आपकी स्किल्स रिपोर्ट और टैलेंट पूल प्रोफ़ाइल 7 दिनों के भीतर तैयार हो जाती है। तैयार होने पर हम आपको संदेश भेजेंगे।',
     download: 'रिपोर्ट डाउनलोड करें (PDF)',
+    downloadCv: 'CV डाउनलोड करें (PDF)',
+    downloadLegal: 'कानूनी समीक्षा डाउनलोड करें (PDF)',
+    documents: 'आपके तैयार दस्तावेज़',
     overall: 'कुल स्कोर',
     overallNote: 'कोहॉर्ट 01 के शीर्ष {percentile}%',
     englishLabel: 'अंग्रेज़ी (CEFR)',

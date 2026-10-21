@@ -33,7 +33,7 @@ async function removeFolder(admin: Admin, bucket: string, folder: string) {
  * candidate is.
  */
 export async function eraseCandidate(admin: Admin, candidateId: string): Promise<EraseResult> {
-  const { data: candidate } = await admin.from('candidates').select('id, auth_user_id, erased_at').eq('id', candidateId).maybeSingle();
+  const { data: candidate } = await admin.from('candidates').select('id, auth_user_id, erased_at, phone').eq('id', candidateId).maybeSingle();
   if (!candidate) return { status: 'not_found' };
 
   const { data: active } = await admin
@@ -77,6 +77,10 @@ export async function eraseCandidate(admin: Admin, candidateId: string): Promise
 
   await admin.from('applications').update({ cover_note: null, answers: {}, cv_document_id: null }).eq('candidate_id', candidateId);
   await admin.from('cv_documents').delete().eq('candidate_id', candidateId);
+  const phoneDigits = String(candidate.phone ?? '').replace(/[^\d]/g, '');
+  if (phoneDigits.length >= 8) {
+    await admin.from('assistant_messages').delete().eq('thread_key', phoneDigits);
+  }
 
   const { error } = await admin
     .from('candidates')

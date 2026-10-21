@@ -223,6 +223,9 @@ export const ar: Dictionary = {
     pendingNote:
       'بمجرد إكمالك التقييم، يصبح تقرير مهاراتك وملفك في قاعدة المواهب جاهزين خلال 7 أيام. سنراسلك عندما يكونان جاهزين.',
     download: 'تحميل التقرير (PDF)',
+    downloadCv: 'تحميل السيرة الذاتية (PDF)',
+    downloadLegal: 'تحميل المراجعة القانونية (PDF)',
+    documents: 'مستنداتك الجاهزة',
     overall: 'الدرجة الإجمالية',
     overallNote: 'ضمن أفضل {percentile}% في الدفعة 01',
     englishLabel: 'الإنجليزية (الإطار الأوروبي)',

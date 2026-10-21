@@ -167,7 +167,7 @@ function pickStep({
     return {
       eyebrow: 'Optional career package',
       title: 'Will your papers work for Portugal?',
-      body: `Your test is done and you are in the database for free. The package (${fee}) starts with a preliminary legal check of your documents, then your full report and CV. It gives no shortlist priority.`,
+      body: `Your test is done and you are in the database for free. The package (${fee}) starts with a preliminary legal check of your documents, then your full report and a prepared CV. You download each one from this dashboard once it is ready. It gives no shortlist priority.`,
       href: '#package',
       cta: 'See what is included',
       image: '/illustrations/payment.jpg',

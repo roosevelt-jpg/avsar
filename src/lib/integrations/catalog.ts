@@ -193,6 +193,8 @@ export const INTEGRATIONS: IntegrationGroup[] = [
         fields: [
           { name: 'WHATSAPP_ACCESS_TOKEN', label: 'Access token', secret: true },
           { name: 'WHATSAPP_PHONE_NUMBER_ID', label: 'Phone number ID', secret: false },
+          { name: 'WHATSAPP_VERIFY_TOKEN', label: 'Webhook verify token', secret: true, hint: 'A string you choose, then enter the same string in the Meta webhook' },
+          { name: 'WHATSAPP_APP_SECRET', label: 'App secret', secret: true, hint: 'Used to check that inbound messages really come from Meta' },
         ],
       },
       {
@@ -217,10 +219,11 @@ export const INTEGRATIONS: IntegrationGroup[] = [
       {
         id: 'anthropic',
         name: 'AI CV service (Anthropic)',
-        description: 'Reads CVs and prepares the professional CV in the package.',
+        description: 'Reads CVs, drafts the career pack and the legal review, and answers from the company notes on the site and on WhatsApp.',
         fields: [
           { name: 'ANTHROPIC_API_KEY', label: 'API key', secret: true },
-          { name: 'CV_MODEL', label: 'Model', secret: false, hint: 'Leave blank for the default' },
+          { name: 'CV_MODEL', label: 'CV model', secret: false, hint: 'Leave blank for the default' },
+          { name: 'ASSISTANT_MODEL', label: 'Assistant model', secret: false, hint: 'Leave blank to use the CV model' },
         ],
       },
       {

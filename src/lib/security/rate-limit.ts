@@ -41,6 +41,8 @@ export const RATE_LIMITS = {
   /* Places autocomplete fires as candidates type; keep Google quota safe. */
   places: { name: 'places', limit: 60, windowSeconds: 60 },
   resetPassword: { name: 'reset-password', limit: 5, windowSeconds: 600 },
+  /* One person asking the assistant, including several people behind one Indian carrier address. */
+  assistant: { name: 'assistant', limit: 20, windowSeconds: 600 },
 } satisfies Record<string, RateLimitRule>;
 
 function upstash(): { url: string; token: string } | null {

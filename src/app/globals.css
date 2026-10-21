@@ -249,10 +249,7 @@ textarea {
   --color-tint-clay: rgba(31, 95, 134, 0.1);
   --color-tint-sky: rgba(60, 143, 212, 0.16);
   --color-tint-sage: rgba(22, 50, 79, 0.08);
-  background:
-    radial-gradient(48% 36% at 100% -8%, rgba(60, 143, 212, 0.28) 0%, transparent 58%),
-    radial-gradient(42% 32% at 0% 12%, rgba(22, 50, 79, 0.16) 0%, transparent 55%),
-    #e7eef6;
+  background: #f3f6f9;
   color: var(--color-ink);
   color-scheme: light;
 }
@@ -307,16 +304,15 @@ textarea {
   letter-spacing: 0.08em;
 }
 
-/* Blue into a light orange, so the action is not two blues on the navy. */
+/* One solid action. A warm line is the only accent, so the button does not
+   look like a colour sample. */
 .btn-gradient {
-  background-image: linear-gradient(100deg, #16324f 0%, #2d74a8 42%, #f6c49a 100%);
-  background-size: 180% 100%;
-  background-position: 0% 50%;
-  box-shadow: 0 16px 30px -18px rgba(22, 50, 79, 0.8);
-  transition: background-position 480ms ease, transform 200ms ease;
+  background: #16324f;
+  box-shadow: inset 0 -2px 0 #e7b48a;
+  transition: background-color 180ms ease;
 }
 .btn-gradient:hover {
-  background-position: 100% 50%;
+  background: #1c4064;
 }
 
 .chip-gradient {
@@ -325,26 +321,25 @@ textarea {
 }
 
 .icon-gem {
-  border-radius: 16px;
-  background-image: linear-gradient(145deg, #16324f, #1f5f86 55%, #3c8fd4);
-  color: #fff;
-  box-shadow: 0 12px 22px -14px rgba(22, 50, 79, 0.7);
+  border-radius: 4px;
+  background: transparent;
+  color: #16324f;
+  box-shadow: inset 0 0 0 1px rgba(22, 50, 79, 0.22);
 }
 
-/* Light faces. A translucent fill let the dark rim show through, and the
-   navy type disappeared into it. */
+/* A flat panel. The page already has a colour; the card does not need one. */
 .market .blue-card {
-  border-radius: 28px;
-  border: 1.5px solid transparent;
-  background:
-    linear-gradient(#f7fbfe, #e7f3fb) padding-box,
-    linear-gradient(135deg, #9ecae6, #f6c49a) border-box;
-  box-shadow: 0 22px 44px -30px rgba(22, 50, 79, 0.28);
+  border-radius: 2px;
+  border: 1px solid rgba(22, 50, 79, 0.12);
+  background: #fbfcfe;
+  box-shadow: none;
 }
-.market .blue-card.shade-0 { background: linear-gradient(#f8fcfe, #e8f3fb) padding-box, linear-gradient(145deg, #b7d4ea, #f6c49a) border-box; }
-.market .blue-card.shade-1 { background: linear-gradient(#f4f9fd, #e3f0fa) padding-box, linear-gradient(160deg, #9ecae6, #f3d2b0) border-box; }
-.market .blue-card.shade-2 { background: linear-gradient(#f7fbfe, #eaf4fb) padding-box, linear-gradient(145deg, #d5e6f4, #f6c49a) border-box; }
-.market .blue-card.shade-3 { background: linear-gradient(#f3f8fc, #e6f2fb) padding-box, linear-gradient(145deg, #c5ddf0, #f0c09a) border-box; }
+.market .blue-card.shade-0,
+.market .blue-card.shade-1,
+.market .blue-card.shade-2,
+.market .blue-card.shade-3 {
+  background: #fbfcfe;
+}
 
 /* A photograph standing in space. The tilt is the anamorphic read; hover
    settles it so the picture can be looked at straight. */
@@ -353,28 +348,16 @@ textarea {
   padding: 16px 0 8px;
 }
 .anamorphic-frame {
-  width: min(100%, 460px);
-  margin-inline-start: auto;
-  margin-inline-end: 6%;
-  border-radius: 36px 36px 18px 36px;
-  transform: perspective(1400px) rotateY(-14deg) rotateX(6deg);
-  transform-origin: center center;
-  box-shadow:
-    28px 40px 60px -28px rgba(28, 20, 16, 0.55),
-    0 0 0 1px rgba(255, 255, 255, 0.45);
-  transition: transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-.anamorphic-stage:hover .anamorphic-frame {
-  transform: perspective(1400px) rotateY(-6deg) rotateX(2deg) translateY(-8px);
+  width: 100%;
+  margin: 0;
+  border-radius: 2px;
+  transform: none;
+  box-shadow: none;
 }
 .anamorphic-mini {
-  border-radius: 22px 22px 8px 22px;
-  transform: perspective(800px) rotateY(-14deg) rotateX(6deg);
-  box-shadow: 16px 22px 30px -20px rgba(28, 20, 16, 0.5);
-  transition: transform 500ms cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-.group:hover .anamorphic-mini {
-  transform: perspective(800px) rotateY(-4deg) rotateX(2deg);
+  border-radius: 2px;
+  transform: none;
+  box-shadow: none;
 }
 
 .shop-header::after {
@@ -382,8 +365,8 @@ textarea {
   position: absolute;
   inset-inline: 0;
   bottom: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #9ecae6, #3c8fd4, #16324f);
+  height: 1px;
+  background: #e7b48a;
 }
 
 .stage-nav {
@@ -403,9 +386,7 @@ textarea {
 }
 
 .hero-mesh {
-  background:
-    radial-gradient(40% 50% at 80% 20%, rgba(60, 143, 212, 0.35), transparent 70%),
-    radial-gradient(35% 45% at 10% 80%, rgba(22, 50, 79, 0.2), transparent 70%);
+  background: transparent;
 }
 .hero-progress-track {
   position: relative;
@@ -438,20 +419,15 @@ textarea {
   margin-inline-end: 16px;
   padding: 0;
   border: 0;
-  border-radius: 28px;
-  background: #fffdfb;
+  border-radius: 2px;
+  background: #fbfcfe;
   color: var(--color-ink);
-  box-shadow: 0 30px 80px -24px rgba(28, 20, 16, 0.45);
+  box-shadow: 0 24px 60px -28px rgba(22, 50, 79, 0.45);
 }
 .wa-panel::backdrop {
   background: rgba(28, 20, 16, 0.46);
 }
 
-@media (max-width: 1023px) {
-  .anamorphic-frame {
-    transform: perspective(900px) rotateY(-8deg) rotateX(4deg);
-  }
-}
 @media (prefers-reduced-motion: reduce) {
   .anamorphic-frame,
   .anamorphic-mini,

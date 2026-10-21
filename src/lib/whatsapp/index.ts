@@ -145,3 +145,40 @@ async function deliver(
   });
   return { sent: response.ok };
 }
+
+/** A reply inside the 24-hour window, in ordinary text rather than a template. */
+export async function sendWhatsAppText(to: string, body: string): Promise<boolean> {
+  await refreshIntegrations();
+  const settings = config();
+  const admin = getAdminSupabase();
+  if (!settings || !admin) return false;
+  const digits = to.replace(/[^\d]/g, '');
+  if (digits.length < 8) return false;
+  try {
+    const response = await fetch(`https://graph.facebook.com/${GRAPH_VERSION}/${settings.phoneNumberId}/messages`, {
+      method: 'POST',
+      headers: { authorization: `Bearer ${settings.token}`, 'content-type': 'application/json' },
+      body: JSON.stringify({
+        messaging_product: 'whatsapp',
+        to: digits,
+        type: 'text',
+        text: { body: body.slice(0, 4000), preview_url: false },
+      }),
+      cache: 'no-store',
+    });
+    const data = (await response.json().catch(() => null)) as { messages?: { id?: string }[]; error?: { message?: string; code?: number } } | null;
+    await admin.from('notification_log').insert({
+      channel: 'whatsapp',
+      template: 'assistant_reply',
+      candidate_id: null,
+      application_id: null,
+      status: response.ok ? 'sent' : 'failed',
+      provider_id: data?.messages?.[0]?.id ?? null,
+      error: response.ok ? null : `${response.status} ${data?.error?.message ?? ''}`.trim().slice(0, 500),
+    });
+    return response.ok;
+  } catch (error) {
+    console.error('[whatsapp] text reply failed', error);
+    return false;
+  }
+}

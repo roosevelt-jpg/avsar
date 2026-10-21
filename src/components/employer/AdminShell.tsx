@@ -100,6 +100,7 @@ const STAFF_NAV: Group[] = [
     icon: 'website',
     items: [
       { href: '/admin/cms', label: 'Pages', permission: 'cms.view' },
+      { href: '/admin/assistant', label: 'Assistant notes', permission: 'cms.edit' },
       { href: '/admin/cms/media', label: 'Media library', permission: 'media.manage' },
     ],
   },

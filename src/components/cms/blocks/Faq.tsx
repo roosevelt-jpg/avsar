@@ -18,14 +18,14 @@ export function FaqBlock({ data, locale }: { data: BlockData; locale: Locale }) 
         <SectionHeading eyebrow={str(data, 'eyebrow')} title={str(data, 'title')} intro={str(data, 'intro')} />
         <div className="flex flex-col gap-2.5">
           {list.map((item, index) => (
-            <details key={index} className="blue-card group open:border-accent">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-[16px] font-medium [&::-webkit-details-marker]:hidden">
+            <details key={index} className="group border-b border-line">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 text-[16px] font-medium [&::-webkit-details-marker]:hidden">
                 {str(item, 'question')}
-                <span aria-hidden className="icon-gem grid size-7 shrink-0 place-items-center text-[18px] leading-none transition-transform group-open:rotate-45">
+                <span aria-hidden className="text-[20px] leading-none text-ink transition-transform group-open:rotate-45">
                   +
                 </span>
               </summary>
-              <div className="px-5 pb-5">
+              <div className="pb-5">
                 <Markdown text={str(item, 'answer')} locale={locale} className="text-[15px] text-ink-2" />
               </div>
             </details>

@@ -20,6 +20,26 @@ export function LegalReviewForm({ candidateId, initial }: { candidateId: string;
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
+  async function draftFromFile() {
+    setBusy(true);
+    setMessage(null);
+    try {
+      const response = await fetch(`/api/admin/legal-reviews/${candidateId}/draft`, { method: 'POST' });
+      const data = (await response.json().catch(() => null)) as Draft | { error?: string } | null;
+      if (response.ok && data && 'summary' in data) {
+        setDraft(data);
+        setMessage('Draft filled from the file. Read it, change anything that is wrong, then save. Nothing has been sent.');
+      } else if (data && 'error' in data && data.error === 'ai_unconfigured') {
+        setMessage('The AI key is not set, so there is no draft. Write the review yourself.');
+      } else {
+        setMessage('No draft was produced. Write the review from the file.');
+      }
+    } catch {
+      setMessage('The connection dropped. Try again.');
+    }
+    setBusy(false);
+  }
+
   async function send(action: 'save' | 'deliver') {
     if (action === 'deliver' && !window.confirm('Deliver this review? The candidate is emailed and it can no longer be edited.')) return;
     setBusy(true);
@@ -63,6 +83,9 @@ export function LegalReviewForm({ candidateId, initial }: { candidateId: string;
         </label>
       ))}
       <div className="flex flex-wrap gap-2">
+        <button type="button" disabled={busy} onClick={() => void draftFromFile()} className="cursor-pointer rounded-full border border-line-strong bg-paper px-4 py-2 text-[13px] disabled:opacity-40">
+          Draft from the file
+        </button>
         <button type="button" disabled={busy} onClick={() => void send('save')} className="cursor-pointer rounded-full border border-line-strong bg-paper px-4 py-2 text-[13px] disabled:opacity-40">
           Save draft
         </button>

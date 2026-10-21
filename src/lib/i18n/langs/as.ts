@@ -205,6 +205,9 @@ export const as: Dictionary = {
     pendingNote:
       'মূল্যায়ন শেষ কৰিলে 7 দিনৰ ভিতৰত দক্ষতাৰ ৰিপ’ৰ্ট আৰু টেলেণ্ট পুল প্ৰ’ফাইল সাজু হয়। হ’লে আমি জনাম।',
     download: 'ৰিপ’ৰ্ট ডাউনলোড (PDF)',
+    downloadCv: 'CV ডাউনলোড (PDF)',
+    downloadLegal: 'আইনী পৰ্যালোচনা ডাউনলোড (PDF)',
+    documents: 'আপোনাৰ সাজু নথি',
     overall: 'মুঠ স্ক’ৰ',
     overallNote: 'ক’হৰ্ট 01-ৰ ওপৰৰ {percentile}%',
     englishLabel: 'ইংৰাজী (CEFR)',

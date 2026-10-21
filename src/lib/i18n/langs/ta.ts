@@ -212,6 +212,9 @@ export const ta: Dictionary = {
     pendingNote:
       'மதிப்பீட்டை முடித்த பிறகு, திறன் அறிக்கையும் டேலன்ட் பூல் சுயவிவரமும் 7 நாட்களுக்குள் தயார். தயாரானதும் செய்தி அனுப்புவோம்.',
     download: 'அறிக்கையைப் பதிவிறக்குங்கள் (PDF)',
+    downloadCv: 'CV பதிவிறக்கம் (PDF)',
+    downloadLegal: 'சட்ட மதிப்பாய்வு பதிவிறக்கம் (PDF)',
+    documents: 'உங்கள் தயாரான ஆவணங்கள்',
     overall: 'மொத்த மதிப்பெண்',
     overallNote: 'கோஹார்ட் 01-இல் முதல் {percentile}%',
     englishLabel: 'ஆங்கிலம் (CEFR)',

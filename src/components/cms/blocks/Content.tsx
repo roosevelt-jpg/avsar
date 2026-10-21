@@ -4,7 +4,6 @@ import type { Locale } from '@/lib/i18n';
 import { ContactForm } from '@/components/contact/ContactForm';
 import { Markdown } from '../Markdown';
 import { TypeOnView } from '../TypeOnView';
-import { InteractiveCard } from '../InteractiveCard';
 import { FrameCycle } from '../FrameCycle';
 import { CmsButton, CmsImage, CmsTextLink, Icon, Section, SectionHeading } from '../primitives';
 
@@ -14,17 +13,13 @@ export function TrustBarBlock({ data }: Props) {
   const list = items(data, 'items');
   if (!list.length) return null;
   return (
-    <section className="px-[clamp(20px,4cqi,56px)] pb-[clamp(8px,2cqi,20px)]">
-      <ul className="mx-auto m-0 grid w-full max-w-[1200px] list-none grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3 p-0">
+    <section className="px-[clamp(20px,4cqi,56px)]">
+      <ul className="mx-auto m-0 grid w-full max-w-[1200px] list-none grid-cols-1 border-t border-line p-0 lg:grid-cols-4">
         {list.map((item, index) => (
-          /* Subgrid rows: a title that wraps in one item pushes every body
-             in that row down together, so they stay level in any language. */
-          <li key={index} className={`blue-card shade-${index % 4} motion-tilt motion-reveal row-span-3 grid grid-rows-subgrid gap-y-3 p-6`}>
-            <span className="icon-gem grid size-12 place-items-center">
-              <Icon name={str(item, 'icon')} className="size-6" />
-            </span>
-            <p className="m-0 self-end text-[16px] font-semibold">{str(item, 'title')}</p>
-            <p className="m-0 text-[14px] leading-[1.5] text-ink-2">{str(item, 'body')}</p>
+          <li key={index} className="border-b border-line py-6 lg:border-b-0 lg:border-s lg:px-6 lg:py-8 lg:first:border-s-0">
+            <Icon name={str(item, 'icon')} className="size-5 text-ink" />
+            <p className="m-0 mt-4 text-[16px] font-semibold">{str(item, 'title')}</p>
+            <p className="m-0 mt-2 text-[14px] leading-[1.5] text-ink-2">{str(item, 'body')}</p>
           </li>
         ))}
       </ul>
@@ -56,25 +51,17 @@ export function StepsBlock({ data }: Props) {
   return (
     <Section id="how">
       <SectionHeading eyebrow={str(data, 'eyebrow')} title={str(data, 'title')} intro={str(data, 'intro')} />
-      <ol className="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-4 p-0">
+      <ol className="m-0 flex list-none flex-col border-t border-line p-0">
         {list.map((item, index) => (
-          <li key={index} className="blue-card group flex flex-col overflow-hidden">
-            <div className="relative aspect-[16/10] overflow-hidden bg-canvas">
-              <CmsImage src={stepPhoto(str(item, 'image'), index)} alt="" sizes="(max-width: 768px) 100vw, 33vw" className="transition-transform duration-500 group-hover:scale-[1.03]" />
+          <li key={index} className="grid grid-cols-1 items-center gap-6 border-b border-line py-8 md:grid-cols-[minmax(0,1fr)_minmax(200px,280px)] md:gap-12">
+            <div>
+              <p className="m-0 font-mono text-[12px] tracking-[0.16em] text-[#c45c1a]">{String(index + 1).padStart(2, '0')}</p>
+              <h3 className="m-0 mt-3 text-[22px] font-semibold tracking-[-0.02em]">{str(item, 'title').replace(/^\d+\.\s*/, '')}</h3>
+              <p className="m-0 mt-2 max-w-[52ch] text-[16px] leading-[1.6] text-ink-2">{str(item, 'body')}</p>
+              {str(item, 'meta') ? <p className="m-0 mt-3 text-[13px] text-muted">{str(item, 'meta')}</p> : null}
             </div>
-            <div className="flex flex-1 flex-col p-6">
-              <div className="mb-4 flex items-center justify-between gap-3">
-                <span className="icon-gem grid size-9 place-items-center font-mono text-[13px] font-semibold">
-                  {String(index + 1).padStart(2, '0')}
-                </span>
-                {str(item, 'meta') ? (
-                  <span className="rounded-full bg-accent-tint px-3 py-1 font-mono text-[11px] uppercase tracking-[0.08em] text-accent-deep">
-                    {str(item, 'meta')}
-                  </span>
-                ) : null}
-              </div>
-              <h3 className="m-0 text-[19px] font-semibold tracking-[-0.01em]">{str(item, 'title').replace(/^\d+\.\s*/, '')}</h3>
-              <p className="m-0 mt-2 text-[15px] leading-[1.6] text-ink-2">{str(item, 'body')}</p>
+            <div className="relative aspect-[16/10] overflow-hidden bg-canvas">
+              <CmsImage src={stepPhoto(str(item, 'image'), index)} alt="" sizes="(max-width: 768px) 100vw, 280px" />
             </div>
           </li>
         ))}
@@ -84,50 +71,35 @@ export function StepsBlock({ data }: Props) {
 }
 
 /**
- * The same steps as a grid. Each card carries the picture for that step,
+ * The same steps as a sequence. Each row keeps the picture for that step,
  * so "create your profile" is a phone form and "fly and start work" is the
- * room, not a repeated kitchen shot.
+ * room, not a repeated kitchen shot. The picture alternates sides so the
+ * page reads as a process, not a stack of identical cards.
  */
 function StepsTimeline({ data }: { data: BlockData }) {
   const list = items(data, 'items');
   return (
-    <Section id="how" tone="surface">
+    <Section id="how">
       <SectionHeading eyebrow={str(data, 'eyebrow')} title={str(data, 'title')} intro={str(data, 'intro')} />
-      <ol className="m-0 grid list-none grid-cols-1 gap-5 p-0 sm:grid-cols-2 lg:grid-cols-3">
+      <ol className="m-0 flex list-none flex-col border-t border-line p-0">
         {list.map((item, index) => {
           const meta = str(item, 'meta');
+          const flip = index % 2 === 1;
           return (
-            /* Three subgrid rows (route line, label and title, text) shared
-               across the whole row of cards, so the paragraphs start level
-               even when a translated title wraps onto three lines. */
-            <li key={index} className="motion-reveal row-span-3 grid grid-rows-subgrid gap-y-0">
-              <InteractiveCard className="blue-card group row-span-3 grid grid-rows-subgrid gap-y-0 overflow-hidden">
-                {stepPhoto(str(item, 'image'), index) ? (
-                  <div className="relative aspect-[16/10] overflow-hidden">
-                    <CmsImage src={stepPhoto(str(item, 'image'), index)} alt="" sizes="(max-width: 768px) 100vw, 33vw" className="transition-transform duration-500 group-hover:scale-[1.04]" />
-                    <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-[#1c1410]/70 to-transparent" />
-                    <span className="absolute start-4 bottom-3 font-mono text-[12px] font-semibold tracking-[0.14em] text-white">
-                      {String(index + 1).padStart(2, '0')}
-                    </span>
-                  </div>
-                ) : (
-                  <span className="icon-gem m-6 grid size-9 w-fit place-items-center font-mono text-[13px]">
-                    {String(index + 1).padStart(2, '0')}
-                  </span>
-                )}
-
-                <div className="relative px-6">
-                  {meta ? (
-                    <span className="inline-flex rounded-full bg-tint-clay px-2.5 py-1 font-mono text-[11px] uppercase tracking-[0.12em] text-accent">
-                      {meta}
-                    </span>
-                  ) : null}
-                  <h3 className="m-0 mt-4 max-w-[80%] text-[20px] font-semibold tracking-[-0.015em]">
-                    {str(item, 'title').replace(/^\d+\.\s*/, '')}
-                  </h3>
+            <li key={index} className="grid grid-cols-1 items-center gap-6 border-b border-line py-8 md:grid-cols-2 md:gap-14 md:py-10">
+              <div className={flip ? 'md:order-2' : ''}>
+                <p className="m-0 font-mono text-[12px] tracking-[0.16em] text-[#c45c1a]">{String(index + 1).padStart(2, '0')}</p>
+                {meta ? <p className="m-0 mt-3 text-[13px] text-muted">{meta}</p> : null}
+                <h3 className="m-0 mt-2 text-[clamp(22px,2.2cqi,28px)] font-semibold tracking-[-0.02em]">
+                  {str(item, 'title').replace(/^\d+\.\s*/, '')}
+                </h3>
+                <p className="m-0 mt-3 max-w-[46ch] text-[16px] leading-[1.65] text-ink-2">{str(item, 'body')}</p>
+              </div>
+              {stepPhoto(str(item, 'image'), index) ? (
+                <div className={`relative aspect-[16/10] overflow-hidden bg-canvas ${flip ? 'md:order-1' : ''}`}>
+                  <CmsImage src={stepPhoto(str(item, 'image'), index)} alt="" sizes="(max-width: 768px) 100vw, 50vw" />
                 </div>
-                <p className="relative m-0 mt-2 px-6 pb-6 text-[15px] leading-[1.6] text-ink-2">{str(item, 'body')}</p>
-              </InteractiveCard>
+              ) : null}
             </li>
           );
         })}
@@ -154,23 +126,14 @@ export function FeaturesBlock({ data, locale }: Props) {
               key={index}
               /* Four subgrid rows (picture, title, text, link), so titles and
                  links line up across a row whatever the text length. */
-              className={`group motion-reveal row-span-4 grid grid-rows-subgrid gap-y-0 ${
-                tiles
-                  ? `blue-card motion-tilt p-7`
-                  : 'blue-card t-colors p-6 hover:border-accent'
-              }`}
+              className="row-span-4 grid grid-rows-subgrid gap-y-0 border-t border-line pt-6"
             >
               {image ? (
-                <div className="anamorphic-mini relative mb-2 aspect-[16/10] overflow-hidden">
+                <div className="relative mb-5 aspect-[16/10] overflow-hidden bg-canvas">
                   <CmsImage src={scenePhoto(image, index)} alt="" sizes="(max-width: 768px) 100vw, 33vw" />
-                  <span className="icon-gem absolute start-3 top-3 grid size-10 place-items-center">
-                    <Icon name={str(item, 'icon')} className="size-5" />
-                  </span>
                 </div>
               ) : (
-                <span className="icon-gem grid size-11 place-items-center">
-                  <Icon name={str(item, 'icon')} className="size-5" />
-                </span>
+                <Icon name={str(item, 'icon')} className="mb-4 size-5 text-ink" />
               )}
               <h3 className={`m-0 font-semibold tracking-[-0.01em] ${tiles ? (image ? 'mt-5 text-[22px]' : 'mt-8 text-[22px]') : 'mt-5 text-[18px]'}`}>{str(item, 'title')}</h3>
               {data.typing === true ? (
@@ -239,8 +202,8 @@ export function SplitBlock({ data, locale }: Props) {
           )}
         </div>
         {frames.length ? (
-          <div className={`anamorphic-stage ${left ? 'lg:order-1' : ''}`}>
-            <div className="anamorphic-frame relative aspect-[4/3] overflow-hidden bg-canvas">
+          <div className={left ? 'lg:order-1' : ''}>
+            <div className="relative aspect-[4/3] overflow-hidden bg-canvas">
               <FrameCycle frames={frames} alt={str(data, 'imageAlt')} />
             </div>
           </div>
@@ -255,16 +218,16 @@ export function CtaBlock({ data, locale }: Props) {
   const primary = link(data, 'primary');
   const secondary = link(data, 'secondary');
   return (
-    <section className="px-[clamp(20px,4cqi,56px)] pt-[clamp(24px,4cqi,48px)]">
-      <div className="mx-auto w-full max-w-[1200px] rounded-[28px] border border-line bg-[rgba(22,50,79,0.08)] px-[clamp(24px,5cqi,56px)] py-[clamp(32px,5cqi,56px)]">
+    <section className="bg-[#16324f] px-[clamp(20px,4cqi,56px)] py-[clamp(56px,8cqi,96px)] text-[#f4f8fb]">
+      <div className="mx-auto w-full max-w-[1200px]">
         <div className="flex flex-wrap items-end justify-between gap-8">
           <div className="max-w-[640px]">
-            <h2 className="m-0 text-balance text-[clamp(28px,3.8cqi,46px)] font-semibold leading-[1.06] tracking-[-0.03em] text-ink">{str(data, 'title')}</h2>
-            {str(data, 'body') ? <p className="m-0 mt-4 text-[17px] leading-[1.6] text-ink-2">{str(data, 'body')}</p> : null}
+            <h2 className="m-0 text-balance text-[clamp(28px,3.8cqi,46px)] font-semibold leading-[1.06] tracking-[-0.03em] text-[#f4f8fb]">{str(data, 'title')}</h2>
+            {str(data, 'body') ? <p className="m-0 mt-4 text-[17px] leading-[1.6] text-[#d5e2ee]">{str(data, 'body')}</p> : null}
           </div>
           <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
-            {primary && <CmsButton href={primary.href} label={primary.label} locale={locale} variant="primary" size="lg" />}
-            {secondary && <CmsTextLink href={secondary.href} label={secondary.label} locale={locale} />}
+            {primary && <CmsButton href={primary.href} label={primary.label} locale={locale} variant="white" size="lg" />}
+            {secondary && <CmsTextLink href={secondary.href} label={secondary.label} locale={locale} dark />}
           </div>
         </div>
       </div>

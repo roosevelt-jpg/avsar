@@ -11,11 +11,14 @@ export async function CmsPageView({
   page,
   locale,
   banner,
+  notice,
 }: {
   page: ResolvedPage;
   locale: Locale;
   /** Shown above everything, e.g. "Preview of an unpublished draft". */
   banner?: React.ReactNode;
+  /** Shown under the header, e.g. a signed-in candidate's document downloads. */
+  notice?: React.ReactNode;
 }) {
   const settings = await getSiteSettings();
   return (
@@ -23,6 +26,7 @@ export async function CmsPageView({
       {banner}
       <SiteHeader locale={locale} />
       <main>
+        {notice}
         <BlockRenderer blocks={page.blocks} locale={locale} settings={settings} />
       </main>
     </>

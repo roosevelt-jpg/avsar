@@ -205,6 +205,9 @@ export const mr: Dictionary = {
     pendingNote:
       'मूल्यांकन पूर्ण केल्यावर 7 दिवसांत कौशल्य अहवाल आणि टॅलेंट पूल प्रोफाइल तयार होतात. झाल्यावर आम्ही कळवू.',
     download: 'अहवाल डाउनलोड (PDF)',
+    downloadCv: 'CV डाउनलोड (PDF)',
+    downloadLegal: 'कायदेशीर आढावा डाउनलोड (PDF)',
+    documents: 'तुमची तयार कागदपत्रे',
     overall: 'एकूण गुण',
     overallNote: 'कोहॉर्ट 01 मधील वरचे {percentile}%',
     englishLabel: 'इंग्रजी (CEFR)',

@@ -13,7 +13,7 @@ import Anthropic from '@anthropic-ai/sdk';
 export const CV_MODEL = process.env.CV_MODEL ?? 'claude-opus-5';
 
 /** Bumped whenever a prompt changes, and stored with every assessment. */
-export const PROMPT_VERSION = 'v1-2026-09';
+export const PROMPT_VERSION = 'v2-2026-10';
 
 export function isAiConfigured(): boolean {
   return (process.env.ANTHROPIC_API_KEY ?? '').length > 0;

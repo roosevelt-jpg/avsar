@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { CmsPageView, cmsMetadata } from '@/components/cms/CmsPageView';
+import { HomeDocuments } from '@/components/candidate/HomeDocuments';
 import { getPublishedPage } from '@/lib/cms/data';
 import { isLocale, localePath } from '@/lib/i18n';
 
@@ -23,5 +24,5 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   if (!isLocale(locale)) notFound();
   const page = await getPublishedPage('home', locale);
   if (!page) notFound();
-  return <CmsPageView page={page} locale={locale} />;
+  return <CmsPageView page={page} locale={locale} notice={<HomeDocuments locale={locale} />} />;
 }

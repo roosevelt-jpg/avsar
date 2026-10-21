@@ -57,7 +57,7 @@ export function FooterSubscribe({ locale, labels }: { locale: Locale; labels: La
           <button
             type="submit"
             disabled={state === 'sending'}
-            className="btn-gradient t-colors rounded-full px-6 py-3 text-[14px] font-semibold text-white disabled:opacity-60"
+            className="t-colors bg-[#f4f8fb] px-6 py-3 text-[14px] font-semibold text-[#16324f] disabled:opacity-60"
           >
             {labels.button}
           </button>

@@ -205,6 +205,9 @@ export const bn: Dictionary = {
     pendingNote:
       'মূল্যায়ন শেষ করলে 7 দিনের মধ্যে দক্ষতার রিপোর্ট ও ট্যালেন্ট পুল প্রোফাইল প্রস্তুত হয়। হলে আমরা খবর দেব।',
     download: 'রিপোর্ট ডাউনলোড (PDF)',
+    downloadCv: 'CV ডাউনলোড (PDF)',
+    downloadLegal: 'আইনি পর্যালোচনা ডাউনলোড (PDF)',
+    documents: 'আপনার তৈরি নথি',
     overall: 'মোট স্কোর',
     overallNote: 'কোহর্ট 01-এর উপরের {percentile}%',
     englishLabel: 'ইংরেজি (CEFR)',

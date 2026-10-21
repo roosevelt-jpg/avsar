@@ -389,14 +389,32 @@ export default async function DashboardPage({
                   {reportReady ? d.title : d.pending}
                 </h2>
               </div>
-              {canReceiveReport(candidate) ? (
-                <Link
-                  href={localePath(locale, '/dashboard/report.pdf')}
-                  className="t-colors rounded-full border border-line-strong bg-surface px-4 py-2.5 text-[14px] no-underline hover:border-ink"
-                >
-                  {d.download}
-                </Link>
-              ) : null}
+              <div className="flex flex-wrap gap-2">
+                {canReceiveReport(candidate) ? (
+                  <Link
+                    href={localePath(locale, '/dashboard/report.pdf')}
+                    className="t-colors rounded-full border border-line-strong bg-surface px-4 py-2.5 text-[14px] no-underline hover:border-ink"
+                  >
+                    {d.download}
+                  </Link>
+                ) : null}
+                {pack ? (
+                  <Link
+                    href={localePath(locale, '/dashboard/cv.pdf')}
+                    className="t-colors rounded-full border border-line-strong bg-surface px-4 py-2.5 text-[14px] no-underline hover:border-ink"
+                  >
+                    {d.downloadCv}
+                  </Link>
+                ) : null}
+                {legalReview ? (
+                  <Link
+                    href={localePath(locale, '/dashboard/legal.pdf')}
+                    className="t-colors rounded-full border border-line-strong bg-surface px-4 py-2.5 text-[14px] no-underline hover:border-ink"
+                  >
+                    {d.downloadLegal}
+                  </Link>
+                ) : null}
+              </div>
             </div>
 
             {!reportReady && (
@@ -475,7 +493,17 @@ export default async function DashboardPage({
 
         {(legalReview || status.paid) && (
           <section className="mt-12 border-t border-line pt-10">
-            <h2 className="m-0 text-[22px] font-semibold tracking-[-0.02em]">Preliminary legal review</h2>
+            <div className="flex flex-wrap items-end justify-between gap-3">
+              <h2 className="m-0 text-[22px] font-semibold tracking-[-0.02em]">Preliminary legal review</h2>
+              {legalReview ? (
+                <Link
+                  href={localePath(locale, '/dashboard/legal.pdf')}
+                  className="t-colors rounded-full border border-line-strong bg-surface px-4 py-2.5 text-[14px] no-underline hover:border-ink"
+                >
+                  {d.downloadLegal}
+                </Link>
+              ) : null}
+            </div>
             {legalReview ? (
               <>
                 <dl className="m-0 mt-4 flex flex-col gap-4 text-[15px] leading-[1.6]">

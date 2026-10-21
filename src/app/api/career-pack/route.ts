@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getSessionCandidate, hasPaid } from '@/lib/auth';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { isAiConfigured } from '@/lib/cv/client';
-import { generateCareerPack, unsupportedBullets } from '@/lib/cv/coach';
+import { generateCareerPack, unsupportedBullets, withoutUnsupported } from '@/lib/cv/coach';
 import { toRatingInput } from '@/lib/cv/redact';
 import type { Extraction } from '@/lib/cv/schema';
 import type { RatingInput } from '@/lib/cv/redact';
@@ -129,18 +129,19 @@ export async function POST() {
     });
 
     const flagged = unsupportedBullets(result.pack, profile);
+    const pack = withoutUnsupported(result.pack, flagged);
     if (flagged.length > 0) {
-      console.warn('[career-pack] unsupported lines', candidate.id, flagged);
+      console.warn('[career-pack] dropped unsupported lines', candidate.id, flagged);
     }
 
     const { error } = await admin.from('career_packs').upsert(
       {
         candidate_id: candidate.id,
-        strengths: result.pack.strengths,
-        improvements: result.pack.improvements,
-        interview: result.pack.interview,
-        improved_cv: result.pack.improvedCv,
-        translated: result.pack.translated,
+        strengths: pack.strengths,
+        improvements: pack.improvements,
+        interview: pack.interview,
+        improved_cv: pack.improvedCv,
+        translated: pack.translated,
         unsupported_lines: flagged,
         model: result.model,
         prompt_version: result.promptVersion,

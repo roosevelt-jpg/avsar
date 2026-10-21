@@ -30,7 +30,10 @@ export const FOOTER_LABELS = {
  */
 export const WHATSAPP_LABELS = {
   title: '{{company}} on WhatsApp',
-  intro: 'Pick a desk. A person on the team replies during office hours. This window does not answer by itself.',
+  intro: 'Ask here. Answers use our company notes only. If the notes do not cover it, this window says so. A person still replies on WhatsApp during office hours.',
+  ask: 'Your question',
+  send: 'Send',
+  fromNotes: 'From the notes',
   close: 'Close',
   allDesks: 'All desks',
   continue: 'Continue on WhatsApp',

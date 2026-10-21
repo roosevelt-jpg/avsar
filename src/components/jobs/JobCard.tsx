@@ -20,7 +20,7 @@ export function JobCard({ job, locale, priority = false, saved }: { job: Job; lo
   const salary = formatSalary(job);
   const image = jobImage(job);
   return (
-    <article className="blue-card motion-tilt group relative flex flex-col overflow-hidden">
+    <article className="blue-card group relative flex flex-col overflow-hidden">
       <div className="relative aspect-[16/9] overflow-hidden bg-canvas">
         {image ? (
           <Image

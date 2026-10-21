@@ -14,9 +14,8 @@ export type HeroSlide = {
 const DWELL_MS = 6500;
 
 /**
- * The homepage opener is a stage, not a split poster: the photograph sits in
- * perspective and the slides change on their own. Hover, a pause control, or
- * a reduced-motion setting holds the current frame.
+ * The homepage opener. The film or photograph sits flat beside the words.
+ * Hover, a pause control, or a reduced-motion setting holds the current frame.
  */
 export function HeroStage({ slides, children }: { slides: HeroSlide[]; children: ReactNode }) {
   const [index, setIndex] = useState(0);
@@ -63,8 +62,8 @@ export function HeroStage({ slides, children }: { slides: HeroSlide[]; children:
         <div className="min-w-0">{children}</div>
 
         {current ? (
-          <div className="anamorphic-stage">
-            <div className="anamorphic-frame relative aspect-[4/5] overflow-hidden bg-night sm:aspect-[4/3] lg:aspect-[4/5]">
+          <div>
+            <div className="relative aspect-[4/5] overflow-hidden bg-night sm:aspect-[4/3] lg:aspect-[5/4]">
               {slides.map((slide, slideIndex) => {
                 const active = slideIndex === index;
                 const showImage = slide.kind === 'image' || broken[slideIndex];
@@ -94,7 +93,7 @@ export function HeroStage({ slides, children }: { slides: HeroSlide[]; children:
                   </div>
                 );
               })}
-              <span aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#1c1410]/70 via-transparent to-transparent" />
+              <span aria-hidden className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-[#16324f]/15" />
               {current.caption ? (
                 <p className="absolute inset-x-5 bottom-5 m-0 text-[15px] font-semibold text-white">{current.caption}</p>
               ) : null}

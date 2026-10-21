@@ -80,10 +80,7 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
   return (
     <HeroStage slides={slides}>
       {str(data, 'eyebrow') ? (
-        <p className="m-0 mb-5 inline-flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.16em] text-accent-deep">
-          <span aria-hidden className="h-[3px] w-10 rounded-full bg-[linear-gradient(90deg,#16324f,#3c8fd4,#7eb6e8)]" />
-          {str(data, 'eyebrow')}
-        </p>
+        <p className="m-0 mb-5 text-[13px] font-medium text-[#c45c1a]">{str(data, 'eyebrow')}</p>
       ) : null}
       <Heading className="m-0 text-balance break-words text-[clamp(36px,5.4cqi,68px)] font-semibold leading-[1.02] tracking-[-0.045em]">
         {str(data, 'title')}
@@ -147,14 +144,11 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
       )}
 
       {stats.length > 0 && (
-        <dl className="m-0 mt-8 grid max-w-[640px] grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-3">
+        <dl className="m-0 mt-10 grid max-w-[560px] grid-cols-3 gap-6 border-t border-line pt-6">
           {stats.map((stat, index) => (
-            <div key={index} className="blue-card min-w-0 px-5 py-4 text-start">
-              <dt className="sr-only">{str(stat, 'label')}</dt>
-              <dd className="m-0 bg-[linear-gradient(100deg,#16324f,#3c8fd4_55%,#7eb6e8)] bg-clip-text text-[26px] font-semibold tracking-[-0.03em] text-transparent">
-                {str(stat, 'value')}
-              </dd>
-              <dd className="m-0 mt-1 text-[13px] leading-[1.4] text-ink-2 [overflow-wrap:anywhere]">{str(stat, 'label')}</dd>
+            <div key={index} className="min-w-0">
+              <dd className="m-0 text-[26px] font-semibold tracking-[-0.03em] text-ink">{str(stat, 'value')}</dd>
+              <dt className="m-0 mt-1 text-[13px] leading-[1.4] text-ink-2 [overflow-wrap:anywhere]">{str(stat, 'label')}</dt>
             </div>
           ))}
         </dl>

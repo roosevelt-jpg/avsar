@@ -4,6 +4,22 @@ import { careerPackSchema, trimPack, type CareerPack } from './coach-schema';
 import type { RatingInput } from './redact';
 import { positionLabel } from '@/lib/data/positions';
 
+const ADVICE_LANGUAGE: Record<string, string> = {
+  hi: 'Hindi',
+  bn: 'Bengali',
+  mr: 'Marathi',
+  te: 'Telugu',
+  ta: 'Tamil',
+  ur: 'Urdu',
+  gu: 'Gujarati',
+  kn: 'Kannada',
+  or: 'Odia',
+  ml: 'Malayalam',
+  pa: 'Punjabi',
+  as: 'Assamese',
+  ar: 'Arabic',
+};
+
 /**
  * Generates the career pack. SERVER ONLY.
  *
@@ -86,8 +102,8 @@ export async function generateCareerPack(input: CoachInput): Promise<CoachResult
               '',
               'How many of each: 3 or 4 strengths, 3 to 5 improvements, 3 to 5 interview questions, 3 to lead with, 3 to prepare for, 3 to ask them.',
               '',
-              input.locale === 'hi'
-                ? 'Also translate the strengths, improvements and interview guidance into Hindi. Leave the CV in English.'
+              ADVICE_LANGUAGE[input.locale]
+                ? `Also translate the strengths, improvements and interview guidance into ${ADVICE_LANGUAGE[input.locale]}, written to be read aloud. Leave the CV in English.`
                 : 'No translation needed; return null for the translated field.',
             ].join('\n'),
           },
@@ -143,4 +159,18 @@ export function unsupportedBullets(pack: CareerPack, profile: RatingInput): stri
     }
   }
   return flagged;
+}
+
+/** Drops CV lines that could not be traced to the candidate's own record. */
+export function withoutUnsupported(pack: CareerPack, flagged: string[]): CareerPack {
+  const bad = new Set(flagged);
+  return {
+    ...pack,
+    improvedCv: {
+      ...pack.improvedCv,
+      experience: pack.improvedCv.experience
+        .map((role) => ({ ...role, bullets: role.bullets.filter((bullet) => !bad.has(bullet.text)) }))
+        .filter((role) => role.bullets.length > 0),
+    },
+  };
 }

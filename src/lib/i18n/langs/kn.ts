@@ -205,6 +205,9 @@ export const kn: Dictionary = {
     pendingNote:
       'ಮೌಲ್ಯಮಾಪನ ಪೂರ್ಣಗೊಳಿಸಿದ ಬಳಿಕ, ಕೌಶಲ್ಯ ವರದಿ ಮತ್ತು ಟ್ಯಾಲೆಂಟ್ ಪೂಲ್ ಪ್ರೊಫೈಲ್ 7 ದಿನಗಳಲ್ಲಿ ಸಿದ್ಧ. ಸಿದ್ಧವಾದಾಗ ನಾವು ಸಂದೇಶ ಕಳುಹಿಸುತ್ತೇವೆ.',
     download: 'ವರದಿ ಡೌನ್‌ಲೋಡ್ (PDF)',
+    downloadCv: 'CV ಡೌನ್‌ಲೋಡ್ (PDF)',
+    downloadLegal: 'ಕಾನೂನು ಪರಿಶೀಲನೆ ಡೌನ್‌ಲೋಡ್ (PDF)',
+    documents: 'ನಿಮ್ಮ ಸಿದ್ಧ ದಾಖಲೆಗಳು',
     overall: 'ಒಟ್ಟು ಅಂಕ',
     overallNote: 'ಕೋಹಾರ್ಟ್ 01 ರಲ್ಲಿ ಮೇಲಿನ {percentile}%',
     englishLabel: 'ಇಂಗ್ಲಿಷ್ (CEFR)',
