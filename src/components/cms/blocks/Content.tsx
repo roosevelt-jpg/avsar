@@ -233,30 +233,22 @@ export function SplitBlock({ data, locale }: Props) {
   );
 }
 
-/* One closing band on every page: navy, with the saffron action. The editor
-   no longer offers a style, so pages cannot drift back to a grey box. */
+/* The closer stays on the pale field. An orange button on a dark band
+   disappeared into it, which is the same problem as the old footer. */
 export function CtaBlock({ data, locale }: Props) {
   const primary = link(data, 'primary');
   const secondary = link(data, 'secondary');
   return (
-    <section className="px-[clamp(20px,4cqi,56px)] py-[clamp(24px,4cqi,48px)]">
-      <div className="relative mx-auto w-full max-w-[1200px] overflow-hidden rounded-[36px] bg-night px-[clamp(24px,5cqi,72px)] py-[clamp(40px,6cqi,80px)] text-on-night">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background:
-              'radial-gradient(42% 80% at 100% 0%, color-mix(in oklab, #e8a23a 55%, transparent), transparent 70%), radial-gradient(36% 70% at 0% 100%, color-mix(in oklab, #0f8f78 45%, transparent), transparent 70%)',
-          }}
-        />
-        <div className="relative flex flex-wrap items-end justify-between gap-8">
+    <section className="px-[clamp(20px,4cqi,56px)] pt-[clamp(24px,4cqi,48px)]">
+      <div className="mx-auto w-full max-w-[1200px] rounded-[28px] border border-[#d5ebe4] bg-[#f4fbf8] px-[clamp(24px,5cqi,56px)] py-[clamp(32px,5cqi,56px)]">
+        <div className="flex flex-wrap items-end justify-between gap-8">
           <div className="max-w-[640px]">
-            <h2 className="m-0 text-balance text-[clamp(28px,3.8cqi,46px)] font-semibold leading-[1.06] tracking-[-0.03em]">{str(data, 'title')}</h2>
-            {str(data, 'body') ? <p className="m-0 mt-4 text-[17px] leading-[1.6] text-dark-muted-2">{str(data, 'body')}</p> : null}
+            <h2 className="m-0 text-balance text-[clamp(28px,3.8cqi,46px)] font-semibold leading-[1.06] tracking-[-0.03em] text-ink">{str(data, 'title')}</h2>
+            {str(data, 'body') ? <p className="m-0 mt-4 text-[17px] leading-[1.6] text-ink-2">{str(data, 'body')}</p> : null}
           </div>
           <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
-            {primary && <CmsButton href={primary.href} label={primary.label} locale={locale} variant="primary" size="lg" />}
-            {secondary && <CmsTextLink href={secondary.href} label={secondary.label} locale={locale} dark />}
+            {primary && <CmsButton href={primary.href} label={primary.label} locale={locale} variant="teal" size="lg" />}
+            {secondary && <CmsTextLink href={secondary.href} label={secondary.label} locale={locale} />}
           </div>
         </div>
       </div>
