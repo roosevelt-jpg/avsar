@@ -8,7 +8,8 @@ import { AccountMenu } from '@/components/auth/AccountMenu';
 import { getSiteSettings } from '@/lib/cms/data';
 import { getViewer } from '@/lib/auth';
 import { MarketNav } from '@/components/candidate/MarketNav';
-import { ctaLabel, localHref, navLabel, whatsappHref } from '@/lib/cms/settings';
+import { WhatsAppDesk } from '@/components/candidate/WhatsAppDesk';
+import { ctaLabel, localHref, navLabel } from '@/lib/cms/settings';
 
 /**
  * The header on every candidate page.
@@ -47,7 +48,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
         </div>
       ) : null}
 
-      <header className="sticky top-0 z-40 border-b border-line/80 bg-[#f6f3ee]/90 px-[clamp(12px,4cqi,56px)] py-[12px] text-ink backdrop-blur-md sm:py-[14px]">
+      <header className="shop-header sticky top-0 z-40 bg-paper/90 px-[clamp(12px,4cqi,56px)] py-[12px] text-ink backdrop-blur-md sm:py-[14px]">
         {/* Nothing in the bar may wrap: a two-line "Visa & relocation" doubles
             the header height. The full menu appears only from xl, where six
             links, the toggles and the button fit on one line; below that the
@@ -124,16 +125,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
           </div>
         </div>
       </header>
-      {whatsappHref(general.whatsapp) ? (
-        <a
-          href={whatsappHref(general.whatsapp)}
-          target="_blank"
-          rel="noreferrer"
-          className="btn-gradient fixed bottom-5 end-5 z-50 inline-flex items-center gap-2 rounded-[14px] px-4 py-3 text-[15px] font-semibold text-white no-underline"
-        >
-          WhatsApp
-        </a>
-      ) : null}
+      <WhatsAppDesk company={general.siteName} phone={general.whatsapp} hours={general.officeHours} />
     </>
   );
 }

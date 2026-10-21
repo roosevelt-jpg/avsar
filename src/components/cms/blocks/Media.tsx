@@ -58,7 +58,7 @@ export async function CandidateStoriesBlock({ data }: Props) {
       <SectionHeading eyebrow={str(data, 'eyebrow')} title={str(data, 'title')} intro={str(data, 'intro')} />
       <ul className="m-0 grid list-none grid-cols-1 gap-4 p-0 md:grid-cols-3">
         {stories.map((story) => (
-          <li key={story.id} className="flex flex-col rounded-[22px] border border-line bg-paper p-6">
+          <li key={story.id} className="blue-card flex flex-col p-6">
             <blockquote className="m-0 flex-1 text-[17px] leading-[1.6] text-ink">“{story.quote}”</blockquote>
             <div className="mt-6">
               <p className="m-0 text-[15px] font-semibold">{story.displayName}</p>

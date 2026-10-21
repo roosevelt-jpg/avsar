@@ -20,7 +20,7 @@ export function JobCard({ job, locale, priority = false, saved }: { job: Job; lo
   const salary = formatSalary(job);
   const image = jobImage(job);
   return (
-    <article className="blue-card group relative flex flex-col overflow-hidden transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-accent">
+    <article className="blue-card motion-tilt group relative flex flex-col overflow-hidden">
       <div className="relative aspect-[16/9] overflow-hidden bg-canvas">
         {image ? (
           <Image
@@ -57,7 +57,7 @@ export function JobCard({ job, locale, priority = false, saved }: { job: Job; lo
         {job.employerDisplay ? <p className="m-0 mt-1 text-[14px] text-ink-2">{job.employerDisplay}</p> : null}
         <p className="m-0 mt-3 line-clamp-2 text-[14px] leading-[1.55] text-muted">{job.summary}</p>
         <div className="mt-auto flex flex-wrap items-center gap-2 pt-4">
-          {salary && <span className="rounded-[10px] bg-[linear-gradient(115deg,#16324f,#3c8fd4)] px-3 py-1 text-[13px] font-semibold text-white">{salary}</span>}
+          {salary && <span className="chip-gradient rounded-full px-3 py-1 text-[13px] font-semibold">{salary}</span>}
           <span className="rounded-full border border-line px-3 py-1 text-[13px] text-ink-2">{siteText(locale, HOUSING_LABELS[job.housing])}</span>
           {job.openings > 1 && <span className="rounded-full border border-line px-3 py-1 text-[13px] text-ink-2">{job.openings} {siteText(locale, 'openings')}</span>}
         </div>

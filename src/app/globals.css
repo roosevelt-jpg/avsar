@@ -214,42 +214,43 @@ textarea {
 }
 
 /*
-  Public marketing pages only. Warm paper, a display serif, and an ocean
-  gradient that warms to sand at the edge. The dashboard, the assessment
-  and the console keep the quiet grey tokens. Repeated under .dark so a
-  theme class on <html> cannot paint the shopfront brown.
+  Public marketing pages only. Stone paper, a coral-to-teal gradient, and
+  photographs set in perspective. The dashboard, the assessment and the
+  console keep the quiet grey tokens. Repeated under .dark so a theme class
+  on <html> cannot paint the shopfront with the console palette.
 */
 .market {
-  --color-paper: #f6f3ee;
-  --color-canvas: #e6eef5;
-  --color-surface: #fffcf8;
-  --color-surface-subtle: #f3efe8;
-  --color-surface-hover: #f7f4ee;
-  --color-ink: #16181d;
-  --color-ink-2: #3c4450;
-  --color-muted: #6d665c;
-  --color-line: #e6dfd4;
-  --color-line-strong: #d4cbbd;
-  --color-line-soft: #f0ebe3;
-  --color-dark-line: #2a4a66;
-  --color-dark-muted: #b7c9d8;
-  --color-dark-muted-2: #e4eef5;
-  --color-accent: #1f5f86;
-  --color-accent-deep: #16324f;
-  --color-accent-tint: #e7f2f8;
-  --color-accent-on-dark: #9ecae6;
-  --color-employer: #3c8fd4;
-  --color-employer-deep: #1f5f86;
-  --color-success: #2f7d57;
-  --color-ink-hover: #1f5f86;
-  --color-night: #16324f;
-  --color-on-night: #f7f4ee;
-  --color-tint-sand: #f6f3ee;
-  --color-tint-clay: #f3e6d4;
-  --color-tint-sky: #dceaf5;
-  --color-tint-sage: #e5efe8;
+  --color-paper: #f3efe8;
+  --color-canvas: #e7f3ef;
+  --color-surface: #fffdfb;
+  --color-surface-subtle: #f6f1ea;
+  --color-surface-hover: #f8f4ee;
+  --color-ink: #1c1410;
+  --color-ink-2: #4a4038;
+  --color-muted: #7a6e64;
+  --color-line: #e6ddd2;
+  --color-line-strong: #d4c6b8;
+  --color-line-soft: #f3ece4;
+  --color-dark-line: #3a2e28;
+  --color-dark-muted: #d7cfc6;
+  --color-dark-muted-2: #f3ebe3;
+  --color-accent: #d4532c;
+  --color-accent-deep: #8f3018;
+  --color-accent-tint: #fde7df;
+  --color-accent-on-dark: #f0b089;
+  --color-employer: #0f8f78;
+  --color-employer-deep: #0b6b5b;
+  --color-success: #1f7a4d;
+  --color-ink-hover: #d4532c;
+  --color-night: #1c1410;
+  --color-on-night: #f6f1ea;
+  --color-tint-sand: #f6f1ea;
+  --color-tint-clay: #f8e2d4;
+  --color-tint-sky: #d9f0ea;
+  --color-tint-sage: #e5f2ec;
   background:
-    radial-gradient(70% 40% at 100% -10%, #dceaf5 0%, transparent 55%),
+    radial-gradient(48% 36% at 100% -8%, #f8d7c8 0%, transparent 58%),
+    radial-gradient(42% 32% at 0% 12%, #d7f0e8 0%, transparent 55%),
     var(--color-paper);
   color: var(--color-ink);
   color-scheme: light;
@@ -257,76 +258,201 @@ textarea {
 
 :root.dark .market {
   color-scheme: light;
-  --color-paper: #f6f3ee;
-  --color-canvas: #e6eef5;
-  --color-surface: #fffcf8;
-  --color-surface-subtle: #f3efe8;
-  --color-surface-hover: #f7f4ee;
-  --color-ink: #16181d;
-  --color-ink-2: #3c4450;
-  --color-muted: #6d665c;
-  --color-line: #e6dfd4;
-  --color-line-strong: #d4cbbd;
-  --color-line-soft: #f0ebe3;
-  --color-dark-line: #2a4a66;
-  --color-dark-muted: #b7c9d8;
-  --color-dark-muted-2: #e4eef5;
-  --color-accent: #1f5f86;
-  --color-accent-deep: #16324f;
-  --color-accent-tint: #e7f2f8;
-  --color-accent-on-dark: #9ecae6;
-  --color-employer: #3c8fd4;
-  --color-employer-deep: #1f5f86;
-  --color-success: #2f7d57;
-  --color-ink-hover: #1f5f86;
-  --color-night: #16324f;
-  --color-on-night: #f7f4ee;
-  --color-tint-sand: #f6f3ee;
-  --color-tint-clay: #f3e6d4;
-  --color-tint-sky: #dceaf5;
-  --color-tint-sage: #e5efe8;
+  --color-paper: #f3efe8;
+  --color-canvas: #e7f3ef;
+  --color-surface: #fffdfb;
+  --color-surface-subtle: #f6f1ea;
+  --color-surface-hover: #f8f4ee;
+  --color-ink: #1c1410;
+  --color-ink-2: #4a4038;
+  --color-muted: #7a6e64;
+  --color-line: #e6ddd2;
+  --color-line-strong: #d4c6b8;
+  --color-line-soft: #f3ece4;
+  --color-dark-line: #3a2e28;
+  --color-dark-muted: #d7cfc6;
+  --color-dark-muted-2: #f3ebe3;
+  --color-accent: #d4532c;
+  --color-accent-deep: #8f3018;
+  --color-accent-tint: #fde7df;
+  --color-accent-on-dark: #f0b089;
+  --color-employer: #0f8f78;
+  --color-employer-deep: #0b6b5b;
+  --color-success: #1f7a4d;
+  --color-ink-hover: #d4532c;
+  --color-night: #1c1410;
+  --color-on-night: #f6f1ea;
+  --color-tint-sand: #f6f1ea;
+  --color-tint-clay: #f8e2d4;
+  --color-tint-sky: #d9f0ea;
+  --color-tint-sage: #e5f2ec;
 }
 
-/* Shopfront type is a display serif. Column labels in the footer stay the
-   sans, because a serif at 13px in all caps turns muddy. */
+/* The shopfront stays in the site sans. A display serif made the page read
+   as a magazine template. Footer column labels stay small and tracked out. */
 .market :is(h1, h2) {
-  font-family: var(--font-dm-serif), var(--font-noto-serif-devanagari), var(--font-sans);
-  font-weight: 400;
-  letter-spacing: -0.03em;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: -0.045em;
 }
 .market footer h2 {
-  font-family: var(--font-sans);
   font-weight: 600;
   letter-spacing: 0.08em;
 }
 
-/* The action is a short gradient, ocean into a warm edge, so a button is
-   not a flat blue rectangle and not a black pill. */
+/* The action runs coral into gold into teal, and the highlight travels on
+   hover. A flat blue rectangle is what the previous shopfront was. */
 .btn-gradient {
-  background-image: linear-gradient(115deg, #16324f 0%, #1f5f86 52%, #3c8fd4 100%);
-  box-shadow: 0 14px 28px -18px rgba(22, 50, 79, 0.85);
+  background-image: linear-gradient(100deg, #d4532c 0%, #e8a23a 46%, #0f8f78 100%);
+  background-size: 180% 100%;
+  background-position: 0% 50%;
+  box-shadow: 0 16px 30px -18px rgba(212, 83, 44, 0.8);
+  transition: background-position 480ms ease, transform 200ms ease;
 }
 .btn-gradient:hover {
-  background-image: linear-gradient(115deg, #1f5f86 0%, #3c8fd4 55%, #c4a574 140%);
+  background-position: 100% 50%;
 }
 
-/* Cards keep a warm face and a gradient rim, so neighbouring cards are not
-   the same white box with a blue top border. */
+.chip-gradient {
+  background-image: linear-gradient(100deg, #d4532c, #e8a23a 48%, #0f8f78);
+  color: #fff;
+}
+
+.icon-gem {
+  border-radius: 16px;
+  background-image: linear-gradient(145deg, #d4532c, #e8a23a 55%, #0f8f78);
+  color: #fff;
+  box-shadow: 0 12px 22px -14px rgba(212, 83, 44, 0.9);
+}
+
+/* Cards are a warm face with a three-colour rim, so a row is not four
+   copies of the same white box. */
 .market .blue-card {
-  border-radius: 22px 22px 22px 8px;
-  border: 1px solid transparent;
+  border-radius: 28px;
+  border: 1.5px solid transparent;
   background:
-    linear-gradient(#fffcf8, #fffcf8) padding-box,
-    linear-gradient(145deg, #c5d8ea, #f6f3ee 42%, #e4d2b4) border-box;
-  box-shadow: 0 18px 40px -28px rgba(22, 50, 79, 0.45);
+    linear-gradient(#fffdfb, #fffdfb) padding-box,
+    linear-gradient(135deg, #d4532c, #e8a23a 42%, #0f8f78) border-box;
+  box-shadow: 0 22px 44px -30px rgba(28, 20, 16, 0.45);
 }
-.market .blue-card.shade-0 { background: linear-gradient(#fffcf8, #f4f8fb) padding-box, linear-gradient(145deg, #c5d8ea, #f6f3ee 42%, #e4d2b4) border-box; }
-.market .blue-card.shade-1 { background: linear-gradient(#fffcf8, #f7f3ea) padding-box, linear-gradient(160deg, #e4d2b4, #dceaf5) border-box; }
-.market .blue-card.shade-2 { background: linear-gradient(#f7fafc, #fffcf8) padding-box, linear-gradient(145deg, #9ecae6, #f6f3ee) border-box; }
-.market .blue-card.shade-3 { background: linear-gradient(#f6f3ee, #fffcf8) padding-box, linear-gradient(145deg, #d4cbbd, #c5d8ea) border-box; }
+.market .blue-card.shade-0 { background: linear-gradient(#fffdfb, #fff6f2) padding-box, linear-gradient(145deg, #d4532c, #f3efe8 50%, #0f8f78) border-box; }
+.market .blue-card.shade-1 { background: linear-gradient(#fffdfb, #f4fbf8) padding-box, linear-gradient(160deg, #e8a23a, #d9f0ea) border-box; }
+.market .blue-card.shade-2 { background: linear-gradient(#fffdfb, #fff8f4) padding-box, linear-gradient(145deg, #0f8f78, #f8e2d4) border-box; }
+.market .blue-card.shade-3 { background: linear-gradient(#f6f1ea, #fffdfb) padding-box, linear-gradient(145deg, #d4c6b8, #d4532c) border-box; }
 
-.market .motion-tilt:hover {
-  transform: translateY(-4px);
+/* A photograph standing in space. The tilt is the anamorphic read; hover
+   settles it so the picture can be looked at straight. */
+.anamorphic-stage {
+  perspective: 1400px;
+  padding: 16px 0 8px;
+}
+.anamorphic-frame {
+  width: min(100%, 460px);
+  margin-inline-start: auto;
+  margin-inline-end: 6%;
+  border-radius: 36px 36px 18px 36px;
+  transform: perspective(1400px) rotateY(-14deg) rotateX(6deg);
+  transform-origin: center center;
+  box-shadow:
+    28px 40px 60px -28px rgba(28, 20, 16, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.45);
+  transition: transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.anamorphic-stage:hover .anamorphic-frame {
+  transform: perspective(1400px) rotateY(-6deg) rotateX(2deg) translateY(-8px);
+}
+.anamorphic-mini {
+  border-radius: 22px 22px 8px 22px;
+  transform: perspective(800px) rotateY(-14deg) rotateX(6deg);
+  box-shadow: 16px 22px 30px -20px rgba(28, 20, 16, 0.5);
+  transition: transform 500ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.group:hover .anamorphic-mini {
+  transform: perspective(800px) rotateY(-4deg) rotateX(2deg);
+}
+
+.shop-header::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #d4532c, #e8a23a, #0f8f78);
+}
+
+.stage-nav {
+  display: grid;
+  height: 36px;
+  min-width: 36px;
+  place-items: center;
+  border-radius: 999px;
+  border: 1px solid var(--color-line-strong);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-size: 20px;
+  line-height: 1;
+}
+.stage-nav:hover {
+  border-color: var(--color-accent);
+}
+
+.hero-mesh {
+  background:
+    radial-gradient(40% 50% at 80% 20%, rgba(232, 162, 58, 0.45), transparent 70%),
+    radial-gradient(35% 45% at 10% 80%, rgba(15, 143, 120, 0.35), transparent 70%);
+}
+.hero-progress-track {
+  position: relative;
+  height: 3px;
+  width: 72px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--color-line);
+}
+.hero-progress {
+  position: absolute;
+  inset: 0;
+  transform-origin: left center;
+  background: linear-gradient(90deg, #d4532c, #0f8f78);
+  animation: hero-progress 6.5s linear;
+}
+[dir='rtl'] .hero-progress {
+  transform-origin: right center;
+}
+.hero-progress.is-paused {
+  animation-play-state: paused;
+}
+
+.wa-panel {
+  width: min(400px, calc(100vw - 24px));
+  max-height: min(640px, calc(100vh - 32px));
+  margin-top: auto;
+  margin-bottom: 88px;
+  margin-inline-start: auto;
+  margin-inline-end: 16px;
+  padding: 0;
+  border: 0;
+  border-radius: 28px;
+  background: #fffdfb;
+  color: var(--color-ink);
+  box-shadow: 0 30px 80px -24px rgba(28, 20, 16, 0.45);
+}
+.wa-panel::backdrop {
+  background: rgba(28, 20, 16, 0.46);
+}
+
+@media (max-width: 1023px) {
+  .anamorphic-frame {
+    transform: perspective(900px) rotateY(-8deg) rotateX(4deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .anamorphic-frame,
+  .anamorphic-mini,
+  .hero-bleed {
+    transform: none;
+    animation: none;
+  }
 }
 
 /* Soft wash behind candidate and console dashboards so surfaces sit on
@@ -419,6 +545,14 @@ body {
    Marketing motion. Everything here is decoration: content is fully visible
    without it, and all of it is off for visitors who ask for reduced motion.
    -------------------------------------------------------------------------- */
+@keyframes hero-progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes hero-bleed {
+  from { transform: scale(1.08); }
+  to { transform: scale(1.18) translate3d(-1.5%, -1%, 0); }
+}
 @keyframes avsar-float {
   0%, 100% { transform: translateY(0) rotate(0deg); }
   50% { transform: translateY(-10px) rotate(-1.5deg); }
@@ -433,6 +567,9 @@ body {
 }
 
 @media (prefers-reduced-motion: no-preference) {
+  .hero-bleed {
+    animation: hero-bleed 16s ease-in-out infinite alternate;
+  }
   .motion-float {
     animation: avsar-float 6s ease-in-out infinite;
     will-change: transform;

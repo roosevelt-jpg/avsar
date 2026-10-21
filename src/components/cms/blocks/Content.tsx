@@ -1,4 +1,5 @@
 import { items, link, num, str, strList, type BlockData } from '@/lib/cms/blocks';
+import { scenePhoto } from '@/lib/cms/scenes';
 import type { Locale } from '@/lib/i18n';
 import { ContactForm } from '@/components/contact/ContactForm';
 import { Markdown } from '../Markdown';
@@ -8,23 +9,21 @@ import { CmsButton, CmsImage, CmsTextLink, Icon, Section, SectionHeading } from 
 
 type Props = { data: BlockData; locale: Locale };
 
-const TRUST_TONES = ['bg-accent', 'bg-night', 'bg-employer', 'bg-[#5b92e4]'] as const;
-
 export function TrustBarBlock({ data }: Props) {
   const list = items(data, 'items');
   if (!list.length) return null;
   return (
     <section className="px-[clamp(20px,4cqi,56px)] pb-[clamp(8px,2cqi,20px)]">
-      <ul className="mx-auto m-0 grid w-full max-w-[1200px] list-none grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-px overflow-hidden rounded-[28px] bg-[linear-gradient(120deg,#16324f,#1f5f86_58%,#c4a574)] p-0 text-on-night">
+      <ul className="mx-auto m-0 grid w-full max-w-[1200px] list-none grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3 p-0">
         {list.map((item, index) => (
           /* Subgrid rows: a title that wraps in one item pushes every body
              in that row down together, so they stay level in any language. */
-          <li key={index} className="motion-reveal row-span-3 grid grid-rows-subgrid gap-y-2 bg-[#16324f]/25 p-6 backdrop-blur-[2px]">
-            <span className="grid size-12 place-items-center rounded-[14px] bg-white/15 text-white">
+          <li key={index} className={`blue-card shade-${index % 4} motion-tilt motion-reveal row-span-3 grid grid-rows-subgrid gap-y-3 p-6`}>
+            <span className="icon-gem grid size-12 place-items-center">
               <Icon name={str(item, 'icon')} className="size-6" />
             </span>
             <p className="m-0 self-end text-[16px] font-semibold">{str(item, 'title')}</p>
-            <p className="m-0 text-[14px] leading-[1.5] text-dark-muted-2">{str(item, 'body')}</p>
+            <p className="m-0 text-[14px] leading-[1.5] text-ink-2">{str(item, 'body')}</p>
           </li>
         ))}
       </ul>
@@ -61,12 +60,12 @@ export function StepsBlock({ data }: Props) {
           <li key={index} className="blue-card group flex flex-col overflow-hidden">
             {str(item, 'image') ? (
               <div className="relative aspect-[16/10] overflow-hidden bg-canvas">
-                <CmsImage src={str(item, 'image')} alt="" sizes="(max-width: 768px) 100vw, 33vw" className="transition-transform duration-500 group-hover:scale-[1.03]" />
+                <CmsImage src={scenePhoto(str(item, 'image'), index)} alt="" sizes="(max-width: 768px) 100vw, 33vw" className="transition-transform duration-500 group-hover:scale-[1.03]" />
               </div>
             ) : null}
             <div className="flex flex-1 flex-col p-6">
               <div className="mb-4 flex items-center justify-between gap-3">
-                <span className="grid size-9 place-items-center rounded-full bg-accent font-mono text-[13px] font-semibold text-white">
+                <span className="icon-gem grid size-9 place-items-center font-mono text-[13px] font-semibold">
                   {String(index + 1).padStart(2, '0')}
                 </span>
                 {str(item, 'meta') ? (
@@ -106,14 +105,14 @@ function StepsTimeline({ data }: { data: BlockData }) {
               <InteractiveCard className="blue-card group row-span-3 grid grid-rows-subgrid gap-y-0 overflow-hidden">
                 {str(item, 'image') ? (
                   <div className="relative aspect-[16/10] overflow-hidden">
-                    <CmsImage src={str(item, 'image')} alt="" sizes="(max-width: 768px) 100vw, 33vw" className="transition-transform duration-500 group-hover:scale-[1.04]" />
-                    <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-[#16324f]/70 to-transparent" />
+                    <CmsImage src={scenePhoto(str(item, 'image'), index)} alt="" sizes="(max-width: 768px) 100vw, 33vw" className="transition-transform duration-500 group-hover:scale-[1.04]" />
+                    <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-[#1c1410]/70 to-transparent" />
                     <span className="absolute start-4 bottom-3 font-mono text-[12px] font-semibold tracking-[0.14em] text-white">
                       {String(index + 1).padStart(2, '0')}
                     </span>
                   </div>
                 ) : (
-                  <span className="m-6 grid size-9 w-fit place-items-center rounded-full bg-[linear-gradient(135deg,#16324f,#3c8fd4)] font-mono text-[13px] text-white">
+                  <span className="icon-gem m-6 grid size-9 w-fit place-items-center font-mono text-[13px]">
                     {String(index + 1).padStart(2, '0')}
                   </span>
                 )}
@@ -156,23 +155,21 @@ export function FeaturesBlock({ data, locale }: Props) {
               key={index}
               /* Four subgrid rows (picture, title, text, link), so titles and
                  links line up across a row whatever the text length. */
-              className={`group motion-reveal row-span-4 grid grid-rows-subgrid gap-y-0 overflow-hidden ${
+              className={`group motion-reveal row-span-4 grid grid-rows-subgrid gap-y-0 ${
                 tiles
                   ? `blue-card motion-tilt p-7`
                   : 'blue-card t-colors p-6 hover:border-accent'
               }`}
             >
-              {image && !image.includes('/illustrations/') ? (
-                <div className="relative -mx-6 -mt-6 mb-2 aspect-[16/9] overflow-hidden">
-                  <CmsImage src={image} alt="" sizes="(max-width: 768px) 100vw, 33vw" className="transition-transform duration-500 group-hover:scale-[1.04]" />
-                  <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-[#16324f]/45 to-transparent" />
+              {image ? (
+                <div className="anamorphic-mini relative mb-2 aspect-[16/10] overflow-hidden">
+                  <CmsImage src={scenePhoto(image, index)} alt="" sizes="(max-width: 768px) 100vw, 33vw" />
+                  <span className="icon-gem absolute start-3 top-3 grid size-10 place-items-center">
+                    <Icon name={str(item, 'icon')} className="size-5" />
+                  </span>
                 </div>
-              ) : image ? (
-                <span className={`mb-2 grid h-16 w-16 place-items-center rounded-[16px] text-white ${TRUST_TONES[index % TRUST_TONES.length]}`}>
-                  <Icon name={str(item, 'icon')} className="size-6" />
-                </span>
               ) : (
-                <span className={`grid size-11 place-items-center rounded-[14px] text-white ${tiles ? 'bg-night' : TRUST_TONES[index % TRUST_TONES.length]}`}>
+                <span className="icon-gem grid size-11 place-items-center">
                   <Icon name={str(item, 'icon')} className="size-5" />
                 </span>
               )}
@@ -225,8 +222,10 @@ export function SplitBlock({ data, locale }: Props) {
           )}
         </div>
         {image ? (
-          <div className={`relative aspect-[4/3] overflow-hidden rounded-[28px] bg-canvas ${left ? 'lg:order-1' : ''}`}>
-            <CmsImage src={image} alt={str(data, 'imageAlt')} />
+          <div className={`anamorphic-stage ${left ? 'lg:order-1' : ''}`}>
+            <div className="anamorphic-frame relative aspect-[4/3] overflow-hidden bg-canvas">
+              <CmsImage src={scenePhoto(image, 1)} alt={str(data, 'imageAlt')} />
+            </div>
           </div>
         ) : null}
       </div>
@@ -241,13 +240,13 @@ export function CtaBlock({ data, locale }: Props) {
   const secondary = link(data, 'secondary');
   return (
     <section className="px-[clamp(20px,4cqi,56px)] py-[clamp(24px,4cqi,48px)]">
-      <div className="relative mx-auto w-full max-w-[1200px] overflow-hidden rounded-[8px] bg-night px-[clamp(24px,5cqi,72px)] py-[clamp(40px,6cqi,80px)] text-on-night">
+      <div className="relative mx-auto w-full max-w-[1200px] overflow-hidden rounded-[36px] bg-night px-[clamp(24px,5cqi,72px)] py-[clamp(40px,6cqi,80px)] text-on-night">
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0"
           style={{
             background:
-              'radial-gradient(40% 80% at 100% 0%, color-mix(in oklab, var(--color-accent) 50%, transparent), transparent 70%)',
+              'radial-gradient(42% 80% at 100% 0%, color-mix(in oklab, #e8a23a 55%, transparent), transparent 70%), radial-gradient(36% 70% at 0% 100%, color-mix(in oklab, #0f8f78 45%, transparent), transparent 70%)',
           }}
         />
         <div className="relative flex flex-wrap items-end justify-between gap-8">

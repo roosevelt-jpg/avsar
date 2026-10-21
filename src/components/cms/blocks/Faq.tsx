@@ -21,7 +21,7 @@ export function FaqBlock({ data, locale }: { data: BlockData; locale: Locale }) 
             <details key={index} className="blue-card group open:border-accent">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-[16px] font-medium [&::-webkit-details-marker]:hidden">
                 {str(item, 'question')}
-                <span aria-hidden className="grid size-7 shrink-0 place-items-center rounded-full bg-accent text-[18px] leading-none text-white transition-transform group-open:rotate-45">
+                <span aria-hidden className="icon-gem grid size-7 shrink-0 place-items-center text-[18px] leading-none transition-transform group-open:rotate-45">
                   +
                 </span>
               </summary>
