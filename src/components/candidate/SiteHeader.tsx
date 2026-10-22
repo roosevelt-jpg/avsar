@@ -41,7 +41,7 @@ function whatsappCopy(locale: Locale, company: string): WhatsAppDeskCopy {
  * The mobile menu is a native <details>, so it works before any JavaScript
  * has arrived on a slow connection.
  */
-export async function SiteHeader({ locale, compact = false }: { locale: Locale; compact?: boolean }) {
+export async function SiteHeader({ locale }: { locale: Locale }) {
   const settings = await getSiteSettings();
   const { announcement, navigation, general } = settings;
   /* The sign-up button is for visitors. Anyone signed in already has an
@@ -50,16 +50,13 @@ export async function SiteHeader({ locale, compact = false }: { locale: Locale; 
      other scripts run two to three times longer and ran into the buttons on
      the right, so they keep the menu button until 2xl. Literal class names,
      so Tailwind sees them. */
-  /* Compact is the header as it appears on a phone, used inside the homepage
-     phone frames. Breakpoints follow the window, so without this a desktop
-     visitor would see the full menu squeezed into a 390px screen. */
-  const wide = compact ? 'hidden' : locale === 'en' ? 'xl:flex' : '2xl:flex';
-  const narrow = compact ? 'block' : locale === 'en' ? 'xl:hidden' : '2xl:hidden';
+  const wide = locale === 'en' ? 'xl:flex' : '2xl:flex';
+  const narrow = locale === 'en' ? 'xl:hidden' : '2xl:hidden';
   const showCta = Boolean(navigation.headerCta.label && navigation.headerCta.href) && (await getViewer()).role === 'anonymous';
 
   return (
     <>
-      {announcement.enabled && announcement.text && !compact ? (
+      {announcement.enabled && announcement.text ? (
         <div className="announce-bar">
           <div className="announce-track">
             {[0, 1].map((copy) => (
@@ -92,19 +89,17 @@ export async function SiteHeader({ locale, compact = false }: { locale: Locale; 
           />
 
           <div className="flex shrink-0 items-center gap-3 [&>*]:shrink-0">
-            {compact ? null : (
-              <a
-                href={`tel:${general.supportPhone.replace(/\s/g, '')}`}
-                dir="ltr"
-                className="t-colors hidden whitespace-nowrap font-mono text-[13px] tabular-nums text-dark-muted-2 no-underline hover:text-white 2xl:inline"
-              >
-                {general.supportPhone}
-              </a>
-            )}
+            <a
+              href={`tel:${general.supportPhone.replace(/\s/g, '')}`}
+              dir="ltr"
+              className="t-colors hidden whitespace-nowrap font-mono text-[13px] tabular-nums text-dark-muted-2 no-underline hover:text-white 2xl:inline"
+            >
+              {general.supportPhone}
+            </a>
             <LocaleToggle locale={locale} />
-            <ThemeToggle className={compact ? 'hidden' : 'hidden sm:grid'} />
+            <ThemeToggle className="hidden sm:grid" />
             <AccountMenu locale={locale} />
-            {showCta && !compact ? (
+            {showCta ? (
               <Link
                 href={localHref(locale, navigation.headerCta.href)}
                 className="t-colors hidden rounded-[14px] bg-[#f4f8fb] px-4 py-2 text-[14px] font-semibold text-[#16324f] no-underline md:inline-flex"
@@ -156,9 +151,7 @@ export async function SiteHeader({ locale, compact = false }: { locale: Locale; 
           </div>
         </div>
       </header>
-      {compact ? null : (
-        <WhatsAppDesk phone={general.whatsapp} hours={general.officeHours} copy={whatsappCopy(locale, general.siteName)} />
-      )}
+      <WhatsAppDesk phone={general.whatsapp} hours={general.officeHours} copy={whatsappCopy(locale, general.siteName)} />
     </>
   );
 }

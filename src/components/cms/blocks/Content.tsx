@@ -1,6 +1,5 @@
 import { items, link, num, str, strList, type BlockData } from '@/lib/cms/blocks';
-import { phoneScreenFor, scenePhoto, SELECTED_FRAMES, stepPhoto } from '@/lib/cms/scenes';
-import { PhoneScreen } from '@/components/cms/PhoneScreen';
+import { scenePhoto, SELECTED_FRAMES, stepPhoto } from '@/lib/cms/scenes';
 import type { Locale } from '@/lib/i18n';
 import { ContactForm } from '@/components/contact/ContactForm';
 import { Markdown } from '../Markdown';
@@ -9,26 +8,6 @@ import { FrameCycle } from '../FrameCycle';
 import { CmsButton, CmsImage, CmsTextLink, Icon, Section, SectionHeading } from '../primitives';
 
 type Props = { data: BlockData; locale: Locale };
-
-/** A step or feature picture. Phone photographs show the matching mobile page. */
-function StepMedia({
-  src,
-  locale,
-  className,
-  sizes,
-}: {
-  src: string;
-  locale: Locale;
-  className: string;
-  sizes: string;
-}) {
-  const screen = phoneScreenFor(src);
-  return (
-    <div className={className}>
-      {screen ? <PhoneScreen screen={screen} locale={locale} /> : <CmsImage src={src} alt="" sizes={sizes} />}
-    </div>
-  );
-}
 
 export function TrustBarBlock({ data }: Props) {
   const list = items(data, 'items');
@@ -66,9 +45,9 @@ export function StatsBlock({ data }: Props) {
   );
 }
 
-export function StepsBlock({ data, locale }: Props) {
+export function StepsBlock({ data }: Props) {
   const list = items(data, 'items');
-  if (str(data, 'layout') === 'timeline') return <StepsTimeline data={data} locale={locale} />;
+  if (str(data, 'layout') === 'timeline') return <StepsTimeline data={data} />;
   return (
     <Section id="how">
       <SectionHeading eyebrow={str(data, 'eyebrow')} title={str(data, 'title')} intro={str(data, 'intro')} />
@@ -81,12 +60,9 @@ export function StepsBlock({ data, locale }: Props) {
               <p className="m-0 mt-2 max-w-[52ch] text-[16px] leading-[1.6] text-ink-2">{str(item, 'body')}</p>
               {str(item, 'meta') ? <p className="m-0 mt-3 text-[13px] text-muted">{str(item, 'meta')}</p> : null}
             </div>
-            <StepMedia
-              src={stepPhoto(str(item, 'image'), index)}
-              locale={locale}
-              className={`photo-card relative aspect-[16/10] bg-canvas ${index % 2 === 1 ? 'photo-card-alt' : ''}`}
-              sizes="(max-width: 768px) 100vw, 280px"
-            />
+            <div className={`photo-card relative aspect-[16/10] bg-canvas ${index % 2 === 1 ? 'photo-card-alt' : ''}`}>
+              <CmsImage src={stepPhoto(str(item, 'image'), index)} alt="" sizes="(max-width: 768px) 100vw, 280px" />
+            </div>
           </li>
         ))}
       </ol>
@@ -100,7 +76,7 @@ export function StepsBlock({ data, locale }: Props) {
  * room, not a repeated kitchen shot. The picture alternates sides so the
  * page reads as a process, not a stack of identical cards.
  */
-function StepsTimeline({ data, locale }: { data: BlockData; locale: Props['locale'] }) {
+function StepsTimeline({ data }: { data: BlockData }) {
   const list = items(data, 'items');
   return (
     <Section id="how">
@@ -120,12 +96,9 @@ function StepsTimeline({ data, locale }: { data: BlockData; locale: Props['local
                 <p className="m-0 mt-3 max-w-[46ch] text-[16px] leading-[1.65] text-ink-2">{str(item, 'body')}</p>
               </div>
               {stepPhoto(str(item, 'image'), index) ? (
-                <StepMedia
-                  src={stepPhoto(str(item, 'image'), index)}
-                  locale={locale}
-                  className={`photo-card relative aspect-[16/10] bg-canvas ${flip ? 'photo-card-alt md:order-1' : ''}`}
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
+                <div className={`photo-card relative aspect-[16/10] bg-canvas ${flip ? 'photo-card-alt md:order-1' : ''}`}>
+                  <CmsImage src={stepPhoto(str(item, 'image'), index)} alt="" sizes="(max-width: 768px) 100vw, 50vw" />
+                </div>
               ) : null}
             </li>
           );
@@ -156,12 +129,9 @@ export function FeaturesBlock({ data, locale }: Props) {
               className="row-span-4 grid grid-rows-subgrid gap-y-0 border-t border-line pt-6"
             >
               {image ? (
-                <StepMedia
-                  src={scenePhoto(image, index)}
-                  locale={locale}
-                  className={`photo-card relative mb-5 aspect-[16/10] bg-canvas ${index % 2 === 1 ? 'photo-card-alt' : ''}`}
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                />
+                <div className={`photo-card relative mb-5 aspect-[16/10] bg-canvas ${index % 2 === 1 ? 'photo-card-alt' : ''}`}>
+                  <CmsImage src={scenePhoto(image, index)} alt="" sizes="(max-width: 768px) 100vw, 33vw" />
+                </div>
               ) : (
                 <Icon name={str(item, 'icon')} className="mb-4 size-5 text-ink" />
               )}

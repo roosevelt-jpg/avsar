@@ -18,8 +18,6 @@ export function AssessmentRunner({
   secondsRemaining,
   /** Answers already stored for this attempt, so a resumed section is filled in. */
   savedAnswers,
-  /** Homepage phone frame. Shows the real questions and does not save or listen for keys. */
-  preview = false,
 }: {
   locale: Locale;
   t: Dictionary;
@@ -28,7 +26,6 @@ export function AssessmentRunner({
   attemptId: string | null;
   secondsRemaining: number;
   savedAnswers: Record<string, number>;
-  preview?: boolean;
 }) {
   const router = useRouter();
   const a = t.assess;
@@ -138,7 +135,6 @@ export function AssessmentRunner({
   /* A-D keyboard shortcuts. The prototype labels the options with them, so they
      should actually work. */
   useEffect(() => {
-    if (preview) return;
     function onKey(event: KeyboardEvent) {
       if (event.metaKey || event.ctrlKey || event.altKey) return;
       const position = KEYS.indexOf(event.key.toUpperCase() as (typeof KEYS)[number]);
@@ -150,7 +146,7 @@ export function AssessmentRunner({
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [item, preview]);
+  }, [item]);
 
   /**
    * Closes this section and moves on. The server decides what comes next and
@@ -158,7 +154,6 @@ export function AssessmentRunner({
    * which sections are already in.
    */
   async function finishSection() {
-    if (preview) return;
     if (!attemptId) {
       router.push(localePath(locale, '/dashboard'));
       return;
