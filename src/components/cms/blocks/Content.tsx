@@ -1,5 +1,5 @@
 import { items, link, num, str, strList, type BlockData } from '@/lib/cms/blocks';
-import { scenePhoto, SELECTED_FRAMES, stepPhoto } from '@/lib/cms/scenes';
+import { marketingImage, scenePhoto, SELECTED_FRAMES, stepPhoto } from '@/lib/cms/scenes';
 import type { Locale } from '@/lib/i18n';
 import { ContactForm } from '@/components/contact/ContactForm';
 import { Markdown } from '../Markdown';
@@ -8,6 +8,18 @@ import { FrameCycle } from '../FrameCycle';
 import { CmsButton, CmsImage, CmsTextLink, Icon, Section, SectionHeading } from '../primitives';
 
 type Props = { data: BlockData; locale: Locale };
+
+/** A marketing picture. The 3D renders sit whole in the card, with a slight tilt. */
+function StepPicture({ src, altClass, sizes }: { src: string; altClass: string; sizes: string }) {
+  const threeD = src.includes('/illustrations/');
+  return (
+    <div className={threeD ? 'anamorphic-stage' : ''}>
+      <div className={`photo-card relative aspect-[16/10] bg-canvas ${threeD ? 'anamorphic-frame' : ''} ${altClass}`}>
+        <CmsImage src={src} alt="" sizes={sizes} className={threeD ? 'illustration object-contain' : ''} />
+      </div>
+    </div>
+  );
+}
 
 export function TrustBarBlock({ data }: Props) {
   const list = items(data, 'items');
@@ -60,9 +72,7 @@ export function StepsBlock({ data }: Props) {
               <p className="m-0 mt-2 max-w-[52ch] text-[16px] leading-[1.6] text-ink-2">{str(item, 'body')}</p>
               {str(item, 'meta') ? <p className="m-0 mt-3 text-[13px] text-muted">{str(item, 'meta')}</p> : null}
             </div>
-            <div className={`photo-card relative aspect-[16/10] bg-canvas ${index % 2 === 1 ? 'photo-card-alt' : ''}`}>
-              <CmsImage src={stepPhoto(str(item, 'image'), index)} alt="" sizes="(max-width: 768px) 100vw, 280px" />
-            </div>
+            <StepPicture src={stepPhoto(str(item, 'image'), index)} altClass={index % 2 === 1 ? 'photo-card-alt' : ''} sizes="(max-width: 768px) 100vw, 280px" />
           </li>
         ))}
       </ol>
@@ -96,9 +106,11 @@ function StepsTimeline({ data }: { data: BlockData }) {
                 <p className="m-0 mt-3 max-w-[46ch] text-[16px] leading-[1.65] text-ink-2">{str(item, 'body')}</p>
               </div>
               {stepPhoto(str(item, 'image'), index) ? (
-                <div className={`photo-card relative aspect-[16/10] bg-canvas ${flip ? 'photo-card-alt md:order-1' : ''}`}>
-                  <CmsImage src={stepPhoto(str(item, 'image'), index)} alt="" sizes="(max-width: 768px) 100vw, 50vw" />
-                </div>
+                <StepPicture
+                  src={stepPhoto(str(item, 'image'), index)}
+                  altClass={`${flip ? 'photo-card-alt md:order-1' : ''}`}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
               ) : null}
             </li>
           );
@@ -129,9 +141,11 @@ export function FeaturesBlock({ data, locale }: Props) {
               className="row-span-4 grid grid-rows-subgrid gap-y-0 border-t border-line pt-6"
             >
               {image ? (
-                <div className={`photo-card relative mb-5 aspect-[16/10] bg-canvas ${index % 2 === 1 ? 'photo-card-alt' : ''}`}>
-                  <CmsImage src={scenePhoto(image, index)} alt="" sizes="(max-width: 768px) 100vw, 33vw" />
-                </div>
+                <StepPicture
+                  src={scenePhoto(image, index)}
+                  altClass={`mb-5 ${index % 2 === 1 ? 'photo-card-alt' : ''}`}
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                />
               ) : (
                 <Icon name={str(item, 'icon')} className="mb-4 size-5 text-ink" />
               )}
@@ -167,9 +181,9 @@ function splitFrames(data: BlockData): { src: string; alt: string }[] {
     image.startsWith('/photos/kitchen') ||
     image.startsWith('/walkthrough/') ||
     image.includes('/illustrations/');
-  if (!replaced) return [{ src: image, alt: str(data, 'imageAlt') }];
+  if (!replaced) return [{ src: marketingImage(image), alt: str(data, 'imageAlt') }];
   if (!image) return [];
-  return [...SELECTED_FRAMES];
+  return SELECTED_FRAMES.map((frame) => ({ ...frame, src: marketingImage(frame.src) }));
 }
 
 export function SplitBlock({ data, locale }: Props) {
@@ -203,8 +217,10 @@ export function SplitBlock({ data, locale }: Props) {
         </div>
         {frames.length ? (
           <div className={left ? 'lg:order-1' : ''}>
-            <div className="photo-card relative aspect-[4/3] bg-canvas">
-              <FrameCycle frames={frames} alt={str(data, 'imageAlt')} />
+            <div className="anamorphic-stage">
+              <div className="photo-card anamorphic-frame relative aspect-[4/3] bg-canvas">
+                <FrameCycle frames={frames} alt={str(data, 'imageAlt')} />
+              </div>
             </div>
           </div>
         ) : null}

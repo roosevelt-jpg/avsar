@@ -36,7 +36,7 @@ export function FrameCycle({ frames, alt }: { frames: { src: string; alt: string
             alt={active ? frame.alt || alt : ''}
             fill
             sizes="(max-width: 1024px) 100vw, 46vw"
-            className={`object-cover transition-opacity duration-700 ${active ? 'opacity-100' : 'opacity-0'}`}
+            className={`${frame.src.includes('/illustrations/') ? 'illustration object-contain' : 'object-cover'} transition-opacity duration-700 ${active ? 'opacity-100' : 'opacity-0'}`}
           />
         );
       })}

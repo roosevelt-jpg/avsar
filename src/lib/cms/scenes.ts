@@ -1,9 +1,26 @@
 /**
- * Photographs for the shopfront. Illustration files read as stickers, and the
- * walkthrough paths in older page data are not in this repo, so a missing or
- * drawn image is swapped for one of these at render time. The label stays
- * whatever the page editor wrote.
+ * Stock stand-ins for a missing picture. The 3D illustrations are the
+ * shopfront set; a saved page that still points at a walkthrough file or a
+ * generic phone photograph is shown as one of those instead.
  */
+const AS_3D: Record<string, string> = {
+  '/photos/steps/profile.jpg': '/illustrations/skills-test.jpg',
+  '/photos/steps/test.jpg': '/illustrations/skills-test.jpg',
+  '/photos/steps/apply.jpg': '/illustrations/find-job.jpg',
+  '/photos/steps/interview.jpg': '/illustrations/chat.jpg',
+  '/photos/steps/visa.jpg': '/illustrations/visa.jpg',
+  '/photos/steps/arrival.jpg': '/illustrations/flight.jpg',
+  '/photos/selected/contract.jpg': '/illustrations/payment.jpg',
+  '/photos/selected/flight.jpg': '/illustrations/flight.jpg',
+  '/photos/selected/visa.jpg': '/illustrations/visa.jpg',
+  '/photos/phone.jpg': '/illustrations/skills-test.jpg',
+};
+
+/** The 3D render for a marketing slot, or the editor's own picture. */
+export function marketingImage(src: string): string {
+  if (src && AS_3D[src]) return AS_3D[src];
+  return src;
+}
 export const SCENE_PHOTOS = [
   '/photos/kitchen.jpg',
   '/photos/lisbon.jpg',
@@ -42,23 +59,25 @@ export const SELECTED_FRAMES = [
 ] as const;
 
 export function scenePhoto(src: string, index: number): string {
-  if (src && STEP_BY_PATH[src]) return STEP_BY_PATH[src];
+  if (src && AS_3D[src]) return AS_3D[src];
+  if (src && STEP_BY_PATH[src]) return marketingImage(STEP_BY_PATH[src]);
+  if (src && src.includes('/illustrations/')) return src;
   if (
     src &&
-    !src.includes('/illustrations/') &&
     !src.startsWith('/walkthrough/') &&
     !src.includes('lisbon-rooftops') &&
     !src.startsWith('/video/')
   ) {
     return src;
   }
-  return SCENE_PHOTOS[index % SCENE_PHOTOS.length] ?? SCENE_PHOTOS[0];
+  return marketingImage(SCENE_PHOTOS[index % SCENE_PHOTOS.length] ?? SCENE_PHOTOS[0]);
 }
 
 /** A step card keeps the editor's own upload, and otherwise the picture for that step. */
 export function stepPhoto(src: string, index: number): string {
-  if (src && STEP_BY_PATH[src]) return STEP_BY_PATH[src];
-  if (src && src.startsWith('/photos/steps/')) return src;
+  if (src && AS_3D[src]) return AS_3D[src];
+  if (src && STEP_BY_PATH[src]) return marketingImage(STEP_BY_PATH[src]);
+  if (src && src.startsWith('/photos/steps/')) return marketingImage(src);
   if (
     src &&
     !src.includes('/illustrations/') &&
@@ -67,5 +86,5 @@ export function stepPhoto(src: string, index: number): string {
   ) {
     return src;
   }
-  return STEP_PHOTOS[index % STEP_PHOTOS.length] ?? STEP_PHOTOS[0];
+  return marketingImage(STEP_PHOTOS[index % STEP_PHOTOS.length] ?? STEP_PHOTOS[0]);
 }
