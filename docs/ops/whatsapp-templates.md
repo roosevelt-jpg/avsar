@@ -17,7 +17,7 @@ Approve these in WhatsApp Manager (English, category UTILITY or MARKETING as Met
 |---|---|
 | `score_ready` | Hello {{1}}, your skills score is {{2}} out of 10. Shortlist: {{3}}. Open your dashboard for the optional career package (legal document check, full report, CV). |
 | `package_offer` | Hello {{1}}, you finished the free assessment and are in our database. The optional career package ({{2}}) adds a preliminary legal document review, your full report and a CV. No shortlist priority. |
-| `payment_received` | Hello {{1}}, payment received. Receipt {{2}}. Your package deliverables are on your dashboard. |
+| `payment_received` | Hello {{1}}, we received {{2}}. Receipt {{3}}. This is not a job offer and not a visa decision. The document is on your dashboard. |
 | `legal_review_ready` | Hello {{1}}, your preliminary legal document review is ready on your dashboard. |
 | `checkout_abandoned` | Hello {{1}}, your payment for the optional career package ({{2}}) did not finish. You can try again from your dashboard. UPI is accepted. It does not change your shortlist chances. |
 

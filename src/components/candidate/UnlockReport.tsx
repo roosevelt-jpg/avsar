@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Mono } from '@/components/ui/Mono';
 import { IDEMPOTENCY_HEADER, useIdempotencyKey } from '@/components/security/useIdempotencyKey';
 import { CheckoutTrust } from '@/components/candidate/CheckoutTrust';
+import { FamilyShare } from '@/components/candidate/FamilyShare';
 import { PackagePaywallCopy } from '@/components/candidate/PackagePaywallCopy';
 import { loadEximpe } from '@/lib/payments/eximpe-client';
 import { loadCashfree } from '@/lib/payments/cashfree-client';
@@ -12,8 +13,7 @@ import { openPaytmCheckout, parsePaytmClientToken } from '@/lib/payments/paytm-c
 import type { CompanySettings, HiringSettings } from '@/lib/company/config';
 import type { ConversionSettings } from '@/lib/cms/settings';
 import { siteText } from '@/lib/cms/localize';
-import { fill, type Dictionary } from '@/lib/i18n';
-import type { Locale } from '@/lib/i18n';
+import { fill, localePath, type Dictionary, type Locale } from '@/lib/i18n';
 import type { CheckoutProduct } from '@/lib/company/config';
 import type { PaymentMethodHint, PaymentProvider } from '@/lib/payments/types';
 
@@ -47,6 +47,9 @@ export function UnlockReport({
   whatsapp,
   supportEmail,
   preferUpi = false,
+  lines,
+  shareUrl,
+  voiceUrl,
 }: {
   t: Dictionary;
   locale: Locale;
@@ -63,6 +66,10 @@ export function UnlockReport({
   methods: PaymentMethodHint[];
   provider: PaymentProvider['name'];
   providerMode: 'sandbox' | 'production';
+  /** Phrases the candidate wrote, or one line from the answers they gave at signup. */
+  lines: string[];
+  shareUrl: string;
+  voiceUrl: string;
 }) {
   const s = t.status;
   const [method, setMethod] = useState<PaymentMethodHint>(
@@ -257,6 +264,23 @@ export function UnlockReport({
         })}
       </div>
 
+      {lines.length > 0 ? (
+        <div className="mt-5 rounded-[12px] border border-line bg-surface px-4 py-3">
+          <p className="m-0 text-[13px] leading-[1.5] text-muted">
+            {siteText(locale, 'From what you wrote. This is not a visa decision.')}
+          </p>
+          <ul className="m-0 mt-2 list-disc pl-5 text-[15px] leading-[1.55] text-ink">
+            {lines.map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
+      <div className="mt-5">
+        <FamilyShare locale={locale} shareUrl={shareUrl} voiceUrl={voiceUrl} />
+      </div>
+
       <div className="mt-5 flex flex-wrap gap-2.5">
         <button
           type="button"
@@ -276,6 +300,9 @@ export function UnlockReport({
             {siteText(locale, 'Talk before you pay')}
           </a>
         ) : null}
+        <a href={localePath(locale, '/for-your-family')} className="t-colors inline-flex items-center text-[14px] text-ink-2 underline">
+          {siteText(locale, 'For your family')}
+        </a>
       </div>
 
       {/* A card-only rail abroad is an international payment for an Indian card,

@@ -32,6 +32,12 @@ const schemas = {
     supportEmail: z.string().trim().email().max(200),
     officeAddress: text(500),
     officeHours: text(160),
+    familyVoiceUrl: z
+      .string()
+      .trim()
+      .max(1000)
+      .optional()
+      .transform((value) => (value ? safeUrl(value) : '')),
     socials: z.object({ instagram: url, facebook: url, linkedin: url, youtube: url }),
   }),
   announcement: z.object({ enabled: z.boolean(), text: text(240), linkLabel: text(60), href: url }),

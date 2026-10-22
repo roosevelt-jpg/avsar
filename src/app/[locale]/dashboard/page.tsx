@@ -41,6 +41,9 @@ import { BackgroundForm } from '@/components/candidate/BackgroundForm';
 import { getCandidateRelocation } from '@/lib/relocation/data';
 import { getFunnelStats } from '@/lib/stats/funnel';
 import { siteText } from '@/lib/cms/localize';
+import { linesTheyWrote } from '@/lib/candidate/own-words';
+import { publicOrigin } from '@/lib/http/origin';
+import { EXPERIENCE_BANDS } from '@/lib/employer/portal';
 
 export const metadata = privateMetadata('Your dashboard');
 
@@ -74,6 +77,7 @@ export default async function DashboardPage({
 
   let r: DashboardReport | null = null;
   let pack: Pack | null = null;
+  let ownLines: string[] = [];
   let whatsappOptIn = false;
   const settings = await getSiteSettings();
   const prices = {
@@ -148,6 +152,20 @@ export default async function DashboardPage({
         sector: sectorLabel(sector),
         breakdown,
       };
+    }
+
+    const fromCv = linesTheyWrote(pack?.improvedCv);
+    if (fromCv.length > 0) {
+      ownLines = fromCv;
+    } else if (candidate.sector && (SECTOR_SLUGS as readonly string[]).includes(candidate.sector)) {
+      const band = EXPERIENCE_BANDS[candidate.yearsBand ?? 0] ?? 'Under 1 year';
+      const sectorName = t.sectors[SECTOR_SLUGS.indexOf(sector)] ?? sectorLabel(sector);
+      ownLines = [
+        fill(siteText(locale, 'You told us your work is {sector}, and your experience is {years}.'), {
+          sector: sectorName,
+          years: siteText(locale, band),
+        }),
+      ];
     }
   }
   /* Not assessed yet, or assessed but not scored: the page says plainly that
@@ -282,6 +300,9 @@ export default async function DashboardPage({
               supportEmail={settings.general.supportEmail || settings.company.supportEmail}
               preferUpi={paymentCancelled}
               methods={availablePaymentMethods()}
+              lines={ownLines}
+              voiceUrl={settings.general.familyVoiceUrl}
+              shareUrl={`${await publicOrigin()}${localePath(locale, '/for-your-family')}`}
               provider={getPaymentProvider().name}
               providerMode={(() => {
                 const name = getPaymentProvider().name;

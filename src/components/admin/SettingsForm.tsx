@@ -23,6 +23,9 @@ export function GeneralSettings({ initial }: { initial: Pick<SiteSettings, 'gene
           <Field label="WhatsApp number" help="Include the country code, e.g. +91 98..."><input className={INPUT} value={general.whatsapp} onChange={(e) => setGeneral({ ...general, whatsapp: e.target.value })} /></Field>
           <Field label="Support email"><input className={INPUT} type="email" value={general.supportEmail} onChange={(e) => setGeneral({ ...general, supportEmail: e.target.value })} /></Field>
           <Field label="Office hours"><input className={INPUT} value={general.officeHours} onChange={(e) => setGeneral({ ...general, officeHours: e.target.value })} /></Field>
+          <Field label="Family voice recording" help="An https link to about 30 seconds from someone on the team. It plays on For your family and next to the price. Leave empty until that recording exists.">
+            <input className={INPUT} placeholder="https://" value={general.familyVoiceUrl} onChange={(e) => setGeneral({ ...general, familyVoiceUrl: e.target.value })} />
+          </Field>
         </div>
         <div className="mt-3">
           <Field label="Office address"><textarea className={INPUT} rows={2} value={general.officeAddress} onChange={(e) => setGeneral({ ...general, officeAddress: e.target.value })} /></Field>

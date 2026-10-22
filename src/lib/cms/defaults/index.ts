@@ -5,6 +5,7 @@ import { WHY_PORTUGAL } from './why-portugal';
 import { VISA } from './visa';
 import { FAQ } from './faq';
 import { STAY_SAFE } from './stay-safe';
+import { FOR_YOUR_FAMILY } from './for-your-family';
 import { ABOUT } from './about';
 import { JOBS_INTRO } from './jobs';
 import { LEGAL_PAGES } from './legal';
@@ -22,7 +23,7 @@ import { LEGAL_PAGES } from './legal';
 export type { DefaultPage } from './make';
 export { makeBlocks } from './make';
 
-export const DEFAULT_PAGES: DefaultPage[] = [HOME, JOBS_INTRO, HOW_IT_WORKS, WHY_PORTUGAL, VISA, FAQ, STAY_SAFE, ABOUT, ...LEGAL_PAGES];
+export const DEFAULT_PAGES: DefaultPage[] = [HOME, JOBS_INTRO, HOW_IT_WORKS, WHY_PORTUGAL, VISA, FAQ, STAY_SAFE, FOR_YOUR_FAMILY, ABOUT, ...LEGAL_PAGES];
 
 export function defaultPage(slug: string): DefaultPage | undefined {
   return DEFAULT_PAGES.find((page) => page.slug === slug);

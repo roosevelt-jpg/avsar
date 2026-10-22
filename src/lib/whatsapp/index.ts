@@ -30,8 +30,8 @@ export const WHATSAPP_TEMPLATES = {
   score_ready: 3,
   /** {{1}} first name, {{2}} package price */
   package_offer: 2,
-  /** {{1}} first name, {{2}} receipt number */
-  payment_received: 2,
+  /** {{1}} first name, {{2}} amount and what was bought, {{3}} receipt number */
+  payment_received: 3,
   /** {{1}} first name */
   legal_review_ready: 1,
   /** {{1}} first name, {{2}} package price. One message, the day after checkout was opened and not paid. */

@@ -3,9 +3,10 @@ import { emailStaff, notifyStaff } from '@/lib/notifications/staff';
 import { getMailer } from '@/lib/email';
 import { composeEmail } from '@/lib/email/compose';
 import { getSiteSettings } from '@/lib/cms/data';
-import { asPaidProduct, formatMoney, productGrants } from '@/lib/company/config';
+import { asPaidProduct, formatMoney, productGrants, type PaidProduct } from '@/lib/company/config';
+import { siteText } from '@/lib/cms/localize';
+import { fill, isLocale, localePath } from '@/lib/i18n';
 import { candidateEntitlements } from '@/lib/payments/entitlements';
-import { localePath } from '@/lib/i18n';
 import { sendWhatsApp } from '@/lib/whatsapp';
 import type { PaymentStatus } from './types';
 
@@ -116,16 +117,27 @@ export async function recordPayment(input: {
   }
 
   const to = typeof buyer.email === 'string' ? buyer.email : '';
+  const settings = await getSiteSettings();
+  const locale = typeof buyer.locale === 'string' && isLocale(buyer.locale) ? buyer.locale : 'en';
+  const paidMinor = typeof payment.amount_paise === 'number' ? payment.amount_paise : 0;
+  const plainPrice = formatMoney(paidMinor, settings.pricing.chargeCurrency).replace(/[\u2066\u2069]/g, '');
+  const bought = productNoun(product);
   if (to) {
     try {
-      const settings = await getSiteSettings();
       const origin = process.env.SITE_ORIGIN ?? 'https://recruitment.smithandadams.com';
-      const locale = typeof buyer.locale === 'string' && buyer.locale ? buyer.locale : 'en';
-      const paidMinor = typeof payment.amount_paise === 'number' ? payment.amount_paise : 0;
       const email = await composeEmail(
         'payment_received',
         { first_name: firstName, price: formatMoney(paidMinor, settings.pricing.chargeCurrency) },
-        { origin, actionUrl: `${origin}${localePath(locale, '/dashboard')}` },
+        {
+          origin,
+          actionUrl: `${origin}${localePath(locale, '/dashboard')}`,
+          extra: [
+            fill(siteText(locale, 'We received {price} for the {product}. This is not a job offer and not a visa decision.'), {
+              price: plainPrice,
+              product: siteText(locale, bought),
+            }),
+          ],
+        },
       );
       await getMailer().send({ to, ...email });
     } catch (error) {
@@ -136,6 +148,13 @@ export async function recordPayment(input: {
   await sendWhatsApp({
     candidateId: String(buyer.id),
     template: 'payment_received',
-    params: [firstName, receipt],
+    params: [firstName, `${plainPrice} for the ${bought}`, receipt],
   });
+}
+
+/** English noun used in the receipt. The email translates it; the WhatsApp template stays English. */
+function productNoun(product: PaidProduct): string {
+  if (product === 'skills_report') return 'skills report';
+  if (product === 'visa_requirements') return 'visa-requirements list';
+  return 'both reports';
 }

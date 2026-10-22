@@ -12,6 +12,7 @@ export const FOOTER_LABELS = {
   hire: 'Hire from India',
   helpSafety: 'Help and safety',
   staySafe: 'Stay safe from fraud',
+  forYourFamily: 'For your family',
   company: 'Company',
   about: 'About us',
   contact: 'Contact',

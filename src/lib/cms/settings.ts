@@ -60,6 +60,8 @@ export type SiteSettings = {
     supportEmail: string;
     officeAddress: string;
     officeHours: string;
+    /** https URL of a short recording for the family page and the pay panel. Empty until a real person records it. */
+    familyVoiceUrl: string;
     socials: { instagram: string; facebook: string; linkedin: string; youtube: string };
   };
   announcement: { enabled: boolean; text: string; linkLabel: string; href: string };
@@ -157,6 +159,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     supportEmail: DEFAULT_COMPANY.supportEmail,
     officeAddress: DEFAULT_COMPANY.offices.map((office) => `${office.city}: ${office.address}`).join('\n'),
     officeHours: 'Monday to Friday, 10:00 to 17:00 Lisbon time and 10:00 to 17:00 Dubai time',
+    familyVoiceUrl: '',
     socials: { instagram: 'https://www.instagram.com/smithandadamsgroup/', facebook: '', linkedin: 'https://www.linkedin.com/company/91010816/', youtube: '' },
   },
   announcement: {

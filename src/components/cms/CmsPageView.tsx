@@ -4,6 +4,9 @@ import type { ResolvedPage } from '@/lib/cms/data';
 import { getSiteSettings } from '@/lib/cms/data';
 import type { Locale } from '@/lib/i18n';
 import { pageMetadata } from '@/lib/seo';
+import { FamilyShare } from '@/components/candidate/FamilyShare';
+import { publicOrigin } from '@/lib/http/origin';
+import { localePath } from '@/lib/i18n';
 import { BlockRenderer } from './BlockRenderer';
 
 /** A whole CMS page: header and rendered blocks. The footer comes from the locale layout. */
@@ -28,6 +31,17 @@ export async function CmsPageView({
       <main>
         {notice}
         <BlockRenderer blocks={page.blocks} locale={locale} settings={settings} />
+        {page.slug === 'for-your-family' ? (
+          <section id="send" className="px-[clamp(20px,4cqi,56px)] pb-[clamp(48px,8cqi,96px)]">
+            <div className="mx-auto w-full max-w-[720px]">
+              <FamilyShare
+                locale={locale}
+                voiceUrl={settings.general.familyVoiceUrl}
+                shareUrl={`${await publicOrigin()}${localePath(locale, '/for-your-family')}`}
+              />
+            </div>
+          </section>
+        ) : null}
       </main>
     </>
   );

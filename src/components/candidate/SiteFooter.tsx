@@ -92,6 +92,7 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
     {
       title: label('helpSafety'),
       links: [
+        { href: page('/for-your-family'), label: label('forYourFamily') },
         { href: page('/stay-safe'), label: label('staySafe') },
         { href: localePath(locale, '/selection-rules'), label: t.selectionRules },
         { href: localePath(locale, '/contact'), label: t.footerContact },
