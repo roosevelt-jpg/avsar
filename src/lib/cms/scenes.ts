@@ -55,6 +55,23 @@ export function scenePhoto(src: string, index: number): string {
   return SCENE_PHOTOS[index % SCENE_PHOTOS.length] ?? SCENE_PHOTOS[0];
 }
 
+/**
+ * Photographs whose screen is a blank or generic mock. The homepage draws the
+ * real mobile page there instead, so the phone shows this site.
+ */
+export type ShopPhone = 'signup' | 'assessment' | 'jobs' | 'pricing';
+
+const PHONE_SCREENS: Record<string, ShopPhone> = {
+  '/photos/steps/profile.jpg': 'signup',
+  '/photos/steps/test.jpg': 'assessment',
+  '/photos/steps/apply.jpg': 'jobs',
+  '/photos/phone.jpg': 'pricing',
+};
+
+export function phoneScreenFor(src: string): ShopPhone | null {
+  return PHONE_SCREENS[src] ?? null;
+}
+
 /** A step card keeps the editor's own upload, and otherwise the picture for that step. */
 export function stepPhoto(src: string, index: number): string {
   if (src && STEP_BY_PATH[src]) return STEP_BY_PATH[src];
