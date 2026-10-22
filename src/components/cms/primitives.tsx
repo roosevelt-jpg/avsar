@@ -137,7 +137,7 @@ export function CmsImage({
       sizes={sizes}
       priority={priority}
       unoptimized={!src.startsWith('/')}
-      className={`${className.includes('object-contain') ? '' : 'object-cover'} ${className}`}
+      className={`object-cover ${className}`}
     />
   );
 }

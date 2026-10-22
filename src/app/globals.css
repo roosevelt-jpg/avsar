@@ -359,7 +359,7 @@ textarea {
   border-end-end-radius: 36px;
 }
 .anamorphic-stage {
-  perspective: 1200px;
+  perspective: none;
   padding: 8px 0;
 }
 .anamorphic-frame {
@@ -371,13 +371,6 @@ textarea {
   border-end-start-radius: 36px;
   border-end-end-radius: 14px;
   box-shadow: 18px 28px 48px -28px rgba(22, 50, 79, 0.45);
-  transform: rotateX(4deg) rotateY(-8deg);
-  transform-style: preserve-3d;
-}
-@media (max-width: 640px) {
-  .anamorphic-frame {
-    transform: rotateX(2deg) rotateY(-4deg);
-  }
 }
 .anamorphic-mini {
   border-start-start-radius: 22px;
