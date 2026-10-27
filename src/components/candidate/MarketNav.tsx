@@ -30,12 +30,12 @@ export function MarketNav({
             key={item.href}
             href={item.href}
             aria-current={current ? 'page' : undefined}
-            className={`group relative ${linkClassName} ${current ? 'text-white' : 'text-dark-muted-2'}`}
+            className={`group relative text-[#16324f] no-underline hover:text-[#1f5f86] ${current ? 'font-semibold' : ''} ${linkClassName}`}
           >
             {item.label}
             <span
               aria-hidden
-              className={`absolute inset-x-0 -bottom-1.5 h-[3px] origin-left rounded-full bg-[linear-gradient(90deg,#9ecae6,#3c8fd4,#16324f)] transition-transform duration-300 ${
+              className={`absolute inset-x-0 -bottom-1.5 h-[2px] origin-left bg-[#c96a4b] transition-transform duration-300 ${
                 current ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
               }`}
             />

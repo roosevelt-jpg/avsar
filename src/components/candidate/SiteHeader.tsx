@@ -81,7 +81,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
           <MarketNav
             items={navigation.items.map((item) => ({ href: localHref(locale, item.href), label: navLabel(item, locale) }))}
             className={`hidden min-w-0 items-center gap-[clamp(12px,1.3vw,20px)] text-[14.5px] font-medium ${wide}`}
-            linkClassName="t-colors text-[#16324f] no-underline hover:text-[#1f5f86]"
+            linkClassName="t-colors"
           />
 
           <div className="flex shrink-0 items-center gap-3 [&>*]:shrink-0">
