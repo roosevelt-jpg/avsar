@@ -15,6 +15,7 @@ import { ur } from './ur';
 import { additions } from './additions';
 import { updates } from './updates';
 import { familyCopy } from './family';
+import { conversionCopy } from './conversion';
 
 /** English source string → translation. English itself is the key, so it is not listed. */
 export type ContentCopy = Record<string, string>;
@@ -24,6 +25,6 @@ const generated: Record<Exclude<Locale, 'en'>, ContentCopy> = { hi, bn, mr, te, 
 export const contentCopy = Object.fromEntries(
   Object.entries(generated).map(([locale, copy]) => [
     locale,
-    { ...copy, ...additions[locale as Exclude<Locale, 'en'>], ...updates[locale as Exclude<Locale, 'en'>], ...familyCopy[locale as Exclude<Locale, 'en'>] },
+    { ...copy, ...additions[locale as Exclude<Locale, 'en'>], ...updates[locale as Exclude<Locale, 'en'>], ...familyCopy[locale as Exclude<Locale, 'en'>], ...conversionCopy[locale as Exclude<Locale, 'en'>] },
   ]),
 ) as Record<Exclude<Locale, 'en'>, ContentCopy>;

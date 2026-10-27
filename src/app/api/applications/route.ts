@@ -14,6 +14,7 @@ import { withIdempotency } from '@/lib/security/idempotency';
 import { emailStaff, notifyStaff } from '@/lib/notifications/staff';
 import { log, requestIdOf } from '@/lib/observability/log';
 import { recordConsent } from '@/lib/privacy/log';
+import { attachLeads } from '@/lib/console/same-person';
 
 export const runtime = 'nodejs';
 
@@ -145,6 +146,8 @@ async function apply(
       if (cvError) console.error('[applications] cv attach failed', cvError);
     }
   }
+
+  await attachLeads({ candidateId: candidate.id, email: candidate.email });
 
   if (isNew) {
     await sendWhatsApp({

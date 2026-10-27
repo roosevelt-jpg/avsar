@@ -13,12 +13,30 @@ const INPUT = 'w-full rounded-[10px] border border-line bg-surface px-3 py-2 tex
  * because the common mistake is the other way round: an internal remark
  * landing in a candidate's tracker.
  */
-export function ApplicationActions({ id, status, rating }: { id: string; status: ApplicationStatus; rating: number | null }) {
+export function ApplicationActions({
+  id,
+  status,
+  rating,
+  assignedToMe,
+  hasOwner,
+  nextStep,
+  nextStepOn,
+}: {
+  id: string;
+  status: ApplicationStatus;
+  rating: number | null;
+  assignedToMe: boolean;
+  hasOwner: boolean;
+  nextStep: string | null;
+  nextStepOn: string | null;
+}) {
   const router = useRouter();
   const [next, setNext] = useState<ApplicationStatus>(status);
   const [note, setNote] = useState('');
   const [visible, setVisible] = useState(false);
   const [notify, setNotify] = useState(true);
+  const [step, setStep] = useState(nextStep ?? '');
+  const [stepOn, setStepOn] = useState(nextStepOn ?? '');
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -73,6 +91,35 @@ export function ApplicationActions({ id, status, rating }: { id: string; status:
           className="mt-4 w-full cursor-pointer rounded-full border-0 bg-ink px-4 py-2.5 text-[14px] font-medium text-paper disabled:cursor-not-allowed disabled:opacity-50"
         >
           {busy ? 'Saving…' : moving ? `Move to ${STATUS_META[next].label}` : 'Add note'}
+        </button>
+        {message && <p className="m-0 mt-2 text-[13px] text-ink-2">{message}</p>}
+      </section>
+
+      <section className="rounded-[16px] border border-line bg-surface p-4">
+        <p className="m-0 font-mono text-[11px] uppercase tracking-[0.1em] text-muted">Owner</p>
+        <p className="m-0 mt-2 text-[14px] text-ink-2">{assignedToMe ? 'You have this file.' : hasOwner ? 'A colleague has this file.' : 'Nobody has taken this file.'}</p>
+        <button
+          type="button"
+          disabled={busy}
+          onClick={() => submit({ assign: assignedToMe ? 'nobody' : 'me' })}
+          className="mt-3 cursor-pointer rounded-full border border-line-strong bg-surface px-3 py-1.5 text-[13px] disabled:opacity-50"
+        >
+          {assignedToMe ? 'Release' : 'Take it'}
+        </button>
+      </section>
+
+      <section className="rounded-[16px] border border-line bg-surface p-4">
+        <p className="m-0 font-mono text-[11px] uppercase tracking-[0.1em] text-muted">Next step</p>
+        <p className="m-0 mt-2 text-[13px] text-ink-2">What you will do, and the day it is due. The candidate does not see this.</p>
+        <input className={`${INPUT} mt-3`} value={step} maxLength={200} onChange={(e) => setStep(e.target.value)} placeholder="Call about the passport scan" />
+        <input className={`${INPUT} mt-2`} type="date" value={stepOn} onChange={(e) => setStepOn(e.target.value)} />
+        <button
+          type="button"
+          disabled={busy}
+          onClick={() => submit({ nextStep: step.trim() || null, nextStepOn: stepOn || null })}
+          className="mt-3 w-full cursor-pointer rounded-full border-0 bg-ink px-4 py-2.5 text-[14px] font-medium text-paper disabled:opacity-50"
+        >
+          {busy ? 'Saving…' : 'Save next step'}
         </button>
         {message && <p className="m-0 mt-2 text-[13px] text-ink-2">{message}</p>}
       </section>

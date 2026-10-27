@@ -10,6 +10,8 @@ import { listApplicationsForConsole, listUpcomingInterviews, type AdminApplicati
 import { interviewTimes } from '@/lib/interviews/time';
 import { STATUS_META } from '@/lib/applications/status';
 import { getAnalytics, parseRange, RANGES } from '@/lib/console/analytics';
+import { workQueue } from '@/lib/console/due';
+import { getSiteSettings } from '@/lib/cms/data';
 import { can, requirePermission } from '@/lib/rbac/server';
 import { getServerSupabase } from '@/lib/supabase/server';
 
@@ -45,10 +47,18 @@ export default async function ConsoleDashboard({ searchParams }: { searchParams:
   const showJobs = can(access, 'jobs.view');
   const showCandidates = can(access, 'candidates.view');
 
-  const [analytics, recent, interviews] = await Promise.all([
+  const settings = await getSiteSettings();
+  const [analytics, recent, interviews, queue] = await Promise.all([
     getAnalytics(range),
     showApps ? listApplicationsForConsole({}) : Promise.resolve({ rows: [] as AdminApplicationRow[], total: 0, pageSize: 0 }),
     showApps ? listUpcomingInterviews() : Promise.resolve([] as UpcomingInterview[]),
+    workQueue({
+      userId: access.userId,
+      responseDays: settings.hiring.responseDays,
+      applications: showApps,
+      leads: can(access, 'leads.manage'),
+      relocation: can(access, 'relocation.manage'),
+    }),
   ]);
 
   const kpis = analytics.kpis.filter((kpi) => {
@@ -59,6 +69,7 @@ export default async function ConsoleDashboard({ searchParams }: { searchParams:
 
   const now = [
     showApps && { label: 'Waiting for review', value: analytics.live.awaitingReview, href: '/admin/applications?status=submitted', urgent: analytics.live.awaitingReview > 0 },
+    showApps && { label: 'Late replies', value: queue.lateCount, href: '/admin/applications?late=1', urgent: queue.lateCount > 0 },
     showApps && { label: 'In interview', value: analytics.live.interviewsActive, href: '/admin/applications?status=interview', urgent: false },
     showApps && { label: 'Offers out', value: analytics.live.offersOpen, href: '/admin/applications?status=offer', urgent: false },
     showJobs && { label: 'Live jobs', value: analytics.live.openJobs, href: '/admin/jobs?status=published', urgent: false },
@@ -95,7 +106,7 @@ export default async function ConsoleDashboard({ searchParams }: { searchParams:
       {now.length > 0 && (
         <section aria-label="Right now" className="motion-rise mt-7">
           <p className="m-0 mb-3 font-mono text-[11px] uppercase tracking-[0.08em] text-muted">Needs attention</p>
-          <ul className="m-0 grid list-none grid-cols-2 gap-3 p-0 lg:grid-cols-4">
+          <ul className="m-0 grid list-none grid-cols-2 gap-3 p-0 lg:grid-cols-5">
             {now.map((item) => (
               <li key={item.label}>
                 <Link
@@ -115,6 +126,58 @@ export default async function ConsoleDashboard({ searchParams }: { searchParams:
             ))}
           </ul>
         </section>
+      )}
+
+      {(queue.due.length > 0 || queue.mine.length > 0) && (
+        <div className="mt-6 grid gap-4 xl:grid-cols-2">
+          <Panel title="Due today" note="Oldest first">
+            {queue.due.length === 0 ? (
+              <p className="m-0 text-[14px] text-muted">Nothing is due. New applications, messages and documents will show here.</p>
+            ) : (
+              <ul className="m-0 flex list-none flex-col divide-y divide-line-soft p-0">
+                {queue.due.map((item) => (
+                  <li key={item.id}>
+                    <Link href={item.href} className="flex items-start justify-between gap-3 py-2.5 text-ink no-underline hover:text-employer">
+                      <span>
+                        <span className="block text-[14px] font-medium">{item.title}</span>
+                        <span className="block text-[12px] text-muted">{item.detail}</span>
+                      </span>
+                      <span className={`shrink-0 text-[12px] ${item.tone === 'overdue' ? 'font-medium text-accent-deep' : 'text-muted'}`}>
+                        {item.tone === 'overdue' ? 'Late' : item.tone === 'today' ? 'Today' : 'Waiting'}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <p className="mt-3 mb-0 text-[13px]">
+              <Link href="/admin/analysis" className="text-ink underline">
+                Read this week&apos;s numbers
+              </Link>
+            </p>
+          </Panel>
+          {showApps && (
+            <Panel title="Yours" note="Files you have taken">
+              {queue.mine.length === 0 ? (
+                <p className="m-0 text-[14px] text-muted">You have not taken a file. Open an application and press Take it.</p>
+              ) : (
+                <ul className="m-0 flex list-none flex-col divide-y divide-line-soft p-0">
+                  {queue.mine.map((item) => (
+                    <li key={item.id}>
+                      <Link href={item.href} className="flex items-start justify-between gap-3 py-2.5 text-ink no-underline hover:text-employer">
+                        <span>
+                          <span className="block text-[14px] font-medium">{item.title}</span>
+                          <span className="block text-[12px] text-muted">{item.detail || 'No next step yet'}</span>
+                        </span>
+                        {item.late ? <span className="shrink-0 text-[12px] font-medium text-accent-deep">Late</span> : null}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Panel>
+          )}
+        </div>
       )}
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3">

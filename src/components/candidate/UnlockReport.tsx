@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type MouseEvent } from 'react';
 import { Mono } from '@/components/ui/Mono';
 import { IDEMPOTENCY_HEADER, useIdempotencyKey } from '@/components/security/useIdempotencyKey';
 import { CheckoutTrust } from '@/components/candidate/CheckoutTrust';
@@ -111,8 +111,69 @@ export function UnlockReport({
   const selected = choices.find((choice) => choice.id === product) ?? choices[0];
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [reading, setReading] = useState('');
+  const [readingBusy, setReadingBusy] = useState(false);
+  const [readingFailed, setReadingFailed] = useState(false);
+  const [payer, setPayer] = useState('');
+  const [asked, setAsked] = useState(false);
+  const [familyNote, setFamilyNote] = useState('');
+  const [familyBusy, setFamilyBusy] = useState(false);
   const idempotency = useIdempotencyKey();
   const shortlistLabel = `${(hiring.shortlistMinScore / 10).toFixed(hiring.shortlistMinScore % 10 === 0 ? 0 : 1)} out of 10`;
+
+  async function explain() {
+    setReadingBusy(true);
+    setReadingFailed(false);
+    try {
+      const response = await fetch('/api/candidate/score-reading', { method: 'POST' });
+      const data = (await response.json().catch(() => null)) as { reading?: string } | null;
+      if (!response.ok || !data?.reading) {
+        setReading('');
+        setReadingFailed(true);
+        return;
+      }
+      setReading(data.reading);
+    } finally {
+      setReadingBusy(false);
+    }
+  }
+
+  function talk(event: MouseEvent<HTMLAnchorElement>) {
+    event.preventDefault();
+    const href = event.currentTarget.href;
+    void fetch('/api/candidate/pay-signal', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ kind: 'talk', product: selected?.id ?? product }),
+    }).finally(() => {
+      window.open(href, '_blank', 'noopener,noreferrer');
+    });
+  }
+
+  async function sendFamily() {
+    setFamilyBusy(true);
+    setFamilyNote('');
+    try {
+      const response = await fetch('/api/candidate/pay-signal', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ kind: 'family_send', product: selected?.id ?? product, phone: payer, confirmed: asked }),
+      });
+      const data = (await response.json().catch(() => null)) as { sent?: boolean; waUrl?: string; error?: string } | null;
+      if (data?.error === 'phone' || data?.error === 'confirm') {
+        setFamilyNote(siteText(locale, 'That number could not be read.'));
+        return;
+      }
+      if (data?.sent) {
+        setFamilyNote(siteText(locale, 'Sent on WhatsApp.'));
+        return;
+      }
+      if (data?.waUrl) window.open(data.waUrl, '_blank', 'noopener,noreferrer');
+      setFamilyNote(siteText(locale, 'This opens WhatsApp so you can send it yourself.'));
+    } finally {
+      setFamilyBusy(false);
+    }
+  }
 
   async function pay() {
     setBusy(true);
@@ -278,7 +339,55 @@ export function UnlockReport({
       ) : null}
 
       <div className="mt-5">
+        <button
+          type="button"
+          onClick={() => void explain()}
+          disabled={readingBusy}
+          className="t-colors cursor-pointer rounded-[12px] border border-line-strong bg-surface px-4 py-2.5 text-[14px] font-medium text-ink hover:border-ink disabled:opacity-40"
+        >
+          {readingBusy ? '…' : siteText(locale, 'Explain my score')}
+        </button>
+        {readingFailed ? <p className="mt-3 mb-0 text-[13px] text-ink-2">{t.auth.errGeneric}</p> : null}
+        {reading ? (
+          <p className="mt-3 mb-0 max-w-[62ch] text-[15px] leading-[1.55] text-ink">
+            {reading} {siteText(locale, 'This is a reading of your free score. It is not a job offer and not a visa decision.')}
+          </p>
+        ) : null}
+      </div>
+
+      <div className="mt-5">
         <FamilyShare locale={locale} shareUrl={shareUrl} voiceUrl={voiceUrl} />
+        <form
+          className="mt-4 flex max-w-[420px] flex-col gap-2"
+          onSubmit={(event) => {
+            event.preventDefault();
+            void sendFamily();
+          }}
+        >
+          <label className="text-[13px] text-ink-2" htmlFor="payer-phone">
+            {siteText(locale, 'Number of the person who pays')}
+          </label>
+          <input
+            id="payer-phone"
+            value={payer}
+            onChange={(event) => setPayer(event.target.value)}
+            inputMode="tel"
+            autoComplete="tel"
+            className="rounded-[10px] border border-line-strong bg-surface px-3 py-2.5 text-[15px] text-ink"
+          />
+          <label className="flex items-start gap-2 text-[13px] leading-[1.45] text-ink-2">
+            <input type="checkbox" checked={asked} onChange={(event) => setAsked(event.target.checked)} className="mt-0.5" />
+            {siteText(locale, 'They asked to receive this page.')}
+          </label>
+          <button
+            type="submit"
+            disabled={familyBusy || !asked || payer.trim().length < 8}
+            className="t-colors w-fit cursor-pointer rounded-[12px] border border-line-strong bg-surface px-4 py-2.5 text-[14px] font-medium text-ink hover:border-ink disabled:opacity-40"
+          >
+            {siteText(locale, 'Send the family page')}
+          </button>
+          {familyNote ? <p className="m-0 text-[13px] text-ink-2">{familyNote}</p> : null}
+        </form>
       </div>
 
       <div className="mt-5 flex flex-wrap gap-2.5">
@@ -295,6 +404,7 @@ export function UnlockReport({
             href={`https://wa.me/${digits}?text=${encodeURIComponent(talkText)}`}
             target="_blank"
             rel="noreferrer"
+            onClick={talk}
             className="t-colors inline-flex items-center rounded-[12px] border border-line-strong bg-surface px-5 py-3 text-[15px] font-medium text-ink no-underline hover:border-ink"
           >
             {siteText(locale, 'Talk before you pay')}

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { audit } from '@/lib/audit';
+import { attachLeads } from '@/lib/console/same-person';
 import { IMPORT_MAX_BYTES, parseCsv, readLeadRows } from '@/lib/leads/import';
 import { apiPermission } from '@/lib/rbac/server';
 import { withIdempotency } from '@/lib/security/idempotency';
@@ -77,6 +78,19 @@ export async function POST(request: Request) {
       if (error) {
         return NextResponse.json({ error: 'save_failed', imported: i, ...summary }, { status: 500 });
       }
+    }
+    const emails = [...new Set(fresh.map((row) => row.email?.toLowerCase()).filter((value): value is string => Boolean(value)))];
+    const phones = [...new Set(fresh.map((row) => row.phone).filter((value): value is string => Boolean(value)))];
+    const [byEmail, byPhone] = await Promise.all([
+      emails.length ? admin.from('candidates').select('id, email, phone').in('email', emails.slice(0, 200)) : Promise.resolve({ data: [] }),
+      phones.length ? admin.from('candidates').select('id, email, phone').in('phone', phones.slice(0, 200)) : Promise.resolve({ data: [] }),
+    ]);
+    const people = new Map<string, { email: string | null; phone: string | null }>();
+    for (const person of [...(byEmail.data ?? []), ...(byPhone.data ?? [])]) {
+      people.set(String(person.id), { email: (person.email as string | null) ?? null, phone: (person.phone as string | null) ?? null });
+    }
+    for (const [id, person] of people) {
+      await attachLeads({ candidateId: id, email: person.email, phone: person.phone, actor: guard.userId });
     }
     await audit(guard.userId, 'lead.import', `file:${fileName}`, { imported: fresh.length, duplicates, problems: result.problems.length });
     return NextResponse.json({ status: 'imported', imported: fresh.length, ...summary });

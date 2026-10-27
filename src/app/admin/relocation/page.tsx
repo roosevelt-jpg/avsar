@@ -34,7 +34,7 @@ export default async function AdminRelocation() {
         ) : (
           <ul className="m-0 mt-4 flex list-none flex-col gap-3 p-0">
             {queue.documents.map((doc) => (
-              <li key={doc.id} className="rounded-[16px] border border-line bg-surface p-4">
+              <li id={`doc-${doc.id}`} key={doc.id} className="rounded-[16px] border border-line bg-surface p-4">
                 <div className="flex flex-wrap items-center gap-3">
                   <span className="font-medium">{doc.candidateName}</span>
                   <Pill tone="neutral">{DOCUMENT_LABELS[doc.kind]}</Pill>

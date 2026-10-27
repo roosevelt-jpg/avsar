@@ -9,6 +9,7 @@ import { anonymousActor, withIdempotency } from '@/lib/security/idempotency';
 import { clientIp, rateLimit, rateLimitedResponse, RATE_LIMITS } from '@/lib/security/rate-limit';
 import { TURNSTILE_HEADER, verifyTurnstile } from '@/lib/security/turnstile';
 import { getAdminSupabase } from '@/lib/supabase/admin';
+import { attachLeads, findSamePerson } from '@/lib/console/same-person';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 
 export const runtime = 'nodejs';
@@ -100,6 +101,9 @@ export async function POST(request: Request) {
       log.error('contact.insert_failed', { requestId: requestIdOf(request), error: error?.message });
       return NextResponse.json({ error: 'save_failed' }, { status: 500 });
     }
+
+    const knownId = candidate?.id ?? (await findSamePerson({ email: input.email, phone })).candidate?.id ?? null;
+    if (knownId) await attachLeads({ candidateId: knownId, email: input.email, phone });
 
     const title = `${LEAD_TOPIC_LABELS[input.topic]}: ${input.company || input.fullName}`;
     await notifyStaff({

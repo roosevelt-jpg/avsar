@@ -100,11 +100,23 @@ export type AdminApplicationRow = {
   createdAt: string;
   statusChangedAt: string;
   rating: number | null;
+  assignedTo: string | null;
+  nextStep: string | null;
+  nextStepOn: string | null;
   candidate: { id: string; fullName: string; email: string; phone: string; cityState: string | null; position: string | null; paymentStatus: string };
   job: { id: string; title: string; city: string; slug: string };
 };
 
-export type AdminApplicationFilters = { status?: string; jobId?: string; q?: string; page?: number };
+export type AdminApplicationFilters = {
+  status?: string;
+  jobId?: string;
+  q?: string;
+  page?: number;
+  /** Only applications this staff member has taken. */
+  assignedTo?: string;
+  /** Submitted applications created before this instant are past the reply promise. */
+  lateBefore?: string;
+};
 
 function adminRowFrom(raw: Record<string, unknown>): AdminApplicationRow {
   const one = (value: unknown) => (Array.isArray(value) ? value[0] : value) as Record<string, unknown> | undefined;
@@ -117,6 +129,9 @@ function adminRowFrom(raw: Record<string, unknown>): AdminApplicationRow {
     createdAt: String(raw.created_at),
     statusChangedAt: String(raw.status_changed_at),
     rating: (raw.rating as number | null) ?? null,
+    assignedTo: (raw.assigned_to as string | null) ?? null,
+    nextStep: (raw.next_step as string | null) ?? null,
+    nextStepOn: (raw.next_step_on as string | null) ?? null,
     candidate: {
       id: String(c.id ?? ''),
       fullName: String(c.full_name ?? ''),
@@ -131,7 +146,7 @@ function adminRowFrom(raw: Record<string, unknown>): AdminApplicationRow {
 }
 
 const ADMIN_SELECT =
-  'id, reference, status, created_at, status_changed_at, rating, candidates!inner (id, full_name, email, phone, city_state, position, payment_status), job_postings!inner (id, title, city, slug)';
+  'id, reference, status, created_at, status_changed_at, rating, assigned_to, next_step, next_step_on, candidates!inner (id, full_name, email, phone, city_state, position, payment_status), job_postings!inner (id, title, city, slug)';
 
 export async function listApplicationsForConsole(
   filters: AdminApplicationFilters,
@@ -142,13 +157,18 @@ export async function listApplicationsForConsole(
   const admin = getAdminSupabase();
   if (!admin) return { rows: [], total: 0, pageSize };
 
+  /* The review queue is oldest first. A new application at the top is how a
+     late reply gets buried under today's arrivals. */
+  const oldest = Boolean(filters.lateBefore) || filters.status === 'submitted';
   let query = admin
     .from('applications')
     .select(ADMIN_SELECT, { count: 'exact' })
-    .order('status_changed_at', { ascending: false })
+    .order(oldest ? 'created_at' : 'status_changed_at', { ascending: oldest })
     .range((page - 1) * pageSize, page * pageSize - 1);
 
-  if (filters.status) query = query.eq('status', filters.status);
+  if (filters.lateBefore) query = query.eq('status', 'submitted').lt('created_at', filters.lateBefore);
+  else if (filters.status) query = query.eq('status', filters.status);
+  if (filters.assignedTo) query = query.eq('assigned_to', filters.assignedTo);
   if (filters.jobId) query = query.eq('job_id', filters.jobId);
   if (filters.q?.trim()) {
     const q = filters.q.trim().replace(/[%,()]/g, ' ');
@@ -176,7 +196,7 @@ export type AdminApplicationDetail = AdminApplicationRow & {
 };
 
 const DETAIL_SELECT =
-  'id, reference, status, created_at, status_changed_at, rating, cover_note, answers, cv_document_id, ' +
+  'id, reference, status, created_at, status_changed_at, rating, assigned_to, next_step, next_step_on, cover_note, answers, cv_document_id, ' +
   'candidates!inner (id, full_name, email, phone, city_state, position, payment_status, years_experience_band, has_passport, created_at, visible_to_employers, whatsapp_opt_in_at), ' +
   'job_postings!inner (id, title, city, slug, screening_questions), ' +
   'application_events (id, from_status, to_status, note, visible_to_candidate, actor, created_at), ' +

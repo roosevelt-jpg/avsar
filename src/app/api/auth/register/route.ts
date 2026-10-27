@@ -226,10 +226,14 @@ export async function POST(request: Request) {
     .select('id')
     .single();
 
-  if (candidateError) {
+  if (candidateError || !candidate) {
     console.error('[register] candidate upsert failed', candidateError);
     return NextResponse.json({ error: 'storage_failed' }, { status: 500 });
   }
+
+  /* A message they sent before creating an account is the same person. */
+  const { attachLeads } = await import('@/lib/console/same-person');
+  await attachLeads({ candidateId: String(candidate.id), email, phone });
 
   /**
    * Ask them to prove the address, without making anything wait for it.

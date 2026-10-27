@@ -37,7 +37,7 @@ export default async function AdminLegalReviews() {
       ) : (
         <ul className="m-0 mt-7 flex list-none flex-col gap-3 p-0">
           {queue.map((item) => (
-            <li key={item.candidateId} className="rounded-[16px] border border-line bg-surface p-4">
+            <li id={`review-${item.candidateId}`} key={item.candidateId} className="rounded-[16px] border border-line bg-surface p-4">
               <div className="flex flex-wrap items-center gap-3">
                 <span className="font-medium">{item.candidateName}</span>
                 {item.position && <span className="text-ink-2">{positionLabel(item.position)}</span>}

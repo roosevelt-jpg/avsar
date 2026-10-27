@@ -6,6 +6,8 @@ import { Mono } from '@/components/ui/Mono';
 import { LEAD_KIND_LABELS, LEAD_STATUS_LABELS, LEAD_STATUS_TONE, LEAD_TOPIC_LABELS, getLead, type LeadStatus } from '@/lib/leads/data';
 import { requirePermission } from '@/lib/rbac/server';
 import { isWhatsAppConfigured } from '@/lib/whatsapp';
+import { attachLeads, findSamePerson } from '@/lib/console/same-person';
+import { SamePerson } from '@/components/admin/SamePerson';
 
 export const metadata = { title: 'Inbox' };
 
@@ -18,6 +20,15 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
   const found = await getLead(id);
   if (!found) notFound();
   const { lead, events } = found;
+  const person = await findSamePerson({
+    email: lead.email,
+    phone: lead.phone,
+    candidateId: lead.candidateId,
+    excludeLeadId: lead.id,
+  });
+  if (person.candidate) {
+    await attachLeads({ candidateId: person.candidate.id, email: lead.email ?? person.candidate.email, phone: lead.phone ?? person.candidate.phone, actor: access.userId });
+  }
 
   const facts: [string, string | null][] = [
     ['Email', lead.email],
@@ -46,6 +57,14 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
 
       <div className="mt-7 grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         <div className="flex flex-col gap-6">
+          {person.candidate ? (
+            <p className="m-0 text-[14px] text-ink-2">
+              This is the same person as {person.candidate.fullName}
+              {person.candidate.email ? ` · ${person.candidate.email}` : ''}.
+            </p>
+          ) : null}
+          <SamePerson person={person} />
+
           {lead.message && (
             <section className="rounded-[16px] border border-line bg-surface p-5">
               <Mono className="text-muted">MESSAGE · {lead.fullName}</Mono>

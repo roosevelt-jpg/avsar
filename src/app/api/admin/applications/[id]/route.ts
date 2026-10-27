@@ -17,8 +17,14 @@ const schema = z
     visibleToCandidate: z.boolean().default(true),
     notify: z.boolean().default(true),
     rating: z.number().int().min(1).max(5).nullable().optional(),
+    assign: z.enum(['me', 'nobody']).optional(),
+    nextStep: z.string().trim().max(200).nullable().optional(),
+    nextStepOn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
   })
-  .refine((body) => body.status || body.note || body.rating !== undefined, 'nothing to change');
+  .refine(
+    (body) => body.status || body.note || body.rating !== undefined || body.assign || body.nextStep !== undefined || body.nextStepOn !== undefined,
+    'nothing to change',
+  );
 
 /**
  * Moves an application, adds a note, or rates it.
@@ -51,13 +57,24 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const from = current.status as ApplicationStatus;
   const moving = body.status && body.status !== from;
 
-  if (moving || body.note) {
+  const stepNote =
+    body.nextStep !== undefined
+      ? body.nextStep
+        ? `Next step: ${body.nextStep}${body.nextStepOn ? ` (${body.nextStepOn})` : ''}`
+        : 'Next step cleared.'
+      : body.assign === 'me'
+        ? 'Taken.'
+        : body.assign === 'nobody'
+          ? 'Released.'
+          : null;
+
+  if (moving || body.note || stepNote) {
     const { error } = await admin.from('application_events').insert({
       application_id: id,
       from_status: moving ? from : null,
       to_status: moving ? body.status : null,
-      note: body.note || null,
-      visible_to_candidate: body.visibleToCandidate,
+      note: body.note || stepNote,
+      visible_to_candidate: Boolean(moving || body.note) && body.visibleToCandidate,
       actor: guard.userId,
     });
     if (error) {
@@ -69,6 +86,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const update: Record<string, unknown> = {};
   if (moving) Object.assign(update, { status: body.status, status_changed_at: new Date().toISOString() });
   if (body.rating !== undefined) update.rating = body.rating;
+  if (body.assign) update.assigned_to = body.assign === 'me' ? guard.userId : null;
+  if (body.nextStep !== undefined) update.next_step = body.nextStep || null;
+  if (body.nextStepOn !== undefined) update.next_step_on = body.nextStepOn;
   if (Object.keys(update).length) {
     const { error } = await admin.from('applications').update(update).eq('id', id);
     if (error) {
@@ -101,9 +121,12 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   }
   if (moving && body.status === 'hired') await recordEmployerFees(admin, [id]);
 
-  await audit(guard.userId, moving ? 'application.move' : 'application.note', `application:${id}`, {
+  await audit(guard.userId, moving ? 'application.move' : body.assign || body.nextStep !== undefined ? 'application.plan' : 'application.note', `application:${id}`, {
     from: moving ? from : undefined,
     to: moving ? body.status : undefined,
+    assign: body.assign,
+    nextStep: body.nextStep,
+    nextStepOn: body.nextStepOn,
   });
 
   return NextResponse.json({ ok: true });

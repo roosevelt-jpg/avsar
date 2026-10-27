@@ -6,6 +6,7 @@ import { CHECKOUT_PRODUCTS, RAIL_CURRENCIES, priceBreakdown, productGrants, type
 import { getPaymentProvider, receiptNumber } from '@/lib/payments';
 import { paymentMethodSchema } from '@/lib/validation';
 import { getAdminSupabase } from '@/lib/supabase/admin';
+import { notifyStaff } from '@/lib/notifications/staff';
 import { getSessionCandidate, type SessionCandidate } from '@/lib/auth';
 import { withIdempotency } from '@/lib/security/idempotency';
 import { getCandidateStatus } from '@/lib/candidate/status';
@@ -159,6 +160,18 @@ async function openCheckout(request: Request, candidate: SessionCandidate): Prom
        This runs after the row exists, so a failed insert cannot unlock anyone. */
     if (treatAsPaid && completesBoth) {
       await supabase.from('candidates').update({ payment_status: 'paid' }).eq('id', candidate.id);
+    }
+
+    /* Same day, on the staff list. The next-day WhatsApp is the checkout
+       recovery cron, and it only goes to someone who opted in. */
+    if (!treatAsPaid) {
+      await notifyStaff({
+        permission: 'payments.view',
+        kind: 'checkout.opened',
+        title: `${candidate.fullName} opened checkout`,
+        body: `${PRODUCT_LABEL[product.data]}. Not paid yet.`,
+        href: '/admin/payments',
+      });
     }
   }
 

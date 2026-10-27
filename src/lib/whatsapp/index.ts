@@ -36,6 +36,9 @@ export const WHATSAPP_TEMPLATES = {
   legal_review_ready: 1,
   /** {{1}} first name, {{2}} package price. One message, the day after checkout was opened and not paid. */
   checkout_abandoned: 2,
+  /** {{1}} candidate first name, {{2}} the three live prices, {{3}} family page URL.
+      Sent only after the candidate confirms the other person asked for the page. */
+  family_page: 3,
 } as const;
 
 export type WhatsAppTemplate = keyof typeof WHATSAPP_TEMPLATES;
@@ -96,13 +99,18 @@ export async function sendWhatsApp(input: {
  * registered. The caller is responsible for consent (the lead's own
  * "WhatsApp is fine" tick); this only refuses a number that is not E.164.
  */
-export async function sendWhatsAppToNumber(input: { to: string; template: WhatsAppTemplate; params: string[] }): Promise<{ sent: boolean }> {
+export async function sendWhatsAppToNumber(input: {
+  to: string;
+  template: WhatsAppTemplate;
+  params: string[];
+  candidateId?: string | null;
+}): Promise<{ sent: boolean }> {
   await refreshIntegrations();
   const settings = config();
   const admin = getAdminSupabase();
   if (!settings || !admin || !/^\+[1-9]\d{6,14}$/.test(input.to)) return { sent: false };
   try {
-    return await deliver(settings, admin, { ...input, candidateId: null, applicationId: null });
+    return await deliver(settings, admin, { ...input, candidateId: input.candidateId ?? null, applicationId: null });
   } catch (error) {
     console.error('[whatsapp] send failed', input.template, error);
     return { sent: false };

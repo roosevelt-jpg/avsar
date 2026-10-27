@@ -20,5 +20,8 @@ Approve these in WhatsApp Manager (English, category UTILITY or MARKETING as Met
 | `payment_received` | Hello {{1}}, we received {{2}}. Receipt {{3}}. This is not a job offer and not a visa decision. The document is on your dashboard. |
 | `legal_review_ready` | Hello {{1}}, your preliminary legal document review is ready on your dashboard. |
 | `checkout_abandoned` | Hello {{1}}, your payment for the optional career package ({{2}}) did not finish. You can try again from your dashboard. UPI is accepted. It does not change your shortlist chances. |
+| `family_page` | Hello, {{1}} asked us to send you this page. Joining is free. The only charges are {{2}}, and they are paid on the website. A job and a visa are not for sale. {{3}} |
+
+`family_page` is sent to a number the candidate typed, and only after they tick that the other person asked for the page. It does not send until the template is approved in WhatsApp Manager. If the send fails, the candidate gets a WhatsApp link and sends the page themselves.
 
 Sends only go to candidates with `whatsapp_opt_in_at` set. Without `WHATSAPP_ACCESS_TOKEN` / `WHATSAPP_PHONE_NUMBER_ID`, nothing is sent.

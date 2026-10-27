@@ -46,6 +46,7 @@ const STAFF_NAV: Group[] = [
     pinned: true,
     items: [
       { href: '/admin/dashboard', label: 'Dashboard', permission: 'dashboard.view' },
+      { href: '/admin/analysis', label: 'Analysis', permission: 'dashboard.view' },
       { href: '/admin/notifications', label: 'Notifications' },
     ],
   },

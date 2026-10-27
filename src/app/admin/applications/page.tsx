@@ -5,10 +5,12 @@ import { applicationCounts, listApplicationsForConsole } from '@/lib/application
 import { APPLICATION_STATUSES, STATUS_META, isApplicationStatus } from '@/lib/applications/status';
 import { getJobById } from '@/lib/jobs/data';
 import { can, requirePermission } from '@/lib/rbac/server';
+import { getSiteSettings } from '@/lib/cms/data';
+import { lateCreatedBefore } from '@/lib/console/due';
 
 export const metadata = { title: 'Applications' };
 
-type Search = { status?: string; job?: string; q?: string; page?: string };
+type Search = { status?: string; job?: string; q?: string; page?: string; mine?: string; late?: string };
 
 export default async function AdminApplications({ searchParams }: { searchParams: Promise<Search> }) {
   const access = await requirePermission('applications.view', '/admin/applications');
@@ -16,9 +18,13 @@ export default async function AdminApplications({ searchParams }: { searchParams
   const status = search.status && isApplicationStatus(search.status) ? search.status : undefined;
   const jobId = search.job && /^[0-9a-f-]{36}$/i.test(search.job) ? search.job : undefined;
   const page = Math.max(1, Number(search.page) || 1);
+  const mine = search.mine === '1';
+  const late = search.late === '1';
+  const { hiring } = await getSiteSettings();
+  const lateBefore = late ? lateCreatedBefore(hiring.responseDays) : undefined;
 
   const [{ rows, total, pageSize }, counts, job] = await Promise.all([
-    listApplicationsForConsole({ status, jobId, q: search.q, page }),
+    listApplicationsForConsole({ status: late ? 'submitted' : status, jobId, q: search.q, page, assignedTo: mine ? access.userId : undefined, lateBefore }),
     applicationCounts(),
     jobId ? getJobById(jobId) : Promise.resolve(null),
   ]);
@@ -36,22 +42,30 @@ export default async function AdminApplications({ searchParams }: { searchParams
     <AdminShell current="/admin/applications" isStaff>
       <AdminHeading
         title={job ? `Applications · ${job.title}, ${job.city}` : 'Applications'}
-        lead="Newest movement first. Open one to read the answers, move the stage and message the candidate."
+        lead={status === 'submitted' || late ? 'Oldest application first, so a late reply is at the top. Open one to take it, set the next step, and move the stage.' : 'Newest movement first. Open one to read the answers, move the stage and message the candidate.'}
       />
 
       <nav aria-label="Stage" className="mt-6 flex flex-wrap gap-2">
-        <Link href={href({ status: undefined, page: undefined })} className={`rounded-full border px-3 py-1 text-[13px] no-underline ${!status ? 'border-ink bg-ink text-paper' : 'border-line bg-surface text-ink-2'}`}>
+        <Link href={href({ status: undefined, late: undefined, page: undefined })} className={`rounded-full border px-3 py-1 text-[13px] no-underline ${!status && !late ? 'border-ink bg-ink text-paper' : 'border-line bg-surface text-ink-2'}`}>
           All
         </Link>
         {APPLICATION_STATUSES.map((value) => (
           <Link
             key={value}
-            href={href({ status: value, page: undefined })}
-            className={`rounded-full border px-3 py-1 text-[13px] no-underline ${status === value ? 'border-ink bg-ink text-paper' : 'border-line bg-surface text-ink-2 hover:border-ink'}`}
+            href={href({ status: value, late: undefined, page: undefined })}
+            className={`rounded-full border px-3 py-1 text-[13px] no-underline ${!late && status === value ? 'border-ink bg-ink text-paper' : 'border-line bg-surface text-ink-2 hover:border-ink'}`}
           >
             {STATUS_META[value].label} <span className="opacity-60">{counts[value] ?? 0}</span>
           </Link>
         ))}
+      </nav>
+      <nav aria-label="Queue" className="mt-3 flex flex-wrap gap-2">
+        <Link href={href({ mine: mine ? undefined : '1', page: undefined })} className={`rounded-full border px-3 py-1 text-[13px] no-underline ${mine ? 'border-ink bg-ink text-paper' : 'border-line bg-surface text-ink-2'}`}>
+          Mine
+        </Link>
+        <Link href={href({ late: late ? undefined : '1', status: undefined, page: undefined })} className={`rounded-full border px-3 py-1 text-[13px] no-underline ${late ? 'border-ink bg-ink text-paper' : 'border-line bg-surface text-ink-2'}`}>
+          Late replies
+        </Link>
       </nav>
 
       <form method="get" action="/admin/applications" className="mt-4 flex flex-wrap gap-2">
@@ -70,7 +84,9 @@ export default async function AdminApplications({ searchParams }: { searchParams
           total={total}
           canManage={can(access, 'applications.manage')}
           canExport={can(access, 'candidates.export')}
-          exportQuery={new URLSearchParams(Object.entries({ status, job: jobId, q: search.q?.trim() }).filter((entry): entry is [string, string] => Boolean(entry[1]))).toString()}
+          viewerId={access.userId}
+          responseDays={hiring.responseDays}
+          exportQuery={new URLSearchParams(Object.entries({ status: late ? 'submitted' : status, job: jobId, q: search.q?.trim(), mine: mine ? '1' : undefined, late: late ? '1' : undefined }).filter((entry): entry is [string, string] => Boolean(entry[1]))).toString()}
         />
       )}
 

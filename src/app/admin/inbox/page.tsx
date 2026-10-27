@@ -96,6 +96,7 @@ export default async function AdminInbox({ searchParams }: { searchParams: Promi
                     <span className="block text-[13px] text-muted">
                       {lead.company ? `${lead.fullName} · ` : ''}
                       {LEAD_KIND_LABELS[lead.kind]}
+                      {lead.candidateId ? ' · same person as a profile' : ''}
                     </span>
                   </td>
                   <td className="px-4 py-3">

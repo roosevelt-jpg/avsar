@@ -8,6 +8,7 @@ import { Mono } from '@/components/ui/Mono';
 import { IDEMPOTENCY_HEADER, useIdempotencyKey } from '@/components/security/useIdempotencyKey';
 import type { AdminApplicationRow } from '@/lib/applications/data';
 import { APPLICATION_STATUSES, STATUS_META, type ApplicationStatus } from '@/lib/applications/status';
+import { replyClock } from '@/lib/console/workdays';
 import { positionLabel } from '@/lib/data/positions';
 
 /**
@@ -21,6 +22,8 @@ export function ApplicationsTable({
   canExport,
   exportQuery,
   total,
+  viewerId,
+  responseDays,
 }: {
   rows: AdminApplicationRow[];
   canManage: boolean;
@@ -28,6 +31,8 @@ export function ApplicationsTable({
   /** The current filters as a query string, so "Export all" matches the screen. */
   exportQuery: string;
   total: number;
+  viewerId: string;
+  responseDays: number;
 }) {
   const router = useRouter();
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -107,7 +112,7 @@ export function ApplicationsTable({
       )}
 
       <div className="scroll-x mt-3 rounded-[16px] border border-line bg-surface">
-        <table className="w-full min-w-[900px] border-collapse text-[14px]">
+        <table className="w-full min-w-[1100px] border-collapse text-[14px]">
           <thead>
             <tr className="border-b border-line">
               {selectable && (
@@ -120,7 +125,7 @@ export function ApplicationsTable({
                   />
                 </th>
               )}
-              {['Candidate', 'Job', 'Stage', 'Package', 'Rating', 'Applied', 'Last move'].map((h) => (
+              {['Candidate', 'Job', 'Stage', 'Reply', 'Next step', 'Package', 'Rating', 'Applied'].map((h) => (
                 <th key={h} className="px-4 py-3 text-start font-normal"><Mono className="text-muted">{h.toUpperCase()}</Mono></th>
               ))}
             </tr>
@@ -142,11 +147,28 @@ export function ApplicationsTable({
                   <Pill tone={STATUS_META[row.status].tone === 'success' ? 'success' : STATUS_META[row.status].tone === 'stopped' ? 'muted' : row.status === 'submitted' ? 'accent' : 'neutral'}>
                     {STATUS_META[row.status].label}
                   </Pill>
+                  <span className="mt-1 block text-[12px] text-muted">{row.assignedTo === viewerId ? 'Yours' : row.assignedTo ? 'Taken' : 'Unassigned'}</span>
+                </td>
+                <td className="px-4 py-3 text-[13px]">
+                  {row.status === 'submitted' ? (
+                    <ReplyAge createdAt={row.createdAt} responseDays={responseDays} />
+                  ) : (
+                    <span className="text-muted">-</span>
+                  )}
+                </td>
+                <td className="px-4 py-3 text-[13px] text-ink-2">
+                  {row.nextStep ? (
+                    <>
+                      {row.nextStep}
+                      {row.nextStepOn ? <span className="block text-[12px] text-muted">{row.nextStepOn}</span> : null}
+                    </>
+                  ) : (
+                    <span className="text-muted">-</span>
+                  )}
                 </td>
                 <td className="px-4 py-3">{row.candidate.paymentStatus === 'paid' ? <Pill tone="dark">Bought</Pill> : <span className="text-[12px] text-muted">no</span>}</td>
                 <td className="px-4 py-3 text-employer">{row.rating ? '★'.repeat(row.rating) : <span className="text-muted">-</span>}</td>
                 <td className="px-4 py-3"><Mono className="text-muted">{new Date(row.createdAt).toLocaleDateString('en-GB')}</Mono></td>
-                <td className="px-4 py-3"><Mono className="text-muted">{new Date(row.statusChangedAt).toLocaleDateString('en-GB')}</Mono></td>
               </tr>
             ))}
           </tbody>
@@ -154,4 +176,10 @@ export function ApplicationsTable({
       </div>
     </>
   );
+}
+
+function ReplyAge({ createdAt, responseDays }: { createdAt: string; responseDays: number }) {
+  const clock = replyClock(createdAt, responseDays);
+  const label = clock.overdue ? `Late · day ${clock.elapsed} of ${clock.limit}` : clock.dueSoon ? `Due soon · day ${clock.elapsed} of ${clock.limit}` : `Day ${clock.elapsed} of ${clock.limit}`;
+  return <span className={clock.overdue ? 'font-medium text-accent-deep' : 'text-ink-2'}>{label}</span>;
 }

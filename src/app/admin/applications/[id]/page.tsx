@@ -22,6 +22,9 @@ import { backgroundFor } from '@/lib/candidate/background';
 import { BackgroundSummary } from '@/components/admin/BackgroundSummary';
 import { computeReadiness, DOCUMENT_LABELS } from '@/lib/relocation/documents';
 import { milestoneTemplate, progress } from '@/lib/relocation/milestones';
+import { replyClock } from '@/lib/console/workdays';
+import { attachLeads, findSamePerson } from '@/lib/console/same-person';
+import { SamePerson } from '@/components/admin/SamePerson';
 
 export const metadata = { title: 'Application' };
 
@@ -42,6 +45,21 @@ export default async function ApplicationDetail({ params }: { params: Promise<{ 
   ]);
   const readiness = computeReadiness(relocation.documents);
   const canManage = can(access, 'applications.manage');
+  if (can(access, 'leads.manage')) {
+    await attachLeads({
+      candidateId: app.candidate.id,
+      email: app.candidate.email,
+      phone: app.candidate.phone,
+      actor: access.userId,
+    });
+  }
+  const person = await findSamePerson({
+    candidateId: app.candidate.id,
+    email: app.candidate.email,
+    phone: app.candidate.phone,
+    excludeApplicationId: app.id,
+  });
+  const clock = app.status === 'submitted' ? replyClock(app.createdAt, rules.responseDays) : null;
   const canRelocate = can(access, 'relocation.manage');
   const plannable = ['offer', 'hired', 'visa_processing', 'relocated'].includes(app.status);
 
@@ -51,7 +69,7 @@ export default async function ApplicationDetail({ params }: { params: Promise<{ 
       <div className="mt-4">
         <AdminHeading
           title={app.candidate.fullName}
-          lead={`${app.job.title}, ${app.job.city} · ${app.reference}`}
+          lead={`${app.job.title}, ${app.job.city} · ${app.reference}${clock ? ` · day ${clock.elapsed} of ${clock.limit}${clock.overdue ? ' · reply is late' : clock.dueSoon ? ' · reply due soon' : ''}` : ''}${app.nextStep ? ` · next: ${app.nextStep}${app.nextStepOn ? ` (${app.nextStepOn})` : ''}` : ''}`}
           actions={<Pill tone={meta.tone === 'success' ? 'success' : meta.tone === 'stopped' ? 'muted' : 'accent'}>{meta.label}</Pill>}
         />
       </div>
@@ -92,6 +110,8 @@ export default async function ApplicationDetail({ params }: { params: Promise<{ 
               <Link href="/admin/cvs" className="prose-link mt-4 inline-block text-[14px]">Open the CV queue</Link>
             )}
           </section>
+
+          <SamePerson person={person} />
 
           {(app.screeningQuestions.length > 0 || app.coverNote) && (
             <section className="rounded-[16px] border border-line bg-surface p-5">
@@ -265,7 +285,15 @@ export default async function ApplicationDetail({ params }: { params: Promise<{ 
           )}
           {canManage ? (
             <div className="flex flex-col gap-4">
-              <ApplicationActions id={app.id} status={app.status} rating={app.rating} />
+              <ApplicationActions
+                id={app.id}
+                status={app.status}
+                rating={app.rating}
+                assignedToMe={app.assignedTo === access.userId}
+                hasOwner={Boolean(app.assignedTo)}
+                nextStep={app.nextStep}
+                nextStepOn={app.nextStepOn}
+              />
               <InterviewForm applicationId={app.id} />
             </div>
           ) : (
