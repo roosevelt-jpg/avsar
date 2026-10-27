@@ -41,7 +41,7 @@ const LINK = 't-colors text-[14px] font-bold uppercase leading-[1.35] text-white
 function FooterColumn({ title, links }: { title: string; links: FooterLink[] }) {
   return (
     <div className="min-w-0">
-      <h2 className="m-0 mb-4 text-[14px] font-medium text-white">{title}</h2>
+      <h2 className="m-0 mb-4 text-[14px] font-medium text-[#c96a4b]">{title}</h2>
       <ul className="m-0 flex list-none flex-col gap-3 p-0">
         {links.map((item) =>
           item.external ? (
@@ -147,7 +147,7 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
       <div className="border-b border-white/15">
         <div className="mx-auto grid w-full max-w-[1200px] gap-12 px-[clamp(20px,4cqi,32px)] py-16 md:grid-cols-3">
           <div>
-            <h2 className="m-0 text-[22px] font-medium leading-[1.25] text-white">{label('getStarted')}</h2>
+            <h2 className="m-0 text-[22px] font-medium leading-[1.25] text-[#c96a4b]">{label('getStarted')}</h2>
             <p className="m-0 mt-3 text-[15px] leading-[1.5] text-white/85">{settings.footer.blurb}</p>
             {cta.href && ctaLabel ? (
               <div className="mt-6">
@@ -156,7 +156,7 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
             ) : null}
           </div>
           <div>
-            <h2 className="m-0 text-[22px] font-medium leading-[1.25] text-white">{label('contact')}</h2>
+            <h2 className="m-0 text-[22px] font-medium leading-[1.25] text-[#c96a4b]">{label('contact')}</h2>
             <p className="m-0 mt-3 text-[15px] leading-[1.5] text-white/85">{settings.general.officeHours}</p>
             <div className="mt-6 flex flex-col items-start gap-3">
               {settings.general.whatsapp ? (
@@ -175,7 +175,7 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
             </div>
           </div>
           <div>
-            <h2 className="m-0 text-[22px] font-medium leading-[1.25] text-white">{label('subscribeTitle')}</h2>
+            <h2 className="m-0 text-[22px] font-medium leading-[1.25] text-[#c96a4b]">{label('subscribeTitle')}</h2>
             <p className="m-0 mt-3 mb-6 text-[15px] leading-[1.5] text-white/85">{label('subscribeNote')}</p>
             <FooterSubscribe
               locale={locale}
