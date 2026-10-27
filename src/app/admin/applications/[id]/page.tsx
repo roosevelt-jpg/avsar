@@ -107,7 +107,7 @@ export default async function ApplicationDetail({ params }: { params: Promise<{ 
               ))}
             </dl>
             {can(access, 'cv.review') && (
-              <Link href="/admin/cvs" className="prose-link mt-4 inline-block text-[14px]">Open the CV queue</Link>
+              <Link href="/admin/cv-queue" className="prose-link mt-4 inline-block text-[14px]">Open the CV queue</Link>
             )}
           </section>
 

@@ -81,6 +81,13 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: '/:path*', headers: SECURITY_HEADERS }];
   },
+  /* The queue used to live in a folder named `cvs`. The Vercel CLI treats
+     that name as CVS metadata and, on Windows, matches it without caring
+     about case, so the page was never uploaded and /admin/cvs 404ed. The
+     old address stays as a redirect for bookmarks and the sidebar. */
+  async redirects() {
+    return [{ source: '/admin/cvs', destination: '/admin/cv-queue', permanent: false }];
+  },
 };
 
 export default nextConfig;

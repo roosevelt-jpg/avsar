@@ -66,7 +66,7 @@ const STAFF_NAV: Group[] = [
     items: [
       { href: '/admin', label: 'Talent search', permission: 'candidates.view' },
       { href: '/admin/shortlists', label: 'Shortlists', permission: 'candidates.view' },
-      { href: '/admin/cvs', label: 'CV queue', permission: 'cv.review' },
+      { href: '/admin/cv-queue', label: 'CV queue', permission: 'cv.review' },
       { href: '/admin/items', label: 'Assessment items', permission: 'cv.review' },
     ],
   },

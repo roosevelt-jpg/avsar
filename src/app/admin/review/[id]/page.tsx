@@ -65,7 +65,7 @@ export default async function CvReviewPage({ params }: { params: Promise<{ id: s
       <header className="flex flex-wrap items-center justify-between gap-4 border-b border-line px-[clamp(20px,4cqi,56px)] py-[18px]">
         <Wordmark href="/admin" suffix="review" accent="employer" />
         <span className="flex flex-wrap items-center gap-4">
-          <Link href="/admin/cvs" className="text-[15px] no-underline text-ink-2 hover:text-employer t-colors">
+          <Link href="/admin/cv-queue" className="text-[15px] no-underline text-ink-2 hover:text-employer t-colors">
             Back to the CV queue
           </Link>
           <AccountMenu locale="en" tone="employer" />

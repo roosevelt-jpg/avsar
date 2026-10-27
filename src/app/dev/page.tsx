@@ -43,7 +43,7 @@ const GROUPS: { title: string; note: string; rows: [string, string, string][] }[
     rows: [
       ['/employers', '02 Employer landing', 'plain-language pitch, live assessed count'],
       ['/admin/employer', '06 Employer talent search', 'parsed query, filters in the URL, pagination'],
-      ['/admin/cvs', 'CV queue', 'trigger the AI read, then open a review'],
+      ['/admin/cv-queue', 'CV queue', 'trigger the AI read, then open a review'],
     ],
   },
   {
