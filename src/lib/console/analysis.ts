@@ -28,6 +28,10 @@ export type ConversionFacts = {
   employerVacancies: number;
   employerApplicants: number;
   assessedPool: number;
+  /** Open work the staff desk already lists. */
+  inboxNew: number;
+  legalWaiting: number;
+  documentsWaiting: number;
   talk: number;
   familySent: number;
   familyFailed: number;
@@ -64,6 +68,9 @@ export async function conversionFacts(days = 7): Promise<ConversionFacts> {
     employerVacancies: 0,
     employerApplicants: 0,
     assessedPool: 0,
+    inboxNew: 0,
+    legalWaiting: 0,
+    documentsWaiting: 0,
     talk: 0,
     familySent: 0,
     familyFailed: 0,
@@ -77,7 +84,7 @@ export async function conversionFacts(days = 7): Promise<ConversionFacts> {
   for (let i = 1; i < days; i += 1) start = shiftBack(start);
   const from = zonedLocalToUtc(`${start}T00:00`, 'Asia/Kolkata')?.toISOString() ?? new Date().toISOString();
   const employerVisible = ['shortlisted', 'interview', 'offer', 'hired', 'visa_processing', 'relocated'];
-  const [tests, signals, checkouts, paid, accounts, profiles, applications, interviews, openJobs, awaiting, familyLinks, vacancies, applicants, pool] =
+  const [tests, signals, checkouts, paid, accounts, profiles, applications, interviews, openJobs, awaiting, familyLinks, vacancies, applicants, pool, inbox, legal, documents] =
     await Promise.all([
       admin.from('reports').select('candidate_id', { count: 'exact', head: true }).gte('generated_at', from),
       admin.from('conversion_signals').select('kind, sent').gte('created_at', from),
@@ -93,6 +100,9 @@ export async function conversionFacts(days = 7): Promise<ConversionFacts> {
       admin.from('job_postings').select('id', { count: 'exact', head: true }).not('employer_id', 'is', null).in('status', ['draft', 'published']),
       admin.from('applications').select('id', { count: 'exact', head: true }).in('status', employerVisible),
       admin.from('reports').select('candidate_id', { count: 'exact', head: true }),
+      admin.from('leads').select('id', { count: 'exact', head: true }).eq('status', 'new'),
+      admin.from('legal_reviews').select('candidate_id', { count: 'exact', head: true }).neq('status', 'delivered'),
+      admin.from('relocation_documents').select('id', { count: 'exact', head: true }).eq('status', 'uploaded').is('superseded_at', null),
     ]);
   const rows = signals.data ?? [];
   return {
@@ -108,6 +118,9 @@ export async function conversionFacts(days = 7): Promise<ConversionFacts> {
     employerVacancies: vacancies.count ?? 0,
     employerApplicants: applicants.count ?? 0,
     assessedPool: pool.count ?? 0,
+    inboxNew: inbox.count ?? 0,
+    legalWaiting: legal.count ?? 0,
+    documentsWaiting: documents.count ?? 0,
     talk: rows.filter((row) => row.kind === 'talk').length,
     familySent: rows.filter((row) => row.kind === 'family_send' && row.sent).length,
     familyFailed: rows.filter((row) => row.kind === 'family_send' && !row.sent).length,
@@ -124,12 +137,14 @@ function shiftBack(iso: string): string {
 
 export function briefingFromFacts(facts: ConversionFacts): Briefing {
   return {
-    summary: `Since ${facts.since}, on applicant dashboards: ${facts.newAccounts} new accounts, ${facts.profilesComplete} profiles finished, ${facts.finishedTests} scores written, ${facts.applications} applications and ${facts.interviews} interviews. ${facts.openJobs} jobs are open, ${facts.awaitingPayment} people with a score have not paid for both reports, and ${facts.familyLinks} family links were created. On employer dashboards: ${facts.employerVacancies} vacancies, ${facts.employerApplicants} applicants they can open, and ${facts.assessedPool} people assessed in the pool. On payment: ${facts.talk} asked to talk before paying, ${facts.checkoutsOpen} opened checkout and have not paid, and ${facts.paid} payments completed. ${facts.familySent} family pages were sent${facts.familyFailed ? `, and ${facts.familyFailed} could not be sent` : ''}.`,
+    summary: `Since ${facts.since}, on applicant dashboards: ${facts.newAccounts} new accounts, ${facts.profilesComplete} profiles finished, ${facts.finishedTests} scores written, ${facts.applications} applications and ${facts.interviews} interviews. ${facts.openJobs} jobs are open, ${facts.awaitingPayment} people with a score have not paid for both reports, and ${facts.familyLinks} family links were created. On employer dashboards: ${facts.employerVacancies} vacancies, ${facts.employerApplicants} applicants they can open, and ${facts.assessedPool} people assessed in the pool. On payment: ${facts.talk} asked to talk before paying, ${facts.checkoutsOpen} opened checkout and have not paid, and ${facts.paid} payments completed. ${facts.familySent} family pages were sent${facts.familyFailed ? `, and ${facts.familyFailed} could not be sent` : ''}. Still open: ${facts.inboxNew} unread messages, ${facts.legalWaiting} legal reviews not delivered, ${facts.documentsWaiting} visa documents waiting.`,
     calls: facts.talk > 0 ? [`Call the ${facts.talk} who asked to talk before paying. They are on Due today.`] : [],
     watch: [
       ...(facts.checkoutsOpen > 0 ? [`${facts.checkoutsOpen} opened checkout and did not pay.`] : []),
       ...(facts.employerApplicants > 0 ? [`${facts.employerApplicants} applicants are visible on employer dashboards.`] : []),
       ...(facts.awaitingPayment > 0 ? [`${facts.awaitingPayment} applicant dashboards are still waiting on a payment.`] : []),
+      ...(facts.legalWaiting > 0 ? [`${facts.legalWaiting} legal reviews are not delivered.`] : []),
+      ...(facts.documentsWaiting > 0 ? [`${facts.documentsWaiting} visa documents are waiting to be checked.`] : []),
     ],
     source: 'counts',
   };
@@ -143,7 +158,7 @@ export async function writeBriefing(facts: ConversionFacts): Promise<Briefing> {
       model: MODEL,
       max_tokens: 700,
       system:
-        'You brief a recruitment team. Use only the JSON counts. Cover the applicant dashboard, the employer dashboard, and payment. Do not invent a rate, a salary, a name, or a reason. Do not promise a job or a visa. Write plain sentences. calls are who to phone. watch are the numbers that need a person to look.',
+        'You brief a recruitment team. Use only the JSON counts. Cover the applicant dashboard, the employer dashboard, payment, and the open work. Do not invent a rate, a salary, a name, or a reason. Do not promise a job or a visa. Write plain sentences. calls are who to phone. watch are the numbers that need a person to look.',
       messages: [{ role: 'user', content: JSON.stringify(facts) }],
       output_config: { format: zodOutputFormat(briefingSchema) },
     });

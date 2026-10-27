@@ -4,16 +4,31 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { getBrowserSupabase } from '@/lib/supabase/browser';
 
+const LIVE_TABLES = [
+  'applications',
+  'candidates',
+  'payments',
+  'job_postings',
+  'reports',
+  'application_interviews',
+  'conversion_signals',
+  'leads',
+  'legal_reviews',
+  'relocation_documents',
+] as const;
+
 /**
- * Keeps the dashboard current without a reload.
+ * Keeps a console page current without a reload.
  *
- * Subscribes to Supabase Realtime for new applications, stage changes, new
- * candidates and payments (migration 0015 adds those tables to the realtime
- * publication; RLS still decides what each staff member receives). A burst of
- * changes is collapsed into one refresh. If Realtime is unavailable, it falls
- * back to refreshing every 60 seconds, and it pauses while the tab is hidden.
+ * Subscribes to the tables behind the applicant desk, the employer desk, and
+ * the open work. Realtime delivers a change only when that person's own
+ * permissions already allow the row (migrations 0015 and 0034). A burst of
+ * changes is collapsed into one refresh. Family links are not in the
+ * publication, so a page can pass pollMs and still pick those up. If Realtime
+ * is unavailable, it refreshes every 60 seconds, and it pauses while the tab
+ * is hidden.
  */
-export function LiveUpdates({ generatedAt }: { generatedAt: string }) {
+export function LiveUpdates({ generatedAt, pollMs }: { generatedAt: string; pollMs?: number }) {
   const router = useRouter();
   const [mode, setMode] = useState<'connecting' | 'live' | 'polling'>('connecting');
   const [pulse, setPulse] = useState(0);
@@ -34,8 +49,10 @@ export function LiveUpdates({ generatedAt }: { generatedAt: string }) {
     let poll: ReturnType<typeof setInterval> | null = null;
     const startPolling = () => {
       setMode('polling');
-      if (!poll) poll = setInterval(refresh, 60_000);
+      if (!poll) poll = setInterval(refresh, pollMs ?? 60_000);
     };
+
+    if (pollMs) poll = setInterval(refresh, pollMs);
 
     if (!supabase) {
       startPolling();
@@ -45,16 +62,14 @@ export function LiveUpdates({ generatedAt }: { generatedAt: string }) {
       };
     }
 
-    const channel = supabase
-      .channel('console-dashboard')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'applications' }, refresh)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'candidates' }, refresh)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'payments' }, refresh)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'job_postings' }, refresh)
-      .subscribe((status: string) => {
-        if (status === 'SUBSCRIBED') setMode('live');
-        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') startPolling();
-      });
+    let channel = supabase.channel('console-live');
+    for (const table of LIVE_TABLES) {
+      channel = channel.on('postgres_changes', { event: '*', schema: 'public', table }, refresh);
+    }
+    channel.subscribe((status: string) => {
+      if (status === 'SUBSCRIBED') setMode('live');
+      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') startPolling();
+    });
 
     const onVisible = () => document.visibilityState === 'visible' && refresh();
     document.addEventListener('visibilitychange', onVisible);
@@ -65,7 +80,7 @@ export function LiveUpdates({ generatedAt }: { generatedAt: string }) {
       if (timer.current) clearTimeout(timer.current);
       void supabase.removeChannel(channel);
     };
-  }, [router]);
+  }, [pollMs, router]);
 
   const time = new Date(generatedAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 

@@ -15,6 +15,9 @@ type ConversionFacts = {
   employerVacancies: number;
   employerApplicants: number;
   assessedPool: number;
+  inboxNew: number;
+  legalWaiting: number;
+  documentsWaiting: number;
   talk: number;
   familySent: number;
   familyFailed: number;
@@ -34,8 +37,31 @@ type Briefing = {
  * The button asks for a short briefing. If the model is off, the same
  * counts come back as plain sentences.
  */
-export function AnalysisTool({ facts }: { facts: ConversionFacts }) {
+export function AnalysisTool({ facts, insight }: { facts: ConversionFacts; insight: Briefing }) {
   const [briefing, setBriefing] = useState<Briefing | null>(null);
+  const [forFacts, setForFacts] = useState('');
+  const signature = [
+    facts.newAccounts,
+    facts.profilesComplete,
+    facts.finishedTests,
+    facts.applications,
+    facts.interviews,
+    facts.openJobs,
+    facts.awaitingPayment,
+    facts.familyLinks,
+    facts.employerVacancies,
+    facts.employerApplicants,
+    facts.assessedPool,
+    facts.inboxNew,
+    facts.legalWaiting,
+    facts.documentsWaiting,
+    facts.talk,
+    facts.familySent,
+    facts.familyFailed,
+    facts.checkoutsOpen,
+    facts.paid,
+  ].join('.');
+  const shown = briefing && forFacts === signature ? briefing : insight;
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState(false);
 
@@ -50,6 +76,7 @@ export function AnalysisTool({ facts }: { facts: ConversionFacts }) {
       }
       const data = (await response.json()) as { briefing?: Briefing };
       setBriefing(data.briefing ?? null);
+      setForFacts(signature);
     } catch {
       setFailed(true);
     } finally {
@@ -79,6 +106,15 @@ export function AnalysisTool({ facts }: { facts: ConversionFacts }) {
         { label: 'Vacancies', value: facts.employerVacancies },
         { label: 'Applicants they can open', value: facts.employerApplicants },
         { label: 'Assessed in the pool', value: facts.assessedPool },
+      ],
+    },
+    {
+      title: 'Open work',
+      note: 'What is still waiting on the staff desk',
+      rows: [
+        { label: 'Unread messages', value: facts.inboxNew },
+        { label: 'Legal reviews not delivered', value: facts.legalWaiting },
+        { label: 'Visa documents waiting', value: facts.documentsWaiting },
       ],
     },
     {
@@ -120,30 +156,31 @@ export function AnalysisTool({ facts }: { facts: ConversionFacts }) {
           disabled={busy}
           className="cursor-pointer rounded-[10px] border-0 bg-ink px-4 py-2.5 text-[14px] font-medium text-paper disabled:opacity-40"
         >
-          {busy ? 'Reading the counts…' : 'Write a briefing'}
+          {busy ? 'Reading the counts…' : 'Rewrite with the model'}
         </button>
         {failed ? <p className="mt-2 mb-0 text-[13px] text-accent-deep">The briefing could not be written. The counts above are still the figures.</p> : null}
       </div>
-      {briefing ? (
-        <section className="rounded-[16px] border border-line/70 bg-surface p-4">
-          <p className="m-0 text-[15px] leading-[1.55] text-ink">{briefing.summary}</p>
-          {briefing.calls.length > 0 ? (
-            <ul className="mt-3 mb-0 list-disc pl-5 text-[14px] text-ink">
-              {briefing.calls.map((line) => (
-                <li key={line}>{line}</li>
-              ))}
-            </ul>
-          ) : null}
-          {briefing.watch.length > 0 ? (
-            <ul className="mt-3 mb-0 list-disc pl-5 text-[14px] text-muted">
-              {briefing.watch.map((line) => (
-                <li key={line}>{line}</li>
-              ))}
-            </ul>
-          ) : null}
-          <p className="mt-3 mb-0 font-mono text-[11px] text-muted">{briefing.source === 'model' ? 'Written from these counts.' : 'Written from the counts, without a model.'}</p>
-        </section>
-      ) : null}
+      <section className="rounded-[16px] border border-line/70 bg-surface p-4">
+        <h2 className="m-0 text-[16px] font-semibold">Insights</h2>
+        <p className="m-0 mt-2 text-[15px] leading-[1.55] text-ink">{shown.summary}</p>
+        {shown.calls.length > 0 ? (
+          <ul className="mt-3 mb-0 list-disc pl-5 text-[14px] text-ink">
+            {shown.calls.map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
+        ) : null}
+        {shown.watch.length > 0 ? (
+          <ul className="mt-3 mb-0 list-disc pl-5 text-[14px] text-muted">
+            {shown.watch.map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
+        ) : null}
+        <p className="mt-3 mb-0 font-mono text-[11px] text-muted">
+          {shown.source === 'model' ? 'Written from these counts. A new change replaces it.' : 'Written from the counts as they change.'}
+        </p>
+      </section>
     </div>
   );
 }

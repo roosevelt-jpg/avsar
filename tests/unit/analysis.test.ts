@@ -16,6 +16,9 @@ describe('analysis stays inside the counts', () => {
       employerVacancies: 7,
       employerApplicants: 9,
       assessedPool: 40,
+      inboxNew: 2,
+      legalWaiting: 1,
+      documentsWaiting: 3,
       talk: 2,
       familySent: 1,
       familyFailed: 0,
@@ -27,6 +30,7 @@ describe('analysis stays inside the counts', () => {
     expect(briefing.summary).toContain('2 asked to talk');
     expect(briefing.summary).toContain('3 opened checkout');
     expect(briefing.summary).toContain('1 payments completed');
+    expect(briefing.summary).toContain('3 visa documents waiting');
     expect(briefing.summary).not.toMatch(/guaranteed|visa (is |will be )approved/i);
     expect(briefing.source).toBe('counts');
   });
