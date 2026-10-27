@@ -36,21 +36,23 @@ const SOCIAL_ICONS: Record<string, ReactNode> = {
 
 type FooterLink = { href: string; label: string; external?: boolean };
 
+const LINK = 't-colors text-[14px] font-bold uppercase leading-[1.35] text-white no-underline hover:underline';
+
 function FooterColumn({ title, links }: { title: string; links: FooterLink[] }) {
   return (
     <div className="min-w-0">
-      <h2 className="m-0 mb-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#9ecae6]">{title}</h2>
-      <ul className="m-0 flex list-none flex-col gap-2.5 p-0 text-[15px]">
+      <h2 className="m-0 mb-4 text-[14px] font-medium text-white">{title}</h2>
+      <ul className="m-0 flex list-none flex-col gap-3 p-0">
         {links.map((item) =>
           item.external ? (
             <li key={item.href}>
-              <a href={item.href} target="_blank" rel="noopener noreferrer" className="t-colors text-[#e4eef5] no-underline hover:text-white">
+              <a href={item.href} target="_blank" rel="noopener noreferrer" className={LINK}>
                 {item.label}
               </a>
             </li>
           ) : (
             <li key={item.href}>
-              <Link href={item.href} className="t-colors text-[#e4eef5] no-underline hover:text-white">
+              <Link href={item.href} className={LINK}>
                 {item.label}
               </Link>
             </li>
@@ -58,6 +60,25 @@ function FooterColumn({ title, links }: { title: string; links: FooterLink[] }) 
         )}
       </ul>
     </div>
+  );
+}
+
+/** The outlined action on the dark band. Same shape as a recruitment-site footer button. */
+function FooterAction({ href, label, external = false }: { href: string; label: string; external?: boolean }) {
+  const className = 't-colors inline-flex items-center gap-2 rounded-full border border-white px-6 py-2 text-[14px] font-bold uppercase tracking-[0.04em] text-white no-underline hover:bg-white hover:text-[#16324f]';
+  if (external) {
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer" className={className}>
+        {label}
+        <span aria-hidden className="rtl:-scale-x-100">→</span>
+      </a>
+    );
+  }
+  return (
+    <Link href={href} className={className}>
+      {label}
+      <span aria-hidden className="rtl:-scale-x-100">→</span>
+    </Link>
   );
 }
 
@@ -116,82 +137,46 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
     { href: localePath(locale, '/refund-policy'), label: t.footerRefund },
   ];
 
+  const contactHref = page('/contact');
+
   return (
-    /* Same blue as the header. The panel stays open so the blue is the
-       background, not a card sitting on top of it. */
-    <footer className="bg-[#16324f] px-[clamp(20px,4cqi,56px)] py-[clamp(28px,4cqi,48px)] text-[#e4eef5]">
-      <div className="mx-auto max-w-[1280px]">
-        <div>
-          <div className="flex flex-col items-start justify-between gap-6 border-b border-[#2a4a66] pb-8 lg:flex-row lg:items-end">
-            <div className="max-w-[560px]">
-              <Wordmark href={localePath(locale, '/')} tone="dark" size={30} />
-              <p className="m-0 mt-4 text-[16px] leading-[1.6] text-[#e4eef5]">{settings.footer.blurb}</p>
-            </div>
-            <div className="flex flex-wrap items-center gap-3">
-              {cta.href && ctaLabel ? (
-                <Link
-                  href={localHref(locale, cta.href)}
-                  className="t-colors inline-flex items-center gap-2 rounded-[14px] bg-[#f4f8fb] px-6 py-3 text-[15px] font-semibold text-[#16324f] no-underline"
-                >
-                  {ctaLabel}
-                  <span aria-hidden className="rtl:-scale-x-100">→</span>
-                </Link>
-              ) : null}
-              {settings.general.whatsapp && (
-                <a
-                  href={whatsappHref(settings.general.whatsapp)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="t-colors inline-flex items-center rounded-full border border-[#2a4a66] px-6 py-3 text-[15px] font-semibold text-[#f4f8fb] no-underline hover:border-[#f4f8fb]"
-                >
-                  {label('whatsapp')}
-                </a>
+    /* Navy stays the brand colour. The arrangement follows a recruitment
+       footer: three prompts, then the logo beside the link columns, then a
+       thin legal line. Every link is one this site already had. */
+    <footer className="bg-[#16324f] text-white">
+      <div className="border-b border-white/15">
+        <div className="mx-auto grid w-full max-w-[1200px] gap-12 px-[clamp(20px,4cqi,32px)] py-16 md:grid-cols-3">
+          <div>
+            <h2 className="m-0 text-[22px] font-medium leading-[1.25] text-white">{label('getStarted')}</h2>
+            <p className="m-0 mt-3 text-[15px] leading-[1.5] text-white/85">{settings.footer.blurb}</p>
+            {cta.href && ctaLabel ? (
+              <div className="mt-6">
+                <FooterAction href={localHref(locale, cta.href)} label={ctaLabel} />
+              </div>
+            ) : null}
+          </div>
+          <div>
+            <h2 className="m-0 text-[22px] font-medium leading-[1.25] text-white">{label('contact')}</h2>
+            <p className="m-0 mt-3 text-[15px] leading-[1.5] text-white/85">{settings.general.officeHours}</p>
+            <div className="mt-6 flex flex-col items-start gap-3">
+              {settings.general.whatsapp ? (
+                <FooterAction href={whatsappHref(settings.general.whatsapp)} label={label('whatsapp')} external />
+              ) : (
+                <FooterAction href={contactHref} label={label('contact')} />
               )}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-x-6 gap-y-10 py-8 sm:grid-cols-4">
-            {columns.map((column) => (
-              <FooterColumn key={column.title} title={column.title} links={column.links} />
-            ))}
-          </div>
-
-          <div className="flex flex-col gap-5 border-t border-[#2a4a66] pt-6 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex min-w-0 flex-col gap-1.5 text-[14px]">
-              <p className="m-0 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#9ecae6]">{label('contact')}</p>
-              {settings.general.whatsapp && (
-                <a href={whatsappHref(settings.general.whatsapp)} target="_blank" rel="noopener noreferrer" dir="ltr" className="t-colors text-[#e4eef5] no-underline hover:text-white">
+              {settings.general.whatsapp ? (
+                <a href={whatsappHref(settings.general.whatsapp)} target="_blank" rel="noopener noreferrer" dir="ltr" className="t-colors text-[14px] text-white no-underline hover:underline">
                   WhatsApp {settings.general.whatsapp}
                 </a>
-              )}
-              <a href={`mailto:${settings.general.supportEmail}`} className="t-colors break-all text-[#e4eef5] no-underline hover:text-white">
+              ) : null}
+              <a href={`mailto:${settings.general.supportEmail}`} className="t-colors break-all text-[14px] text-white no-underline hover:underline">
                 {settings.general.supportEmail}
               </a>
-              <p className="m-0 text-[13px] text-[#b7c9d8]">{settings.general.officeHours}</p>
             </div>
-            {socials.length > 0 && (
-              <ul className="m-0 flex list-none flex-wrap gap-2.5 p-0">
-                {socials.map(([name, url]) => (
-                  <li key={name}>
-                    <a
-                      href={url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={name}
-                      title={name}
-                      className="t-colors grid size-10 place-items-center rounded-full border border-[#2a4a66] text-[#e4eef5] hover:border-[#f4f8fb] hover:text-white"
-                    >
-                      <svg viewBox="0 0 24 24" className="size-[18px]" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                        {SOCIAL_ICONS[name] ?? <circle cx="12" cy="12" r="8" />}
-                      </svg>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            )}
           </div>
-
-          <div className="mt-6 flex border-t border-[#2a4a66] pt-6 sm:justify-end">
+          <div>
+            <h2 className="m-0 text-[22px] font-medium leading-[1.25] text-white">{label('subscribeTitle')}</h2>
+            <p className="m-0 mt-3 mb-6 text-[15px] leading-[1.5] text-white/85">{label('subscribeNote')}</p>
             <FooterSubscribe
               locale={locale}
               labels={{
@@ -205,73 +190,95 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
             />
           </div>
         </div>
+      </div>
 
-        {/*
-          Who is actually being paid: the legal name, licence number and
-          registered address in full. The company a candidate pays is not the
-          name above the door, and they should not find that out from their
-          bank statement. Payment providers' compliance reviews look for it
-          here too.
-        */}
-        <div className="flex flex-col gap-1 px-1 pt-6 text-[12.5px] leading-[1.7] text-[#b7c9d8]">
-          <p className="m-0">
-            {company.legalName} · {company.registrationLabel} {company.registrationNumber} · {company.registeredAddress}
-          </p>
-          <p className="m-0">
-            Trading as {company.tradingAs}. Charges appear as {company.statementDescriptor}.
-            {company.phone && (
-              <>
-                {' '}
-                <a href={`tel:${company.phone.replace(/\s/g, '')}`} dir="ltr" className="t-colors text-[#e4eef5] hover:text-white">
-                  {company.phone}
-                </a>
-              </>
-            )}
-            {company.supportEmail && (
-              <>
-                {' · '}
-                <a href={`mailto:${company.supportEmail}`} className="t-colors text-[#e4eef5] hover:text-white">
-                  {company.supportEmail}
-                </a>
-              </>
-            )}
-          </p>
-          {partner.legalName && (
-            <p className="m-0">
-              Placement partner in Portugal: {partner.legalName} · {partner.registrationLabel} {partner.registrationNumber} · {partner.address}
-            </p>
-          )}
-          {/* An office at the registered address is already on the first line. */}
-          {company.offices
-            .filter((office) => office.address.trim().toLowerCase() !== company.registeredAddress.trim().toLowerCase())
-            .map((office) => (
-              <p key={office.city} className="m-0">
-                {office.city} office: {office.address}
-              </p>
-            ))}
+      <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-12 px-[clamp(20px,4cqi,32px)] py-16 lg:flex-row lg:gap-16">
+        <div className="shrink-0 lg:w-[200px]">
+          <Wordmark href={localePath(locale, '/')} tone="dark" size={28} />
         </div>
+        <div className="grid min-w-0 flex-1 grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-4">
+          {columns.map((column) => (
+            <FooterColumn key={column.title} title={column.title} links={column.links} />
+          ))}
+        </div>
+      </div>
 
-        {/*
-          The sign-off uses the ink parent mark, because this band is light.
-          The light mark was drawn for the old dark footer and would vanish here.
-        */}
-        <div className="mt-6 flex flex-col gap-4 border-t border-[#2a4a66] px-1 pt-6 pb-2 md:flex-row md:items-center md:justify-between">
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+      {/*
+        Who is actually being paid: the legal name, licence number and
+        registered address in full. The company a candidate pays is not the
+        name above the door, and they should not find that out from their
+        bank statement. Payment providers' compliance reviews look for it
+        here too.
+      */}
+      <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-1 px-[clamp(20px,4cqi,32px)] pb-10 text-[13px] leading-[1.7] text-white/70">
+        <p className="m-0">
+          {company.legalName} · {company.registrationLabel} {company.registrationNumber} · {company.registeredAddress}
+        </p>
+        <p className="m-0">
+          Trading as {company.tradingAs}. Charges appear as {company.statementDescriptor}.
+          {company.phone && (
+            <>
+              {' '}
+              <a href={`tel:${company.phone.replace(/\s/g, '')}`} dir="ltr" className="t-colors text-white hover:underline">
+                {company.phone}
+              </a>
+            </>
+          )}
+          {company.supportEmail && (
+            <>
+              {' · '}
+              <a href={`mailto:${company.supportEmail}`} className="t-colors text-white hover:underline">
+                {company.supportEmail}
+              </a>
+            </>
+          )}
+        </p>
+        {partner.legalName && (
+          <p className="m-0">
+            Placement partner in Portugal: {partner.legalName} · {partner.registrationLabel} {partner.registrationNumber} · {partner.address}
+          </p>
+        )}
+        {/* An office at the registered address is already on the first line. */}
+        {company.offices
+          .filter((office) => office.address.trim().toLowerCase() !== company.registeredAddress.trim().toLowerCase())
+          .map((office) => (
+            <p key={office.city} className="m-0">
+              {office.city} office: {office.address}
+            </p>
+          ))}
+      </div>
+
+      <div className="border-t border-white/15">
+        <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-5 px-[clamp(20px,4cqi,32px)] py-6 md:flex-row md:items-center md:justify-between">
+          <div className="flex min-w-0 flex-wrap items-center gap-x-5 gap-y-3">
             {company.parentBrand && (
               <a href={company.website || undefined} target="_blank" rel="noopener noreferrer" className="t-colors opacity-80 hover:opacity-100">
-                <Image src="/smith-adams-group-light-320.png" alt={`${company.parentBrand} Group`} width={320} height={68} className="h-auto w-[140px]" />
+                <Image src="/smith-adams-group-light-320.png" alt={`${company.parentBrand} Group`} width={320} height={68} className="h-auto w-[120px]" />
               </a>
             )}
-            <p className="m-0 text-[13px] text-[#b7c9d8]">{t.footerLegal}</p>
+            <p className="m-0 text-[14px] text-white">{t.footerLegal}</p>
           </div>
-          <nav aria-label="Legal" className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[13px]">
+          <nav aria-label="Legal" className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[14px]">
             {legal.map((item) => (
-              <Link key={item.href} href={item.href} className="t-colors text-[#e4eef5] no-underline hover:text-white">
+              <Link key={item.href} href={item.href} className="t-colors text-white no-underline hover:underline">
                 {item.label}
               </Link>
             ))}
-            {settings.general.tagline ? <span className="text-[#b7c9d8]">{settings.general.tagline}</span> : null}
+            {settings.general.tagline ? <span className="text-white/70">{settings.general.tagline}</span> : null}
           </nav>
+          {socials.length > 0 && (
+            <ul className="m-0 flex list-none gap-4 p-0">
+              {socials.map(([name, url]) => (
+                <li key={name}>
+                  <a href={url} target="_blank" rel="noopener noreferrer" aria-label={name} title={name} className="t-colors grid size-6 place-items-center text-white hover:opacity-70">
+                    <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                      {SOCIAL_ICONS[name] ?? <circle cx="12" cy="12" r="8" />}
+                    </svg>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
     </footer>

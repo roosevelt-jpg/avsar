@@ -30,14 +30,13 @@ export function FooterSubscribe({ locale, labels }: { locale: Locale; labels: La
   }
 
   return (
-    <div className="flex w-full max-w-[420px] flex-col items-end gap-3 text-end">
-      <p className="m-0 text-[15px] font-semibold text-[#f4f8fb]">{labels.title}</p>
+    <div className="flex w-full flex-col items-start gap-4">
       {state === 'done' ? (
-        <p role="status" className="m-0 text-[14px] text-[#f4f8fb]">
+        <p role="status" className="m-0 text-[15px] leading-[1.5] text-white">
           {labels.done}
         </p>
       ) : (
-        <form onSubmit={submit} className="flex flex-col items-end gap-2 sm:flex-row">
+        <form onSubmit={submit} className="flex w-full flex-col items-start gap-3 sm:flex-row sm:items-center">
           <label className="sr-only" htmlFor="footer-subscribe-email">
             {labels.placeholder}
           </label>
@@ -51,24 +50,23 @@ export function FooterSubscribe({ locale, labels }: { locale: Locale; labels: La
             inputMode="email"
             dir="ltr"
             placeholder={labels.placeholder}
-            className="w-full max-w-[220px] rounded-full border border-[#2a4a66] bg-white/10 px-4 py-2.5 text-[14px] text-[#f4f8fb] placeholder:text-[#b7c9d8] focus:border-[#c96a4b] focus:outline-none"
+            className="w-full border border-white/70 bg-transparent px-4 py-2 text-[14px] text-white placeholder:text-white/60 focus:border-white focus:outline-none sm:max-w-[240px]"
           />
           <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
           <button
             type="submit"
             disabled={state === 'sending'}
-            className="t-colors rounded-[14px] bg-[#f4f8fb] px-6 py-3 text-[14px] font-semibold text-[#16324f] disabled:opacity-60"
+            className="t-colors inline-flex items-center rounded-full border border-white px-6 py-2 text-[14px] font-bold uppercase tracking-[0.04em] text-white disabled:opacity-60 hover:bg-white hover:text-[#16324f]"
           >
             {labels.button}
           </button>
         </form>
       )}
       {state === 'error' ? (
-        <p role="alert" className="m-0 text-[12.5px] text-[#f4f8fb]">
+        <p role="alert" className="m-0 text-[13px] text-white">
           {labels.error}
         </p>
       ) : null}
-      <p className="m-0 text-[12.5px] leading-[1.6] text-[#b7c9d8]">{labels.note}</p>
     </div>
   );
 }
