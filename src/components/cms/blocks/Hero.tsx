@@ -86,7 +86,7 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
         ) : null
       }
     >
-      <Heading className="m-0 text-balance break-words text-[clamp(36px,5.4cqi,68px)] font-semibold leading-[1.02] tracking-[-0.045em]">
+      <Heading className="m-0 text-balance break-words text-[clamp(34px,4.6cqi,56px)] font-semibold leading-[1.12] tracking-[-0.02em]">
         {str(data, 'title')}
       </Heading>
       {str(data, 'subtitle') ? (
@@ -103,7 +103,7 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
               <li key={index}>
                 <Link
                   href={localHref(locale, str(intent, 'href'))}
-                  className="t-colors inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3.5 py-2 text-[14px] font-semibold text-ink no-underline hover:border-accent"
+                  className="t-colors inline-flex items-center gap-2 rounded-[2px] border border-line-strong bg-white px-3.5 py-2 text-[14px] font-medium text-ink no-underline hover:border-ink"
                 >
                   {str(intent, 'icon') ? <Icon name={str(intent, 'icon')} className="size-[18px] text-accent" /> : null}
                   {str(intent, 'label')}

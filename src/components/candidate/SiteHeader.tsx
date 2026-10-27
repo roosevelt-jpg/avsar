@@ -58,41 +58,37 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
     <>
       {announcement.enabled && announcement.text ? (
         <div className="announce-bar">
-          <div className="announce-track">
-            {[0, 1].map((copy) => (
-              <p key={copy} className="announce-item" aria-hidden={copy === 1 ? true : undefined}>
-                <span className="announce-dot" aria-hidden />
-                <span>{announcement.text}</span>
-                {announcement.href && announcement.linkLabel ? (
-                  <Link href={localHref(locale, announcement.href)} className="font-semibold text-[#16324f] underline underline-offset-[3px]">
-                    {announcement.linkLabel}
-                  </Link>
-                ) : null}
-              </p>
-            ))}
-          </div>
+          <p className="announce-item">
+            <span className="announce-dot" aria-hidden />
+            <span>{announcement.text}</span>
+            {announcement.href && announcement.linkLabel ? (
+              <Link href={localHref(locale, announcement.href)} className="font-semibold text-[#c96a4b] underline underline-offset-[3px]">
+                {announcement.linkLabel}
+              </Link>
+            ) : null}
+          </p>
         </div>
       ) : null}
 
-      <header className="shop-header sticky top-0 z-40 bg-[#16324f] px-[clamp(12px,4cqi,56px)] py-[12px] text-[#f4f8fb] backdrop-blur-md sm:py-[14px] [&_.text-ink]:text-[#f4f8fb] [&_.text-ink-2]:text-[#e4eef5]">
+      <header className="shop-header sticky top-0 z-40 bg-white px-[clamp(16px,4cqi,56px)] py-[14px] text-[#16324f]">
         {/* Nothing in the bar may wrap: a two-line "Visa & relocation" doubles
             the header height. The full menu appears only from xl, where six
             links, the toggles and the button fit on one line; below that the
             menu button carries them. */}
         <div className="mx-auto flex w-full max-w-[1280px] items-center justify-between gap-3 whitespace-nowrap sm:gap-6">
-          <Wordmark href={localePath(locale, '/')} tone="dark" size={22} />
+          <Wordmark href={localePath(locale, '/')} tone="light" size={22} />
 
           <MarketNav
             items={navigation.items.map((item) => ({ href: localHref(locale, item.href), label: navLabel(item, locale) }))}
             className={`hidden min-w-0 items-center gap-[clamp(12px,1.3vw,20px)] text-[14.5px] font-medium ${wide}`}
-            linkClassName="t-colors no-underline hover:text-white"
+            linkClassName="t-colors text-[#16324f] no-underline hover:text-[#1f5f86]"
           />
 
           <div className="flex shrink-0 items-center gap-3 [&>*]:shrink-0">
             <a
               href={`tel:${general.supportPhone.replace(/\s/g, '')}`}
               dir="ltr"
-              className="t-colors hidden whitespace-nowrap font-mono text-[13px] tabular-nums text-dark-muted-2 no-underline hover:text-white 2xl:inline"
+              className="t-colors hidden whitespace-nowrap font-mono text-[13px] tabular-nums text-[#5c7084] no-underline hover:text-[#16324f] 2xl:inline"
             >
               {general.supportPhone}
             </a>
@@ -102,7 +98,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
             {showCta ? (
               <Link
                 href={localHref(locale, navigation.headerCta.href)}
-                className="t-colors hidden rounded-[14px] bg-[#f4f8fb] px-4 py-2 text-[14px] font-semibold text-[#16324f] no-underline md:inline-flex"
+                className="t-colors hidden rounded-[2px] bg-[#16324f] px-4 py-2.5 text-[13px] font-semibold uppercase tracking-[0.04em] text-[#f4f8fb] no-underline hover:bg-[#1c4064] md:inline-flex"
               >
                 {ctaLabel(navigation.headerCta, locale)}
               </Link>
@@ -141,7 +137,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
                 {showCta ? (
                   <Link
                     href={localHref(locale, navigation.headerCta.href)}
-                    className="mt-3 flex justify-center rounded-[14px] bg-[#16324f] px-4 py-3 text-[15px] font-semibold text-[#f4f8fb] no-underline"
+                    className="mt-3 flex justify-center rounded-[2px] bg-[#16324f] px-4 py-3 text-[14px] font-semibold uppercase tracking-[0.04em] text-[#f4f8fb] no-underline"
                   >
                     {ctaLabel(navigation.headerCta, locale)}
                   </Link>

@@ -249,7 +249,7 @@ textarea {
   --color-tint-clay: rgba(31, 95, 134, 0.1);
   --color-tint-sky: rgba(60, 143, 212, 0.16);
   --color-tint-sage: rgba(22, 50, 79, 0.08);
-  background: #f3f6f9;
+  background: #ffffff;
   color: var(--color-ink);
   color-scheme: light;
 }
@@ -297,7 +297,7 @@ textarea {
 .market :is(h1, h2) {
   font-family: var(--font-sans);
   font-weight: 600;
-  letter-spacing: -0.045em;
+  letter-spacing: -0.02em;
 }
 .market footer h2 {
   font-weight: 600;
@@ -309,7 +309,8 @@ textarea {
 .btn-gradient {
   background: #16324f;
   color: #f4f8fb;
-  box-shadow: inset 0 -2px 0 #e7b48a;
+  border-radius: 2px;
+  box-shadow: none;
   transition: background-color 180ms ease;
 }
 .btn-gradient:hover {
@@ -330,63 +331,54 @@ textarea {
 
 /* A flat panel. The page already has a colour; the card does not need one. */
 .market .blue-card {
-  border-radius: 2px;
+  border-radius: 0;
   border: 1px solid rgba(22, 50, 79, 0.12);
-  background: #fbfcfe;
+  background: #ffffff;
   box-shadow: none;
 }
 .market .blue-card.shade-0,
 .market .blue-card.shade-1,
 .market .blue-card.shade-2,
 .market .blue-card.shade-3 {
-  background: #fbfcfe;
+  background: #ffffff;
 }
 
-/* Photographs stay flat. The corner cut is what makes a card look finished:
-   one corner is tighter, the others are round, and a soft shadow sits under it. */
-.photo-card {
+/* Photographs are rectangular. A cut corner and a floating shadow is what
+   made the page look assembled rather than designed. */
+.photo-card,
+.photo-card-alt,
+.anamorphic-frame,
+.anamorphic-mini {
   overflow: hidden;
-  border-start-start-radius: 36px;
-  border-start-end-radius: 36px;
-  border-end-start-radius: 36px;
-  border-end-end-radius: 14px;
-  box-shadow: 18px 28px 48px -28px rgba(22, 50, 79, 0.45);
-}
-.photo-card-alt {
-  border-start-start-radius: 16px;
-  border-start-end-radius: 36px;
-  border-end-start-radius: 36px;
-  border-end-end-radius: 36px;
+  border-radius: 0;
+  box-shadow: none;
 }
 .anamorphic-stage {
   perspective: none;
-  padding: 8px 0;
+  padding: 0;
 }
 .anamorphic-frame {
   width: 100%;
   margin: 0;
-  overflow: hidden;
-  border-start-start-radius: 36px;
-  border-start-end-radius: 36px;
-  border-end-start-radius: 36px;
-  border-end-end-radius: 14px;
-  box-shadow: 18px 28px 48px -28px rgba(22, 50, 79, 0.45);
-}
-.anamorphic-mini {
-  border-start-start-radius: 22px;
-  border-start-end-radius: 22px;
-  border-end-start-radius: 22px;
-  border-end-end-radius: 8px;
-  box-shadow: 12px 18px 28px -18px rgba(22, 50, 79, 0.4);
 }
 
+.shop-header {
+  background: #ffffff;
+  color: #16324f;
+}
+
+/* The blocks keep their own class names so the console still edits the same
+   fields. On the shopfront those radii collapse to a square edge. */
+.market :is(.rounded-\[28px\], .rounded-\[22px\], .rounded-\[20px\], .rounded-\[18px\], .rounded-\[16px\], .rounded-\[14px\]) {
+  border-radius: 2px;
+}
 .shop-header::after {
   content: '';
   position: absolute;
   inset-inline: 0;
   bottom: 0;
   height: 1px;
-  background: #c96a4b;
+  background: rgba(22, 50, 79, 0.12);
 }
 
 .stage-nav {
@@ -449,27 +441,30 @@ textarea {
    Hover or keyboard focus holds it still so the link can be used. */
 .announce-bar {
   overflow: hidden;
-  background: #d7ebf7;
-  color: #c96a4b;
+  background: #f3f6f9;
+  color: #16324f;
 }
 .announce-track {
   display: flex;
-  width: max-content;
+  width: 100%;
+  justify-content: center;
 }
 .announce-item {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
   margin: 0;
-  padding: 10px 56px;
-  white-space: nowrap;
+  padding: 8px 20px;
+  white-space: normal;
+  text-align: center;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.45;
 }
 .announce-dot {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   flex: none;
   border-radius: 999px;
   background: #c96a4b;
@@ -646,18 +641,6 @@ body {
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .announce-track {
-    animation: announce-marquee 28s linear infinite;
-  }
-  [dir='rtl'] .announce-track {
-    animation-direction: reverse;
-  }
-  .announce-dot {
-    animation: announce-blink 1.15s steps(1, end) infinite;
-  }
-  .hero-bleed {
-    animation: hero-bleed 16s ease-in-out infinite alternate;
-  }
   .motion-float {
     animation: avsar-float 6s ease-in-out infinite;
     will-change: transform;

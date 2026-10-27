@@ -57,12 +57,12 @@ export function SectionHeading({
        words are wider than a phone. */
     <div className={`mb-[clamp(28px,4cqi,48px)] min-w-0 break-words ${align === 'center' ? 'mx-auto text-center' : ''} max-w-[760px]`}>
       {eyebrow ? (
-        <p className="m-0 mb-3 font-mono text-[12px] uppercase tracking-[0.14em] text-[#c96a4b]">
+        <p className="m-0 mb-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#c96a4b]">
           {eyebrow}
         </p>
       ) : null}
       {title ? (
-        <h2 className="m-0 text-balance text-[clamp(28px,3.6cqi,44px)] font-semibold leading-[1.08] tracking-[-0.03em]">{title}</h2>
+        <h2 className="m-0 text-balance text-[clamp(28px,3.4cqi,42px)] font-semibold leading-[1.15] tracking-[-0.02em]">{title}</h2>
       ) : null}
       {intro ? (
         <p className={`mt-4 mb-0 text-[clamp(16px,1.5cqi,18px)] leading-[1.6] ${dark ? 'text-dark-muted-2' : 'text-ink-2'}`}>{intro}</p>
@@ -95,7 +95,7 @@ export function CmsButton({
   size?: 'md' | 'lg';
 }) {
   if (!href || !label) return null;
-  const className = `t-colors inline-flex items-center justify-center gap-2 rounded-[14px] border font-medium no-underline ${
+  const className = `t-colors inline-flex items-center justify-center gap-2 rounded-[2px] border font-semibold uppercase tracking-[0.04em] no-underline ${
     size === 'lg' ? 'px-6 py-3.5 text-[16px]' : 'px-5 py-3 text-[15px]'
   } ${BUTTON[variant]}`;
   const resolved = localHref(locale, href);
