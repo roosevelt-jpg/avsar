@@ -5,7 +5,7 @@ import { scenePhoto, SCENE_PHOTOS } from '@/lib/cms/scenes';
 import { siteText } from '@/lib/cms/localize';
 import type { Locale } from '@/lib/i18n';
 import { getFunnelStats } from '@/lib/stats/funnel';
-import { CmsButton, CmsTextLink, Icon } from '../primitives';
+import { CmsTextLink, Icon } from '../primitives';
 import { FilmButton } from '../VideoPlayer';
 import { HeroStage, type HeroSlide } from '../HeroStage';
 
@@ -23,7 +23,6 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
   const mediaType = str(data, 'mediaType');
   const src = str(data, 'mediaSrc');
   const hasMedia = mediaType !== 'none' && Boolean(src);
-  const primary = link(data, 'primaryCta');
   const secondary = link(data, 'secondaryCta');
   const film = str(data, 'filmUrl');
   const filmLabel = str(data, 'filmLabel') || 'Watch the film';
@@ -114,9 +113,8 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
         </div>
       )}
 
-      {(primary || secondary || film) && (
+      {(secondary || film) && (
         <div className={`flex flex-wrap items-center gap-x-6 gap-y-4 ${intents.length ? 'mt-6' : 'mt-8'}`}>
-          {primary && <CmsButton href={primary.href} label={primary.label} locale={locale} size="lg" />}
           {film && <FilmButton src={film} label={filmLabel} />}
           {secondary && <CmsTextLink href={secondary.href} label={secondary.label} locale={locale} />}
         </div>
