@@ -51,13 +51,6 @@ export function HeroStage({ slides, lead, children }: { slides: HeroSlide[]; lea
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="hero-mesh absolute -inset-[20%]" />
-        {current && current.kind === 'image' ? (
-          <Image src={current.src} alt="" fill sizes="100vw" className="hero-bleed object-cover opacity-25" priority={index === 0} />
-        ) : null}
-      </div>
-
       <div className="relative mx-auto w-full max-w-[1200px]">
         {lead ? <div className="mb-4">{lead}</div> : null}
         <div className="grid grid-cols-1 items-start gap-[clamp(28px,4cqi,64px)] lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">

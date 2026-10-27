@@ -98,7 +98,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
             {showCta ? (
               <Link
                 href={localHref(locale, navigation.headerCta.href)}
-                className="t-colors hidden rounded-[2px] bg-[#16324f] px-4 py-2.5 text-[13px] font-semibold uppercase tracking-[0.04em] text-[#f4f8fb] no-underline hover:bg-[#1c4064] md:inline-flex"
+                className="btn-gradient t-colors hidden rounded-[2px] px-4 py-2.5 text-[13px] font-semibold uppercase tracking-[0.04em] text-[#f4f8fb] no-underline md:inline-flex"
               >
                 {ctaLabel(navigation.headerCta, locale)}
               </Link>
@@ -137,7 +137,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
                 {showCta ? (
                   <Link
                     href={localHref(locale, navigation.headerCta.href)}
-                    className="mt-3 flex justify-center rounded-[2px] bg-[#16324f] px-4 py-3 text-[14px] font-semibold uppercase tracking-[0.04em] text-[#f4f8fb] no-underline"
+                    className="btn-gradient mt-3 flex justify-center rounded-[2px] px-4 py-3 text-[14px] font-semibold uppercase tracking-[0.04em] text-[#f4f8fb] no-underline"
                   >
                     {ctaLabel(navigation.headerCta, locale)}
                   </Link>

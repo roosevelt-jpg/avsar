@@ -220,6 +220,16 @@ textarea {
   the quiet grey tokens. Repeated under .dark so a theme class on <html>
   cannot paint the shopfront with the console palette.
 */
+.market-map {
+  opacity: 0.72;
+}
+.market-map::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 28%, rgba(255, 255, 255, 0.78) 0%, rgba(255, 255, 255, 0.42) 46%, rgba(255, 255, 255, 0.12) 100%);
+}
+
 .market {
   --color-paper: transparent;
   --color-canvas: rgba(22, 50, 79, 0.08);
@@ -304,17 +314,19 @@ textarea {
   letter-spacing: 0;
 }
 
-/* One solid action. A warm line is the only accent, so the button does not
-   look like a colour sample. */
+/* Navy into the terracotta. The same two colours as the route map. */
 .btn-gradient {
-  background: #16324f;
+  background-color: #16324f;
+  background-image: linear-gradient(108deg, #16324f 0%, #245074 46%, #c96a4b 100%);
   color: #f4f8fb;
   border-radius: 2px;
-  box-shadow: none;
-  transition: background-color 180ms ease;
+  box-shadow: 0 12px 28px -16px rgba(201, 106, 75, 0.85);
+  transition: filter 180ms ease, box-shadow 180ms ease;
 }
 .btn-gradient:hover {
-  background: #1c4064;
+  background-color: #1c4064;
+  background-image: linear-gradient(108deg, #1c4064 0%, #c96a4b 62%, #d98568 100%);
+  filter: saturate(1.05);
 }
 
 .chip-gradient {
@@ -329,12 +341,14 @@ textarea {
   box-shadow: inset 0 0 0 1px rgba(22, 50, 79, 0.22);
 }
 
-/* A flat panel. The page already has a colour; the card does not need one. */
+/* A card standing in space: a shallow tilt, a long shadow, a light along the edge. */
 .market .blue-card {
-  border-radius: 0;
+  border-radius: 18px;
   border: 1px solid rgba(22, 50, 79, 0.12);
-  background: #ffffff;
-  box-shadow: none;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 16px 28px 50px -28px rgba(22, 50, 79, 0.4);
+  transform: perspective(1100px) rotateX(2.5deg) rotateY(-4deg);
+  transition: transform 480ms cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 480ms ease;
 }
 .market .blue-card.shade-0,
 .market .blue-card.shade-1,
@@ -343,15 +357,21 @@ textarea {
   background: #ffffff;
 }
 
-/* Photographs are rectangular. A cut corner and a floating shadow is what
-   made the page look assembled rather than designed. */
+/* Photographs sit like a still in a light: rounded, tilted, with a sheen. */
 .photo-card,
 .photo-card-alt,
 .anamorphic-frame,
 .anamorphic-mini {
   overflow: hidden;
-  border-radius: 0;
-  box-shadow: none;
+  border-radius: 18px;
+  box-shadow:
+    inset 0 0 70px rgba(22, 50, 79, 0.18),
+    18px 32px 54px -26px rgba(22, 50, 79, 0.5);
+  transform: perspective(1100px) rotateX(3deg) rotateY(-6deg);
+  transition: transform 480ms cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 480ms ease;
+}
+.photo-card-alt {
+  transform: perspective(1100px) rotateX(3deg) rotateY(6deg);
 }
 .anamorphic-stage {
   perspective: none;
@@ -503,7 +523,18 @@ dialog.wa-panel[open] {
   background: rgba(28, 20, 16, 0.46);
 }
 
+@media (hover: hover) {
+  .market .photo-card:hover,
+  .market .blue-card:hover {
+    transform: perspective(1100px) rotateX(0deg) rotateY(0deg) translateY(-8px);
+    box-shadow: 0 36px 64px -28px rgba(201, 106, 75, 0.38), 0 16px 36px -22px rgba(22, 50, 79, 0.4);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .photo-card,
+  .photo-card-alt,
+  .market .blue-card,
   .anamorphic-frame,
   .anamorphic-mini,
   .hero-bleed,

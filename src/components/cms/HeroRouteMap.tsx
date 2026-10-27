@@ -26,7 +26,7 @@ export function HeroRouteMap() {
     <div aria-hidden className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden px-[2vw]">
       <svg
         viewBox="40 0 1180 460"
-        className="h-auto w-full max-w-[1500px] text-white opacity-[0.16]"
+        className="h-auto w-full max-w-[1600px] text-[#16324f]"
         fill="none"
         stroke="currentColor"
         strokeLinecap="round"
@@ -39,12 +39,14 @@ export function HeroRouteMap() {
         <path
           className="motion-route"
           d={`M${DELHI[0]} ${DELHI[1]} Q 560 -60 ${PORTO[0]} ${PORTO[1]}`}
+          stroke="#c96a4b"
           strokeWidth={2.5}
           strokeDasharray="10 18"
         />
         <path
           className="motion-route"
           d={`M${MUMBAI[0]} ${MUMBAI[1]} Q 520 20 ${LISBON[0]} ${LISBON[1]}`}
+          stroke="#c96a4b"
           strokeWidth={2.5}
           strokeDasharray="10 18"
         />
@@ -57,7 +59,7 @@ export function HeroRouteMap() {
         ))}
 
         {/* A small arrowhead at the middle of the upper route, pointing west towards Portugal. */}
-        <path d="M528 41 l24 -9 l-6 9 l6 9 z" fill="currentColor" stroke="none" />
+        <path d="M528 41 l24 -9 l-6 9 l6 9 z" fill="#c96a4b" stroke="none" />
       </svg>
     </div>
   );
