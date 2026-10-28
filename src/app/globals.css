@@ -314,12 +314,12 @@ textarea {
   letter-spacing: 0;
 }
 
-/* A solid navy button with terracotta type. The border keeps it visible when
-   the button sits on a navy header, closer or footer. */
+/* A solid navy button with white type. The terracotta border keeps it
+   visible when the button sits on a navy header, closer or footer. */
 .btn-gradient {
   background-color: #16324f;
   background-image: none;
-  color: #c96a4b;
+  color: #ffffff;
   border: 1px solid #c96a4b;
   border-radius: 2px;
   box-shadow: none;
@@ -328,20 +328,20 @@ textarea {
 .btn-gradient:hover {
   background-color: #1c4064;
   background-image: none;
-  color: #c96a4b;
+  color: #ffffff;
   filter: none;
 }
 
 /* Older filled actions still say bg-ink and text-paper. On the shopfront
-   those are the same navy button with terracotta type. */
+   those are the same navy button with white type. */
 .market :is(a, button).bg-ink {
   background-color: #16324f;
-  color: #c96a4b;
+  color: #ffffff;
   border-color: #c96a4b;
 }
 .market :is(a, button).bg-ink:hover {
   background-color: #1c4064;
-  color: #c96a4b;
+  color: #ffffff;
 }
 
 .chip-gradient {

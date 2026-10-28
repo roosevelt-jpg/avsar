@@ -102,9 +102,9 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
               <li key={index}>
                 <Link
                   href={localHref(locale, str(intent, 'href'))}
-                  className="t-colors inline-flex items-center gap-2 rounded-[2px] border border-line-strong bg-white px-3.5 py-2 text-[14px] font-medium text-ink no-underline hover:border-ink"
+                  className="t-colors inline-flex items-center gap-2 rounded-[2px] border border-[#c96a4b] bg-[#16324f] px-3.5 py-2 text-[14px] font-medium text-white no-underline hover:bg-[#1c4064]"
                 >
-                  {str(intent, 'icon') ? <Icon name={str(intent, 'icon')} className="size-[18px] text-accent" /> : null}
+                  {str(intent, 'icon') ? <Icon name={str(intent, 'icon')} className="size-[18px] text-white" /> : null}
                   {str(intent, 'label')}
                 </Link>
               </li>

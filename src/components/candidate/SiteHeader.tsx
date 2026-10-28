@@ -122,7 +122,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
                     <Link
                       key={item.href}
                       href={localHref(locale, item.href)}
-                      className="t-colors rounded-[12px] px-3 py-3 text-[16px] text-[#c96a4b] no-underline hover:bg-white/10"
+                      className="t-colors rounded-[12px] px-3 py-3 text-[16px] text-white no-underline hover:bg-white/10"
                     >
                       {navLabel(item, locale)}
                     </Link>

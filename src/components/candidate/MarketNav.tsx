@@ -30,7 +30,7 @@ export function MarketNav({
             key={item.href}
             href={item.href}
             aria-current={current ? 'page' : undefined}
-            className={`group relative text-[#c96a4b] no-underline hover:text-[#e8c4b6] ${current ? 'font-semibold' : ''} ${linkClassName}`}
+            className={`group relative text-white no-underline hover:text-white/80 ${current ? 'font-semibold' : ''} ${linkClassName}`}
           >
             {item.label}
             <span
