@@ -1,5 +1,7 @@
+import Link from 'next/link';
 import { items, link, num, str, strList, type BlockData } from '@/lib/cms/blocks';
 import { scenePhoto, SELECTED_FRAMES, stepPhoto } from '@/lib/cms/scenes';
+import { localHref } from '@/lib/cms/settings';
 import type { Locale } from '@/lib/i18n';
 import { ContactForm } from '@/components/contact/ContactForm';
 import { Markdown } from '../Markdown';
@@ -115,14 +117,85 @@ function StepsTimeline({ data }: { data: BlockData }) {
   );
 }
 
+/** Photo on top, navy panel underneath. The arrow is the card's own CMS link. */
+function TileArrow({ href, label, locale }: { href: string; label: string; locale: Locale }) {
+  const resolved = localHref(locale, href);
+  const external = /^https?:/i.test(resolved);
+  const className =
+    'mt-5 grid size-10 shrink-0 place-items-center self-end rounded-full bg-[#c96a4b] text-white no-underline';
+  const icon = (
+    <svg viewBox="0 0 16 16" className="size-4 rtl:-scale-x-100" aria-hidden>
+      <path d="M4.5 11.5 11.5 4.5M11.5 4.5H7M11.5 4.5V9" fill="none" stroke="currentColor" strokeWidth="1.6" />
+    </svg>
+  );
+  if (external || resolved.startsWith('mailto:') || resolved.startsWith('tel:')) {
+    return (
+      <a href={resolved} aria-label={label} className={className} target={external ? '_blank' : undefined} rel={external ? 'noopener noreferrer' : undefined}>
+        {icon}
+      </a>
+    );
+  }
+  return (
+    <Link href={resolved} aria-label={label} className={className}>
+      {icon}
+    </Link>
+  );
+}
+
+function featureColumns(columns: number): string {
+  return columns === 2 ? 'sm:grid-cols-2' : columns === 4 ? 'sm:grid-cols-2 lg:grid-cols-4' : 'sm:grid-cols-2 lg:grid-cols-3';
+}
+
+/**
+ * The "Made for you" arrangement: a photograph over a navy panel. Title, sentence,
+ * photo and the optional arrow all still come from the card in the CMS. The band
+ * is white so the map does not show through the gaps.
+ */
+function FeatureTiles({ data, locale, list, columns }: Props & { list: BlockData[]; columns: number }) {
+  return (
+    <Section className="!bg-white">
+      <SectionHeading eyebrow={str(data, 'eyebrow')} title={str(data, 'title')} intro={str(data, 'intro')} />
+      <ul className={`m-0 grid list-none grid-cols-1 items-stretch gap-4 p-0 ${featureColumns(columns)}`}>
+        {list.map((item, index) => {
+          const cardLink = link(item, 'link');
+          const rawImage = str(item, 'image');
+          const image = rawImage ? scenePhoto(rawImage, index) : '';
+          const body = str(item, 'body');
+          return (
+            <li key={index} className="flex h-full flex-col overflow-hidden rounded-[12px] bg-[#16324f]">
+              {image ? (
+                <div className="relative aspect-[16/10] bg-[#245074]">
+                  <CmsImage src={image} alt="" sizes="(max-width: 768px) 100vw, 33vw" />
+                </div>
+              ) : (
+                <div className="grid aspect-[16/10] place-items-center bg-[#245074]">
+                  <Icon name={str(item, 'icon')} className="size-8 text-white" />
+                </div>
+              )}
+              <div className="flex flex-1 flex-col px-5 py-5 text-white">
+                <h3 className="m-0 text-[20px] font-semibold leading-[1.25] tracking-[-0.01em]">{str(item, 'title')}</h3>
+                {data.typing === true ? (
+                  <TypeOnView text={body} className="m-0 mt-2 text-[14px] leading-[1.55] text-white/85" />
+                ) : (
+                  <p className="m-0 mt-2 text-[14px] leading-[1.55] text-white/85">{body}</p>
+                )}
+                {cardLink ? <TileArrow href={cardLink.href} label={cardLink.label} locale={locale} /> : null}
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </Section>
+  );
+}
+
 export function FeaturesBlock({ data, locale }: Props) {
   const list = items(data, 'items');
   const columns = num(data, 'columns', 3);
-  const tiles = str(data, 'style') === 'tiles';
-  const grid =
-    columns === 2 ? 'sm:grid-cols-2' : columns === 4 ? 'sm:grid-cols-2 lg:grid-cols-4' : 'sm:grid-cols-2 lg:grid-cols-3';
+  if (str(data, 'style') === 'tiles') return <FeatureTiles data={data} locale={locale} list={list} columns={columns} />;
+  const grid = featureColumns(columns);
   return (
-    <Section tone={tiles ? 'paper' : 'surface'}>
+    <Section tone="surface">
       <SectionHeading eyebrow={str(data, 'eyebrow')} title={str(data, 'title')} intro={str(data, 'intro')} />
       <ul className={`m-0 grid list-none grid-cols-1 gap-4 p-0 ${grid}`}>
         {list.map((item, index) => {
@@ -142,7 +215,7 @@ export function FeaturesBlock({ data, locale }: Props) {
               ) : (
                 <Icon name={str(item, 'icon')} className="mb-4 size-5 text-ink" />
               )}
-              <h3 className={`m-0 font-semibold tracking-[-0.01em] ${tiles ? (image ? 'mt-5 text-[22px]' : 'mt-8 text-[22px]') : 'mt-5 text-[18px]'}`}>{str(item, 'title')}</h3>
+              <h3 className="m-0 mt-5 text-[18px] font-semibold tracking-[-0.01em]">{str(item, 'title')}</h3>
               {data.typing === true ? (
                 <TypeOnView text={str(item, 'body')} className="m-0 mt-2 flex-1 text-[15px] leading-[1.6] text-ink-2" />
               ) : (

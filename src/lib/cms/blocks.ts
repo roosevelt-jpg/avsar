@@ -291,8 +291,8 @@ export const BLOCKS = {
           { kind: 'select', name: 'icon', label: 'Icon', options: iconOptions },
           { kind: 'text', name: 'title', label: 'Title', max: 100 },
           { kind: 'textarea', name: 'body', label: 'Body', rows: 3, max: 400 },
-          { kind: 'link', name: 'link', label: 'Link', help: 'Optional. Shown as "Learn more" style text under the card', optional: true },
-          { kind: 'media', name: 'image', label: '3D image', help: 'Optional. Shown floating at the top of the card in place of the icon', accept: 'image', optional: true },
+          { kind: 'link', name: 'link', label: 'Link', help: 'Optional. On photo tiles this is the round arrow. Otherwise it is a text link under the card.', optional: true },
+          { kind: 'media', name: 'image', label: 'Image', help: 'Optional. On photo tiles it fills the top of the card. Otherwise it sits above the title.', accept: 'image', optional: true },
         ],
       },
       {
@@ -307,7 +307,7 @@ export const BLOCKS = {
         label: 'Style',
         options: [
           { value: 'cards', label: 'White cards' },
-          { value: 'tiles', label: 'Soft coloured tiles' },
+          { value: 'tiles', label: 'Photo and navy panel' },
         ],
       },
     ],
