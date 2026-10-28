@@ -1,6 +1,5 @@
-import Image from 'next/image';
-import Link from 'next/link';
 import { link, num, str, type BlockData } from '@/lib/cms/blocks';
+import { siteText } from '@/lib/cms/localize';
 import { listFeaturedJobs } from '@/lib/jobs/data';
 import { AREAS, POSITIONS } from '@/lib/data/positions';
 import { POSITION_LQIP, positionImage } from '@/lib/data/position-images';
@@ -8,6 +7,7 @@ import type { Locale } from '@/lib/i18n';
 import { localePath } from '@/lib/i18n/path';
 import { JobCard } from '@/components/jobs/JobCard';
 import { CmsTextLink, Section, SectionHeading } from '../primitives';
+import { RoleShowcase } from './RoleShowcase';
 
 type Props = { data: BlockData; locale: Locale };
 
@@ -44,42 +44,33 @@ export async function FeaturedJobsBlock({ data, locale }: Props) {
 }
 
 export function JobCategoriesBlock({ data, locale }: Props) {
+  const eyebrow = str(data, 'eyebrow');
+  const title = str(data, 'title');
+  const areas = AREAS.map((area) => ({
+    slug: area.slug,
+    label: siteText(locale, area.label),
+    roles: POSITIONS.filter((position) => position.area === area.slug).map((position) => ({
+      slug: position.slug,
+      label: siteText(locale, position.label),
+      href: localePath(locale, `/jobs?position=${position.slug}`),
+      image: positionImage(position.slug, 840),
+      blur: POSITION_LQIP[position.slug],
+    })),
+  })).filter((area) => area.roles.length > 0);
+
   return (
-    <Section tone="surface" id="sectors">
-      <SectionHeading eyebrow={str(data, 'eyebrow')} title={str(data, 'title')} intro={str(data, 'intro')} />
-      {/* One grid for every role, in area order, with the area as a tag on
-          each card. A grid per area left most of a row empty when an area
-          has one or two roles. */}
-      <ul className="m-0 grid list-none grid-cols-2 gap-3 p-0 sm:grid-cols-3 lg:grid-cols-4">
-        {AREAS.flatMap((area) =>
-          POSITIONS.filter((position) => position.area === area.slug).map((position) => (
-            <li key={position.slug} className="motion-reveal">
-              <Link
-                href={localePath(locale, `/jobs?position=${position.slug}`)}
-                className={`photo-card group relative block aspect-[4/3] bg-canvas no-underline ${POSITIONS.indexOf(position) % 2 === 1 ? 'photo-card-alt' : ''}`}
-              >
-                <Image
-                  src={positionImage(position.slug, 420)}
-                  alt=""
-                  fill
-                  sizes="(max-width: 640px) 50vw, 25vw"
-                  placeholder="blur"
-                  blurDataURL={POSITION_LQIP[position.slug]}
-                  className="object-cover transition-transform duration-500 group-hover:scale-[1.05]"
-                />
-                <span className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/10 to-transparent" />
-                <span className="absolute start-3 top-3 max-w-[calc(100%-24px)] truncate rounded-full bg-black/45 px-2.5 py-1 font-mono text-[10.5px] uppercase tracking-[0.1em] text-white backdrop-blur-sm">
-                  {area.label}
-                </span>
-                <span className="absolute inset-x-3 bottom-3 flex items-center justify-between gap-2 text-[15px] font-semibold text-white">
-                  {position.label}
-                  <span aria-hidden className="transition-transform group-hover:translate-x-0.5 rtl:-scale-x-100">→</span>
-                </span>
-              </Link>
-            </li>
-          )),
-        )}
-      </ul>
+    <Section className="!bg-white" id="sectors">
+      {eyebrow ? <p className="m-0 mb-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#c96a4b]">{eyebrow}</p> : null}
+      {title ? (
+        <h2 className="m-0 mb-8 text-balance text-[clamp(32px,4.2cqi,52px)] font-semibold leading-[1.05] tracking-[-0.03em] text-[#16324f]">{title}</h2>
+      ) : null}
+      <RoleShowcase
+        areas={areas}
+        intro={str(data, 'intro')}
+        label={title || eyebrow}
+        previousLabel={siteText(locale, 'Previous role')}
+        nextLabel={siteText(locale, 'Next role')}
+      />
     </Section>
   );
 }

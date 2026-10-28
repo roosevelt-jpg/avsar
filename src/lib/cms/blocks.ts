@@ -376,7 +376,7 @@ export const BLOCKS = {
   },
   job_categories: {
     label: 'Job categories',
-    description: 'Every position we recruit for, with photographs, linking to the jobs board.',
+    description: 'The areas and roles from the jobs list, as tabs, with a photograph that keeps moving. The heading and the introduction are edited here.',
     fields: [eyebrow, title, intro],
     empty: { eyebrow: '', title: 'Roles we recruit for', intro: '' },
   },
