@@ -252,25 +252,40 @@ function splitFrames(data: BlockData): { src: string; alt: string }[] {
   return [...SELECTED_FRAMES];
 }
 
+/**
+ * Heading, the CMS paragraphs, then one tick per bullet, with the photograph
+ * on the side chosen in the console. The ticks sit in pale squares so a long
+ * list reads as a checklist. The photograph stays flat: the tilt used on the
+ * other cards would fight this quieter two-column layout. A white band keeps
+ * the route map from showing through the gap.
+ */
 export function SplitBlock({ data, locale }: Props) {
   const frames = splitFrames(data);
   const left = str(data, 'imageSide') === 'left';
   const bullets = strList(data, 'bullets');
   const cta = link(data, 'cta');
+  const eyebrow = str(data, 'eyebrow');
+  const title = str(data, 'title');
+  const body = str(data, 'body');
   return (
-    <Section>
-      <div className={`grid grid-cols-1 items-center gap-[clamp(32px,5cqi,72px)] ${frames.length ? 'lg:grid-cols-2' : ''}`}>
+    <Section className="!bg-white">
+      <div className={`grid grid-cols-1 items-start gap-[clamp(28px,5cqi,72px)] ${frames.length ? 'lg:grid-cols-2' : ''}`}>
         <div className={left ? 'lg:order-2' : ''}>
-          <SectionHeading eyebrow={str(data, 'eyebrow')} title={str(data, 'title')} />
-          {str(data, 'body') ? <Markdown text={str(data, 'body')} locale={locale} className="-mt-4 text-[17px] text-ink-2" /> : null}
+          {eyebrow ? (
+            <p className="m-0 mb-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#c96a4b]">{eyebrow}</p>
+          ) : null}
+          {title ? (
+            <h2 className="m-0 text-balance text-[clamp(32px,4.2cqi,52px)] font-semibold leading-[1.05] tracking-[-0.03em] text-[#16324f]">{title}</h2>
+          ) : null}
+          {body ? <Markdown text={body} locale={locale} className="mt-5 text-[16px] leading-[1.6] text-[#3d5168]" /> : null}
           {bullets.length > 0 && (
-            <ul className="m-0 mt-6 flex list-none flex-col gap-3 p-0">
+            <ul className="m-0 mt-7 flex list-none flex-col gap-4 p-0">
               {bullets.map((bullet) => (
-                <li key={bullet} className="flex gap-3 text-[16px] leading-[1.5]">
-                  <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-success/15 text-success">
-                    <Icon name="check" className="size-4" />
+                <li key={bullet} className="flex items-start gap-3.5 text-[16px] leading-[1.45] text-[#16324f]">
+                  <span className="grid size-9 shrink-0 place-items-center rounded-[8px] border border-[#16324f]/10 bg-white text-[#c96a4b] shadow-[0_1px_2px_rgba(22,50,79,0.08)]">
+                    <Icon name="check" className="size-[18px]" />
                   </span>
-                  {bullet}
+                  <span className="pt-1.5">{bullet}</span>
                 </li>
               ))}
             </ul>
@@ -283,7 +298,7 @@ export function SplitBlock({ data, locale }: Props) {
         </div>
         {frames.length ? (
           <div className={left ? 'lg:order-1' : ''}>
-            <div className="photo-card relative aspect-[4/3] bg-canvas">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-[12px] bg-[#16324f]">
               <FrameCycle frames={frames} alt={str(data, 'imageAlt')} />
             </div>
           </div>
