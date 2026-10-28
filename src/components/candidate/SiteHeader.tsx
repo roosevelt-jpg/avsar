@@ -70,13 +70,13 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
         </div>
       ) : null}
 
-      <header className="shop-header sticky top-0 z-40 bg-white px-[clamp(16px,4cqi,56px)] py-[14px] text-[#16324f]">
+      <header className="shop-header sticky top-0 z-40 px-[clamp(16px,4cqi,56px)] py-[14px]">
         {/* Nothing in the bar may wrap: a two-line "Visa & relocation" doubles
             the header height. The full menu appears only from xl, where six
             links, the toggles and the button fit on one line; below that the
             menu button carries them. */}
         <div className="mx-auto flex w-full max-w-[1280px] items-center justify-between gap-3 whitespace-nowrap sm:gap-6">
-          <Wordmark href={localePath(locale, '/')} tone="light" size={22} />
+          <Wordmark href={localePath(locale, '/')} tone="dark" size={22} />
 
           <MarketNav
             items={navigation.items.map((item) => ({ href: localHref(locale, item.href), label: navLabel(item, locale) }))}
@@ -88,7 +88,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
             <a
               href={`tel:${general.supportPhone.replace(/\s/g, '')}`}
               dir="ltr"
-              className="t-colors hidden whitespace-nowrap font-mono text-[13px] tabular-nums text-[#5c7084] no-underline hover:text-[#16324f] 2xl:inline"
+              className="t-colors hidden whitespace-nowrap font-mono text-[13px] tabular-nums text-[#c96a4b] no-underline hover:text-[#e8c4b6] 2xl:inline"
             >
               {general.supportPhone}
             </a>
@@ -98,7 +98,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
             {showCta ? (
               <Link
                 href={localHref(locale, navigation.headerCta.href)}
-                className="btn-gradient t-colors hidden rounded-[2px] px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.02em] text-[#f4f8fb] no-underline md:inline-flex"
+                className="btn-gradient t-colors hidden rounded-[2px] px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.02em] no-underline md:inline-flex"
               >
                 {ctaLabel(navigation.headerCta, locale)}
               </Link>
@@ -107,7 +107,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
             <details className={`group relative ${narrow}`}>
               <summary
                 aria-label="Menu"
-                className="grid size-10 cursor-pointer list-none place-items-center rounded-[4px] border border-line bg-surface text-ink [&::-webkit-details-marker]:hidden"
+                className="grid size-10 cursor-pointer list-none place-items-center rounded-[4px] border border-[#c96a4b]/50 bg-transparent text-[#c96a4b] [&::-webkit-details-marker]:hidden"
               >
                 <svg viewBox="0 0 24 24" className="size-5 group-open:hidden" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
                   <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
@@ -116,13 +116,13 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
                   <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
                 </svg>
               </summary>
-              <div className="absolute end-0 top-12 w-[min(86vw,320px)] rounded-[20px] border border-[#d5e2ee] bg-[#eef4fa] p-3 text-[#16324f] shadow-[0_24px_60px_-24px_rgba(22,50,79,0.4)] [&_.text-ink]:!text-[#16324f] [&_.text-ink-2]:!text-[#3d5168]">
+              <div className="absolute end-0 top-12 w-[min(86vw,320px)] rounded-[12px] border border-[#c96a4b]/40 bg-[#16324f] p-3 text-[#c96a4b] shadow-[0_24px_60px_-24px_rgba(8,20,36,0.7)]">
                 <nav aria-label="Mobile" className="flex flex-col">
                   {navigation.items.map((item) => (
                     <Link
                       key={item.href}
                       href={localHref(locale, item.href)}
-                      className="t-colors rounded-[12px] px-3 py-3 text-[16px] text-ink no-underline hover:bg-paper"
+                      className="t-colors rounded-[12px] px-3 py-3 text-[16px] text-[#c96a4b] no-underline hover:bg-white/10"
                     >
                       {navLabel(item, locale)}
                     </Link>
@@ -137,7 +137,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
                 {showCta ? (
                   <Link
                     href={localHref(locale, navigation.headerCta.href)}
-                    className="btn-gradient mt-3 flex justify-center rounded-[2px] px-4 py-3 text-[14px] font-semibold uppercase tracking-[0.04em] text-[#f4f8fb] no-underline"
+                    className="btn-gradient mt-3 flex justify-center rounded-[2px] px-4 py-3 text-[14px] font-semibold uppercase tracking-[0.04em] no-underline"
                   >
                     {ctaLabel(navigation.headerCta, locale)}
                   </Link>

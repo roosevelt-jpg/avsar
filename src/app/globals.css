@@ -314,19 +314,34 @@ textarea {
   letter-spacing: 0;
 }
 
-/* Navy into the terracotta. The same two colours as the route map. */
+/* A solid navy button with terracotta type. The border keeps it visible when
+   the button sits on a navy header, closer or footer. */
 .btn-gradient {
   background-color: #16324f;
-  background-image: linear-gradient(108deg, #16324f 0%, #245074 46%, #c96a4b 100%);
-  color: #f4f8fb;
+  background-image: none;
+  color: #c96a4b;
+  border: 1px solid #c96a4b;
   border-radius: 2px;
-  box-shadow: 0 12px 28px -16px rgba(201, 106, 75, 0.85);
-  transition: filter 180ms ease, box-shadow 180ms ease;
+  box-shadow: none;
+  transition: background-color 180ms ease;
 }
 .btn-gradient:hover {
   background-color: #1c4064;
-  background-image: linear-gradient(108deg, #1c4064 0%, #c96a4b 62%, #d98568 100%);
-  filter: saturate(1.05);
+  background-image: none;
+  color: #c96a4b;
+  filter: none;
+}
+
+/* Older filled actions still say bg-ink and text-paper. On the shopfront
+   those are the same navy button with terracotta type. */
+.market :is(a, button).bg-ink {
+  background-color: #16324f;
+  color: #c96a4b;
+  border-color: #c96a4b;
+}
+.market :is(a, button).bg-ink:hover {
+  background-color: #1c4064;
+  color: #c96a4b;
 }
 
 .chip-gradient {
@@ -383,8 +398,18 @@ textarea {
 }
 
 .shop-header {
-  background: #ffffff;
-  color: #16324f;
+  background: #16324f;
+  color: #c96a4b;
+}
+.shop-header .text-ink,
+.shop-header .text-ink-2,
+.shop-header .text-muted {
+  color: #c96a4b;
+}
+.shop-header button:not(.btn-gradient) {
+  background-color: transparent;
+  border-color: rgba(201, 106, 75, 0.55);
+  color: #c96a4b;
 }
 
 /* The blocks keep their own class names so the console still edits the same
@@ -398,7 +423,7 @@ textarea {
   inset-inline: 0;
   bottom: 0;
   height: 1px;
-  background: rgba(22, 50, 79, 0.12);
+  background: rgba(201, 106, 75, 0.45);
 }
 
 .stage-nav {

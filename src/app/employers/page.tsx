@@ -51,7 +51,7 @@ export default async function EmployerLanding() {
           <AccountMenu locale="en" tone="employer" />
           <Link
             href="/employers#contact"
-            className="btn-gradient t-colors rounded-[14px] px-4 py-2.5 text-[14px] font-semibold text-white no-underline"
+            className="btn-gradient t-colors rounded-[14px] px-4 py-2.5 text-[14px] font-semibold no-underline"
           >
             Book a call
           </Link>

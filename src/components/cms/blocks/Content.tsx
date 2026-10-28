@@ -306,7 +306,7 @@ export function CtaBlock({ data, locale }: Props) {
             {str(data, 'body') ? <p className="m-0 mt-4 text-[17px] leading-[1.6] text-[#d5e2ee]">{str(data, 'body')}</p> : null}
           </div>
           <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
-            {primary && <CmsButton href={primary.href} label={primary.label} locale={locale} variant="white" size="sm" />}
+            {primary && <CmsButton href={primary.href} label={primary.label} locale={locale} size="sm" />}
             {secondary && <CmsTextLink href={secondary.href} label={secondary.label} locale={locale} dark />}
           </div>
         </div>

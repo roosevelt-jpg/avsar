@@ -65,7 +65,7 @@ function FooterColumn({ title, links }: { title: string; links: FooterLink[] }) 
 
 /** The outlined action on the dark band. Same shape as a recruitment-site footer button. */
 function FooterAction({ href, label, external = false }: { href: string; label: string; external?: boolean }) {
-  const className = 't-colors inline-flex items-center gap-2 rounded-full border border-white px-6 py-2 text-[14px] font-bold uppercase tracking-[0.04em] text-white no-underline hover:bg-white hover:text-[#16324f]';
+  const className = 't-colors inline-flex items-center gap-2 rounded-full border border-[#c96a4b] bg-[#16324f] px-6 py-2 text-[14px] font-bold uppercase tracking-[0.04em] text-[#c96a4b] no-underline hover:bg-[#1c4064]';
   if (external) {
     return (
       <a href={href} target="_blank" rel="noopener noreferrer" className={className}>
