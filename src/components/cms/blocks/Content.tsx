@@ -71,35 +71,42 @@ export function StepsBlock({ data }: Props) {
 }
 
 /**
- * The same steps as a sequence. Each row keeps the picture for that step,
- * so "create your profile" is a phone form and "fly and start work" is the
- * room, not a repeated kitchen shot. The picture alternates sides so the
- * page reads as a process, not a stack of identical cards.
+ * Two columns, a round photo, and a dotted rule between cells. The photo,
+ * title, sentence and small label all still come from the step in the CMS.
+ * The band is solid white so the map behind the page does not cut through
+ * the rules.
  */
 function StepsTimeline({ data }: { data: BlockData }) {
   const list = items(data, 'items');
   return (
-    <Section id="how">
+    <Section id="how" className="!bg-white">
       <SectionHeading eyebrow={str(data, 'eyebrow')} title={str(data, 'title')} intro={str(data, 'intro')} />
-      <ol className="m-0 flex list-none flex-col border-t border-line p-0">
+      <ol className="m-0 grid list-none grid-cols-1 p-0 md:grid-cols-2">
         {list.map((item, index) => {
           const meta = str(item, 'meta');
-          const flip = index % 2 === 1;
+          const photo = stepPhoto(str(item, 'image'), index);
+          const secondColumn = index % 2 === 1;
           return (
-            <li key={index} className="grid grid-cols-1 items-center gap-6 border-b border-line py-8 md:grid-cols-2 md:gap-14 md:py-10">
-              <div className={flip ? 'md:order-2' : ''}>
-                <p className="m-0 font-mono text-[12px] tracking-[0.16em] text-[#c96a4b]">{String(index + 1).padStart(2, '0')}</p>
-                {meta ? <p className="m-0 mt-3 text-[13px] text-muted">{meta}</p> : null}
-                <h3 className="m-0 mt-2 text-[clamp(22px,2.2cqi,28px)] font-semibold tracking-[-0.02em]">
-                  {str(item, 'title').replace(/^\d+\.\s*/, '')}
-                </h3>
-                <p className="m-0 mt-3 max-w-[46ch] text-[16px] leading-[1.65] text-ink-2">{str(item, 'body')}</p>
-              </div>
-              {stepPhoto(str(item, 'image'), index) ? (
-                <div className={`photo-card relative aspect-[16/10] bg-canvas ${flip ? 'photo-card-alt md:order-1' : ''}`}>
-                  <CmsImage src={stepPhoto(str(item, 'image'), index)} alt="" sizes="(max-width: 768px) 100vw, 50vw" />
+            <li
+              key={index}
+              className={`flex items-start gap-5 py-8 md:gap-7 md:py-10 ${
+                index > 0 ? 'border-t border-dotted border-[#16324f]/25 md:border-t-0' : ''
+              } ${index >= 2 ? 'md:border-t md:border-dotted md:border-[#16324f]/25' : ''} ${
+                secondColumn ? 'md:border-s md:border-dotted md:border-[#16324f]/25 md:ps-10' : 'md:pe-10'
+              }`}
+            >
+              {photo ? (
+                <div className="relative size-[88px] shrink-0 overflow-hidden rounded-full bg-[#f3f6f9] ring-1 ring-[#16324f]/10 md:size-[112px]">
+                  <CmsImage src={photo} alt="" sizes="112px" />
                 </div>
               ) : null}
+              <div className="min-w-0 pt-1">
+                <h3 className="m-0 text-[clamp(20px,2cqi,26px)] font-semibold leading-[1.2] tracking-[-0.02em] text-[#16324f]">
+                  {str(item, 'title').replace(/^\d+\.\s*/, '')}
+                </h3>
+                <p className="m-0 mt-2 max-w-[42ch] text-[15px] leading-[1.6] text-[#3d5168]">{str(item, 'body')}</p>
+                {meta ? <p className="m-0 mt-4 text-[15px] font-medium text-[#c96a4b]">{meta}</p> : null}
+              </div>
             </li>
           );
         })}

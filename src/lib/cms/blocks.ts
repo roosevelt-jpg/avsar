@@ -255,7 +255,7 @@ export const BLOCKS = {
         kind: 'select',
         name: 'layout',
         label: 'Layout',
-        help: 'Both layouts show a picture on each step. Timeline is the tighter grid.',
+        help: 'Timeline is two columns with a round photo and a dotted rule. Cards is a stacked list. Both use the same steps.',
         options: [
           { value: 'cards', label: 'Cards' },
           { value: 'timeline', label: 'Timeline' },
