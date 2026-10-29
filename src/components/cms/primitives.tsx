@@ -75,7 +75,7 @@ const BUTTON = {
   /* The filled action is the recruitment blue. "dark" is the quieter
      second button, for when two actions sit side by side. */
   primary: 'btn-gradient',
-  dark: 'border border-[#c96a4b] bg-[#16324f] text-white hover:bg-[#1c4064]',
+  dark: 'border border-[#c96a4b] bg-[#0a088f] text-white hover:bg-[#22209a]',
   light: 'bg-surface text-ink border-line-strong hover:border-ink',
   ghostDark: 'bg-transparent text-on-night border-dark-line hover:border-on-night',
   white: 'bg-on-night text-night border-transparent hover:bg-white',

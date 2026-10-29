@@ -116,7 +116,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
                   <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
                 </svg>
               </summary>
-              <div className="absolute end-0 top-12 w-[min(86vw,320px)] rounded-[12px] border border-[#c96a4b]/40 bg-[#16324f] p-3 text-[#c96a4b] shadow-[0_24px_60px_-24px_rgba(8,20,36,0.7)]">
+              <div className="absolute end-0 top-12 w-[min(86vw,320px)] rounded-[12px] border border-[#c96a4b]/40 bg-[#0a088f] p-3 text-[#c96a4b] shadow-[0_24px_60px_-24px_rgba(8,20,36,0.7)]">
                 <nav aria-label="Mobile" className="flex flex-col">
                   {navigation.items.map((item) => (
                     <Link

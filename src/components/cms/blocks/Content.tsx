@@ -92,18 +92,18 @@ function StepsTimeline({ data }: { data: BlockData }) {
             <li
               key={index}
               className={`flex items-start gap-5 py-8 md:gap-7 md:py-10 ${
-                index > 0 ? 'border-t border-dotted border-[#16324f]/25 md:border-t-0' : ''
-              } ${index >= 2 ? 'md:border-t md:border-dotted md:border-[#16324f]/25' : ''} ${
-                secondColumn ? 'md:border-s md:border-dotted md:border-[#16324f]/25 md:ps-10' : 'md:pe-10'
+                index > 0 ? 'border-t border-dotted border-[#0a088f]/25 md:border-t-0' : ''
+              } ${index >= 2 ? 'md:border-t md:border-dotted md:border-[#0a088f]/25' : ''} ${
+                secondColumn ? 'md:border-s md:border-dotted md:border-[#0a088f]/25 md:ps-10' : 'md:pe-10'
               }`}
             >
               {photo ? (
-                <div className="relative size-[88px] shrink-0 overflow-hidden rounded-full bg-[#f3f6f9] ring-1 ring-[#16324f]/10 md:size-[112px]">
+                <div className="relative size-[88px] shrink-0 overflow-hidden rounded-full bg-[#f3f6f9] ring-1 ring-[#0a088f]/10 md:size-[112px]">
                   <CmsImage src={photo} alt="" sizes="112px" />
                 </div>
               ) : null}
               <div className="min-w-0 pt-1">
-                <h3 className="m-0 text-[clamp(20px,2cqi,26px)] font-semibold leading-[1.2] tracking-[-0.02em] text-[#16324f]">
+                <h3 className="m-0 text-[clamp(20px,2cqi,26px)] font-semibold leading-[1.2] tracking-[-0.02em] text-[#0a088f]">
                   {str(item, 'title').replace(/^\d+\.\s*/, '')}
                 </h3>
                 <p className="m-0 mt-2 max-w-[42ch] text-[15px] leading-[1.6] text-[#3d5168]">{str(item, 'body')}</p>
@@ -162,13 +162,13 @@ function FeatureTiles({ data, locale, list, columns }: Props & { list: BlockData
           const image = rawImage ? scenePhoto(rawImage, index) : '';
           const body = str(item, 'body');
           return (
-            <li key={index} className="flex h-full flex-col overflow-hidden rounded-[12px] bg-[#16324f]">
+            <li key={index} className="flex h-full flex-col overflow-hidden rounded-[12px] bg-[#0a088f]">
               {image ? (
-                <div className="relative aspect-[16/10] bg-[#245074]">
+                <div className="relative aspect-[16/10] bg-[#1614a8]">
                   <CmsImage src={image} alt="" sizes="(max-width: 768px) 100vw, 33vw" />
                 </div>
               ) : (
-                <div className="grid aspect-[16/10] place-items-center bg-[#245074]">
+                <div className="grid aspect-[16/10] place-items-center bg-[#1614a8]">
                   <Icon name={str(item, 'icon')} className="size-8 text-white" />
                 </div>
               )}
@@ -275,14 +275,14 @@ export function SplitBlock({ data, locale }: Props) {
             <p className="m-0 mb-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#c96a4b]">{eyebrow}</p>
           ) : null}
           {title ? (
-            <h2 className="m-0 text-balance text-[clamp(32px,4.2cqi,52px)] font-semibold leading-[1.05] tracking-[-0.03em] text-[#16324f]">{title}</h2>
+            <h2 className="m-0 text-balance text-[clamp(32px,4.2cqi,52px)] font-semibold leading-[1.05] tracking-[-0.03em] text-[#0a088f]">{title}</h2>
           ) : null}
           {body ? <Markdown text={body} locale={locale} className="mt-5 text-[16px] leading-[1.6] text-[#3d5168]" /> : null}
           {bullets.length > 0 && (
             <ul className="m-0 mt-7 flex list-none flex-col gap-4 p-0">
               {bullets.map((bullet) => (
-                <li key={bullet} className="flex items-start gap-3.5 text-[16px] leading-[1.45] text-[#16324f]">
-                  <span className="grid size-9 shrink-0 place-items-center rounded-[8px] border border-[#16324f]/10 bg-white text-[#c96a4b] shadow-[0_1px_2px_rgba(22,50,79,0.08)]">
+                <li key={bullet} className="flex items-start gap-3.5 text-[16px] leading-[1.45] text-[#0a088f]">
+                  <span className="grid size-9 shrink-0 place-items-center rounded-[8px] border border-[#0a088f]/10 bg-white text-[#c96a4b] shadow-[0_1px_2px_rgba(10,8,143,0.08)]">
                     <Icon name="check" className="size-[18px]" />
                   </span>
                   <span className="pt-1.5">{bullet}</span>
@@ -298,7 +298,7 @@ export function SplitBlock({ data, locale }: Props) {
         </div>
         {frames.length ? (
           <div className={left ? 'lg:order-1' : ''}>
-            <div className="relative aspect-[4/3] overflow-hidden rounded-[12px] bg-[#16324f]">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-[12px] bg-[#0a088f]">
               <FrameCycle frames={frames} alt={str(data, 'imageAlt')} />
             </div>
           </div>
@@ -313,7 +313,7 @@ export function CtaBlock({ data, locale }: Props) {
   const primary = link(data, 'primary');
   const secondary = link(data, 'secondary');
   return (
-    <section className="bg-[#16324f] px-[clamp(20px,4cqi,56px)] py-[clamp(56px,8cqi,96px)] text-[#f4f8fb]">
+    <section className="bg-[#0a088f] px-[clamp(20px,4cqi,56px)] py-[clamp(56px,8cqi,96px)] text-[#f4f8fb]">
       <div className="mx-auto w-full max-w-[1200px]">
         <div className="flex flex-wrap items-end justify-between gap-8">
           <div className="max-w-[640px]">

@@ -57,7 +57,7 @@ export async function FeaturedEmployersBlock({ data, locale }: Props) {
   return (
     <section className="bg-white px-[clamp(20px,4cqi,56px)] py-[clamp(40px,6cqi,72px)]">
       <div className="mx-auto w-full max-w-[1200px]">
-        <h2 className="m-0 mb-8 text-center text-[clamp(28px,3.2cqi,40px)] font-semibold tracking-[-0.02em] text-[#16324f]">{title}</h2>
+        <h2 className="m-0 mb-8 text-center text-[clamp(28px,3.2cqi,40px)] font-semibold tracking-[-0.02em] text-[#0a088f]">{title}</h2>
         <EmployerStrip
           employers={employers}
           previousLabel={siteText(locale, 'Previous employers')}
@@ -87,7 +87,7 @@ export function JobCategoriesBlock({ data, locale }: Props) {
     <Section className="!bg-white" id="sectors">
       {eyebrow ? <p className="m-0 mb-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#c96a4b]">{eyebrow}</p> : null}
       {title ? (
-        <h2 className="m-0 mb-8 text-balance text-[clamp(32px,4.2cqi,52px)] font-semibold leading-[1.05] tracking-[-0.03em] text-[#16324f]">{title}</h2>
+        <h2 className="m-0 mb-8 text-balance text-[clamp(32px,4.2cqi,52px)] font-semibold leading-[1.05] tracking-[-0.03em] text-[#0a088f]">{title}</h2>
       ) : null}
       <RoleShowcase
         areas={areas}
