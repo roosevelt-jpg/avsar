@@ -92,6 +92,8 @@ export type SiteSettings = {
    * this section is the wording beside them.
    */
   conversion: ConversionSettings;
+  /** Copy on /employers. The placement fee stays under Company & pricing. */
+  employerLanding: EmployerLanding;
   /**
    * Paid-traffic VSL funnel at /[locale]/go: video, headline and CTAs that
    * send the visitor to sign-up. Video falls back to Applications film, then
@@ -126,8 +128,44 @@ export type ConversionSettings = {
   stickyCtaLabel: string;
   pricingLead: string;
   pricingFeatures: string[];
+  pricingTitle: string;
+  pricingQuestions: string;
+  pricingStartCta: string;
+  candidateEyebrow: string;
+  candidatePeriod: string;
+  employerEyebrow: string;
+  employerPeriod: string;
+  employerNote: string;
+  employerFeatures: string[];
+  partnerEyebrow: string;
+  partnerPrice: string;
+  partnerNote: string;
+  partnerFeatures: string[];
+  bookCall: string;
+  contactSales: string;
+  reportsHeading: string;
+  storiesEyebrow: string;
+  storiesTitle: string;
+  storiesIntro: string;
+  pricingFaq: { question: string; answer: string }[];
   /** Soft package line on role-matched job alerts for unpaid candidates. */
   mentionPackageInJobAlerts: boolean;
+};
+
+/** The /employers page. The fee in contactNote is {{fee}}, filled from Company & pricing. */
+export type EmployerLanding = {
+  wordmarkSuffix: string;
+  navTalent: string;
+  navHow: string;
+  navPricing: string;
+  navCandidates: string;
+  ctaLabel: string;
+  headline: string;
+  intro: string;
+  stepsTitle: string;
+  steps: { title: string; body: string }[];
+  contactTitle: string;
+  contactNote: string;
 };
 
 export const SETTINGS_KEYS = [
@@ -143,6 +181,7 @@ export const SETTINGS_KEYS = [
   'cohort',
   'emails',
   'conversion',
+  'employerLanding',
   'vsl',
 ] as const;
 
@@ -345,7 +384,66 @@ export const DEFAULT_SETTINGS: SiteSettings = {
       'Score, account, test and applying stay free',
       'No shortlist priority from buying',
     ],
+    pricingTitle: 'Report prices',
+    pricingQuestions: 'Questions',
+    pricingStartCta: 'Create a free account',
+    candidateEyebrow: 'Candidates',
+    candidatePeriod: 'both together',
+    employerEyebrow: 'Employers · per hire',
+    employerPeriod: 'per placement',
+    employerNote: 'Search is free. Pay when the candidate starts.',
+    employerFeatures: ['Talent-pool search', 'Skills reports', 'Visa and relocation handled', '90-day replacement'],
+    partnerEyebrow: 'Employers · partner',
+    partnerPrice: 'Custom',
+    partnerNote: 'For 10+ hires a year across sites.',
+    partnerFeatures: ['Everything in per hire', 'Dedicated recruiter', 'Pre-arrival training', 'Housing coordination'],
+    bookCall: 'Book a call',
+    contactSales: 'Contact sales',
+    reportsHeading: 'What the two reports include',
+    storiesEyebrow: 'From people who made the move',
+    storiesTitle: 'In their own words',
+    storiesIntro: 'Only stories written by candidates we placed and approved by our team. Nothing is invented.',
+    pricingFaq: [
+      {
+        question: 'What can I pay for?',
+        answer:
+          'A skills report PDF ({skills}) and a list of what is missing for the visa ({visa}). Both together are {bundle}, instead of {separate}. The account, the rewritten CV, the test, your score and applying are free. Buying either report gives no priority and does not guarantee an interview, a job or a visa.',
+      },
+      {
+        question: 'Do I pay a placement fee if I am hired?',
+        answer: 'No. The employer pays our fee. If anyone asks you to pay for a job offer, a visa slot or processing, it is not us.',
+      },
+      {
+        question: 'When do I pay?',
+        answer:
+          'Only if you choose to, after you have read your rewritten CV and seen your score. You pay on this website for the skills report, the visa-requirements list, or both together.',
+      },
+      {
+        question: 'Can I get a refund?',
+        answer:
+          'Yes. Within 14 days you can have back the amount you paid, if you have not downloaded that paid document. Downloading the free CV does not affect the refund.',
+      },
+    ],
     mentionPackageInJobAlerts: true,
+  },
+  employerLanding: {
+    wordmarkSuffix: 'for employers',
+    navTalent: 'Talent pool',
+    navHow: 'How it works',
+    navPricing: 'Pricing',
+    navCandidates: 'For candidates',
+    ctaLabel: 'Book a call',
+    headline: 'Hire pre-assessed workers from India for your team in Portugal.',
+    intro:
+      'Search a pool of candidates scored on skills, experience and English. We handle visas, relocation, housing and onboarding.',
+    stepsTitle: 'From search to first shift',
+    steps: [
+      { title: 'Search and shortlist', body: 'Describe the role in plain words. Filter by sector, English level and experience.' },
+      { title: 'Interview', body: 'Video interviews with shortlisted candidates, with their full skills report attached.' },
+      { title: 'We relocate them', body: 'Work visa, travel, housing and arrival support, handled by our team in Lisbon.' },
+    ],
+    contactTitle: 'Tell us what roles you need to fill.',
+    contactNote: '{{fee}} per placement. Search is free.',
   },
 };
 
@@ -400,6 +498,37 @@ export function mergeSettings(rows: { key: string; value: unknown }[]): SiteSett
         Array.isArray(storedConversion.pricingFeatures) && storedConversion.pricingFeatures.length > 0
           ? storedConversion.pricingFeatures.map(String).slice(0, 10)
           : DEFAULT_SETTINGS.conversion.pricingFeatures,
+      employerFeatures:
+        Array.isArray(storedConversion.employerFeatures) && storedConversion.employerFeatures.length > 0
+          ? storedConversion.employerFeatures.map(String).slice(0, 8)
+          : DEFAULT_SETTINGS.conversion.employerFeatures,
+      partnerFeatures:
+        Array.isArray(storedConversion.partnerFeatures) && storedConversion.partnerFeatures.length > 0
+          ? storedConversion.partnerFeatures.map(String).slice(0, 8)
+          : DEFAULT_SETTINGS.conversion.partnerFeatures,
+      pricingFaq:
+        Array.isArray(storedConversion.pricingFaq) && storedConversion.pricingFaq.length > 0
+          ? storedConversion.pricingFaq
+              .filter((item): item is { question: string; answer: string } => Boolean(item && typeof item === 'object'))
+              .map((item) => ({ question: String(item.question ?? ''), answer: String(item.answer ?? '') }))
+              .filter((item) => item.question && item.answer)
+              .slice(0, 8)
+          : DEFAULT_SETTINGS.conversion.pricingFaq,
+    };
+  }
+  const storedLanding = stored.employerLanding as Partial<EmployerLanding> | undefined;
+  if (storedLanding) {
+    out.employerLanding = {
+      ...DEFAULT_SETTINGS.employerLanding,
+      ...storedLanding,
+      steps:
+        Array.isArray(storedLanding.steps) && storedLanding.steps.length > 0
+          ? storedLanding.steps
+              .filter((step): step is { title: string; body: string } => Boolean(step && typeof step === 'object'))
+              .map((step) => ({ title: String(step.title ?? ''), body: String(step.body ?? '') }))
+              .filter((step) => step.title && step.body)
+              .slice(0, 6)
+          : DEFAULT_SETTINGS.employerLanding.steps,
     };
   }
   const storedVsl = stored.vsl as Partial<VslSettings> | undefined;

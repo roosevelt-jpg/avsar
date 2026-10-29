@@ -206,8 +206,18 @@ export function ConversionSettingsForm({ initial }: { initial: SiteSettings['con
         </div>
       </Section>
 
-      <Section title="Pricing page" lead="Candidate column on /pricing. Employer and partner cards stay in the page code.">
+      <Section title="Pricing page" lead="Every sentence on /pricing. Amounts still come from Company & pricing. In a question, {skills}, {visa}, {bundle} and {separate} are replaced with those amounts.">
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Field label="Page title"><input className={INPUT} value={conversion.pricingTitle} onChange={(e) => setConversion({ ...conversion, pricingTitle: e.target.value })} /></Field>
+          <Field label="Questions heading"><input className={INPUT} value={conversion.pricingQuestions} onChange={(e) => setConversion({ ...conversion, pricingQuestions: e.target.value })} /></Field>
+          <Field label="Start button"><input className={INPUT} value={conversion.pricingStartCta} onChange={(e) => setConversion({ ...conversion, pricingStartCta: e.target.value })} /></Field>
+          <Field label="Reports heading"><input className={INPUT} value={conversion.reportsHeading} onChange={(e) => setConversion({ ...conversion, reportsHeading: e.target.value })} /></Field>
+        </div>
         <Field label="Lead"><textarea className={INPUT} rows={3} value={conversion.pricingLead} onChange={(e) => setConversion({ ...conversion, pricingLead: e.target.value })} /></Field>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <Field label="Candidate label"><input className={INPUT} value={conversion.candidateEyebrow} onChange={(e) => setConversion({ ...conversion, candidateEyebrow: e.target.value })} /></Field>
+          <Field label="Candidate price note"><input className={INPUT} value={conversion.candidatePeriod} onChange={(e) => setConversion({ ...conversion, candidatePeriod: e.target.value })} /></Field>
+        </div>
         <ul className="m-0 mt-3 flex list-none flex-col gap-2 p-0">
           {conversion.pricingFeatures.map((feature, index) => (
             <li key={index}>
@@ -236,6 +246,49 @@ export function ConversionSettingsForm({ initial }: { initial: SiteSettings['con
             </button>
           ) : null}
         </div>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <Field label="Employer label"><input className={INPUT} value={conversion.employerEyebrow} onChange={(e) => setConversion({ ...conversion, employerEyebrow: e.target.value })} /></Field>
+          <Field label="Employer price note"><input className={INPUT} value={conversion.employerPeriod} onChange={(e) => setConversion({ ...conversion, employerPeriod: e.target.value })} /></Field>
+        </div>
+        <Field label="Employer card note"><input className={INPUT} value={conversion.employerNote} onChange={(e) => setConversion({ ...conversion, employerNote: e.target.value })} /></Field>
+        <ul className="m-0 mt-2 flex list-none flex-col gap-2 p-0">
+          {conversion.employerFeatures.map((feature, index) => (
+            <li key={index}>
+              <Field label={`Employer feature ${index + 1}`}>
+                <input className={INPUT} value={feature} onChange={(e) => setConversion({ ...conversion, employerFeatures: conversion.employerFeatures.map((item, i) => (i === index ? e.target.value : item)) })} />
+              </Field>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <Field label="Partner label"><input className={INPUT} value={conversion.partnerEyebrow} onChange={(e) => setConversion({ ...conversion, partnerEyebrow: e.target.value })} /></Field>
+          <Field label="Partner price"><input className={INPUT} value={conversion.partnerPrice} onChange={(e) => setConversion({ ...conversion, partnerPrice: e.target.value })} /></Field>
+          <Field label="Book a call"><input className={INPUT} value={conversion.bookCall} onChange={(e) => setConversion({ ...conversion, bookCall: e.target.value })} /></Field>
+          <Field label="Contact sales"><input className={INPUT} value={conversion.contactSales} onChange={(e) => setConversion({ ...conversion, contactSales: e.target.value })} /></Field>
+        </div>
+        <Field label="Partner card note"><input className={INPUT} value={conversion.partnerNote} onChange={(e) => setConversion({ ...conversion, partnerNote: e.target.value })} /></Field>
+        <ul className="m-0 mt-2 flex list-none flex-col gap-2 p-0">
+          {conversion.partnerFeatures.map((feature, index) => (
+            <li key={index}>
+              <Field label={`Partner feature ${index + 1}`}>
+                <input className={INPUT} value={feature} onChange={(e) => setConversion({ ...conversion, partnerFeatures: conversion.partnerFeatures.map((item, i) => (i === index ? e.target.value : item)) })} />
+              </Field>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-4 grid gap-3">
+          <Field label="Stories eyebrow"><input className={INPUT} value={conversion.storiesEyebrow} onChange={(e) => setConversion({ ...conversion, storiesEyebrow: e.target.value })} /></Field>
+          <Field label="Stories title"><input className={INPUT} value={conversion.storiesTitle} onChange={(e) => setConversion({ ...conversion, storiesTitle: e.target.value })} /></Field>
+          <Field label="Stories introduction"><textarea className={INPUT} rows={2} value={conversion.storiesIntro} onChange={(e) => setConversion({ ...conversion, storiesIntro: e.target.value })} /></Field>
+        </div>
+        <ul className="m-0 mt-4 flex list-none flex-col gap-3 p-0">
+          {conversion.pricingFaq.map((item, index) => (
+            <li key={index} className="grid gap-2 rounded-[12px] bg-paper p-3">
+              <Field label={`Question ${index + 1}`}><input className={INPUT} value={item.question} onChange={(e) => setConversion({ ...conversion, pricingFaq: conversion.pricingFaq.map((row, i) => (i === index ? { ...row, question: e.target.value } : row)) })} /></Field>
+              <Field label="Answer"><textarea className={INPUT} rows={3} value={item.answer} onChange={(e) => setConversion({ ...conversion, pricingFaq: conversion.pricingFaq.map((row, i) => (i === index ? { ...row, answer: e.target.value } : row)) })} /></Field>
+            </li>
+          ))}
+        </ul>
         <label className="mt-4 flex items-start gap-2 text-[14px]">
           <input
             type="checkbox"
@@ -251,6 +304,41 @@ export function ConversionSettingsForm({ initial }: { initial: SiteSettings['con
       </Section>
 
       <SaveBar onSave={() => saver.save(conversion)} state={saver.state} busy={saver.busy} />
+    </div>
+  );
+}
+
+/** Settings › the /employers page. {{fee}} in the contact note is the placement fee. */
+export function EmployerLandingForm({ initial }: { initial: SiteSettings['employerLanding'] }) {
+  const [page, setPage] = useState(initial);
+  const saver = useSettingsSaver('employerLanding');
+
+  return (
+    <div className="flex flex-col gap-5">
+      <Section title="Employer landing" lead="The page at /employers. The placement fee is still set under Company & pricing. Write {{fee}} where that amount should appear.">
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Field label="Name beside the logo"><input className={INPUT} value={page.wordmarkSuffix} onChange={(e) => setPage({ ...page, wordmarkSuffix: e.target.value })} /></Field>
+          <Field label="Header button"><input className={INPUT} value={page.ctaLabel} onChange={(e) => setPage({ ...page, ctaLabel: e.target.value })} /></Field>
+          <Field label="Talent pool link"><input className={INPUT} value={page.navTalent} onChange={(e) => setPage({ ...page, navTalent: e.target.value })} /></Field>
+          <Field label="How it works link"><input className={INPUT} value={page.navHow} onChange={(e) => setPage({ ...page, navHow: e.target.value })} /></Field>
+          <Field label="Pricing link"><input className={INPUT} value={page.navPricing} onChange={(e) => setPage({ ...page, navPricing: e.target.value })} /></Field>
+          <Field label="For candidates link"><input className={INPUT} value={page.navCandidates} onChange={(e) => setPage({ ...page, navCandidates: e.target.value })} /></Field>
+        </div>
+        <Field label="Headline"><textarea className={INPUT} rows={2} value={page.headline} onChange={(e) => setPage({ ...page, headline: e.target.value })} /></Field>
+        <Field label="Introduction"><textarea className={INPUT} rows={3} value={page.intro} onChange={(e) => setPage({ ...page, intro: e.target.value })} /></Field>
+        <Field label="Steps heading"><input className={INPUT} value={page.stepsTitle} onChange={(e) => setPage({ ...page, stepsTitle: e.target.value })} /></Field>
+        <ul className="m-0 flex list-none flex-col gap-3 p-0">
+          {page.steps.map((step, index) => (
+            <li key={index} className="grid gap-2 rounded-[12px] bg-paper p-3">
+              <Field label={`Step ${index + 1}`}><input className={INPUT} value={step.title} onChange={(e) => setPage({ ...page, steps: page.steps.map((row, i) => (i === index ? { ...row, title: e.target.value } : row)) })} /></Field>
+              <Field label="Detail"><textarea className={INPUT} rows={2} value={step.body} onChange={(e) => setPage({ ...page, steps: page.steps.map((row, i) => (i === index ? { ...row, body: e.target.value } : row)) })} /></Field>
+            </li>
+          ))}
+        </ul>
+        <Field label="Contact heading"><input className={INPUT} value={page.contactTitle} onChange={(e) => setPage({ ...page, contactTitle: e.target.value })} /></Field>
+        <Field label="Contact note"><input className={INPUT} value={page.contactNote} onChange={(e) => setPage({ ...page, contactNote: e.target.value })} /></Field>
+      </Section>
+      <SaveBar onSave={() => saver.save(page)} state={saver.state} busy={saver.busy} />
     </div>
   );
 }

@@ -6,7 +6,7 @@ import { SiteHeader } from '@/components/candidate/SiteHeader';
 import { FaqAccordion } from '@/components/candidate/FaqAccordion';
 import { PackagePaywallCopy } from '@/components/candidate/PackagePaywallCopy';
 import { CandidateStoriesBlock } from '@/components/cms/blocks/Media';
-import { fill, getDictionary, isLocale, localePath } from '@/lib/i18n';
+import { fill, isLocale, localePath } from '@/lib/i18n';
 import { getSiteSettings } from '@/lib/cms/data';
 import { formatFee, formatMoney, formatProductFee } from '@/lib/company/config';
 import { siteText } from '@/lib/cms/localize';
@@ -21,8 +21,6 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function PricingPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
-  const t = getDictionary(locale);
-  const p = t.pricing;
   const settings = await getSiteSettings();
   const { pricing, hiring, conversion } = settings;
   const tx = (english: string) => siteText(locale, english);
@@ -34,7 +32,7 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
       ? { label: tx(conversion.offerPrimaryLabel), href: localePath(locale, '/dashboard#package') }
       : status?.assessmentComplete && status.paid
         ? { label: tx('Go to your dashboard'), href: localePath(locale, '/dashboard') }
-        : { label: p.startCta, href: localePath(locale, '/signup') };
+        : { label: tx(conversion.pricingStartCta), href: localePath(locale, '/signup') };
 
   const shortlistLabel = `${(hiring.shortlistMinScore / 10).toFixed(hiring.shortlistMinScore % 10 === 0 ? 0 : 1)} out of 10`;
   const skills = formatProductFee(pricing, 'skills_report');
@@ -44,9 +42,9 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
 
   const plans = [
     {
-      eyebrow: p.candidates,
+      eyebrow: tx(conversion.candidateEyebrow),
       price: bundle,
-      period: tx('both together'),
+      period: tx(conversion.candidatePeriod),
       note: `${tx('Skills report')} ${skills}. ${tx('Visa requirements')} ${visa}. ${tx('Bought separately')} ${separate}.`,
       features: conversion.pricingFeatures.map(tx),
       cta: candidateCta,
@@ -54,52 +52,30 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
       showPaywall: true as const,
     },
     {
-      eyebrow: p.employers,
+      eyebrow: tx(conversion.employerEyebrow),
       price: formatMoney(pricing.employerPlacementFeeMinor, 'EUR'),
-      period: p.employersPeriod,
-      note: p.employersNote,
-      features: p.employersFeatures,
-      cta: { label: p.bookCall, href: '/employers#contact' },
+      period: tx(conversion.employerPeriod),
+      note: tx(conversion.employerNote),
+      features: conversion.employerFeatures.map(tx),
+      cta: { label: tx(conversion.bookCall), href: '/employers#contact' },
       dark: false,
       showPaywall: false as const,
     },
     {
-      eyebrow: p.partner,
-      price: p.partnerPrice,
+      eyebrow: tx(conversion.partnerEyebrow),
+      price: tx(conversion.partnerPrice),
       period: '',
-      note: p.partnerNote,
-      features: p.partnerFeatures,
-      cta: { label: p.contactSales, href: '/employers#contact' },
+      note: tx(conversion.partnerNote),
+      features: conversion.partnerFeatures.map(tx),
+      cta: { label: tx(conversion.contactSales), href: '/employers#contact' },
       dark: false,
       showPaywall: false as const,
     },
   ];
 
-  const faq = [
-    [
-      tx('What can I pay for?'),
-      fill(tx('A skills report PDF ({skills}) and a list of what is missing for the visa ({visa}). Both together are {bundle}, instead of {separate}. The account, the rewritten CV, the test, your score and applying are free. Buying either report gives no priority and does not guarantee an interview, a job or a visa.'), {
-        skills,
-        visa,
-        bundle,
-        separate,
-      }),
-    ],
-    [
-      tx('Do I pay a placement fee if I am hired?'),
-      tx('No. The employer pays our fee. If anyone asks you to pay for a job offer, a visa slot or processing, it is not us.'),
-    ],
-    [
-      tx('When do I pay?'),
-      tx(
-        'Only if you choose to, after you have read your rewritten CV and seen your score. You pay on this website for the skills report, the visa-requirements list, or both together.',
-      ),
-    ],
-    [
-      tx('Can I get a refund?'),
-      tx('Yes. Within 14 days you can have back the amount you paid, if you have not downloaded that paid document. Downloading the free CV does not affect the refund.'),
-    ],
-  ] as const;
+  const faq = conversion.pricingFaq.map(
+    (item) => [tx(item.question), fill(tx(item.answer), { skills, visa, bundle, separate })] as const,
+  );
 
   return (
     <>
@@ -107,7 +83,7 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
 
       <main className="px-[clamp(20px,4cqi,56px)] py-[clamp(48px,7cqi,96px)]">
         <h1 className="m-0 text-[clamp(32px,5cqi,60px)] font-semibold leading-[1.05] tracking-[-0.035em]">
-          {p.title}
+          {tx(conversion.pricingTitle)}
         </h1>
         <p className="mt-4 mb-10 max-w-[56ch] text-[clamp(16px,1.8cqi,19px)] leading-[1.55] text-ink-2">
           {tx(conversion.pricingLead)}
@@ -162,7 +138,7 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
         </ul>
 
         <section className="mt-10 rounded-[24px] border border-line bg-surface p-[clamp(20px,3cqi,32px)]">
-          <h2 className="m-0 text-[20px] font-semibold tracking-[-0.02em]">{tx('What the two reports include')}</h2>
+          <h2 className="m-0 text-[20px] font-semibold tracking-[-0.02em]">{tx(conversion.reportsHeading)}</h2>
           <PackagePaywallCopy
             locale={locale}
             conversion={conversion}
@@ -175,9 +151,9 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
           <CandidateStoriesBlock
             locale={locale}
             data={{
-              eyebrow: 'From people who made the move',
-              title: 'In their own words',
-              intro: 'Only stories written by candidates we placed and approved by our team. Nothing is invented.',
+              eyebrow: conversion.storiesEyebrow,
+              title: conversion.storiesTitle,
+              intro: conversion.storiesIntro,
               limit: 3,
             }}
           />
@@ -185,7 +161,7 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
 
         <section className="mt-[clamp(48px,7cqi,96px)] max-w-[840px]">
           <h2 className="m-0 mb-7 text-[clamp(26px,3.6cqi,44px)] font-semibold leading-[1.1] tracking-[-0.03em]">
-            {p.questions}
+            {tx(conversion.pricingQuestions)}
           </h2>
           <FaqAccordion items={faq} />
         </section>
