@@ -81,7 +81,7 @@ export function StepsBlock({ data }: Props) {
 function StepsTimeline({ data }: { data: BlockData }) {
   const list = items(data, 'items');
   return (
-    <Section id="how" className="!bg-white">
+    <Section id="how">
       <SectionHeading eyebrow={str(data, 'eyebrow')} title={str(data, 'title')} intro={str(data, 'intro')} />
       <ol className="m-0 grid list-none grid-cols-1 p-0 md:grid-cols-2">
         {list.map((item, index) => {
@@ -92,21 +92,21 @@ function StepsTimeline({ data }: { data: BlockData }) {
             <li
               key={index}
               className={`flex items-start gap-5 py-8 md:gap-7 md:py-10 ${
-                index > 0 ? 'border-t border-dotted border-[#16324f]/25 md:border-t-0' : ''
-              } ${index >= 2 ? 'md:border-t md:border-dotted md:border-[#16324f]/25' : ''} ${
-                secondColumn ? 'md:border-s md:border-dotted md:border-[#16324f]/25 md:ps-10' : 'md:pe-10'
+                index > 0 ? 'border-t border-dotted border-[#c96a4b] md:border-t-0' : ''
+              } ${index >= 2 ? 'md:border-t md:border-dotted md:border-[#c96a4b]' : ''} ${
+                secondColumn ? 'md:border-s md:border-dotted md:border-[#c96a4b] md:ps-10' : 'md:pe-10'
               }`}
             >
               {photo ? (
-                <div className="relative size-[88px] shrink-0 overflow-hidden rounded-full bg-[#f3f6f9] ring-1 ring-[#16324f]/10 md:size-[112px]">
+                <div className="relative size-[88px] shrink-0 overflow-hidden rounded-full bg-white/10 ring-1 ring-white md:size-[112px]">
                   <CmsImage src={photo} alt="" sizes="112px" />
                 </div>
               ) : null}
               <div className="min-w-0 pt-1">
-                <h3 className="m-0 text-[clamp(20px,2cqi,26px)] font-semibold leading-[1.2] tracking-[-0.02em] text-[#16324f]">
+                <h3 className="m-0 text-[clamp(20px,2cqi,26px)] font-semibold leading-[1.2] tracking-[-0.02em] text-white">
                   {str(item, 'title').replace(/^\d+\.\s*/, '')}
                 </h3>
-                <p className="m-0 mt-2 max-w-[42ch] text-[15px] leading-[1.6] text-[#3d5168]">{str(item, 'body')}</p>
+                <p className="m-0 mt-2 max-w-[42ch] text-[15px] leading-[1.6] text-white/80">{str(item, 'body')}</p>
                 {meta ? <p className="m-0 mt-4 text-[15px] font-medium text-[#c96a4b]">{meta}</p> : null}
               </div>
             </li>
@@ -122,7 +122,7 @@ function TileArrow({ href, label, locale }: { href: string; label: string; local
   const resolved = localHref(locale, href);
   const external = /^https?:/i.test(resolved);
   const className =
-    'mt-5 grid size-10 shrink-0 place-items-center self-end rounded-full bg-[#c96a4b] text-white no-underline';
+    'btn-gradient mt-5 grid size-10 shrink-0 place-items-center self-end rounded-full text-white no-underline';
   const icon = (
     <svg viewBox="0 0 16 16" className="size-4 rtl:-scale-x-100" aria-hidden>
       <path d="M4.5 11.5 11.5 4.5M11.5 4.5H7M11.5 4.5V9" fill="none" stroke="currentColor" strokeWidth="1.6" />
@@ -153,7 +153,7 @@ function featureColumns(columns: number): string {
  */
 function FeatureTiles({ data, locale, list, columns }: Props & { list: BlockData[]; columns: number }) {
   return (
-    <Section className="!bg-white">
+    <Section>
       <SectionHeading eyebrow={str(data, 'eyebrow')} title={str(data, 'title')} intro={str(data, 'intro')} />
       <ul className={`m-0 grid list-none grid-cols-1 items-stretch gap-4 p-0 ${featureColumns(columns)}`}>
         {list.map((item, index) => {
@@ -162,13 +162,13 @@ function FeatureTiles({ data, locale, list, columns }: Props & { list: BlockData
           const image = rawImage ? scenePhoto(rawImage, index) : '';
           const body = str(item, 'body');
           return (
-            <li key={index} className="flex h-full flex-col overflow-hidden rounded-[12px] bg-[#16324f]">
+            <li key={index} className="flex h-full flex-col overflow-hidden rounded-[12px] border border-white bg-[#0a088f]">
               {image ? (
-                <div className="relative aspect-[16/10] bg-[#245074]">
+                <div className="relative aspect-[16/10] bg-white/10">
                   <CmsImage src={image} alt="" sizes="(max-width: 768px) 100vw, 33vw" />
                 </div>
               ) : (
-                <div className="grid aspect-[16/10] place-items-center bg-[#245074]">
+                <div className="grid aspect-[16/10] place-items-center bg-white/10">
                   <Icon name={str(item, 'icon')} className="size-8 text-white" />
                 </div>
               )}
@@ -268,21 +268,21 @@ export function SplitBlock({ data, locale }: Props) {
   const title = str(data, 'title');
   const body = str(data, 'body');
   return (
-    <Section className="!bg-white">
+    <Section>
       <div className={`grid grid-cols-1 items-start gap-[clamp(28px,5cqi,72px)] ${frames.length ? 'lg:grid-cols-2' : ''}`}>
         <div className={left ? 'lg:order-2' : ''}>
           {eyebrow ? (
             <p className="m-0 mb-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#c96a4b]">{eyebrow}</p>
           ) : null}
           {title ? (
-            <h2 className="m-0 text-balance text-[clamp(32px,4.2cqi,52px)] font-semibold leading-[1.05] tracking-[-0.03em] text-[#16324f]">{title}</h2>
+            <h2 className="m-0 text-balance text-[clamp(32px,4.2cqi,52px)] font-semibold leading-[1.05] tracking-[-0.03em] text-white">{title}</h2>
           ) : null}
-          {body ? <Markdown text={body} locale={locale} className="mt-5 text-[16px] leading-[1.6] text-[#3d5168]" /> : null}
+          {body ? <Markdown text={body} locale={locale} className="mt-5 text-[16px] leading-[1.6] text-white/80" /> : null}
           {bullets.length > 0 && (
             <ul className="m-0 mt-7 flex list-none flex-col gap-4 p-0">
               {bullets.map((bullet) => (
-                <li key={bullet} className="flex items-start gap-3.5 text-[16px] leading-[1.45] text-[#16324f]">
-                  <span className="grid size-9 shrink-0 place-items-center rounded-[8px] border border-[#16324f]/10 bg-white text-[#c96a4b] shadow-[0_1px_2px_rgba(22,50,79,0.08)]">
+                <li key={bullet} className="flex items-start gap-3.5 text-[16px] leading-[1.45] text-white">
+                  <span className="grid size-9 shrink-0 place-items-center rounded-[8px] border border-white bg-transparent text-[#c96a4b]">
                     <Icon name="check" className="size-[18px]" />
                   </span>
                   <span className="pt-1.5">{bullet}</span>
@@ -298,7 +298,7 @@ export function SplitBlock({ data, locale }: Props) {
         </div>
         {frames.length ? (
           <div className={left ? 'lg:order-1' : ''}>
-            <div className="relative aspect-[4/3] overflow-hidden rounded-[12px] bg-[#16324f]">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-[12px] border border-white bg-[#0a088f]">
               <FrameCycle frames={frames} alt={str(data, 'imageAlt')} />
             </div>
           </div>
@@ -313,12 +313,12 @@ export function CtaBlock({ data, locale }: Props) {
   const primary = link(data, 'primary');
   const secondary = link(data, 'secondary');
   return (
-    <section className="bg-[#16324f] px-[clamp(20px,4cqi,56px)] py-[clamp(56px,8cqi,96px)] text-[#f4f8fb]">
+    <section className="border-t border-[#c96a4b] bg-[#0a088f] px-[clamp(20px,4cqi,56px)] py-[clamp(56px,8cqi,96px)] text-white">
       <div className="mx-auto w-full max-w-[1200px]">
         <div className="flex flex-wrap items-end justify-between gap-8">
           <div className="max-w-[640px]">
-            <h2 className="m-0 text-balance text-[clamp(28px,3.8cqi,46px)] font-semibold leading-[1.06] tracking-[-0.03em] text-[#f4f8fb]">{str(data, 'title')}</h2>
-            {str(data, 'body') ? <p className="m-0 mt-4 text-[17px] leading-[1.6] text-[#d5e2ee]">{str(data, 'body')}</p> : null}
+            <h2 className="m-0 text-balance text-[clamp(28px,3.8cqi,46px)] font-semibold leading-[1.06] tracking-[-0.03em] text-white">{str(data, 'title')}</h2>
+            {str(data, 'body') ? <p className="m-0 mt-4 text-[17px] leading-[1.6] text-white/80">{str(data, 'body')}</p> : null}
           </div>
           <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
             {primary && <CmsButton href={primary.href} label={primary.label} locale={locale} size="sm" />}

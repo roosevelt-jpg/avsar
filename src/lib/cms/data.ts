@@ -31,6 +31,23 @@ export type ResolvedPage = {
   source: 'published' | 'published-fallback-en' | 'default' | 'draft';
 };
 
+/**
+ * A saved home page written before this block existed would otherwise never
+ * show the employer row. One is inserted after the trust bar when the page
+ * has none. Hiding the block in the console is respected, because a hidden
+ * one still counts as present.
+ */
+function ensureFeaturedEmployers(slug: string, blocks: Block[]): Block[] {
+  if (slug !== 'home' || blocks.some((block) => block.type === 'featured_employers')) return blocks;
+  const block: Block = { id: 'home-employers', type: 'featured_employers', data: { title: 'Featured employers' } };
+  const trust = blocks.findIndex((item) => item.type === 'trust_bar');
+  const hero = blocks.findIndex((item) => item.type === 'hero');
+  const index = trust >= 0 ? trust + 1 : hero >= 0 ? hero + 1 : 0;
+  const next = blocks.slice();
+  next.splice(index, 0, block);
+  return next;
+}
+
 function fromDefault(slug: string, locale: string): ResolvedPage | null {
   const page = defaultPage(slug);
   if (!page) return null;
@@ -71,7 +88,7 @@ export const getPublishedPage = cache(async (slug: string, locale: string): Prom
     slug,
     locale: row.locale,
     title: row.title,
-    blocks: sanitizeBlocks(row.blocks),
+    blocks: ensureFeaturedEmployers(slug, sanitizeBlocks(row.blocks)),
     seo: {
       ...seo,
       title: seo.title || fallback?.seo.title || row.title,
@@ -108,7 +125,7 @@ export async function getDraftPage(slug: string, locale: string): Promise<(Resol
     slug,
     locale,
     title: String(row.title),
-    blocks: sanitizeBlocks(row.blocks),
+    blocks: ensureFeaturedEmployers(slug, sanitizeBlocks(row.blocks)),
     seo: sanitizeSeo(row.seo),
     source: 'draft',
     stored: true,

@@ -1,8 +1,10 @@
 import Link from 'next/link';
 import { AdminEmpty, AdminHeading, AdminShell, Pill } from '@/components/employer/AdminShell';
+import { EmployerLogoField } from '@/components/employer/EmployerLogoField';
 import { VacancyRequestForm } from '@/components/employer/VacancyRequestForm';
 import { Mono } from '@/components/ui/Mono';
 import { listEmployerVacancies, REQUEST_STATUS_LABELS, requireEmployerPortal } from '@/lib/employer/portal';
+import { getServerSupabase } from '@/lib/supabase/server';
 import type { JobStatus } from '@/lib/jobs/types';
 
 export const metadata = { title: 'Vacancies' };
@@ -22,6 +24,13 @@ const TONE: Record<JobStatus, 'success' | 'neutral' | 'muted' | 'accent'> = {
 export default async function EmployerVacancies() {
   const portal = await requireEmployerPortal('/admin/vacancies', '/admin/jobs?status=requests');
   const vacancies = await listEmployerVacancies(portal);
+  const supabase = await getServerSupabase();
+  const { data: mark } = (await supabase
+    ?.from('employers')
+    .select('logo_path')
+    .eq('id', portal.employerId)
+    .maybeSingle()) ?? { data: null };
+  const hasLogo = Boolean((mark as { logo_path?: string | null } | null)?.logo_path);
 
   return (
     <AdminShell current="/admin/vacancies" isStaff={false} suffix="employer">
@@ -29,6 +38,13 @@ export default async function EmployerVacancies() {
         title="Vacancies"
         lead={`The roles you have asked us to fill for ${portal.name}. A recruiter turns each request into a posting, checks it with you, and publishes it; until then candidates cannot see it.`}
       />
+
+      <p className="m-0 mt-6 max-w-[640px] text-[15px] text-ink-2">
+        {portal.name} is on the homepage employer row. A logo replaces the name in that row.
+      </p>
+      <div className="mt-3">
+        <EmployerLogoField employerId={portal.employerId} hasLogo={hasLogo} />
+      </div>
 
       <VacancyRequestForm />
 

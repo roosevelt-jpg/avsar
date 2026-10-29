@@ -380,6 +380,12 @@ export const BLOCKS = {
     fields: [eyebrow, title, intro],
     empty: { eyebrow: '', title: 'Roles we recruit for', intro: '' },
   },
+  featured_employers: {
+    label: 'Featured employers',
+    description: 'A moving row of every employer. A company appears when it is added or signs up. Only the heading is edited here.',
+    fields: [title],
+    empty: { title: 'Featured employers' },
+  },
   video: {
     label: 'Film',
     description: 'An uploaded film or a YouTube link.',

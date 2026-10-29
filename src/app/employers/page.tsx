@@ -30,7 +30,7 @@ export default async function EmployerLanding() {
   const { company, pricing } = settings;
   return (
     <div className="avsar-root market">
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-line bg-white px-[clamp(20px,4cqi,56px)] py-[18px] text-ink">
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-[#c96a4b] px-[clamp(20px,4cqi,56px)] py-[18px] text-white">
         <Wordmark href="/employers" suffix="for employers" accent="employer" />
         <nav className="flex flex-wrap gap-[clamp(12px,2.4cqi,28px)] text-[15px] font-medium text-ink-2">
           <Link href="/admin/employer" className="no-underline hover:text-employer t-colors">

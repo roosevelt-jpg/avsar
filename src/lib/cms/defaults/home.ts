@@ -70,6 +70,10 @@ export const HOME: DefaultPage = {
       },
     ],
     [
+      'featured_employers',
+      { title: 'Featured employers' },
+    ],
+    [
       'featured_jobs',
       {
         eyebrow: 'Open now',

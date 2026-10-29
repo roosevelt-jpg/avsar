@@ -1,5 +1,6 @@
 import { link, num, str, type BlockData } from '@/lib/cms/blocks';
 import { siteText } from '@/lib/cms/localize';
+import { listPublicEmployers } from '@/lib/employer/marks';
 import { listFeaturedJobs } from '@/lib/jobs/data';
 import { AREAS, POSITIONS } from '@/lib/data/positions';
 import { POSITION_LQIP, positionImage } from '@/lib/data/position-images';
@@ -7,6 +8,7 @@ import type { Locale } from '@/lib/i18n';
 import { localePath } from '@/lib/i18n/path';
 import { JobCard } from '@/components/jobs/JobCard';
 import { CmsTextLink, Section, SectionHeading } from '../primitives';
+import { EmployerStrip } from './EmployerStrip';
 import { RoleShowcase } from './RoleShowcase';
 
 type Props = { data: BlockData; locale: Locale };
@@ -43,6 +45,29 @@ export async function FeaturedJobsBlock({ data, locale }: Props) {
   );
 }
 
+/**
+ * Every employer, not a list typed into the page. The heading is the only
+ * CMS field. With no employers yet the section is left out, rather than
+ * showing an empty title.
+ */
+export async function FeaturedEmployersBlock({ data, locale }: Props) {
+  const employers = await listPublicEmployers();
+  if (employers.length === 0) return null;
+  const title = siteText(locale, str(data, 'title') || 'Featured employers');
+  return (
+    <section className="px-[clamp(20px,4cqi,56px)] py-[clamp(40px,6cqi,72px)]">
+      <div className="mx-auto w-full max-w-[1200px]">
+        <h2 className="m-0 mb-8 text-center text-[clamp(28px,3.2cqi,40px)] font-semibold tracking-[-0.02em] text-white">{title}</h2>
+        <EmployerStrip
+          employers={employers}
+          previousLabel={siteText(locale, 'Previous employers')}
+          nextLabel={siteText(locale, 'Next employers')}
+        />
+      </div>
+    </section>
+  );
+}
+
 export function JobCategoriesBlock({ data, locale }: Props) {
   const eyebrow = str(data, 'eyebrow');
   const title = str(data, 'title');
@@ -59,10 +84,10 @@ export function JobCategoriesBlock({ data, locale }: Props) {
   })).filter((area) => area.roles.length > 0);
 
   return (
-    <Section className="!bg-white" id="sectors">
+    <Section id="sectors">
       {eyebrow ? <p className="m-0 mb-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#c96a4b]">{eyebrow}</p> : null}
       {title ? (
-        <h2 className="m-0 mb-8 text-balance text-[clamp(32px,4.2cqi,52px)] font-semibold leading-[1.05] tracking-[-0.03em] text-[#16324f]">{title}</h2>
+        <h2 className="m-0 mb-8 text-balance text-[clamp(32px,4.2cqi,52px)] font-semibold leading-[1.05] tracking-[-0.03em] text-white">{title}</h2>
       ) : null}
       <RoleShowcase
         areas={areas}

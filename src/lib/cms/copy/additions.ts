@@ -20,6 +20,7 @@ export const additions: Record<Exclude<Locale, 'en'>, Record<string, string>> = 
     'based on {{finished}} people so far': 'अब तक {{finished}} लोगों के आधार पर',
     Live: 'लाइव',
     'How we select': 'हम कैसे चुनते हैं',
+    'Featured employers': 'प्रमुख नियोक्ता',
   },
   bn: {
     'Create my free profile': 'আমার বিনামূল্যে প্রোফাইল তৈরি করুন',
@@ -34,6 +35,7 @@ export const additions: Record<Exclude<Locale, 'en'>, Record<string, string>> = 
     'based on {{finished}} people so far': 'এখন পর্যন্ত {{finished}} জনের ভিত্তিতে',
     Live: 'লাইভ',
     'How we select': 'আমরা কীভাবে বাছাই করি',
+    'Featured employers': 'নির্বাচিত নিয়োগকর্তা',
   },
   mr: {
     'Create my free profile': 'माझी मोफत प्रोफाइल तयार करा',
@@ -48,6 +50,7 @@ export const additions: Record<Exclude<Locale, 'en'>, Record<string, string>> = 
     'based on {{finished}} people so far': 'आतापर्यंत {{finished}} लोकांवर आधारित',
     Live: 'लाइव्ह',
     'How we select': 'आम्ही निवड कशी करतो',
+    'Featured employers': 'वैशिष्ट्यीकृत नियोक्ते',
   },
   te: {
     'Create my free profile': 'నా ఉచిత ప్రొఫైల్ సృష్టించండి',
@@ -62,6 +65,7 @@ export const additions: Record<Exclude<Locale, 'en'>, Record<string, string>> = 
     'based on {{finished}} people so far': 'ఇప్పటివరకు {{finished}} మంది ఆధారంగా',
     Live: 'లైవ్',
     'How we select': 'మేము ఎలా ఎంపిక చేస్తాము',
+    'Featured employers': 'ప్రముఖ యజమానులు',
   },
   ta: {
     'Create my free profile': 'என் இலவச சுயவிவரத்தை உருவாக்கு',
@@ -76,6 +80,7 @@ export const additions: Record<Exclude<Locale, 'en'>, Record<string, string>> = 
     'based on {{finished}} people so far': 'இதுவரை {{finished}} பேரின் அடிப்படையில்',
     Live: 'நேரலை',
     'How we select': 'நாங்கள் எப்படித் தேர்ந்தெடுக்கிறோம்',
+    'Featured employers': 'சிறப்பு முதலாளிகள்',
   },
   ur: {
     'Create my free profile': 'میری مفت پروفائل بنائیں',
@@ -90,6 +95,7 @@ export const additions: Record<Exclude<Locale, 'en'>, Record<string, string>> = 
     'based on {{finished}} people so far': 'اب تک {{finished}} لوگوں کی بنیاد پر',
     Live: 'لائیو',
     'How we select': 'ہم کیسے منتخب کرتے ہیں',
+    'Featured employers': 'نمایاں آجر',
   },
   gu: {
     'Create my free profile': 'મારી મફત પ્રોફાઇલ બનાવો',
@@ -104,6 +110,7 @@ export const additions: Record<Exclude<Locale, 'en'>, Record<string, string>> = 
     'based on {{finished}} people so far': 'અત્યાર સુધી {{finished}} લોકોના આધારે',
     Live: 'લાઇવ',
     'How we select': 'અમે કેવી રીતે પસંદ કરીએ છીએ',
+    'Featured employers': 'વિશિષ્ટ નિયોક્તાઓ',
   },
   kn: {
     'Create my free profile': 'ನನ್ನ ಉಚಿತ ಪ್ರೊಫೈಲ್ ರಚಿಸಿ',
@@ -118,6 +125,7 @@ export const additions: Record<Exclude<Locale, 'en'>, Record<string, string>> = 
     'based on {{finished}} people so far': 'ಇದುವರೆಗೆ {{finished}} ಜನರ ಆಧಾರದ ಮೇಲೆ',
     Live: 'ಲೈವ್',
     'How we select': 'ನಾವು ಹೇಗೆ ಆಯ್ಕೆ ಮಾಡುತ್ತೇವೆ',
+    'Featured employers': 'ವಿಶಿಷ್ಟ ಉದ್ಯೋಗದಾತರು',
   },
   or: {
     'Create my free profile': 'ମୋର ମାଗଣା ପ୍ରୋଫାଇଲ୍ ତିଆରି କରନ୍ତୁ',
@@ -132,6 +140,7 @@ export const additions: Record<Exclude<Locale, 'en'>, Record<string, string>> = 
     'based on {{finished}} people so far': 'ଏପର୍ଯ୍ୟନ୍ତ {{finished}} ଜଣଙ୍କ ଆଧାରରେ',
     Live: 'ଲାଇଭ୍',
     'How we select': 'ଆମେ କିପରି ବାଛୁ',
+    'Featured employers': 'ବିଶେଷ ନିଯୁକ୍ତିଦାତା',
   },
   ml: {
     'Create my free profile': 'എന്റെ സൗജന്യ പ്രൊഫൈൽ ഉണ്ടാക്കുക',
@@ -146,6 +155,7 @@ export const additions: Record<Exclude<Locale, 'en'>, Record<string, string>> = 
     'based on {{finished}} people so far': 'ഇതുവരെ {{finished}} പേരെ അടിസ്ഥാനമാക്കി',
     Live: 'ലൈവ്',
     'How we select': 'ഞങ്ങൾ എങ്ങനെ തിരഞ്ഞെടുക്കുന്നു',
+    'Featured employers': 'തിരഞ്ഞെടുത്ത തൊഴിൽദാതാക്കൾ',
   },
   pa: {
     'Create my free profile': 'ਮੇਰੀ ਮੁਫ਼ਤ ਪ੍ਰੋਫਾਈਲ ਬਣਾਓ',
@@ -160,6 +170,7 @@ export const additions: Record<Exclude<Locale, 'en'>, Record<string, string>> = 
     'based on {{finished}} people so far': 'ਹੁਣ ਤੱਕ {{finished}} ਲੋਕਾਂ ਦੇ ਅਧਾਰ ’ਤੇ',
     Live: 'ਲਾਈਵ',
     'How we select': 'ਅਸੀਂ ਕਿਵੇਂ ਚੁਣਦੇ ਹਾਂ',
+    'Featured employers': 'ਖਾਸ ਮਾਲਕ',
   },
   as: {
     'Create my free profile': 'মোৰ বিনামূলীয়া প্ৰফাইল তৈয়াৰ কৰক',
@@ -174,6 +185,7 @@ export const additions: Record<Exclude<Locale, 'en'>, Record<string, string>> = 
     'based on {{finished}} people so far': 'এতিয়ালৈকে {{finished}} জনৰ ভিত্তিত',
     Live: 'লাইভ',
     'How we select': 'আমি কেনেকৈ বাছনি কৰোঁ',
+    'Featured employers': 'বিশেষ নিয়োগকৰ্তা',
   },
   ar: {
     'Create my free profile': 'أنشئ ملفي المجاني',
@@ -188,5 +200,6 @@ export const additions: Record<Exclude<Locale, 'en'>, Record<string, string>> = 
     'based on {{finished}} people so far': 'بناءً على {{finished}} شخصًا حتى الآن',
     Live: 'مباشر',
     'How we select': 'كيف نختار',
+    'Featured employers': 'أصحاب العمل المميزون',
   },
 };

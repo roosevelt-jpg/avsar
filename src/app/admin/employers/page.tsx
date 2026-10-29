@@ -1,6 +1,7 @@
 import { Mono } from '@/components/ui/Mono';
 import { AdminShell, AdminHeading, AdminEmpty } from '@/components/employer/AdminShell';
 import { AddEmployer } from '@/components/employer/AddEmployer';
+import { EmployerLogoField } from '@/components/employer/EmployerLogoField';
 import { requirePermission } from '@/lib/rbac/server';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 
@@ -17,10 +18,18 @@ export default async function EmployersPage() {
   await requirePermission('employers.manage', '/admin/employers');
 
   const admin = getAdminSupabase();
-  const { data } = (await admin
+  const listed = await admin
     ?.from('employers')
-    .select('id, name, country, vat_number, vetted_at, created_at, employer_users (auth_user_id)')
-    .order('created_at', { ascending: false })) ?? { data: null };
+    .select('id, name, country, vat_number, vetted_at, created_at, logo_path, employer_users (auth_user_id)')
+    .order('created_at', { ascending: false });
+  const data = listed?.error
+    ? (
+        await admin
+          ?.from('employers')
+          .select('id, name, country, vat_number, vetted_at, created_at, employer_users (auth_user_id)')
+          .order('created_at', { ascending: false })
+      )?.data
+    : listed?.data;
 
   const rows = (data ?? []) as unknown as {
     id: string;
@@ -28,6 +37,7 @@ export default async function EmployersPage() {
     country: string;
     vat_number: string | null;
     vetted_at: string | null;
+    logo_path?: string | null;
     employer_users: { auth_user_id: string }[];
   }[];
 
@@ -35,7 +45,7 @@ export default async function EmployersPage() {
     <AdminShell current="/admin/employers" isStaff suffix="employers">
       <AdminHeading
         title="Employers"
-        lead="An employer with no contact cannot sign in, so adding one creates the company and its first login together."
+        lead="An employer with no contact cannot sign in, so adding one creates the company and its first login together. Every employer is on the homepage row. A logo replaces the name there."
       />
 
       <AddEmployer />
@@ -50,6 +60,7 @@ export default async function EmployersPage() {
               <th className="py-2.5 pr-4 font-normal"><Mono className="text-muted">COUNTRY</Mono></th>
               <th className="py-2.5 pr-4 font-normal"><Mono className="text-muted">VAT</Mono></th>
               <th className="py-2.5 pr-4 font-normal"><Mono className="text-muted">CONTACTS</Mono></th>
+              <th className="py-2.5 pr-4 font-normal"><Mono className="text-muted">LOGO</Mono></th>
               <th className="py-2.5 pr-4 font-normal"><Mono className="text-muted">VETTED</Mono></th>
             </tr>
           </thead>
@@ -65,6 +76,9 @@ export default async function EmployersPage() {
                   ) : (
                     <span className="text-ink-2">{row.employer_users.length}</span>
                   )}
+                </td>
+                <td className="py-3 pr-4">
+                  <EmployerLogoField employerId={row.id} hasLogo={Boolean(row.logo_path)} />
                 </td>
                 <td className="py-3 pr-4">
                   <Mono className="text-muted">

@@ -26,7 +26,7 @@ export function HeroRouteMap() {
     <div aria-hidden className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden px-[2vw]">
       <svg
         viewBox="40 0 1180 460"
-        className="h-auto w-full max-w-[1600px] text-[#16324f]"
+        className="h-auto w-full max-w-[1600px] text-white"
         fill="none"
         stroke="currentColor"
         strokeLinecap="round"

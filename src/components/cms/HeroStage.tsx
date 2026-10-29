@@ -88,7 +88,7 @@ export function HeroStage({ slides, lead, children }: { slides: HeroSlide[]; lea
                   </div>
                 );
               })}
-              <span aria-hidden className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-[#16324f]/15" />
+              <span aria-hidden className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white" />
               {current.caption ? (
                 <p className="absolute inset-x-5 bottom-5 m-0 text-[15px] font-semibold text-white">{current.caption}</p>
               ) : null}
@@ -107,7 +107,7 @@ export function HeroStage({ slides, lead, children }: { slides: HeroSlide[]; lea
                       role="tab"
                       aria-selected={slideIndex === index}
                       aria-label={slide.caption || `Slide ${slideIndex + 1}`}
-                      className={`h-1.5 rounded-full transition-all duration-300 ${slideIndex === index ? 'w-8 bg-[linear-gradient(90deg,#16324f,#3c8fd4,#7eb6e8)]' : 'w-2.5 bg-line-strong'}`}
+                      className={`h-1.5 rounded-full transition-all duration-300 ${slideIndex === index ? 'w-8 bg-[#c96a4b]' : 'w-2.5 bg-white/40'}`}
                       onClick={() => setIndex(slideIndex)}
                     />
                   ))}

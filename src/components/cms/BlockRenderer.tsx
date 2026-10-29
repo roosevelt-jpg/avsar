@@ -15,7 +15,7 @@ import {
   StepsBlock,
   TrustBarBlock,
 } from './blocks/Content';
-import { FeaturedJobsBlock, JobCategoriesBlock } from './blocks/Jobs';
+import { FeaturedEmployersBlock, FeaturedJobsBlock, JobCategoriesBlock } from './blocks/Jobs';
 import { LiveFunnelBlock } from './blocks/LiveFunnel';
 import { CandidateStoriesBlock, GalleryBlock, TestimonialsBlock, VideoBlock } from './blocks/Media';
 import { ContactCardsBlock, FaqBlock } from './blocks/Faq';
@@ -56,6 +56,8 @@ export function BlockRenderer({ blocks, locale, settings }: { blocks: Block[]; l
             return <FeaturedJobsBlock key={block.id} {...props} />;
           case 'job_categories':
             return <JobCategoriesBlock key={block.id} {...props} />;
+          case 'featured_employers':
+            return <FeaturedEmployersBlock key={block.id} {...props} />;
           case 'video':
             return <VideoBlock key={block.id} {...props} />;
           case 'gallery':
