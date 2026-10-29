@@ -107,7 +107,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
             <details className={`group relative ${narrow}`}>
               <summary
                 aria-label="Menu"
-                className="grid size-10 cursor-pointer list-none place-items-center rounded-[4px] border border-white bg-transparent text-[#c96a4b] [&::-webkit-details-marker]:hidden"
+                className="grid size-10 cursor-pointer list-none place-items-center rounded-[4px] border border-[#c96a4b]/50 bg-transparent text-[#c96a4b] [&::-webkit-details-marker]:hidden"
               >
                 <svg viewBox="0 0 24 24" className="size-5 group-open:hidden" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
                   <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
@@ -116,13 +116,13 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
                   <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
                 </svg>
               </summary>
-              <div className="absolute end-0 top-12 w-[min(86vw,320px)] rounded-[12px] border border-white bg-[#0a088f] p-3 text-[#c96a4b] shadow-[0_24px_60px_-24px_rgba(8,20,36,0.7)]">
+              <div className="absolute end-0 top-12 w-[min(86vw,320px)] rounded-[12px] border border-[#c96a4b]/40 bg-[#16324f] p-3 text-[#c96a4b] shadow-[0_24px_60px_-24px_rgba(8,20,36,0.7)]">
                 <nav aria-label="Mobile" className="flex flex-col">
                   {navigation.items.map((item) => (
                     <Link
                       key={item.href}
                       href={localHref(locale, item.href)}
-                      className="t-colors rounded-[12px] px-3 py-3 text-[16px] text-[#c96a4b] no-underline hover:bg-white/10 hover:text-white"
+                      className="t-colors rounded-[12px] px-3 py-3 text-[16px] text-white no-underline hover:bg-white/10"
                     >
                       {navLabel(item, locale)}
                     </Link>

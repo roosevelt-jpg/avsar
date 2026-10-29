@@ -36,7 +36,7 @@ const SOCIAL_ICONS: Record<string, ReactNode> = {
 
 type FooterLink = { href: string; label: string; external?: boolean };
 
-const LINK = 't-colors text-[14px] font-bold uppercase leading-[1.35] text-[#c96a4b] no-underline hover:text-white hover:underline';
+const LINK = 't-colors text-[14px] font-bold uppercase leading-[1.35] text-white no-underline hover:underline';
 
 function FooterColumn({ title, links }: { title: string; links: FooterLink[] }) {
   return (
@@ -65,7 +65,7 @@ function FooterColumn({ title, links }: { title: string; links: FooterLink[] }) 
 
 /** The outlined action on the dark band. Same shape as a recruitment-site footer button. */
 function FooterAction({ href, label, external = false }: { href: string; label: string; external?: boolean }) {
-  const className = 'btn-gradient t-colors inline-flex items-center gap-2 rounded-full px-6 py-2 text-[14px] font-bold uppercase tracking-[0.04em] text-white no-underline';
+  const className = 't-colors inline-flex items-center gap-2 rounded-full border border-[#c96a4b] bg-[#16324f] px-6 py-2 text-[14px] font-bold uppercase tracking-[0.04em] text-white no-underline hover:bg-[#1c4064]';
   if (external) {
     return (
       <a href={href} target="_blank" rel="noopener noreferrer" className={className}>
@@ -143,7 +143,7 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
     /* Navy stays the brand colour. The arrangement follows a recruitment
        footer: three prompts, then the logo beside the link columns, then a
        thin legal line. Every link is one this site already had. */
-    <footer className="border-t border-[#c96a4b] bg-[#0a088f] text-white">
+    <footer className="bg-[#16324f] text-white">
       <div className="border-b border-white/15">
         <div className="mx-auto grid w-full max-w-[1200px] gap-12 px-[clamp(20px,4cqi,32px)] py-16 md:grid-cols-3">
           <div>

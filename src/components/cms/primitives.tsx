@@ -72,12 +72,13 @@ export function SectionHeading({
 }
 
 const BUTTON = {
-  /* Every action on the shopfront is the same orange button with white type. */
+  /* The filled action is the recruitment blue. "dark" is the quieter
+     second button, for when two actions sit side by side. */
   primary: 'btn-gradient',
-  dark: 'btn-gradient text-white',
-  light: 'btn-gradient text-white',
-  ghostDark: 'btn-gradient text-white',
-  white: 'btn-gradient text-white',
+  dark: 'border border-[#c96a4b] bg-[#16324f] text-white hover:bg-[#1c4064]',
+  light: 'bg-surface text-ink border-line-strong hover:border-ink',
+  ghostDark: 'bg-transparent text-on-night border-dark-line hover:border-on-night',
+  white: 'bg-on-night text-night border-transparent hover:bg-white',
 } as const;
 
 export function CmsButton({
@@ -169,12 +170,13 @@ export function CmsVideo({
  * section has one obvious thing to press, and the alternatives sit beside it
  * quietly.
  */
-export function CmsTextLink({ href, label, locale }: { href: string; label: string; locale: Locale; dark?: boolean }) {
+export function CmsTextLink({ href, label, locale, dark = false }: { href: string; label: string; locale: Locale; dark?: boolean }) {
   if (!href || !label) return null;
   const resolved = localHref(locale, href);
   const external = /^https?:/i.test(resolved);
-  const className =
-    't-colors inline-flex items-center gap-1.5 text-[15px] font-medium text-[#c96a4b] underline decoration-1 decoration-[#c96a4b] underline-offset-[5px] hover:text-white hover:decoration-white';
+  const className = `t-colors inline-flex items-center gap-1.5 text-[15px] font-medium underline decoration-1 underline-offset-[5px] ${
+    dark ? 'text-on-night decoration-on-night/40 hover:decoration-on-night' : 'text-ink decoration-line-strong hover:text-accent hover:decoration-accent'
+  }`;
   const content = (
     <>
       {label}

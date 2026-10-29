@@ -58,12 +58,12 @@ export function EmployerStrip({
       <li
         key={`${copy}-${employer.id}`}
         aria-hidden={copy === 1 ? true : undefined}
-        className="flex h-[76px] w-[168px] shrink-0 items-center justify-center rounded-[8px] border border-white bg-white px-4"
+        className="flex h-[76px] w-[168px] shrink-0 items-center justify-center rounded-[8px] border border-[#16324f]/10 bg-white px-4 shadow-[0_1px_2px_rgba(22,50,79,0.06)]"
       >
         {employer.logoUrl ? (
           <Image src={employer.logoUrl} alt={copy === 0 ? employer.name : ''} width={140} height={40} unoptimized className="max-h-10 w-auto object-contain" />
         ) : (
-          <span className="line-clamp-2 text-center text-[14px] font-semibold leading-tight text-[#0a088f]">{employer.name}</span>
+          <span className="line-clamp-2 text-center text-[14px] font-semibold leading-tight text-[#16324f]">{employer.name}</span>
         )}
       </li>
     ));
@@ -79,7 +79,7 @@ export function EmployerStrip({
       <button
         type="button"
         aria-label={previousLabel}
-        className="btn-gradient absolute start-0 top-1/2 grid size-10 -translate-y-1/2 cursor-pointer place-items-center rounded-full text-white"
+        className="absolute start-0 top-1/2 grid size-10 -translate-y-1/2 cursor-pointer place-items-center rounded-full border border-[#c96a4b] bg-white text-[#16324f] shadow-[0_1px_2px_rgba(22,50,79,0.08)] hover:bg-[#16324f] hover:text-white"
         onClick={() => nudge(-1)}
       >
         <svg viewBox="0 0 24 24" className="size-5 rtl:-scale-x-100" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden>
@@ -89,7 +89,7 @@ export function EmployerStrip({
       <button
         type="button"
         aria-label={nextLabel}
-        className="btn-gradient absolute end-0 top-1/2 grid size-10 -translate-y-1/2 cursor-pointer place-items-center rounded-full text-white"
+        className="absolute end-0 top-1/2 grid size-10 -translate-y-1/2 cursor-pointer place-items-center rounded-full border border-[#c96a4b] bg-white text-[#16324f] shadow-[0_1px_2px_rgba(22,50,79,0.08)] hover:bg-[#16324f] hover:text-white"
         onClick={() => nudge(1)}
       >
         <svg viewBox="0 0 24 24" className="size-5 rtl:-scale-x-100" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden>
