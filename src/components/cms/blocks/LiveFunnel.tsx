@@ -17,8 +17,8 @@ export async function LiveFunnelBlock({ data, locale }: { data: BlockData; local
   const note = str(data, 'note');
 
   return (
-    <Section tone="surface">
-      <div className="grid grid-cols-1 gap-[clamp(28px,4cqi,56px)] lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+    <Section tone="surface" className="!py-[clamp(28px,4cqi,48px)]">
+      <div className="grid grid-cols-1 items-start gap-[clamp(20px,3cqi,40px)] lg:grid-cols-2">
         <div>
           <SectionHeading eyebrow={str(data, 'eyebrow')} title={str(data, 'title')} intro={str(data, 'intro')} />
           {note ? <p className="-mt-2 mb-0 max-w-[56ch] text-[15px] leading-[1.6] text-ink-2">{note}</p> : null}
