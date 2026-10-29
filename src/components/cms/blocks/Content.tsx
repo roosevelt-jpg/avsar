@@ -253,11 +253,11 @@ function splitFrames(data: BlockData): { src: string; alt: string }[] {
 }
 
 /**
- * Heading, the CMS paragraphs, then one tick per bullet, with the photograph
- * on the side chosen in the console. The ticks sit in pale squares so a long
- * list reads as a checklist. The photograph stays flat: the tilt used on the
- * other cards would fight this quieter two-column layout. A white band keeps
- * the route map from showing through the gap.
+ * Heading and the CMS paragraphs sit beside the photograph, in one row, so a
+ * long checklist does not hang below the picture on one side. The ticks are
+ * their own row under both columns. The photograph stays flat: the tilt used
+ * on the other cards would fight this quieter layout. A white band keeps the
+ * route map from showing through the gap.
  */
 export function SplitBlock({ data, locale }: Props) {
   const frames = splitFrames(data);
@@ -268,33 +268,16 @@ export function SplitBlock({ data, locale }: Props) {
   const title = str(data, 'title');
   const body = str(data, 'body');
   return (
-    <Section className="!bg-white">
-      <div className={`grid grid-cols-1 items-start gap-[clamp(28px,5cqi,72px)] ${frames.length ? 'lg:grid-cols-2' : ''}`}>
+    <Section className="!bg-white !py-[clamp(28px,4cqi,48px)]">
+      <div className={`grid grid-cols-1 items-center gap-[clamp(20px,3cqi,40px)] ${frames.length ? 'lg:grid-cols-2' : ''}`}>
         <div className={left ? 'lg:order-2' : ''}>
           {eyebrow ? (
-            <p className="m-0 mb-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#c96a4b]">{eyebrow}</p>
+            <p className="m-0 mb-2 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#c96a4b]">{eyebrow}</p>
           ) : null}
           {title ? (
-            <h2 className="m-0 text-balance text-[clamp(32px,4.2cqi,52px)] font-semibold leading-[1.05] tracking-[-0.03em] text-[#0a088f]">{title}</h2>
+            <h2 className="m-0 text-balance text-[clamp(28px,3.4cqi,44px)] font-semibold leading-[1.05] tracking-[-0.03em] text-[#0a088f]">{title}</h2>
           ) : null}
-          {body ? <Markdown text={body} locale={locale} className="mt-5 text-[16px] leading-[1.6] text-[#3d5168]" /> : null}
-          {bullets.length > 0 && (
-            <ul className="m-0 mt-7 flex list-none flex-col gap-4 p-0">
-              {bullets.map((bullet) => (
-                <li key={bullet} className="flex items-start gap-3.5 text-[16px] leading-[1.45] text-[#0a088f]">
-                  <span className="grid size-9 shrink-0 place-items-center rounded-[8px] border border-[#0a088f]/10 bg-white text-[#c96a4b] shadow-[0_1px_2px_rgba(10,8,143,0.08)]">
-                    <Icon name="check" className="size-[18px]" />
-                  </span>
-                  <span className="pt-1.5">{bullet}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-          {cta && (
-            <div className="mt-8">
-              <CmsTextLink href={cta.href} label={cta.label} locale={locale} />
-            </div>
-          )}
+          {body ? <Markdown text={body} locale={locale} className="mt-3 !gap-2.5 text-[15px] !leading-[1.45] text-[#3d5168]" /> : null}
         </div>
         {frames.length ? (
           <div className={left ? 'lg:order-1' : ''}>
@@ -304,6 +287,27 @@ export function SplitBlock({ data, locale }: Props) {
           </div>
         ) : null}
       </div>
+      {bullets.length > 0 || cta ? (
+        <div className="mt-6">
+          {bullets.length > 0 ? (
+            <ul className="m-0 grid list-none grid-cols-1 gap-x-8 gap-y-2.5 p-0 sm:grid-cols-2">
+              {bullets.map((bullet) => (
+                <li key={bullet} className="flex items-start gap-2.5 text-[15px] leading-[1.35] text-[#0a088f]">
+                  <span className="grid size-7 shrink-0 place-items-center rounded-[8px] border border-[#0a088f]/10 bg-white text-[#c96a4b] shadow-[0_1px_2px_rgba(10,8,143,0.08)]">
+                    <Icon name="check" className="size-4" />
+                  </span>
+                  <span className="pt-1">{bullet}</span>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          {cta ? (
+            <div className="mt-4">
+              <CmsTextLink href={cta.href} label={cta.label} locale={locale} />
+            </div>
+          ) : null}
+        </div>
+      ) : null}
     </Section>
   );
 }
