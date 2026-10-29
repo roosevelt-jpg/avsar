@@ -448,16 +448,20 @@ textarea {
 /* The four choices sit on one line. The text column is too narrow for them,
    so on a wide screen the row runs into the space beside it. */
 .intent-row {
-  flex-wrap: nowrap;
-  overflow-x: auto;
+  flex-wrap: wrap;
+  overflow: visible;
 }
 .intent-row a {
-  white-space: nowrap;
+  white-space: normal;
 }
 @media (min-width: 1024px) {
   .intent-row {
+    flex-wrap: nowrap;
     width: calc(100% * 2 / 1.05 + clamp(28px, 4cqi, 64px));
     overflow: visible;
+  }
+  .intent-row a {
+    white-space: nowrap;
   }
 }
 .hero-progress-track {
@@ -829,6 +833,112 @@ body {
   :root:not(.light) .illustration {
     mix-blend-mode: normal;
     border-radius: 20px;
+  }
+}
+
+/* A raised lip: light along the top edge, a darker line along the bottom,
+   and a short shadow. Cards and buttons share it so the border reads as a
+   clean bevel rather than a flat stroke. Photographs keep their own shadow. */
+.avsar-root :is(div, article, section, li, ul, aside, form, a, button, summary)[class*="rounded-"][class*="border"]:not(
+  .photo-card,
+  .photo-card-alt,
+  .blue-card,
+  .anamorphic-frame,
+  .anamorphic-mini,
+  .interactive-card,
+  .shop-header,
+  .announce-bar
+) {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    inset 0 -1px 0 rgba(10, 8, 143, 0.16),
+    0 1px 0 rgba(255, 255, 255, 0.65),
+    0 10px 22px -16px rgba(10, 8, 143, 0.42);
+}
+:root.dark .avsar-root :is(div, article, section, li, ul, aside, form, a, button, summary)[class*="rounded-"][class*="border"]:not(
+  .photo-card,
+  .photo-card-alt,
+  .blue-card,
+  .anamorphic-frame,
+  .anamorphic-mini,
+  .interactive-card,
+  .market,
+  .market *
+) {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.45),
+    0 10px 22px -16px rgba(0, 0, 0, 0.65);
+}
+/* The shopfront stays on white even when the console theme is dark. */
+.market :is(div, article, section, li, ul, aside, form, a, button, summary)[class*="rounded-"][class*="border"]:not(
+  .photo-card,
+  .photo-card-alt,
+  .blue-card,
+  .anamorphic-frame,
+  .anamorphic-mini,
+  .interactive-card
+) {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    inset 0 -1px 0 rgba(10, 8, 143, 0.14),
+    0 1px 0 rgba(255, 255, 255, 0.7),
+    0 10px 22px -16px rgba(10, 8, 143, 0.4);
+}
+
+/* Filled actions press in: a highlight on the top face and a darker foot. */
+.avsar-root :is(button, a):is(.bg-ink, .btn-gradient, [class*="bg-[#0a088f]"]) {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.34),
+    inset 0 -2px 0 rgba(4, 3, 70, 0.48),
+    0 1px 0 rgba(255, 255, 255, 0.45),
+    0 8px 16px -10px rgba(10, 8, 143, 0.55);
+}
+.avsar-root :is(button, a):is(.bg-ink, .btn-gradient, [class*="bg-[#0a088f]"]):hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    inset 0 -1px 0 rgba(4, 3, 70, 0.4),
+    0 4px 10px -8px rgba(10, 8, 143, 0.5);
+}
+.avsar-root :is(button, a):is(.bg-ink, .btn-gradient, [class*="bg-[#0a088f]"]):active {
+  box-shadow:
+    inset 0 2px 0 rgba(4, 3, 70, 0.4),
+    0 1px 0 rgba(255, 255, 255, 0.3);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .avsar-root :is(button, a):is(.bg-ink, .btn-gradient, [class*="bg-[#0a088f]"]):active {
+    transform: translateY(1px);
+  }
+}
+
+/* Phones. A column that demands 260px or more cannot sit beside another
+   column on a 360px screen, so those grids become one column. Wide tables
+   scroll inside the page instead of widening it. */
+img,
+video,
+svg {
+  max-width: 100%;
+}
+.avsar-root :is(p, li, h1, h2, h3, td, th, label) {
+  overflow-wrap: break-word;
+}
+.avsar-root input,
+.avsar-root select,
+.avsar-root textarea {
+  max-width: 100%;
+}
+@media (max-width: 640px) {
+  .avsar-root [class*="minmax(320px"],
+  .avsar-root [class*="minmax(280px"],
+  .avsar-root [class*="minmax(260px"] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .shop-header > div {
+    gap: 8px;
+  }
+  dialog.wa-panel[open] {
+    inset-inline: 12px;
+    width: auto;
   }
 }
 
