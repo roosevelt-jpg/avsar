@@ -308,7 +308,36 @@ textarea {
   --color-gold: #c9a54a;
   --color-gold-deep: #b8923a;
   --color-gold-soft: rgba(201, 165, 74, 0.16);
+  /* Soft ivory for section bands under navy heroes (mockup shopfront). */
+  --color-ivory: #f7f4ee;
+  --color-ivory-deep: #efe8dc;
   --font-display: var(--font-dm-serif), "Times New Roman", serif;
+}
+
+.market .bg-ivory {
+  background-color: var(--color-ivory);
+}
+.market .bg-ivory-deep {
+  background-color: var(--color-ivory-deep);
+}
+
+/* Gold dash + uppercase label used above marketing headlines. */
+.market .eyebrow-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+}
+.market .eyebrow-gold::before {
+  content: '';
+  width: 1.5rem;
+  height: 1px;
+  background: var(--color-gold);
 }
 .market :is(h1, h2) {
   font-family: var(--font-sans);

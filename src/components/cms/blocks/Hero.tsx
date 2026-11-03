@@ -115,9 +115,11 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
       badge={badgeLabel ? { label: badgeLabel, href: badgeHref ? localHref(locale, badgeHref) : undefined } : null}
       lead={
         str(data, 'eyebrow') ? (
-          <p className={`m-0 text-[12px] font-semibold uppercase tracking-[0.16em] ${brand ? 'text-[var(--color-gold)]' : 'text-[#c96a4b]'}`}>
-            {str(data, 'eyebrow')}
-          </p>
+          brand ? (
+            <p className="eyebrow-gold m-0">{str(data, 'eyebrow')}</p>
+          ) : (
+            <p className="m-0 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#c96a4b]">{str(data, 'eyebrow')}</p>
+          )
         ) : null
       }
     >

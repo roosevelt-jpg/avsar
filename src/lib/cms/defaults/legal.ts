@@ -303,9 +303,30 @@ export const CONTACT: DefaultPage = {
   },
   blocks: makeBlocks('contact', [
     [
+      'hero',
+      {
+        eyebrow: 'Contact',
+        title: 'Talk to the team about Portugal careers',
+        accentWord: 'Portugal',
+        subtitle:
+          'Questions about a job, an application or the visa reach a person on our team. We answer within two working days. Office details below come from Settings — we do not invent phone numbers for the page.',
+        primaryCta: { label: 'Create free profile', href: '/signup' },
+        secondaryCta: { label: 'See open jobs', href: '/jobs' },
+        badgeLabel: 'India → Portugal',
+        badgeHref: '/contact',
+        highlights: ['Candidates and families', 'Employers hiring in Portugal', 'Report anyone asking for money'],
+        mediaType: 'image',
+        mediaSrc: '/photos/brand/employer-handshake.jpg',
+        mediaPoster: '',
+        mediaAlt: 'Conversation about working in Portugal',
+        slides: [{ src: '/photos/brand/employer-handshake.jpg', alt: 'Team discussion', caption: '' }],
+        stats: [],
+      },
+    ],
+    [
       'contact_form',
       {
-        title: 'Contact us',
+        title: 'Send a message',
         intro:
           'Questions about a job, an application or the visa, and reports of anyone asking you for money, all reach the same team. A person reads every message.',
       },

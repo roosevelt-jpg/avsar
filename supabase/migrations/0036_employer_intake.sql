@@ -55,6 +55,6 @@ drop policy if exists employer_intake_staff_read on employer_intake_submissions;
 create policy employer_intake_staff_read on employer_intake_submissions
   for select to authenticated
   using (
-    has_permission((select auth.uid()), 'leads.manage')
-    or has_permission((select auth.uid()), 'employers.manage')
+    (select has_permission('leads.manage'))
+    or (select has_permission('employers.manage'))
   );

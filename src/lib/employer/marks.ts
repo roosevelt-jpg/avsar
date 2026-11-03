@@ -30,6 +30,8 @@ export const listPublicEmployers = cache(async (): Promise<EmployerMark[]> => {
     const id = typeof row.id === 'string' ? row.id : '';
     const name = typeof row.name === 'string' ? row.name.trim() : '';
     if (!id || !name) return [];
+    /* Same convention as listPublishedJobs: local seed companies stay off the strip. */
+    if (/local\s*demo/i.test(name)) return [];
     const path = typeof row.logo_path === 'string' ? row.logo_path : '';
     const logoUrl = path && SUPABASE_URL ? `${SUPABASE_URL}/storage/v1/object/public/employer-logos/${path}` : null;
     return [{ id, name, logoUrl }];

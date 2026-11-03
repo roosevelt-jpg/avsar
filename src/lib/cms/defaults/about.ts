@@ -13,17 +13,32 @@ export const ABOUT: DefaultPage = {
     [
       'hero',
       {
-        eyebrow: 'About {{brand}}',
-        title: 'We connect skilled people in India with employers in Portugal who need them.',
+        eyebrow: 'About us',
+        title: 'Connecting global talent with opportunities in Portugal',
+        accentWord: 'Portugal',
         subtitle:
-          'Part of the Smith & Adams group. We recruit fairly, tell candidates the truth about their chances, and stay with them until they are settled at work.',
-        primaryCta: { label: 'See open jobs', href: '/jobs' },
+          'Part of the Smith & Adams group. We recruit skilled people in India for verified employers in Portugal — fairly, with clear steps, and without placement fees for candidates.',
+        primaryCta: { label: 'Find job opportunities', href: '/jobs' },
         secondaryCta: { label: 'For employers', href: '/employers' },
-        highlights: [],
+        badgeLabel: 'Smith & Adams group',
+        badgeHref: '/about',
+        highlights: ['Verified employers', 'Legal contracts', 'Visa support after offer', 'Honest selection'],
         mediaType: 'image',
-        mediaSrc: '/lisbon-rooftops-1200.jpg',
+        mediaSrc: '/photos/brand/hero-hospitality.jpg',
         mediaPoster: '',
-        mediaAlt: 'Lisbon',
+        mediaAlt: 'Lisbon and hospitality work in Portugal',
+        slides: [
+          {
+            src: '/photos/brand/hero-hospitality.jpg',
+            alt: 'Hospitality professional with Lisbon rooftops',
+            caption: '',
+          },
+          {
+            src: '/photos/brand/journey-tram.jpg',
+            alt: 'Yellow tram on a Lisbon street',
+            caption: '',
+          },
+        ],
         stats: [],
       },
     ],
@@ -45,6 +60,21 @@ export const ABOUT: DefaultPage = {
       },
     ],
     [
+      'features',
+      {
+        eyebrow: 'How we work',
+        title: 'Core values we hold ourselves to',
+        intro: 'Plain commitments — not marketing scores.',
+        columns: '4',
+        items: [
+          { icon: 'users', title: 'People first', body: 'Candidates and employers sit at the centre of every decision.' },
+          { icon: 'shield', title: 'Integrity', body: 'We say what a role pays, what it costs, and what we cannot promise.' },
+          { icon: 'star', title: 'Excellence', body: 'Assessed candidates, confirmed vacancies, written contracts.' },
+          { icon: 'heart', title: 'Partnership', body: 'Long-term relationships with employers who hire fairly.' },
+        ],
+      },
+    ],
+    [
       'split',
       {
         eyebrow: 'Employers',
@@ -53,9 +83,18 @@ export const ABOUT: DefaultPage = {
           'Hotels and resorts, restaurant groups, cleaning and facilities companies, construction and engineering contractors, logistics firms and technology companies across Portugal. They come to us because our candidates arrive assessed, prepared and supported.',
         bullets: [],
         cta: { label: 'Hiring? Talk to us', href: '/employers' },
-        image: '/kitchen-work-1400.jpg',
-        imageAlt: 'Kitchen team at work',
+        image: '/photos/brand/employer-handshake.jpg',
+        imageAlt: 'Employer and candidate handshake',
         imageSide: 'right',
+      },
+    ],
+    [
+      'cta',
+      {
+        title: 'Why work with S&A Recruitment?',
+        body: 'Specialised India → Portugal hiring, verified employer network, end-to-end support after selection, and compliance-led visa preparation with independent lawyers.',
+        primary: { label: 'Create free profile', href: '/signup' },
+        secondary: { label: 'Contact us', href: '/contact' },
       },
     ],
     ['contact_cards', { eyebrow: 'Contact', title: 'Talk to us', intro: '' }],

@@ -221,7 +221,7 @@ export function SignupFlow({
         </p>
         <Link
           href={localePath(locale, '/assessment')}
-          className="t-colors inline-block rounded-[12px] bg-[#0a088f] px-5 py-3 text-[15px] font-medium text-white no-underline hover:bg-[#22209a]"
+          className="btn-gradient t-colors inline-block px-5 py-3 text-[15px] font-semibold no-underline"
         >
           {s.successCta} →
         </Link>
@@ -476,7 +476,7 @@ export function SignupFlow({
           type="button"
           onClick={next}
           disabled={busy || (step === 1 && !consent)}
-          className="t-colors cursor-pointer rounded-[12px] border-0 bg-[#0a088f] px-5 py-3 text-[15px] font-medium text-white hover:bg-[#22209a] disabled:cursor-not-allowed disabled:bg-[#0a088f] disabled:text-white disabled:opacity-100"
+          className="btn-gradient t-colors cursor-pointer px-5 py-3 text-[15px] font-semibold disabled:cursor-not-allowed disabled:opacity-100"
         >
           {step === 1 ? s.startAssessment : s.continue}
         </button>

@@ -79,7 +79,13 @@ export async function listPublishedJobs(filters: JobFilters = {}): Promise<JobPa
     console.error('[jobs] list failed', error);
     return { jobs: [], total: 0, page, pageSize };
   }
-  return { jobs: (data ?? []).map((row) => jobFromRow(row as Record<string, unknown>)), total: count ?? 0, page, pageSize };
+  /* Local seed employers use “Local Demo” in the display name. Keep them out
+     of the public board so sandbox rows never look like live vacancies. */
+  const jobs = (data ?? [])
+    .map((row) => jobFromRow(row as Record<string, unknown>))
+    .filter((job) => !/local\s*demo/i.test(job.employerDisplay));
+  const hidden = (data?.length ?? 0) - jobs.length;
+  return { jobs, total: Math.max(0, (count ?? 0) - hidden), page, pageSize };
 }
 
 /**
@@ -117,7 +123,10 @@ export async function getPublishedJob(slug: string): Promise<Job | null> {
     error: null,
   };
   if (error) console.error('[jobs] get failed', error);
-  return data ? jobFromRow(data as Record<string, unknown>) : null;
+  if (!data) return null;
+  const job = jobFromRow(data as Record<string, unknown>);
+  if (/local\s*demo/i.test(job.employerDisplay)) return null;
+  return job;
 }
 
 export async function listFeaturedJobs(limit = 6): Promise<Job[]> {
