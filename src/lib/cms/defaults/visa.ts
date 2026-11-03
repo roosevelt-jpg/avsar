@@ -1,3 +1,4 @@
+import { BRAND_SLIDES, INTRO_FILM, slidesWithCaptions } from '@/lib/cms/brand-media';
 import { makeBlocks, type DefaultPage } from './make';
 
 export const VISA: DefaultPage = {
@@ -23,19 +24,18 @@ export const VISA: DefaultPage = {
         secondaryCta: { label: 'Ask about your case', href: 'https://wa.me/{{whatsapp_digits}}' },
         badgeLabel: 'After a successful offer',
         badgeHref: '/visa-and-relocation',
+        filmUrl: INTRO_FILM.url,
+        filmLabel: INTRO_FILM.label,
         highlights: [
           'Visa fee, police certificate and flight covered once selected',
           'Documents checked by lawyers before submission',
           'Housing, meals and help on arrival',
         ],
         mediaType: 'image',
-        mediaSrc: '/photos/brand/journey-tram.jpg',
-        mediaPoster: '',
-        mediaAlt: 'Lisbon tram — arrival in Portugal',
-        slides: [
-          { src: '/photos/brand/journey-tram.jpg', alt: 'Lisbon tram', caption: '' },
-          { src: '/photos/brand/hero-workers.jpg', alt: 'Professionals relocating to Portugal', caption: '' },
-        ],
+        mediaSrc: '/photos/selected/visa.jpg',
+        mediaPoster: INTRO_FILM.poster,
+        mediaAlt: 'Visa and travel documents',
+        slides: slidesWithCaptions(BRAND_SLIDES.visa),
         stats: [],
       },
     ],
@@ -54,14 +54,58 @@ export const VISA: DefaultPage = {
         eyebrow: 'The process',
         title: 'From signed contract to residence permit',
         intro: '',
+        layout: 'timeline',
+        sideImage: '',
+        sideImageAlt: '',
         items: [
-          { title: 'Signed contract or job offer', body: 'Your Portuguese employer issues the employment contract or a binding promise of employment. This is the basis of the work visa.', meta: 'Week 1', image: '' },
-          { title: 'Gather your documents', body: 'Passport valid well beyond your stay, photographs, police clearance certificate from Passport Seva, travel insurance, proof of accommodation and the employer documents. We send you the exact list and check each one.', meta: 'Weeks 1 to 4', image: '' },
-          { title: 'Visa centre appointment', body: 'You submit your application and give biometrics at the visa application centre for Portugal in India. We book the slot with you and tell you what to bring.', meta: 'Weeks 4 to 6', image: '' },
-          { title: 'Decision and visa', body: 'The embassy decides. Processing times vary; we track it and keep your dashboard updated. The visa lets you enter Portugal to start work.', meta: 'Usually 1 to 3 months', image: '' },
-          { title: 'Travel and arrival', body: 'We confirm your travel date with the employer, share arrival instructions and make sure someone expects you.', meta: 'Arrival', image: '' },
-          { title: 'Residence permit', body: 'After arrival you attend an appointment with AIMA, the Portuguese immigration agency, to receive your residence permit. We help you prepare and attend.', meta: 'First months', image: '' },
+          {
+            title: 'Signed contract or job offer',
+            body: 'Your Portuguese employer issues the employment contract or a binding promise of employment. This is the basis of the work visa.',
+            meta: 'Week 1',
+            image: '/photos/selected/contract.jpg',
+          },
+          {
+            title: 'Gather your documents',
+            body: 'Passport valid well beyond your stay, photographs, police clearance certificate from Passport Seva, travel insurance, proof of accommodation and the employer documents. We send you the exact list and check each one.',
+            meta: 'Weeks 1 to 4',
+            image: '/photos/documents.jpg',
+          },
+          {
+            title: 'Visa centre appointment',
+            body: 'You submit your application and give biometrics at the visa application centre for Portugal in India. We book the slot with you and tell you what to bring.',
+            meta: 'Weeks 4 to 6',
+            image: '/photos/selected/visa.jpg',
+          },
+          {
+            title: 'Decision and visa',
+            body: 'The embassy decides. Processing times vary; we track it and keep your dashboard updated. The visa lets you enter Portugal to start work.',
+            meta: 'Usually 1 to 3 months',
+            image: '/photos/steps/visa.jpg',
+          },
+          {
+            title: 'Travel and arrival',
+            body: 'We confirm your travel date with the employer, share arrival instructions and make sure someone expects you.',
+            meta: 'Arrival',
+            image: '/photos/selected/flight.jpg',
+          },
+          {
+            title: 'Residence permit',
+            body: 'After arrival you attend an appointment with AIMA, the Portuguese immigration agency, to receive your residence permit. We help you prepare and attend.',
+            meta: 'First months',
+            image: '/photos/steps/arrival.jpg',
+          },
         ],
+      },
+    ],
+    [
+      'video',
+      {
+        eyebrow: 'Watch',
+        title: 'How the move works, in under a minute',
+        intro: 'The same film as on signup. Admins can replace the file or paste a YouTube link in the CMS.',
+        src: INTRO_FILM.url,
+        poster: INTRO_FILM.poster,
+        caption: INTRO_FILM.label,
       },
     ],
     [
@@ -90,20 +134,31 @@ export const VISA: DefaultPage = {
         title: 'What candidates ask us most',
         intro: '',
         items: [
-          { question: 'Do I pay for the visa?', answer: 'No. We do not charge any visa processing or placement fee, and once you are selected we cover the official visa fee, the visa centre charge, the police clearance certificate, immigration fees and taxes, legal advice and your flight. Your recruiter tells you how each one is paid. Your passport is your own cost.' },
-          { question: 'What if my visa is refused?', answer: 'The lawyers review the reason with you and, where it is possible, prepare a new application. A refusal is why every document is checked before you submit. Only the authorities decide on a visa.' },
-          { question: 'Do I need a police clearance certificate?', answer: 'Yes. Apply for one through Passport Seva early, because it can take a few weeks. Once you are selected, we cover its cost.' },
-          { question: 'Can my family come with me?', answer: 'Not on the same visa. Once you hold a residence permit you can apply for family reunification. We will advise you on current rules when you are ready.' },
+          {
+            question: 'Who pays for the visa?',
+            answer:
+              'Once you are selected, we pay the visa fee, the police clearance certificate, immigration fees and taxes, and your flight. Before selection, getting a passport is your own cost.',
+          },
+          {
+            question: 'Can my family come with me?',
+            answer:
+              'Family reunification is possible once you hold a residence permit. Timing and documents depend on your case; your recruiter and the lawyers explain what applies to you.',
+          },
+          {
+            question: 'How long does the visa take?',
+            answer:
+              'Often one to three months after biometrics, sometimes longer. We track the file and update your dashboard. We do not invent a guaranteed date.',
+          },
         ],
       },
     ],
     [
       'cta',
       {
-        title: 'Questions about your own situation?',
-        body: 'Message our team on WhatsApp. A recruiter replies within one working day.',
-        primary: { label: 'WhatsApp us', href: 'https://wa.me/{{whatsapp_digits}}' },
-        secondary: { label: 'Browse jobs', href: '/jobs' },
+        title: 'Start with a free profile',
+        body: 'Visa work begins after a successful offer. Applying and the skills test are free.',
+        primary: { label: 'Create free profile', href: '/signup' },
+        secondary: { label: 'See open jobs', href: '/jobs' },
       },
     ],
   ]),

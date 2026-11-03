@@ -552,6 +552,8 @@ export const DEFAULT_SETTINGS: SiteSettings = {
       { src: '/photos/brand/hero-chef.jpg', alt: 'A chef in a Portuguese restaurant kitchen' },
       { src: '/photos/brand/hero-construction.jpg', alt: 'A construction worker on a Portuguese building site' },
       { src: '/photos/brand/hero-hospitality.jpg', alt: 'A hospitality professional with Lisbon rooftops behind them' },
+      { src: '/photos/lisbon.jpg', alt: 'Lisbon waterfront where many employers hire' },
+      { src: '/photos/brand/journey-tram.jpg', alt: 'Everyday Lisbon street scene' },
     ],
     statsCandidates: 'Pre-screened Candidates',
     statsIndustries: 'Key Industries',

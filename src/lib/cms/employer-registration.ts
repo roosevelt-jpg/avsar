@@ -103,6 +103,18 @@ export const DEFAULT_EMPLOYER_REGISTRATION: EmployerRegistrationSettings = {
       src: '/photos/brand/hero-workers.jpg',
       alt: 'Skilled professionals ready to work in Portugal',
     },
+    {
+      src: '/photos/brand/hero-chef.jpg',
+      alt: 'Hospitality talent for Portuguese employers',
+    },
+    {
+      src: '/photos/brand/hero-construction.jpg',
+      alt: 'Construction talent ready for Portugal',
+    },
+    {
+      src: '/photos/lisbon.jpg',
+      alt: 'Lisbon, where many employer roles are based',
+    },
   ],
   highlights: [
     { icon: 'users', label: 'Pre-Screened Talent' },

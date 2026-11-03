@@ -1,3 +1,4 @@
+import { BRAND_SLIDES, INTRO_FILM, slidesWithCaptions } from '@/lib/cms/brand-media';
 import { makeBlocks, type DefaultPage } from './make';
 
 /**
@@ -25,12 +26,12 @@ export const JOBS_INTRO: DefaultPage = {
         subtitle:
           'Discover real, company-verified opportunities for skilled professionals from India. Apply free, get matched, and start your journey to work and live in Portugal.',
         primaryCta: { label: 'Create my free profile', href: '/signup' },
-        secondaryCta: { label: '', href: '' },
+        secondaryCta: { label: 'How it works', href: '/how-it-works' },
         badgeLabel: 'Work & Live in Portugal',
         badgeHref: '/why-portugal',
-        filmUrl: '',
-        filmLabel: '',
-        highlights: [],
+        filmUrl: INTRO_FILM.url,
+        filmLabel: INTRO_FILM.label,
+        highlights: ['Salary shown on every job', 'Housing and meals when included', 'Free to apply'],
         intentsLabel: '',
         intents: [],
         bubbles: [],
@@ -39,35 +40,9 @@ export const JOBS_INTRO: DefaultPage = {
         layout: 'split',
         mediaType: 'image',
         mediaSrc: '/photos/brand/jobs-hero-1.jpg',
-        mediaPoster: '',
-        mediaAlt: 'Skilled professionals ready for jobs in Portugal',
-        slides: [
-          {
-            src: '/photos/brand/jobs-hero-1.jpg',
-            alt: 'A chef and a construction worker smiling in Portugal',
-            caption: '',
-          },
-          {
-            src: '/photos/brand/hero-workers.jpg',
-            alt: 'Chef, construction and hospitality professionals with a Portuguese city behind them',
-            caption: '',
-          },
-          {
-            src: '/photos/brand/hero-chef.jpg',
-            alt: 'A chef in a Portuguese restaurant kitchen',
-            caption: '',
-          },
-          {
-            src: '/photos/brand/hero-construction.jpg',
-            alt: 'A construction worker on a Portuguese building site',
-            caption: '',
-          },
-          {
-            src: '/photos/brand/hero-hospitality.jpg',
-            alt: 'A hospitality professional with Lisbon rooftops behind them',
-            caption: '',
-          },
-        ],
+        mediaPoster: INTRO_FILM.poster,
+        mediaAlt: 'A chef and a construction worker smiling in Portugal',
+        slides: slidesWithCaptions(BRAND_SLIDES.jobs),
         stats: [],
       },
     ],

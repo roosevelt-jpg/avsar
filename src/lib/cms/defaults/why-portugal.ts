@@ -1,3 +1,4 @@
+import { BRAND_SLIDES, INTRO_FILM, slidesWithCaptions } from '@/lib/cms/brand-media';
 import { makeBlocks, type DefaultPage } from './make';
 
 export const WHY_PORTUGAL: DefaultPage = {
@@ -23,15 +24,14 @@ export const WHY_PORTUGAL: DefaultPage = {
         secondaryCta: { label: 'Visa and relocation', href: '/visa-and-relocation' },
         badgeLabel: 'Work & live in Europe',
         badgeHref: '/why-portugal',
+        filmUrl: INTRO_FILM.url,
+        filmLabel: INTRO_FILM.label,
         highlights: ['14 salary payments a year', 'Written contract', 'Public healthcare after registration'],
         mediaType: 'image',
-        mediaSrc: '/photos/brand/hero-hospitality.jpg',
-        mediaPoster: '',
-        mediaAlt: 'Lisbon rooftops and hospitality work',
-        slides: [
-          { src: '/photos/brand/hero-hospitality.jpg', alt: 'Lisbon and hospitality', caption: '' },
-          { src: '/photos/brand/journey-tram.jpg', alt: 'Lisbon street scene', caption: '' },
-        ],
+        mediaSrc: '/photos/lisbon.jpg',
+        mediaPoster: INTRO_FILM.poster,
+        mediaAlt: 'Lisbon waterfront and skyline',
+        slides: slidesWithCaptions(BRAND_SLIDES.portugal),
         stats: [],
       },
     ],
@@ -66,9 +66,21 @@ export const WHY_PORTUGAL: DefaultPage = {
           'Family reunification is possible once you hold a residence permit',
         ],
         cta: { label: 'Visa and residence explained', href: '/visa-and-relocation' },
-        image: '/kitchen-work-1400.jpg',
-        imageAlt: 'A professional kitchen in Portugal',
+        image: '/photos/selected/housing.jpg',
+        imageAlt: 'Housing included with many jobs in Portugal',
         imageSide: 'left',
+      },
+    ],
+    [
+      'gallery',
+      {
+        eyebrow: 'Portugal',
+        title: 'Places and workplaces candidates ask about',
+        items: BRAND_SLIDES.portugal.map((slide) => ({
+          image: slide.src,
+          alt: slide.alt,
+          caption: '',
+        })),
       },
     ],
     [
@@ -86,12 +98,12 @@ export const WHY_PORTUGAL: DefaultPage = {
           {
             question: 'Will I earn enough to send money home?',
             answer:
-              'It depends on the job and on how you live. Housing and meals are included with jobs through us, which leaves much more to save. Every posting shows the salary range, so you can compare before you apply.',
+              'It depends on the role, the city and your spending. Jobs we publish show the salary range. Housing and meals included with the job make a large difference, because rent is the biggest cost in Lisbon and Porto.',
           },
           {
-            question: 'Can I bring my family later?',
+            question: 'Do I need Portuguese before I arrive?',
             answer:
-              'Holders of a Portuguese residence permit can apply for family reunification. The rules and timings are set by the government and do change, so your recruiter will give you current advice when you are ready.',
+              'Most roles we recruit for need basic English. Many employers offer Portuguese lessons after you start. Learning some phrases before you fly helps day-to-day life.',
           },
         ],
       },
@@ -99,10 +111,10 @@ export const WHY_PORTUGAL: DefaultPage = {
     [
       'cta',
       {
-        title: 'See what is open in Lisbon, Porto and the Algarve.',
-        body: '',
+        title: 'Ready to see real jobs in Portugal?',
+        body: 'Every posting shows the salary, the city and what is included.',
         primary: { label: 'Browse jobs', href: '/jobs' },
-        secondary: { label: '', href: '' },
+        secondary: { label: 'Create free profile', href: '/signup' },
       },
     ],
   ]),

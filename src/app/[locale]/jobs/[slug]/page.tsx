@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { SiteHeader } from '@/components/candidate/SiteHeader';
@@ -8,8 +7,11 @@ import { Icon } from '@/components/cms/primitives';
 import { FilmButton } from '@/components/cms/VideoPlayer';
 import { ApplyPanel, type ApplyViewer } from '@/components/jobs/ApplyPanel';
 import { JobCard, jobImage } from '@/components/jobs/JobCard';
+import { JobSectionNav } from '@/components/jobs/JobSectionNav';
 import { SaveJobButton } from '@/components/jobs/SaveJobButton';
 import { MarketingEyebrow } from '@/components/marketing/MarketingEyebrow';
+import { MarketingSlideshow } from '@/components/marketing/MarketingSlideshow';
+import { BRAND_SLIDES, INTRO_FILM } from '@/lib/cms/brand-media';
 import { savedJobIds } from '@/lib/jobs/saved';
 import { getViewer, hasPaid } from '@/lib/auth';
 import { getSiteSettings } from '@/lib/cms/data';
@@ -51,8 +53,6 @@ export default async function JobPage({ params }: Params) {
 
   const [viewer, settings] = await Promise.all([getViewer(), getSiteSettings()]);
 
-  /* Who is looking decides what the apply panel offers. A candidate who has
-     already applied sees where their application is, not a second button. */
   let applyViewer: ApplyViewer = { kind: 'anonymous' };
   let saved: boolean | undefined;
   if (viewer.role === 'candidate') {
@@ -86,6 +86,14 @@ export default async function JobPage({ params }: Params) {
   const others = (await recommendedJobs(job.positionSlug, [job.id], 3)).map((other) => localizeJob(other, locale));
   const t = (english: string) => siteText(locale, english);
 
+  const heroSlides = [
+    ...(image ? [{ src: image, alt: `${job.title}, ${job.city}` }] : []),
+    ...BRAND_SLIDES.jobDetailFallback.map((slide) => ({ src: slide.src, alt: slide.alt })),
+  ].filter((slide, index, all) => all.findIndex((other) => other.src === slide.src) === index);
+
+  const filmUrl = settings.applications.filmUrl.trim() || INTRO_FILM.url;
+  const filmLabel = settings.applications.filmLabel.trim() || INTRO_FILM.label;
+
   const metaRow = [
     { icon: 'map', label: jobLocation(job) },
     { icon: 'briefcase', label: t(EMPLOYMENT_LABELS[job.employmentType]) },
@@ -104,8 +112,14 @@ export default async function JobPage({ params }: Params) {
     { icon: 'globe', label: job.minEnglish ? `${job.minEnglish} ${t('or above')}` : t('Basic English') },
   ].filter(Boolean) as { icon: string; label: string }[];
 
-  /* Google for Jobs. A job board that does not emit JobPosting data is
-     invisible in the job search box most candidates actually use. */
+  const navItems = [
+    { id: 'overview', label: t('Job details') },
+    ...(job.responsibilities.length ? [{ id: 'responsibilities', label: t('What you will do') }] : []),
+    ...(job.requirements.length ? [{ id: 'requirements', label: t('Requirements') }] : []),
+    ...(job.benefits.length || offerItems.length ? [{ id: 'benefits', label: t('Benefits') }] : []),
+    { id: 'apply', label: t('Apply') },
+  ];
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'JobPosting',
@@ -142,17 +156,7 @@ export default async function JobPage({ params }: Params) {
       <SiteHeader locale={locale} />
       <main>
         <section className="relative overflow-hidden bg-[#0a088f] text-white">
-          {image ? (
-            <Image
-              src={image}
-              alt=""
-              fill
-              priority
-              sizes="100vw"
-              unoptimized={!image.startsWith('/')}
-              className="object-cover opacity-35"
-            />
-          ) : null}
+          <MarketingSlideshow slides={heroSlides} className="absolute inset-0 opacity-35" sizes="100vw" />
           <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-[#0a088f] via-[#0a088f]/92 to-[#0a088f]/55" />
           <div className="relative mx-auto w-full max-w-[1200px] px-[clamp(20px,4cqi,56px)] py-[clamp(36px,6cqi,72px)]">
             <nav aria-label="Breadcrumb" className="mb-6 font-mono text-[12px] text-white/70">
@@ -194,6 +198,9 @@ export default async function JobPage({ params }: Params) {
                   ) : null}
                 </ul>
                 {job.summary ? <p className="m-0 mt-6 max-w-[58ch] text-[16px] leading-[1.6] text-white/88">{job.summary}</p> : null}
+                <div className="mt-6">
+                  <FilmButton src={filmUrl} poster={INTRO_FILM.poster} label={t(filmLabel)} tone="dark" />
+                </div>
                 {!open ? (
                   <p className="m-0 mt-6 rounded-[12px] border border-white/25 bg-white/10 px-5 py-4 text-[15px]">
                     {t('This job is no longer taking applications. See similar jobs below.')}
@@ -201,20 +208,9 @@ export default async function JobPage({ params }: Params) {
                 ) : null}
               </div>
 
-              <div className="relative hidden min-h-[280px] overflow-hidden rounded-[18px] bg-[#1614a8] lg:block">
-                {image ? (
-                  <Image
-                    src={image}
-                    alt=""
-                    fill
-                    sizes="420px"
-                    unoptimized={!image.startsWith('/')}
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="placeholder-stripes size-full" />
-                )}
-                {saved !== undefined ? <SaveJobButton jobId={job.id} initialSaved={saved} className="absolute end-4 top-4" /> : null}
+              <div className="relative hidden min-h-[300px] lg:block">
+                <MarketingSlideshow slides={heroSlides} className="absolute inset-0" rounded sizes="420px" />
+                {saved !== undefined ? <SaveJobButton jobId={job.id} initialSaved={saved} className="absolute end-4 top-4 z-10" /> : null}
               </div>
             </div>
           </div>
@@ -222,25 +218,25 @@ export default async function JobPage({ params }: Params) {
 
         <div className="bg-ivory px-[clamp(20px,4cqi,56px)] py-[clamp(28px,5cqi,48px)]">
           <div className="mx-auto grid w-full max-w-[1200px] gap-[clamp(28px,4cqi,48px)] lg:grid-cols-[minmax(0,1fr)_360px]">
-            <article className="rounded-[18px] border border-line bg-white p-[clamp(20px,3cqi,36px)] shadow-[0_18px_40px_-28px_rgba(10,8,143,0.35)]">
-              {job.description ? (
-                <section>
-                  <h2 className="display-serif m-0 mb-4 text-[28px] font-normal tracking-[-0.02em]">{t('About the job')}</h2>
-                  <Markdown text={job.description} locale={locale} className="text-[16px] text-ink-2" />
+            <div className="min-w-0">
+              <JobSectionNav items={navItems} />
+              <article className="mt-4 rounded-[18px] border border-line bg-white p-[clamp(20px,3cqi,36px)] shadow-[0_18px_40px_-28px_rgba(10,8,143,0.35)]">
+                <section id="overview">
+                  {job.description ? (
+                    <>
+                      <h2 className="display-serif m-0 mb-4 text-[28px] font-normal tracking-[-0.02em]">{t('About the job')}</h2>
+                      <Markdown text={job.description} locale={locale} className="text-[16px] text-ink-2" />
+                    </>
+                  ) : (
+                    <h2 className="display-serif m-0 text-[28px] font-normal tracking-[-0.02em]">{t('About the job')}</h2>
+                  )}
                 </section>
-              ) : null}
 
-              {[
-                { title: t('What you will do'), list: job.responsibilities },
-                { title: t('What the employer is looking for'), list: job.requirements },
-                { title: t('What you get'), list: job.benefits },
-              ]
-                .filter((section) => section.list.length > 0)
-                .map((section) => (
-                  <section key={section.title} className="mt-10">
-                    <h2 className="display-serif m-0 mb-4 text-[24px] font-normal tracking-[-0.02em]">{section.title}</h2>
+                {job.responsibilities.length > 0 ? (
+                  <section id="responsibilities" className="mt-10">
+                    <h2 className="display-serif m-0 mb-4 text-[24px] font-normal tracking-[-0.02em]">{t('What you will do')}</h2>
                     <ul className="m-0 flex list-none flex-col gap-3 p-0">
-                      {section.list.map((item) => (
+                      {job.responsibilities.map((item) => (
                         <li key={item} className="flex gap-3 text-[16px] leading-[1.55] text-ink-2">
                           <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-[var(--color-gold-soft)] text-[var(--color-gold-deep)]">
                             <Icon name="check" className="size-4" />
@@ -250,35 +246,64 @@ export default async function JobPage({ params }: Params) {
                       ))}
                     </ul>
                   </section>
-                ))}
+                ) : null}
 
-              <section className="mt-10">
-                <h2 className="display-serif m-0 mb-5 text-[24px] font-normal tracking-[-0.02em]">{t('At a glance')}</h2>
-                <ul className="m-0 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3">
-                  {offerItems.map((item) => (
-                    <li key={item.label} className="flex gap-3 rounded-[14px] border border-line bg-ivory px-4 py-3 text-[14px] text-ink-2">
-                      <span className="grid size-9 shrink-0 place-items-center rounded-full border border-[var(--color-gold)]/40 text-[var(--color-gold-deep)]">
-                        <Icon name={item.icon} className="size-[18px]" />
-                      </span>
-                      <bdi className="self-center font-medium text-ink">{item.label}</bdi>
-                    </li>
-                  ))}
-                </ul>
-              </section>
+                {job.requirements.length > 0 ? (
+                  <section id="requirements" className="mt-10">
+                    <h2 className="display-serif m-0 mb-4 text-[24px] font-normal tracking-[-0.02em]">{t('What the employer is looking for')}</h2>
+                    <ul className="m-0 flex list-none flex-col gap-3 p-0">
+                      {job.requirements.map((item) => (
+                        <li key={item} className="flex gap-3 text-[16px] leading-[1.55] text-ink-2">
+                          <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-[var(--color-gold-soft)] text-[var(--color-gold-deep)]">
+                            <Icon name="check" className="size-4" />
+                          </span>
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                ) : null}
 
-              <section className="mt-10 rounded-[16px] border border-line bg-ivory p-6">
-                <h2 className="m-0 text-[18px] font-semibold">{t('Free to apply. No placement fee.')}</h2>
-                <p className="m-0 mt-2 text-[15px] leading-[1.6] text-ink-2">
-                  {t('You never pay to be hired. If anyone asks you for money for this job outside this website, it is not us.')}{' '}
-                  <Link href={localePath(locale, '/stay-safe')} className="prose-link">
-                    {t('How to stay safe')}
-                  </Link>
-                  .
-                </p>
-              </section>
-            </article>
+                <section id="benefits" className="mt-10">
+                  <h2 className="display-serif m-0 mb-5 text-[24px] font-normal tracking-[-0.02em]">{t('What you get')}</h2>
+                  {job.benefits.length > 0 ? (
+                    <ul className="m-0 mb-6 flex list-none flex-col gap-3 p-0">
+                      {job.benefits.map((item) => (
+                        <li key={item} className="flex gap-3 text-[16px] leading-[1.55] text-ink-2">
+                          <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-[var(--color-gold-soft)] text-[var(--color-gold-deep)]">
+                            <Icon name="check" className="size-4" />
+                          </span>
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                  <ul className="m-0 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3">
+                    {offerItems.map((item) => (
+                      <li key={item.label} className="flex gap-3 rounded-[14px] border border-line bg-ivory px-4 py-3 text-[14px] text-ink-2">
+                        <span className="grid size-9 shrink-0 place-items-center rounded-full border border-[var(--color-gold)]/40 text-[var(--color-gold-deep)]">
+                          <Icon name={item.icon} className="size-[18px]" />
+                        </span>
+                        <bdi className="self-center font-medium text-ink">{item.label}</bdi>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
 
-            <aside className="flex flex-col gap-4 lg:sticky lg:top-24 lg:self-start">
+                <section className="mt-10 rounded-[16px] border border-line bg-ivory p-6">
+                  <h2 className="m-0 text-[18px] font-semibold">{t('Free to apply. No placement fee.')}</h2>
+                  <p className="m-0 mt-2 text-[15px] leading-[1.6] text-ink-2">
+                    {t('You never pay to be hired. If anyone asks you for money for this job outside this website, it is not us.')}{' '}
+                    <Link href={localePath(locale, '/stay-safe')} className="prose-link">
+                      {t('How to stay safe')}
+                    </Link>
+                    .
+                  </p>
+                </section>
+              </article>
+            </div>
+
+            <aside id="apply" className="flex flex-col gap-4 lg:sticky lg:top-24 lg:self-start">
               <ApplyPanel
                 locale={locale}
                 job={{ id: job.id, slug: job.slug, title: job.title, questions: job.screeningQuestions, open }}
@@ -288,15 +313,12 @@ export default async function JobPage({ params }: Params) {
                 shortlistMinScore={settings.hiring.shortlistMinScore}
                 salary={salary}
               />
-              {settings.applications.filmUrl && settings.applications.filmLabel ? (
-                <div className="flex justify-center">
-                  <FilmButton src={settings.applications.filmUrl} label={t(settings.applications.filmLabel)} />
-                </div>
-              ) : null}
               <div className="overflow-hidden rounded-[16px] border border-line bg-white shadow-[0_18px_40px_-28px_rgba(10,8,143,0.35)]">
-                <div className="relative aspect-[16/9]">
-                  <Image src="/photos/brand/journey-tram.jpg" alt="" fill sizes="360px" className="object-cover" />
-                </div>
+                <MarketingSlideshow
+                  slides={BRAND_SLIDES.portugal.map((slide) => ({ src: slide.src, alt: slide.alt }))}
+                  className="aspect-[16/9]"
+                  sizes="360px"
+                />
                 <div className="p-5">
                   <h2 className="display-serif m-0 text-[22px] font-normal">{t('Work and live in Portugal')}</h2>
                   <ul className="m-0 mt-3 flex list-none flex-col gap-2 p-0 text-[14px] text-ink-2">

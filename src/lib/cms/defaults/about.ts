@@ -1,3 +1,4 @@
+import { BRAND_SLIDES, INTRO_FILM, slidesWithCaptions } from '@/lib/cms/brand-media';
 import { makeBlocks, type DefaultPage } from './make';
 
 export const ABOUT: DefaultPage = {
@@ -22,24 +23,32 @@ export const ABOUT: DefaultPage = {
         secondaryCta: { label: 'For employers', href: '/employers' },
         badgeLabel: 'Smith & Adams group',
         badgeHref: '/about',
+        filmUrl: INTRO_FILM.url,
+        filmLabel: 'Watch our story · under a minute',
         highlights: ['Verified employers', 'Legal contracts', 'Visa support after offer', 'Honest selection'],
         mediaType: 'image',
         mediaSrc: '/photos/brand/hero-hospitality.jpg',
-        mediaPoster: '',
+        mediaPoster: INTRO_FILM.poster,
         mediaAlt: 'Lisbon and hospitality work in Portugal',
-        slides: [
-          {
-            src: '/photos/brand/hero-hospitality.jpg',
-            alt: 'Hospitality professional with Lisbon rooftops',
-            caption: '',
-          },
-          {
-            src: '/photos/brand/journey-tram.jpg',
-            alt: 'Yellow tram on a Lisbon street',
-            caption: '',
-          },
-        ],
+        slides: slidesWithCaptions(BRAND_SLIDES.about),
         stats: [],
+      },
+    ],
+    [
+      'live_funnel',
+      {
+        eyebrow: 'Live from our database',
+        title: 'Where candidates actually get to',
+        intro: 'Not a marketing scorecard. These counts update from real assessments and placements.',
+        completedLabel: 'finish the free test',
+        qualifiedLabel: 'score above {{shortlist_score}} out of 10',
+        shortlistedLabel: 'are put forward to an employer',
+        hiredLabel: 'are hired',
+        minSample: 50,
+        pendingText:
+          '{{finished}} people have finished the test so far. We publish rates here once {{min_sample}} have finished, so a handful of results cannot mislead.',
+        note: 'Past results are not a promise of a job.',
+        cta: { label: 'How we select', href: '/selection-rules' },
       },
     ],
     [
@@ -86,6 +95,18 @@ export const ABOUT: DefaultPage = {
         image: '/photos/brand/employer-handshake.jpg',
         imageAlt: 'Employer and candidate handshake',
         imageSide: 'right',
+        gallery: BRAND_SLIDES.employers.slice(0, 4).map((slide) => ({ src: slide.src, alt: slide.alt })),
+      },
+    ],
+    [
+      'video',
+      {
+        eyebrow: 'Our story',
+        title: 'See how the path to Portugal works',
+        intro: 'Replace this film anytime in the CMS page editor.',
+        src: INTRO_FILM.url,
+        poster: INTRO_FILM.poster,
+        caption: 'How recruitment from India to Portugal works',
       },
     ],
     [

@@ -1,3 +1,4 @@
+import { BRAND_SLIDES, INTRO_FILM, slidesWithCaptions } from '@/lib/cms/brand-media';
 import { makeBlocks, type DefaultPage } from './make';
 
 export const HOW_IT_WORKS: DefaultPage = {
@@ -22,15 +23,14 @@ export const HOW_IT_WORKS: DefaultPage = {
         secondaryCta: { label: 'Browse jobs', href: '/jobs' },
         badgeLabel: 'Six live stages',
         badgeHref: '/how-it-works',
+        filmUrl: INTRO_FILM.url,
+        filmLabel: INTRO_FILM.label,
         highlights: ['Free profile and test', 'Real job applications', 'Visa after a successful offer'],
         mediaType: 'image',
-        mediaSrc: '/photos/brand/hero-chef.jpg',
-        mediaPoster: '',
-        mediaAlt: 'A cook plating food in a professional kitchen',
-        slides: [
-          { src: '/photos/brand/hero-chef.jpg', alt: 'Kitchen work in Portugal', caption: '' },
-          { src: '/photos/brand/journey-tram.jpg', alt: 'Lisbon tram', caption: '' },
-        ],
+        mediaSrc: '/photos/steps/profile.jpg',
+        mediaPoster: INTRO_FILM.poster,
+        mediaAlt: 'Creating a career profile',
+        slides: slidesWithCaptions(BRAND_SLIDES.journey),
         stats: [],
       },
     ],
@@ -40,42 +40,51 @@ export const HOW_IT_WORKS: DefaultPage = {
         eyebrow: 'The journey',
         title: 'Six steps from India to Portugal',
         intro: '',
+        layout: 'journey',
+        sideImage: '/photos/brand/journey-tram.jpg',
+        sideImageAlt: 'A yellow Lisbon tram on a historic street',
         items: [
           {
+            icon: 'users',
             title: '1. Create your free profile',
             body: 'Your name, mobile number, email and a password. You can come back and change the account and the CV. Nothing is needed up front.',
             meta: '2 minutes · free',
-            image: '',
+            image: '/photos/steps/profile.jpg',
           },
           {
+            icon: 'document',
             title: '2. Rewrite your CV, then take the test',
             body: 'We rewrite your CV from what you wrote. Then the skills and English questions, up to 90 minutes, and you see your score. Both are free. A score above {{shortlist_score}} out of 10, plus the essential requirements of the role, qualifies you for the shortlist.',
             meta: 'On your phone · free',
-            image: '/walkthrough/assessment.jpg',
+            image: '/photos/steps/test.jpg',
           },
           {
+            icon: 'briefcase',
             title: '3. Apply to jobs',
             body: 'Every job shows the salary, the city and what is included. Press apply and answer a few short questions. Apply to as many jobs as fit you; your assessment result goes with each application.',
             meta: '1 minute per job · free',
-            image: '',
+            image: '/photos/steps/apply.jpg',
           },
           {
+            icon: 'phone',
             title: '4. Calls and interviews',
             body: 'A recruiter calls you first. If you are shortlisted, you interview with the employer on Zoom. Both calls are free. A contract comes only after a successful offer.',
             meta: 'Within {{response_days}} days',
-            image: '/walkthrough/call.jpg',
+            image: '/photos/steps/interview.jpg',
           },
           {
+            icon: 'plane',
             title: '5. After a successful offer',
             body: 'A contract, housing, the flight and legal support come after a successful offer, not before. You receive a written offer and a {{contract_years}}-year employment contract to read before signing. Once you are selected we pay the visa fee, the police clearance certificate, immigration fees and taxes, and your flight. The employer pays the placement fee.',
             meta: '2 to 4 months',
-            image: '/walkthrough/letter.jpg',
+            image: '/photos/steps/visa.jpg',
           },
           {
+            icon: 'home',
             title: '6. Travel and settle in',
             body: 'Housing and meals are included with the job. We meet you, and stay with you through your first weeks: tax number, bank account, social security and health registration, and your residence permit appointment.',
             meta: 'First month',
-            image: '/walkthrough/documents.jpg',
+            image: '/photos/steps/arrival.jpg',
           },
         ],
       },
@@ -104,15 +113,21 @@ export const HOW_IT_WORKS: DefaultPage = {
       },
     ],
     [
-      'stats',
+      'live_funnel',
       {
         eyebrow: 'Honest odds',
-        title: 'How the shortlist works, and our past results',
-        items: [
-          { value: '{{shortlist_score}}/10', label: 'score to beat in the assessment', note: 'plus the role’s essential requirements' },
-          { value: '0', label: 'priority from buying a report', note: 'the shortlist ignores it' },
-          { value: '{{shortlist_hired}}/{{shortlist_size}}', label: 'shortlisted candidates hired, historically', note: 'past results, not a promise; most applicants are not shortlisted' },
-        ],
+        title: 'Where people actually get to',
+        intro:
+          'Counted live from our database, not typed in. Most people who take the test are not hired, and we would rather you knew that before you start.',
+        completedLabel: 'finish the free test',
+        qualifiedLabel: 'score above {{shortlist_score}} out of 10',
+        shortlistedLabel: 'are put forward to an employer',
+        hiredLabel: 'are hired',
+        minSample: 50,
+        pendingText:
+          '{{finished}} people have finished the test so far. We will publish these rates here once {{min_sample}} have, because a rate from a handful of people misleads. Until then: historically about {{shortlist_hired}} of every {{shortlist_size}} shortlisted candidates have been hired.',
+        note: 'The test is free, so taking it costs you nothing but time. Past results are not a promise.',
+        cta: { label: 'How we select', href: '/selection-rules' },
       },
     ],
     [

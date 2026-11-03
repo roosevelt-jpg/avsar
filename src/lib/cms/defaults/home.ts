@@ -1,3 +1,4 @@
+import { BRAND_SLIDES, INTRO_FILM, slidesWithCaptions } from '@/lib/cms/brand-media';
 import { makeBlocks, type DefaultPage } from './make';
 
 export const HOME: DefaultPage = {
@@ -23,8 +24,8 @@ export const HOME: DefaultPage = {
         secondaryCta: { label: 'See open jobs', href: '/jobs' },
         badgeLabel: 'Work & Live in Portugal',
         badgeHref: '/why-portugal',
-        filmUrl: '',
-        filmLabel: '',
+        filmUrl: INTRO_FILM.url,
+        filmLabel: INTRO_FILM.label,
         highlights: [
           'Verified employers',
           'Legal contracts',
@@ -34,35 +35,14 @@ export const HOME: DefaultPage = {
         intentsLabel: '',
         intents: [],
         bubbles: [],
-        liveProof: false,
+        liveProof: true,
         routeMap: false,
         layout: 'split',
         mediaType: 'image',
         mediaSrc: '/photos/brand/hero-workers.jpg',
-        mediaPoster: '',
+        mediaPoster: INTRO_FILM.poster,
         mediaAlt: 'Skilled professionals ready to work in Portugal',
-        slides: [
-          {
-            src: '/photos/brand/hero-workers.jpg',
-            alt: 'Chef, construction and hospitality professionals with a Portuguese city behind them',
-            caption: '',
-          },
-          {
-            src: '/photos/brand/hero-chef.jpg',
-            alt: 'A chef in a Portuguese restaurant kitchen',
-            caption: '',
-          },
-          {
-            src: '/photos/brand/hero-construction.jpg',
-            alt: 'A construction worker on a Portuguese building site',
-            caption: '',
-          },
-          {
-            src: '/photos/brand/hero-hospitality.jpg',
-            alt: 'A hospitality professional with Lisbon rooftops behind them',
-            caption: '',
-          },
-        ],
+        slides: slidesWithCaptions(BRAND_SLIDES.careers),
         stats: [],
       },
     ],

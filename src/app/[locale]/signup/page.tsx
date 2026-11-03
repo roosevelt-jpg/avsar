@@ -33,7 +33,12 @@ export default async function SignupPage({
     : POSITIONS[0].slug;
 
   return (
-    <SignupMarketingShell locale={locale} helpPhone={company.phone}>
+    <SignupMarketingShell
+      locale={locale}
+      helpPhone={company.phone}
+      filmUrl={applications.filmUrl}
+      filmLabel={applications.filmLabel}
+    >
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
         <div className="min-w-0 flex-1">
           <SignupFlow locale={locale} t={t} initialPosition={initialPosition} />

@@ -138,7 +138,7 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
         </p>
       ) : null}
 
-      {(primary || secondary) && (
+      {(primary || secondary || film) && (
         <div className={`flex flex-wrap items-center gap-3 ${intents.length && !brand ? 'mt-6' : 'mt-8'}`}>
           {primary ? (
             <Link
@@ -160,6 +160,14 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
             >
               {secondary.label}
             </Link>
+          ) : null}
+          {film ? (
+            <FilmButton
+              src={film}
+              poster={str(data, 'mediaPoster') || undefined}
+              label={filmLabel}
+              tone={brand ? 'dark' : 'light'}
+            />
           ) : null}
         </div>
       )}
@@ -185,12 +193,11 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
         </div>
       )}
 
-      {film && !brand && (
-        <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-4">
-          <FilmButton src={film} label={filmLabel} />
-          {!primary && secondary ? <CmsTextLink href={secondary.href} label={secondary.label} locale={locale} /> : null}
+      {!primary && !film && secondary && !brand ? (
+        <div className="mt-6">
+          <CmsTextLink href={secondary.href} label={secondary.label} locale={locale} />
         </div>
-      )}
+      ) : null}
 
       {highlights.length > 0 && (
         <ul
