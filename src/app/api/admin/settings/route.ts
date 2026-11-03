@@ -158,17 +158,49 @@ const schemas = {
   }),
   employerLanding: z.object({
     wordmarkSuffix: text(40).min(1),
+    headerLinks: z.array(z.object({ label: text(60).min(1), href: text(120).min(1) })).min(1).max(10),
     navTalent: text(40).min(1),
     navHow: text(40).min(1),
     navPricing: text(40).min(1),
     navCandidates: text(40).min(1),
-    ctaLabel: text(40).min(1),
-    headline: text(160).min(1),
-    intro: text(400).min(1),
+    ctaLabel: text(60).min(1),
+    ctaHref: text(120).min(1),
+    secondaryCtaLabel: text(60).min(1),
+    secondaryCtaHref: text(120).min(1),
+    eyebrow: text(40).min(1),
+    headline: text(200).min(1),
+    accentWord: text(40),
+    intro: text(500).min(1),
+    badgeLabel: text(120).min(1),
+    badgeHref: text(120),
+    slides: z
+      .array(z.object({ src: text(300).min(1), alt: text(160) }))
+      .min(1)
+      .max(8),
+    statsCandidates: text(80).min(1),
+    statsIndustries: text(80).min(1),
+    statsPlaced: text(80).min(1),
+    hiringTimeValue: text(40).min(1),
+    hiringTimeLabel: text(80).min(1),
+    reasonsTitle: text(80).min(1),
+    reasons: z
+      .array(z.object({ icon: text(40).min(1), title: text(80).min(1), body: text(200).min(1) }))
+      .min(1)
+      .max(6),
+    industriesTitle: text(120).min(1),
+    industriesImage: text(300).min(1),
+    industriesImageAlt: text(160),
+    industries: z
+      .array(z.object({ icon: text(40).min(1), label: text(80).min(1) }))
+      .min(1)
+      .max(8),
     stepsTitle: text(80).min(1),
     steps: z.array(z.object({ title: text(80).min(1), body: text(300).min(1) })).min(1).max(6),
+    closingTitle: text(120).min(1),
+    closingBody: text(300).min(1),
     contactTitle: text(120).min(1),
     contactNote: text(200).min(1),
+    searchHeading: text(80).min(1),
   }),
   jobsBoard: z.object({
     searchKeywordPlaceholder: text(80).min(1),

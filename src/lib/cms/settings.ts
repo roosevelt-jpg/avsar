@@ -188,20 +188,63 @@ export type ConversionSettings = {
   mentionPackageInJobAlerts: boolean;
 };
 
-/** The /employers page. The fee in contactNote is {{fee}}, filled from Company & pricing. */
+/** One photograph in the /employers hero slideshow. */
+export type EmployerLandingSlide = { src: string; alt: string };
+
+/** A reason card under "Why partner with us". */
+export type EmployerLandingReason = { icon: string; title: string; body: string };
+
+/** An industry chip on the navy industries band. */
+export type EmployerLandingIndustry = { icon: string; label: string };
+
+/**
+ * The /employers page. Everything on that landing is edited here; the
+ * placement fee in contactNote is {{fee}}, filled from Company & pricing.
+ * Live counts use {count} and are filled from the database at render time.
+ */
 export type EmployerLanding = {
   wordmarkSuffix: string;
+  /** Navy header links on /employers (mockup order). */
+  headerLinks: { label: string; href: string }[];
   navTalent: string;
   navHow: string;
   navPricing: string;
   navCandidates: string;
+  /** Header and hero primary button. Default: Hire talent. */
   ctaLabel: string;
+  ctaHref: string;
+  secondaryCtaLabel: string;
+  secondaryCtaHref: string;
+  eyebrow: string;
   headline: string;
+  /** Word drawn in gold italic inside the headline when it matches. */
+  accentWord: string;
   intro: string;
+  badgeLabel: string;
+  badgeHref: string;
+  slides: EmployerLandingSlide[];
+  /** {count} → assessed candidates. */
+  statsCandidates: string;
+  /** {count} → industries listed below. */
+  statsIndustries: string;
+  /** {count} → funnel hired. */
+  statsPlaced: string;
+  /** Editable hiring-time claim (not a live count). */
+  hiringTimeValue: string;
+  hiringTimeLabel: string;
+  reasonsTitle: string;
+  reasons: EmployerLandingReason[];
+  industriesTitle: string;
+  industriesImage: string;
+  industriesImageAlt: string;
+  industries: EmployerLandingIndustry[];
   stepsTitle: string;
   steps: { title: string; body: string }[];
+  closingTitle: string;
+  closingBody: string;
   contactTitle: string;
   contactNote: string;
+  searchHeading: string;
 };
 
 export const SETTINGS_KEYS = [
@@ -465,22 +508,70 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   },
   employerLanding: {
     wordmarkSuffix: 'for employers',
+    headerLinks: [
+      { label: 'Home', href: '/' },
+      { label: 'Jobs', href: '/jobs' },
+      { label: 'How it Works', href: '/how-it-works' },
+      { label: 'Why Portugal', href: '/why-portugal' },
+      { label: 'Visa & Relocation', href: '/visa-and-relocation' },
+      { label: 'For Employers', href: '/employers' },
+    ],
     navTalent: 'Talent pool',
     navHow: 'How it works',
     navPricing: 'Pricing',
     navCandidates: 'For candidates',
-    ctaLabel: 'Book a call',
-    headline: 'Hire pre-assessed workers from India for your team in Portugal.',
+    ctaLabel: 'Hire Talent Today',
+    ctaHref: '#contact',
+    secondaryCtaLabel: 'Book a Consultation',
+    secondaryCtaHref: '#contact',
+    eyebrow: 'FOR EMPLOYERS',
+    headline: 'Hire Verified Talent from India for Your Business in Portugal',
+    accentWord: 'Portugal',
     intro:
-      'Search a pool of candidates scored on skills, experience and English. We handle visas, relocation, housing and onboarding.',
+      'A trusted recruitment partner for Portuguese companies, connecting you with skilled, pre-screened and job-ready professionals.',
+    badgeLabel: 'Portugal Talent Programme · Skilled · Verified · Compliant',
+    badgeHref: '#contact',
+    slides: [
+      { src: '/photos/brand/employer-handshake.jpg', alt: 'Employer and candidate shaking hands in Portugal' },
+      { src: '/photos/brand/hero-workers.jpg', alt: 'Skilled professionals ready to work in Portugal' },
+      { src: '/photos/brand/hero-chef.jpg', alt: 'A chef in a Portuguese restaurant kitchen' },
+      { src: '/photos/brand/hero-construction.jpg', alt: 'A construction worker on a Portuguese building site' },
+      { src: '/photos/brand/hero-hospitality.jpg', alt: 'A hospitality professional with Lisbon rooftops behind them' },
+    ],
+    statsCandidates: 'Pre-screened Candidates',
+    statsIndustries: 'Key Industries',
+    statsPlaced: 'Candidates Placed',
+    hiringTimeValue: '30–45 Days',
+    hiringTimeLabel: 'Average Hiring Time',
+    reasonsTitle: 'Why Partner With Us?',
+    reasons: [
+      { icon: 'check', title: 'Pre-Screened Talent', body: 'Skills, experience and documentation verified.' },
+      { icon: 'document', title: 'Compliance & Visas', body: 'Full relocation and legal support.' },
+      { icon: 'clock', title: 'Faster Hiring', body: 'Shortlists in days, not months.' },
+      { icon: 'users', title: 'Dedicated Support', body: 'A dedicated team from hiring to onboarding.' },
+    ],
+    industriesTitle: 'Access Skilled Talent Across Key Industries',
+    industriesImage: '/photos/brand/journey-tram.jpg',
+    industriesImageAlt: 'A yellow Lisbon tram on a historic street',
+    industries: [
+      { icon: 'home', label: 'Hospitality & Tourism' },
+      { icon: 'briefcase', label: 'Construction & Trades' },
+      { icon: 'plane', label: 'Logistics & Warehouse' },
+      { icon: 'heart', label: 'Healthcare & Caregiving' },
+      { icon: 'star', label: 'Manufacturing & Production' },
+      { icon: 'globe', label: 'More Industries' },
+    ],
     stepsTitle: 'From search to first shift',
     steps: [
       { title: 'Search and shortlist', body: 'Describe the role in plain words. Filter by sector, English level and experience.' },
       { title: 'Interview', body: 'Video interviews with shortlisted candidates, with their full skills report attached.' },
       { title: 'We relocate them', body: 'Work visa, travel, housing and arrival support, handled by our team in Lisbon.' },
     ],
+    closingTitle: 'Let’s Build Your Team in Portugal',
+    closingBody: 'Share your hiring needs and get a tailored talent shortlist for your business.',
     contactTitle: 'Tell us what roles you need to fill.',
     contactNote: '{{fee}} per placement. Search is free.',
+    searchHeading: 'Search the talent pool',
   },
   jobsBoard: {
     searchKeywordPlaceholder: 'Job title, skill or keyword',
@@ -584,9 +675,49 @@ export function mergeSettings(rows: { key: string; value: unknown }[]): SiteSett
   }
   const storedLanding = stored.employerLanding as Partial<EmployerLanding> | undefined;
   if (storedLanding) {
+    const slides =
+      Array.isArray(storedLanding.slides) && storedLanding.slides.length > 0
+        ? storedLanding.slides
+            .filter((slide): slide is EmployerLandingSlide => Boolean(slide && typeof slide === 'object'))
+            .map((slide) => ({ src: String(slide.src ?? ''), alt: String(slide.alt ?? '') }))
+            .filter((slide) => slide.src)
+            .slice(0, 8)
+        : DEFAULT_SETTINGS.employerLanding.slides;
+    const reasons =
+      Array.isArray(storedLanding.reasons) && storedLanding.reasons.length > 0
+        ? storedLanding.reasons
+            .filter((reason): reason is EmployerLandingReason => Boolean(reason && typeof reason === 'object'))
+            .map((reason) => ({
+              icon: String(reason.icon ?? 'check'),
+              title: String(reason.title ?? ''),
+              body: String(reason.body ?? ''),
+            }))
+            .filter((reason) => reason.title)
+            .slice(0, 6)
+        : DEFAULT_SETTINGS.employerLanding.reasons;
+    const industries =
+      Array.isArray(storedLanding.industries) && storedLanding.industries.length > 0
+        ? storedLanding.industries
+            .filter((item): item is EmployerLandingIndustry => Boolean(item && typeof item === 'object'))
+            .map((item) => ({ icon: String(item.icon ?? 'briefcase'), label: String(item.label ?? '') }))
+            .filter((item) => item.label)
+            .slice(0, 8)
+        : DEFAULT_SETTINGS.employerLanding.industries;
+    const headerLinks =
+      Array.isArray(storedLanding.headerLinks) && storedLanding.headerLinks.length > 0
+        ? storedLanding.headerLinks
+            .filter((item): item is { label: string; href: string } => Boolean(item && typeof item === 'object'))
+            .map((item) => ({ label: String(item.label ?? ''), href: String(item.href ?? '') }))
+            .filter((item) => item.label && item.href)
+            .slice(0, 10)
+        : DEFAULT_SETTINGS.employerLanding.headerLinks;
     out.employerLanding = {
       ...DEFAULT_SETTINGS.employerLanding,
       ...storedLanding,
+      slides,
+      reasons,
+      industries,
+      headerLinks,
       steps:
         Array.isArray(storedLanding.steps) && storedLanding.steps.length > 0
           ? storedLanding.steps

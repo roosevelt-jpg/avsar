@@ -312,32 +312,211 @@ export function ConversionSettingsForm({ initial }: { initial: SiteSettings['con
 export function EmployerLandingForm({ initial }: { initial: SiteSettings['employerLanding'] }) {
   const [page, setPage] = useState(initial);
   const saver = useSettingsSaver('employerLanding');
+  const set = <K extends keyof SiteSettings['employerLanding']>(key: K, value: SiteSettings['employerLanding'][K]) =>
+    setPage({ ...page, [key]: value });
 
   return (
     <div className="flex flex-col gap-5">
-      <Section title="Employer landing" lead="The page at /employers. The placement fee is still set under Company & pricing. Write {{fee}} where that amount should appear.">
-        <div className="grid gap-3 sm:grid-cols-2">
-          <Field label="Name beside the logo"><input className={INPUT} value={page.wordmarkSuffix} onChange={(e) => setPage({ ...page, wordmarkSuffix: e.target.value })} /></Field>
-          <Field label="Header button"><input className={INPUT} value={page.ctaLabel} onChange={(e) => setPage({ ...page, ctaLabel: e.target.value })} /></Field>
-          <Field label="Talent pool link"><input className={INPUT} value={page.navTalent} onChange={(e) => setPage({ ...page, navTalent: e.target.value })} /></Field>
-          <Field label="How it works link"><input className={INPUT} value={page.navHow} onChange={(e) => setPage({ ...page, navHow: e.target.value })} /></Field>
-          <Field label="Pricing link"><input className={INPUT} value={page.navPricing} onChange={(e) => setPage({ ...page, navPricing: e.target.value })} /></Field>
-          <Field label="For candidates link"><input className={INPUT} value={page.navCandidates} onChange={(e) => setPage({ ...page, navCandidates: e.target.value })} /></Field>
-        </div>
-        <Field label="Headline"><textarea className={INPUT} rows={2} value={page.headline} onChange={(e) => setPage({ ...page, headline: e.target.value })} /></Field>
-        <Field label="Introduction"><textarea className={INPUT} rows={3} value={page.intro} onChange={(e) => setPage({ ...page, intro: e.target.value })} /></Field>
-        <Field label="Steps heading"><input className={INPUT} value={page.stepsTitle} onChange={(e) => setPage({ ...page, stepsTitle: e.target.value })} /></Field>
+      <Section title="Header navigation" lead="Navy bar on /employers. Match the mockup order; /employers is underlined when active.">
         <ul className="m-0 flex list-none flex-col gap-3 p-0">
-          {page.steps.map((step, index) => (
-            <li key={index} className="grid gap-2 rounded-[12px] bg-paper p-3">
-              <Field label={`Step ${index + 1}`}><input className={INPUT} value={step.title} onChange={(e) => setPage({ ...page, steps: page.steps.map((row, i) => (i === index ? { ...row, title: e.target.value } : row)) })} /></Field>
-              <Field label="Detail"><textarea className={INPUT} rows={2} value={step.body} onChange={(e) => setPage({ ...page, steps: page.steps.map((row, i) => (i === index ? { ...row, body: e.target.value } : row)) })} /></Field>
+          {page.headerLinks.map((link, index) => (
+            <li key={index} className="grid gap-2 rounded-[12px] bg-paper p-3 sm:grid-cols-2">
+              <Field label="Label">
+                <input
+                  className={INPUT}
+                  value={link.label}
+                  onChange={(e) =>
+                    set(
+                      'headerLinks',
+                      page.headerLinks.map((row, i) => (i === index ? { ...row, label: e.target.value } : row)),
+                    )
+                  }
+                />
+              </Field>
+              <Field label="Link">
+                <input
+                  className={INPUT}
+                  value={link.href}
+                  onChange={(e) =>
+                    set(
+                      'headerLinks',
+                      page.headerLinks.map((row, i) => (i === index ? { ...row, href: e.target.value } : row)),
+                    )
+                  }
+                />
+              </Field>
             </li>
           ))}
         </ul>
-        <Field label="Contact heading"><input className={INPUT} value={page.contactTitle} onChange={(e) => setPage({ ...page, contactTitle: e.target.value })} /></Field>
-        <Field label="Contact note"><input className={INPUT} value={page.contactNote} onChange={(e) => setPage({ ...page, contactNote: e.target.value })} /></Field>
       </Section>
+
+      <Section title="Hero" lead="Full-bleed slideshow and pitch on /employers. Counts below the hero are live from the database — never invent a figure in the labels.">
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Field label="Eyebrow"><input className={INPUT} value={page.eyebrow} onChange={(e) => set('eyebrow', e.target.value)} /></Field>
+          <Field label="Accent word (gold italic)"><input className={INPUT} value={page.accentWord} onChange={(e) => set('accentWord', e.target.value)} /></Field>
+        </div>
+        <Field label="Headline"><textarea className={INPUT} rows={2} value={page.headline} onChange={(e) => set('headline', e.target.value)} /></Field>
+        <Field label="Introduction"><textarea className={INPUT} rows={3} value={page.intro} onChange={(e) => set('intro', e.target.value)} /></Field>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Field label="Primary CTA"><input className={INPUT} value={page.ctaLabel} onChange={(e) => set('ctaLabel', e.target.value)} /></Field>
+          <Field label="Primary CTA link"><input className={INPUT} value={page.ctaHref} onChange={(e) => set('ctaHref', e.target.value)} /></Field>
+          <Field label="Secondary CTA"><input className={INPUT} value={page.secondaryCtaLabel} onChange={(e) => set('secondaryCtaLabel', e.target.value)} /></Field>
+          <Field label="Secondary CTA link"><input className={INPUT} value={page.secondaryCtaHref} onChange={(e) => set('secondaryCtaHref', e.target.value)} /></Field>
+          <Field label="Badge"><input className={INPUT} value={page.badgeLabel} onChange={(e) => set('badgeLabel', e.target.value)} /></Field>
+          <Field label="Badge link"><input className={INPUT} value={page.badgeHref} onChange={(e) => set('badgeHref', e.target.value)} /></Field>
+        </div>
+        <p className="m-0 mt-2 text-[13px] font-medium text-ink-2">Slideshow photographs</p>
+        <ul className="m-0 flex list-none flex-col gap-3 p-0">
+          {page.slides.map((slide, index) => (
+            <li key={index} className="grid gap-2 rounded-[12px] bg-paper p-3 sm:grid-cols-2">
+              <Field label="Image path">
+                <input
+                  className={INPUT}
+                  value={slide.src}
+                  onChange={(e) =>
+                    set(
+                      'slides',
+                      page.slides.map((row, i) => (i === index ? { ...row, src: e.target.value } : row)),
+                    )
+                  }
+                />
+              </Field>
+              <Field label="Alt text">
+                <input
+                  className={INPUT}
+                  value={slide.alt}
+                  onChange={(e) =>
+                    set(
+                      'slides',
+                      page.slides.map((row, i) => (i === index ? { ...row, alt: e.target.value } : row)),
+                    )
+                  }
+                />
+              </Field>
+            </li>
+          ))}
+        </ul>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            className="text-[13px] text-accent"
+            disabled={page.slides.length >= 8}
+            onClick={() => set('slides', [...page.slides, { src: '', alt: '' }])}
+          >
+            Add slide
+          </button>
+          {page.slides.length > 1 ? (
+            <button type="button" className="text-[13px] text-muted" onClick={() => set('slides', page.slides.slice(0, -1))}>
+              Remove last
+            </button>
+          ) : null}
+        </div>
+      </Section>
+
+      <Section title="Live stats strip" lead="Numbers are filled live. The hiring-time value is a claim you set; keep it honest.">
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Field label="Candidates label"><input className={INPUT} value={page.statsCandidates} onChange={(e) => set('statsCandidates', e.target.value)} /></Field>
+          <Field label="Industries label"><input className={INPUT} value={page.statsIndustries} onChange={(e) => set('statsIndustries', e.target.value)} /></Field>
+          <Field label="Placed label"><input className={INPUT} value={page.statsPlaced} onChange={(e) => set('statsPlaced', e.target.value)} /></Field>
+          <Field label="Hiring time value"><input className={INPUT} value={page.hiringTimeValue} onChange={(e) => set('hiringTimeValue', e.target.value)} /></Field>
+          <Field label="Hiring time label"><input className={INPUT} value={page.hiringTimeLabel} onChange={(e) => set('hiringTimeLabel', e.target.value)} /></Field>
+        </div>
+      </Section>
+
+      <Section title="Why partner" lead="Four reason cards under the stats strip.">
+        <Field label="Section title"><input className={INPUT} value={page.reasonsTitle} onChange={(e) => set('reasonsTitle', e.target.value)} /></Field>
+        <ul className="m-0 flex list-none flex-col gap-3 p-0">
+          {page.reasons.map((reason, index) => (
+            <li key={index} className="grid gap-2 rounded-[12px] bg-paper p-3">
+              <div className="grid gap-2 sm:grid-cols-2">
+                <Field label="Icon">
+                  <input
+                    className={INPUT}
+                    value={reason.icon}
+                    onChange={(e) =>
+                      set(
+                        'reasons',
+                        page.reasons.map((row, i) => (i === index ? { ...row, icon: e.target.value } : row)),
+                      )
+                    }
+                  />
+                </Field>
+                <Field label="Title">
+                  <input
+                    className={INPUT}
+                    value={reason.title}
+                    onChange={(e) =>
+                      set(
+                        'reasons',
+                        page.reasons.map((row, i) => (i === index ? { ...row, title: e.target.value } : row)),
+                      )
+                    }
+                  />
+                </Field>
+              </div>
+              <Field label="Body">
+                <textarea
+                  className={INPUT}
+                  rows={2}
+                  value={reason.body}
+                  onChange={(e) =>
+                    set(
+                      'reasons',
+                      page.reasons.map((row, i) => (i === index ? { ...row, body: e.target.value } : row)),
+                    )
+                  }
+                />
+              </Field>
+            </li>
+          ))}
+        </ul>
+      </Section>
+
+      <Section title="Industries band" lead="Navy band with the tram photograph and industry chips.">
+        <Field label="Title"><input className={INPUT} value={page.industriesTitle} onChange={(e) => set('industriesTitle', e.target.value)} /></Field>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Field label="Image path"><input className={INPUT} value={page.industriesImage} onChange={(e) => set('industriesImage', e.target.value)} /></Field>
+          <Field label="Image alt"><input className={INPUT} value={page.industriesImageAlt} onChange={(e) => set('industriesImageAlt', e.target.value)} /></Field>
+        </div>
+        <ul className="m-0 flex list-none flex-col gap-3 p-0">
+          {page.industries.map((industry, index) => (
+            <li key={index} className="grid gap-2 rounded-[12px] bg-paper p-3 sm:grid-cols-2">
+              <Field label="Icon">
+                <input
+                  className={INPUT}
+                  value={industry.icon}
+                  onChange={(e) =>
+                    set(
+                      'industries',
+                      page.industries.map((row, i) => (i === index ? { ...row, icon: e.target.value } : row)),
+                    )
+                  }
+                />
+              </Field>
+              <Field label="Label">
+                <input
+                  className={INPUT}
+                  value={industry.label}
+                  onChange={(e) =>
+                    set(
+                      'industries',
+                      page.industries.map((row, i) => (i === index ? { ...row, label: e.target.value } : row)),
+                    )
+                  }
+                />
+              </Field>
+            </li>
+          ))}
+        </ul>
+      </Section>
+
+      <Section title="Closing and contact" lead="Closing band CTAs reuse the hero buttons. Contact form note still accepts {{fee}}.">
+        <Field label="Closing title"><input className={INPUT} value={page.closingTitle} onChange={(e) => set('closingTitle', e.target.value)} /></Field>
+        <Field label="Closing body"><textarea className={INPUT} rows={2} value={page.closingBody} onChange={(e) => set('closingBody', e.target.value)} /></Field>
+        <Field label="Contact heading"><input className={INPUT} value={page.contactTitle} onChange={(e) => set('contactTitle', e.target.value)} /></Field>
+        <Field label="Contact note"><input className={INPUT} value={page.contactNote} onChange={(e) => set('contactNote', e.target.value)} /></Field>
+      </Section>
+
       <SaveBar onSave={() => saver.save(page)} state={saver.state} busy={saver.busy} />
     </div>
   );
