@@ -30,13 +30,13 @@ export function FooterSubscribe({ locale, labels }: { locale: Locale; labels: La
   }
 
   return (
-    <div className="flex w-full flex-col items-start gap-4">
+    <div className="flex w-full flex-col items-start gap-3">
       {state === 'done' ? (
         <p role="status" className="m-0 text-[15px] leading-[1.5] text-white">
           {labels.done}
         </p>
       ) : (
-        <form onSubmit={submit} className="flex w-full flex-col items-start gap-3 sm:flex-row sm:items-center">
+        <form onSubmit={submit} className="flex w-full max-w-[360px] items-stretch gap-0">
           <label className="sr-only" htmlFor="footer-subscribe-email">
             {labels.placeholder}
           </label>
@@ -50,15 +50,18 @@ export function FooterSubscribe({ locale, labels }: { locale: Locale; labels: La
             inputMode="email"
             dir="ltr"
             placeholder={labels.placeholder}
-            className="w-full border border-white/70 bg-transparent px-4 py-2 text-[14px] text-white placeholder:text-white/60 focus:border-white focus:outline-none sm:max-w-[240px]"
+            className="min-w-0 flex-1 rounded-s-[8px] border border-white/55 border-e-0 bg-[#0a088f]/55 px-3.5 py-2.5 text-[14px] text-white placeholder:text-white/55 focus:border-[var(--color-gold)] focus:outline-none"
           />
           <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
           <button
             type="submit"
             disabled={state === 'sending'}
-            className="t-colors inline-flex items-center rounded-full border border-[#c96a4b] bg-[#0a088f] px-6 py-2 text-[14px] font-bold uppercase tracking-[0.04em] text-white disabled:opacity-60 hover:bg-[#22209a]"
+            aria-label={labels.button}
+            className="t-colors grid size-[46px] shrink-0 place-items-center rounded-e-[8px] border-0 bg-[var(--color-gold)] text-[#0a088f] disabled:opacity-60 hover:bg-[var(--color-gold-deep)]"
           >
-            {labels.button}
+            <span aria-hidden className="text-[18px] font-bold leading-none rtl:-scale-x-100">
+              →
+            </span>
           </button>
         </form>
       )}

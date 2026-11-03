@@ -67,11 +67,16 @@ export type SiteSettings = {
     officeHours: string;
     /** https URL of a short recording for the family page and the pay panel. Empty until a real person records it. */
     familyVoiceUrl: string;
-    socials: { instagram: string; facebook: string; linkedin: string; youtube: string };
+    socials: { instagram: string; facebook: string; linkedin: string; youtube: string; tiktok: string };
   };
   announcement: { enabled: boolean; text: string; linkLabel: string; href: string };
   navigation: { items: NavItem[]; headerCta: { label: string; href: string; labels?: Partial<Record<Locale, string>> } };
-  footer: { blurb: string };
+  /**
+   * Public footer shell. Columns and legal links are edited here so marketing
+   * can change destinations without a deploy; each href should be a CMS page
+   * or a live route that already exists.
+   */
+  footer: FooterSettings;
   applications: {
     /** When true, a candidate must have paid for the assessment before applying. Off by default: applying should be free and fast. */
     requirePaidAssessment: boolean;
@@ -112,6 +117,28 @@ export type SiteSettings = {
    * /video/intro.mp4, so the page never ships blank.
    */
   vsl: VslSettings;
+};
+
+export type FooterLink = { label: string; href: string };
+
+export type FooterTrustBadge = { label: string; icon: string };
+
+export type FooterSettings = {
+  blurb: string;
+  /** Wide photograph behind the lower footer band. Empty = solid navy. */
+  backgroundImage: string;
+  backgroundImageAlt: string;
+  quickLinksTitle: string;
+  quickLinks: FooterLink[];
+  companyTitle: string;
+  companyLinks: FooterLink[];
+  legalLinks: FooterLink[];
+  trustBadges: FooterTrustBadge[];
+  subscribeTitle: string;
+  subscribeNote: string;
+  subscribePlaceholder: string;
+  followTitle: string;
+  copyright: string;
 };
 
 /** Labels on the jobs board. {count} is replaced with a live figure. */
@@ -287,7 +314,13 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     officeAddress: DEFAULT_COMPANY.offices.map((office) => `${office.city}: ${office.address}`).join('\n'),
     officeHours: 'Monday to Friday, 10:00 to 17:00 Lisbon time and 10:00 to 17:00 Dubai time',
     familyVoiceUrl: '',
-    socials: { instagram: 'https://www.instagram.com/smithandadamsgroup/', facebook: '', linkedin: 'https://www.linkedin.com/company/91010816/', youtube: '' },
+    socials: {
+      instagram: 'https://www.instagram.com/smithandadamsgroup/',
+      facebook: '',
+      linkedin: 'https://www.linkedin.com/company/91010816/',
+      youtube: '',
+      tiktok: '',
+    },
   },
   announcement: {
     enabled: true,
@@ -363,7 +396,41 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     },
   },
   footer: {
-    blurb: 'Recruitment from India to Portugal, with real employers, legal contracts and support from your first application to your first month at work.',
+    blurb: 'A specialist international recruitment agency connecting skilled professionals with trusted employers in Portugal.',
+    backgroundImage: '/photos/lisbon.jpg',
+    backgroundImageAlt: 'Lisbon at dusk — the Tagus and the city lights',
+    quickLinksTitle: 'Quick Links',
+    quickLinks: [
+      { label: 'Home', href: '/' },
+      { label: 'Job Opportunities', href: '/jobs' },
+      { label: 'How It Works', href: '/how-it-works' },
+      { label: 'Why Portugal', href: '/why-portugal' },
+      { label: 'Visa & Relocation', href: '/visa-and-relocation' },
+      { label: 'For Employers', href: '/employers' },
+    ],
+    companyTitle: 'Company',
+    companyLinks: [
+      { label: 'About Us', href: '/about' },
+      { label: 'Contact Us', href: '/contact' },
+      { label: 'FAQs', href: '/faq' },
+      { label: 'Success Stories', href: '/success-stories' },
+      { label: 'News & Insights', href: '/news-and-insights' },
+    ],
+    legalLinks: [
+      { label: 'Privacy Policy', href: '/privacy' },
+      { label: 'Terms of Service', href: '/terms' },
+      { label: 'Cookie Policy', href: '/cookie-policy' },
+    ],
+    trustBadges: [
+      { label: 'Trusted Recruitment', icon: 'shield' },
+      { label: 'EU Compliant', icon: 'globe' },
+      { label: 'Data Protected', icon: 'document' },
+    ],
+    subscribeTitle: 'Stay Connected',
+    subscribeNote: 'Get job updates, relocation tips and opportunities in Portugal.',
+    subscribePlaceholder: 'Enter your email address',
+    followTitle: 'Follow Us',
+    copyright: '© {{year}} {{brand}}. All rights reserved.',
   },
   applications: { requirePaidAssessment: false, allowQuickApply: true, filmUrl: '/video/intro.mp4', filmLabel: 'Watch how it works · under a minute' },
   seo: {
@@ -805,6 +872,40 @@ export function mergeSettings(rows: { key: string; value: unknown }[]): SiteSett
         Array.isArray(storedVsl.highlights) && storedVsl.highlights.length > 0
           ? storedVsl.highlights.map(String).slice(0, 6)
           : DEFAULT_SETTINGS.vsl.highlights,
+    };
+  }
+  const storedFooter = stored.footer as Partial<FooterSettings> | undefined;
+  if (storedFooter) {
+    const linkList = (value: unknown, fallback: FooterLink[], max: number): FooterLink[] =>
+      Array.isArray(value) && value.length > 0
+        ? value
+            .filter((item): item is FooterLink => Boolean(item && typeof item === 'object'))
+            .map((item) => ({ label: String(item.label ?? ''), href: String(item.href ?? '') }))
+            .filter((item) => item.label && item.href)
+            .slice(0, max)
+        : fallback;
+    out.footer = {
+      ...DEFAULT_SETTINGS.footer,
+      ...storedFooter,
+      quickLinks: linkList(storedFooter.quickLinks, DEFAULT_SETTINGS.footer.quickLinks, 10),
+      companyLinks: linkList(storedFooter.companyLinks, DEFAULT_SETTINGS.footer.companyLinks, 10),
+      legalLinks: linkList(storedFooter.legalLinks, DEFAULT_SETTINGS.footer.legalLinks, 8),
+      trustBadges:
+        Array.isArray(storedFooter.trustBadges) && storedFooter.trustBadges.length > 0
+          ? storedFooter.trustBadges
+              .filter((item): item is FooterTrustBadge => Boolean(item && typeof item === 'object'))
+              .map((item) => ({ label: String(item.label ?? ''), icon: String(item.icon ?? 'shield') }))
+              .filter((item) => item.label)
+              .slice(0, 6)
+          : DEFAULT_SETTINGS.footer.trustBadges,
+    };
+  }
+  const storedGeneral = stored.general as Partial<SiteSettings['general']> | undefined;
+  if (storedGeneral?.socials && typeof storedGeneral.socials === 'object') {
+    out.general.socials = {
+      ...DEFAULT_SETTINGS.general.socials,
+      ...storedGeneral.socials,
+      tiktok: String((storedGeneral.socials as { tiktok?: string }).tiktok ?? out.general.socials.tiktok ?? ''),
     };
   }
   return out;

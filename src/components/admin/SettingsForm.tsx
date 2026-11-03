@@ -31,7 +31,7 @@ export function GeneralSettings({ initial }: { initial: Pick<SiteSettings, 'gene
           <Field label="Office address"><textarea className={INPUT} rows={2} value={general.officeAddress} onChange={(e) => setGeneral({ ...general, officeAddress: e.target.value })} /></Field>
         </div>
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
-          {(['instagram', 'facebook', 'linkedin', 'youtube'] as const).map((network) => (
+          {(['instagram', 'facebook', 'linkedin', 'youtube', 'tiktok'] as const).map((network) => (
             <Field key={network} label={network[0]!.toUpperCase() + network.slice(1)}>
               <input className={INPUT} placeholder="https://" value={general.socials[network]} onChange={(e) => setGeneral({ ...general, socials: { ...general.socials, [network]: e.target.value } })} />
             </Field>
@@ -55,11 +55,163 @@ export function GeneralSettings({ initial }: { initial: Pick<SiteSettings, 'gene
         <SaveBar onSave={() => a.save(announcement)} state={a.state} busy={a.busy} />
 
         <h2 className="m-0 mt-8 text-[17px] font-semibold">Footer</h2>
-        <div className="mt-3">
-          <Field label="Footer description"><textarea className={INPUT} rows={3} value={footer.blurb} onChange={(e) => setFooter({ blurb: e.target.value })} /></Field>
+        <p className="m-0 mt-1 text-[13px] text-ink-2">
+          Shared on every public page. Link columns should point at CMS pages or live routes. Edit page bodies under CMS.
+        </p>
+        <div className="mt-3 flex flex-col gap-3">
+          <Field label="Blurb under the logo">
+            <textarea className={INPUT} rows={3} value={footer.blurb} onChange={(e) => setFooter({ ...footer, blurb: e.target.value })} />
+          </Field>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Field label="Background photograph" help="Wide image behind the footer. Leave empty for solid navy.">
+              <input className={INPUT} value={footer.backgroundImage} onChange={(e) => setFooter({ ...footer, backgroundImage: e.target.value })} />
+            </Field>
+            <Field label="Background description">
+              <input className={INPUT} value={footer.backgroundImageAlt} onChange={(e) => setFooter({ ...footer, backgroundImageAlt: e.target.value })} />
+            </Field>
+          </div>
+          <Field label="Copyright line" help="Use {{year}} and {{brand}}.">
+            <input className={INPUT} value={footer.copyright} onChange={(e) => setFooter({ ...footer, copyright: e.target.value })} />
+          </Field>
+        </div>
+
+        <FooterLinkEditor
+          title="Quick links column"
+          titleValue={footer.quickLinksTitle}
+          onTitle={(quickLinksTitle) => setFooter({ ...footer, quickLinksTitle })}
+          links={footer.quickLinks}
+          onLinks={(quickLinks) => setFooter({ ...footer, quickLinks })}
+        />
+        <FooterLinkEditor
+          title="Company column"
+          titleValue={footer.companyTitle}
+          onTitle={(companyTitle) => setFooter({ ...footer, companyTitle })}
+          links={footer.companyLinks}
+          onLinks={(companyLinks) => setFooter({ ...footer, companyLinks })}
+        />
+        <FooterLinkEditor
+          title="Legal row"
+          titleValue="Legal links"
+          onTitle={() => undefined}
+          hideTitle
+          links={footer.legalLinks}
+          onLinks={(legalLinks) => setFooter({ ...footer, legalLinks })}
+        />
+
+        <h3 className="m-0 mt-6 text-[15px] font-semibold">Trust badges</h3>
+        <ul className="m-0 mt-2 flex list-none flex-col gap-2 p-0">
+          {footer.trustBadges.map((badge, index) => (
+            <li key={index} className="grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
+              <input
+                className={INPUT}
+                placeholder="Label"
+                value={badge.label}
+                onChange={(e) =>
+                  setFooter({
+                    ...footer,
+                    trustBadges: footer.trustBadges.map((item, i) => (i === index ? { ...item, label: e.target.value } : item)),
+                  })
+                }
+              />
+              <input
+                className={INPUT}
+                placeholder="Icon (shield, globe, document…)"
+                value={badge.icon}
+                onChange={(e) =>
+                  setFooter({
+                    ...footer,
+                    trustBadges: footer.trustBadges.map((item, i) => (i === index ? { ...item, icon: e.target.value } : item)),
+                  })
+                }
+              />
+              <button
+                type="button"
+                className="cursor-pointer rounded-[8px] border border-line bg-surface px-2 text-[12px] text-accent-deep"
+                onClick={() => setFooter({ ...footer, trustBadges: footer.trustBadges.filter((_, i) => i !== index) })}
+              >
+                Remove
+              </button>
+            </li>
+          ))}
+        </ul>
+        <button
+          type="button"
+          className="mt-2 cursor-pointer rounded-full border border-dashed border-line-strong bg-transparent px-3 py-1.5 text-[13px]"
+          onClick={() => setFooter({ ...footer, trustBadges: [...footer.trustBadges, { label: '', icon: 'shield' }] })}
+        >
+          + Add badge
+        </button>
+
+        <h3 className="m-0 mt-6 text-[15px] font-semibold">Stay connected</h3>
+        <div className="mt-2 grid gap-3">
+          <Field label="Subscribe heading">
+            <input className={INPUT} value={footer.subscribeTitle} onChange={(e) => setFooter({ ...footer, subscribeTitle: e.target.value })} />
+          </Field>
+          <Field label="Subscribe note">
+            <textarea className={INPUT} rows={2} value={footer.subscribeNote} onChange={(e) => setFooter({ ...footer, subscribeNote: e.target.value })} />
+          </Field>
+          <Field label="Email placeholder">
+            <input className={INPUT} value={footer.subscribePlaceholder} onChange={(e) => setFooter({ ...footer, subscribePlaceholder: e.target.value })} />
+          </Field>
+          <Field label="Follow us heading">
+            <input className={INPUT} value={footer.followTitle} onChange={(e) => setFooter({ ...footer, followTitle: e.target.value })} />
+          </Field>
         </div>
         <SaveBar onSave={() => f.save(footer)} state={f.state} busy={f.busy} />
       </Section>
+    </div>
+  );
+}
+
+function FooterLinkEditor({
+  title,
+  titleValue,
+  onTitle,
+  links,
+  onLinks,
+  hideTitle = false,
+}: {
+  title: string;
+  titleValue: string;
+  onTitle: (value: string) => void;
+  links: { label: string; href: string }[];
+  onLinks: (value: { label: string; href: string }[]) => void;
+  hideTitle?: boolean;
+}) {
+  return (
+    <div className="mt-6">
+      <h3 className="m-0 text-[15px] font-semibold">{title}</h3>
+      {!hideTitle ? (
+        <div className="mt-2">
+          <Field label="Column heading">
+            <input className={INPUT} value={titleValue} onChange={(e) => onTitle(e.target.value)} />
+          </Field>
+        </div>
+      ) : null}
+      <ul className="m-0 mt-2 flex list-none flex-col gap-2 p-0">
+        {links.map((item, index) => (
+          <li key={index} className="grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
+            <input
+              className={INPUT}
+              placeholder="Label"
+              value={item.label}
+              onChange={(e) => onLinks(links.map((link, i) => (i === index ? { ...link, label: e.target.value } : link)))}
+            />
+            <input
+              className={INPUT}
+              placeholder="/path"
+              value={item.href}
+              onChange={(e) => onLinks(links.map((link, i) => (i === index ? { ...link, href: e.target.value } : link)))}
+            />
+            <button type="button" className="cursor-pointer rounded-[8px] border border-line bg-surface px-2 text-[12px] text-accent-deep" onClick={() => onLinks(links.filter((_, i) => i !== index))}>
+              Remove
+            </button>
+          </li>
+        ))}
+      </ul>
+      <button type="button" className="mt-2 cursor-pointer rounded-full border border-dashed border-line-strong bg-transparent px-3 py-1.5 text-[13px]" onClick={() => onLinks([...links, { label: '', href: '/' }])}>
+        + Add link
+      </button>
     </div>
   );
 }

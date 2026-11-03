@@ -369,4 +369,45 @@ Nobody is authorised to charge a candidate anything beyond the skills report and
   ]),
 };
 
-export const LEGAL_PAGES: DefaultPage[] = [TERMS, PRIVACY, REFUND_POLICY, SELECTION_RULES, DELIVERY, CONTACT];
+export const COOKIE_POLICY: DefaultPage = {
+  slug: 'cookie-policy',
+  path: '/cookie-policy',
+  title: 'Cookie policy',
+  purpose: 'What cookies and similar storage this site uses. Linked from the footer legal row.',
+  seo: {
+    title: 'Cookie policy',
+    description: 'How this site uses cookies and similar storage, and how you can control them.',
+  },
+  blocks: makeBlocks('cookies', [
+    [
+      'document',
+      {
+        title: 'Cookie policy',
+        updated: '',
+        body: `## Who this covers
+
+{{legal_name}}, trading as {{brand}}. This page explains cookies and similar storage on this recruitment website.
+
+## What we use
+
+- **Essential cookies** keep you signed in, protect forms from abuse (for example Turnstile), and remember language where needed. The site does not work properly without them.
+- **Preference storage** may remember settings you choose on this device, such as theme.
+- We do **not** sell cookie data. We do not use advertising trackers that follow you across unrelated sites.
+
+## Analytics and errors
+
+If error reporting or rate-limiting tools are switched on in Settings › Integrations, they may set a technical cookie or use similar storage so the service can work. Those keys are never stored in public site settings.
+
+## Your choices
+
+Most browsers let you block or delete cookies. Blocking essential cookies may stop sign-in, apply and checkout from working. For personal data rights, see the [privacy policy](/privacy) or write to {{dpo_email}}.
+
+## Changes
+
+We update this page when the tools we use change. The date above is left blank until staff set it in the CMS.`,
+      },
+    ],
+  ]),
+};
+
+export const LEGAL_PAGES: DefaultPage[] = [TERMS, PRIVACY, REFUND_POLICY, SELECTION_RULES, DELIVERY, CONTACT, COOKIE_POLICY];

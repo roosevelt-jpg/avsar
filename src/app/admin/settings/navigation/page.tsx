@@ -11,7 +11,7 @@ export default async function NavigationSettingsPage() {
   const settings = await getSiteSettings();
   return (
     <AdminShell current="/admin/settings/navigation" isStaff>
-      <AdminHeading title="Navigation" lead="The links in the public site’s header and footer." />
+      <AdminHeading title="Navigation" lead="Header links and the header button. Footer columns are edited under Settings › General › Footer; page bodies live in CMS." />
       <SettingsTabs current="/admin/settings/navigation" />
       <div className="mt-8">
         <NavigationSettings initial={settings.navigation} />

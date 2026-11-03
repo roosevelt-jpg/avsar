@@ -3,14 +3,13 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { Wordmark } from '@/components/ui/Wordmark';
 import { FooterSubscribe } from '@/components/candidate/FooterSubscribe';
-import { getDictionary, type Locale, localePath } from '@/lib/i18n';
+import { Icon } from '@/components/cms/primitives';
+import type { Locale } from '@/lib/i18n';
 import { getSiteSettings } from '@/lib/cms/data';
-import { localHref, navLabel, whatsappHref } from '@/lib/cms/settings';
+import { localHref } from '@/lib/cms/settings';
 import { siteText } from '@/lib/cms/localize';
-import { FOOTER_LABELS } from '@/lib/cms/interface-copy';
+import type { IconName } from '@/lib/cms/blocks';
 
-/* Simple outline marks for the social buttons, drawn on a 24px grid so they
-   match the stroke icons elsewhere on the site without an icon library. */
 const SOCIAL_ICONS: Record<string, ReactNode> = {
   instagram: (
     <>
@@ -32,255 +31,182 @@ const SOCIAL_ICONS: Record<string, ReactNode> = {
       <path d="M10.5 9.5v5l4-2.5-4-2.5z" fill="currentColor" />
     </>
   ),
+  tiktok: <path d="M14 5c.6 2.2 2.2 3.8 4.5 4.2v2.6c-1.5-.1-2.9-.6-4.1-1.4v5.3A5.3 5.3 0 1110.2 10v2.7a2.7 2.7 0 102.1 2.6V5h1.7z" fill="currentColor" stroke="none" />,
 };
 
-type FooterLink = { href: string; label: string; external?: boolean };
-
-const LINK = 't-colors text-[14px] font-bold uppercase leading-[1.35] text-white no-underline hover:underline';
-
-function FooterColumn({ title, links }: { title: string; links: FooterLink[] }) {
-  return (
-    <div className="min-w-0">
-      <h2 className="m-0 mb-4 text-[14px] font-medium text-[#c96a4b]">{title}</h2>
-      <ul className="m-0 flex list-none flex-col gap-3 p-0">
-        {links.map((item) =>
-          item.external ? (
-            <li key={item.href}>
-              <a href={item.href} target="_blank" rel="noopener noreferrer" className={LINK}>
-                {item.label}
-              </a>
-            </li>
-          ) : (
-            <li key={item.href}>
-              <Link href={item.href} className={LINK}>
-                {item.label}
-              </Link>
-            </li>
-          ),
-        )}
-      </ul>
-    </div>
-  );
+function asIcon(name: string): IconName {
+  const allowed: IconName[] = [
+    'shield',
+    'check',
+    'rupee',
+    'globe',
+    'home',
+    'chat',
+    'briefcase',
+    'plane',
+    'document',
+    'star',
+    'clock',
+    'users',
+    'phone',
+    'heart',
+    'graduation',
+    'map',
+    'euro',
+  ];
+  return (allowed.includes(name as IconName) ? name : 'shield') as IconName;
 }
 
-/** The outlined action on the dark band. Same shape as a recruitment-site footer button. */
-function FooterAction({ href, label, external = false }: { href: string; label: string; external?: boolean }) {
-  const className = 't-colors inline-flex items-center gap-2 rounded-full border border-[#c96a4b] bg-[#0a088f] px-6 py-2 text-[14px] font-bold uppercase tracking-[0.04em] text-white no-underline hover:bg-[#22209a]';
-  if (external) {
-    return (
-      <a href={href} target="_blank" rel="noopener noreferrer" className={className}>
-        {label}
-        <span aria-hidden className="rtl:-scale-x-100">→</span>
-      </a>
-    );
-  }
-  return (
-    <Link href={href} className={className}>
-      {label}
-      <span aria-hidden className="rtl:-scale-x-100">→</span>
-    </Link>
-  );
-}
-
+/**
+ * Shared marketing footer on every public locale page (and employers).
+ *
+ * Columns, blurb, trust badges, subscribe copy, legal links and the Lisbon
+ * photograph come from Settings › General › Footer so staff can change them
+ * without a deploy. Each link should point at a CMS page or live route.
+ */
 export async function SiteFooter({ locale }: { locale: Locale }) {
-  const t = getDictionary(locale);
   const settings = await getSiteSettings();
-  const { company } = settings;
-  const partner = company.partner;
-  const socials = Object.entries(settings.general.socials).filter(([, url]) => url);
-  const cta = settings.navigation.headerCta;
-  const ctaLabel = cta.labels?.[locale] || cta.label;
+  const { company, footer, general } = settings;
+  const socials = Object.entries(general.socials).filter(([, url]) => url);
+  const year = String(new Date().getFullYear());
+  const copyright = footer.copyright
+    .replaceAll('{{year}}', year)
+    .replaceAll('{{brand}}', general.siteName || company.tradingAs);
+  const t = (english: string) => siteText(locale, english);
   const page = (path: string) => localHref(locale, path);
-  const label = (key: keyof typeof FOOTER_LABELS) => siteText(locale, FOOTER_LABELS[key]);
-
-  /* The first column is the site menu from Settings › Navigation, so the
-     footer never lists a page the header has dropped. The rest are fixed
-     pages every install has. */
-  const columns: { title: string; links: FooterLink[] }[] = [
-    {
-      title: label('explore'),
-      links: settings.navigation.items.map((item) => ({ href: localHref(locale, item.href), label: navLabel(item, locale) })),
-    },
-    {
-      title: label('getStarted'),
-      links: [
-        { href: page('/signup'), label: label('createProfile') },
-        { href: page('/applicant/signin'), label: label('signIn') },
-        { href: page('/pricing'), label: label('pricing') },
-        { href: page('/employers'), label: label('hire') },
-      ],
-    },
-    {
-      title: label('helpSafety'),
-      links: [
-        { href: page('/for-your-family'), label: label('forYourFamily') },
-        { href: page('/stay-safe'), label: label('staySafe') },
-        { href: localePath(locale, '/selection-rules'), label: t.selectionRules },
-        { href: localePath(locale, '/contact'), label: t.footerContact },
-      ],
-    },
-    {
-      title: label('company'),
-      links: [
-        { href: page('/about'), label: label('about') },
-        { href: localePath(locale, '/terms'), label: t.footerTerms },
-        { href: localePath(locale, '/privacy'), label: t.footerPrivacy },
-        { href: localePath(locale, '/refund-policy'), label: t.footerRefund },
-        { href: localePath(locale, '/delivery'), label: t.footerDelivery },
-      ],
-    },
-  ];
-
-  const legal = [
-    { href: localePath(locale, '/terms'), label: t.footerTerms },
-    { href: localePath(locale, '/privacy'), label: t.footerPrivacy },
-    { href: localePath(locale, '/refund-policy'), label: t.footerRefund },
-  ];
-
-  const contactHref = page('/contact');
 
   return (
-    /* Navy stays the brand colour. The arrangement follows a recruitment
-       footer: three prompts, then the logo beside the link columns, then a
-       thin legal line. Every link is one this site already had. */
-    <footer className="bg-[#0a088f] text-white">
-      <div className="border-b border-white/15">
-        <div className="mx-auto grid w-full max-w-[1200px] gap-12 px-[clamp(20px,4cqi,32px)] py-16 md:grid-cols-3">
-          <div>
-            <h2 className="m-0 text-[22px] font-medium leading-[1.25] text-[#c96a4b]">{label('getStarted')}</h2>
-            <p className="m-0 mt-3 text-[15px] leading-[1.5] text-white/85">{settings.footer.blurb}</p>
-            {cta.href && ctaLabel ? (
-              <div className="mt-6">
-                <FooterAction href={localHref(locale, cta.href)} label={ctaLabel} />
-              </div>
-            ) : null}
-          </div>
-          <div>
-            <h2 className="m-0 text-[22px] font-medium leading-[1.25] text-[#c96a4b]">{label('contact')}</h2>
-            <p className="m-0 mt-3 text-[15px] leading-[1.5] text-white/85">{settings.general.officeHours}</p>
-            <div className="mt-6 flex flex-col items-start gap-3">
-              {settings.general.whatsapp ? (
-                <FooterAction href={whatsappHref(settings.general.whatsapp)} label={label('whatsapp')} external />
-              ) : (
-                <FooterAction href={contactHref} label={label('contact')} />
-              )}
-              {settings.general.whatsapp ? (
-                <a href={whatsappHref(settings.general.whatsapp)} target="_blank" rel="noopener noreferrer" dir="ltr" className="t-colors text-[14px] text-white no-underline hover:underline">
-                  WhatsApp {settings.general.whatsapp}
-                </a>
-              ) : null}
-              <a href={`mailto:${settings.general.supportEmail}`} className="t-colors break-all text-[14px] text-white no-underline hover:underline">
-                {settings.general.supportEmail}
-              </a>
-            </div>
-          </div>
-          <div>
-            <h2 className="m-0 text-[22px] font-medium leading-[1.25] text-[#c96a4b]">{label('subscribeTitle')}</h2>
-            <p className="m-0 mt-3 mb-6 text-[15px] leading-[1.5] text-white/85">{label('subscribeNote')}</p>
-            <FooterSubscribe
-              locale={locale}
-              labels={{
-                title: label('subscribeTitle'),
-                note: label('subscribeNote'),
-                placeholder: label('subscribePlaceholder'),
-                button: label('subscribeButton'),
-                done: label('subscribeDone'),
-                error: label('subscribeError'),
-              }}
-            />
-          </div>
-        </div>
-      </div>
+    <footer className="relative overflow-hidden bg-[#0a088f] text-white">
+      {footer.backgroundImage ? (
+        <>
+          <Image
+            src={footer.backgroundImage}
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover object-center opacity-45"
+            unoptimized={!footer.backgroundImage.startsWith('/')}
+          />
+          <div aria-hidden className="absolute inset-0 bg-gradient-to-b from-[#0a088f] via-[#0a088f]/92 to-[#0a088f]/55" />
+        </>
+      ) : null}
 
-      <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-12 px-[clamp(20px,4cqi,32px)] py-16 lg:flex-row lg:gap-16">
-        <div className="shrink-0 lg:w-[200px]">
-          <Wordmark href={localePath(locale, '/')} tone="dark" size={28} />
-        </div>
-        <div className="grid min-w-0 flex-1 grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-4">
-          {columns.map((column) => (
-            <FooterColumn key={column.title} title={column.title} links={column.links} />
-          ))}
-        </div>
-      </div>
-
-      {/*
-        Who is actually being paid: the legal name, licence number and
-        registered address in full. The company a candidate pays is not the
-        name above the door, and they should not find that out from their
-        bank statement. Payment providers' compliance reviews look for it
-        here too.
-      */}
-      <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-1 px-[clamp(20px,4cqi,32px)] pb-10 text-[13px] leading-[1.7] text-white/70">
-        <p className="m-0">
-          {company.legalName} · {company.registrationLabel} {company.registrationNumber} · {company.registeredAddress}
-        </p>
-        <p className="m-0">
-          Trading as {company.tradingAs}. Charges appear as {company.statementDescriptor}.
-          {company.phone && (
-            <>
-              {' '}
-              <a href={`tel:${company.phone.replace(/\s/g, '')}`} dir="ltr" className="t-colors text-white hover:underline">
-                {company.phone}
-              </a>
-            </>
-          )}
-          {company.supportEmail && (
-            <>
-              {' · '}
-              <a href={`mailto:${company.supportEmail}`} className="t-colors text-white hover:underline">
-                {company.supportEmail}
-              </a>
-            </>
-          )}
-        </p>
-        {partner.legalName && (
-          <p className="m-0">
-            Placement partner in Portugal: {partner.legalName} · {partner.registrationLabel} {partner.registrationNumber} · {partner.address}
-          </p>
-        )}
-        {/* An office at the registered address is already on the first line. */}
-        {company.offices
-          .filter((office) => office.address.trim().toLowerCase() !== company.registeredAddress.trim().toLowerCase())
-          .map((office) => (
-            <p key={office.city} className="m-0">
-              {office.city} office: {office.address}
-            </p>
-          ))}
-      </div>
-
-      <div className="border-t border-white/15">
-        <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-5 px-[clamp(20px,4cqi,32px)] py-6 md:flex-row md:items-center md:justify-between">
-          <div className="flex min-w-0 flex-wrap items-center gap-x-5 gap-y-3">
-            {company.parentBrand && (
-              <a href={company.website || undefined} target="_blank" rel="noopener noreferrer" className="t-colors opacity-80 hover:opacity-100">
-                <Image src="/smith-adams-group-light-320.png" alt={`${company.parentBrand} Group`} width={320} height={68} className="h-auto w-[120px]" />
-              </a>
-            )}
-            <p className="m-0 text-[14px] text-white">{t.footerLegal}</p>
-          </div>
-          <nav aria-label="Legal" className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[14px]">
-            {legal.map((item) => (
-              <Link key={item.href} href={item.href} className="t-colors text-white no-underline hover:underline">
-                {item.label}
-              </Link>
-            ))}
-            {settings.general.tagline ? <span className="text-white/70">{settings.general.tagline}</span> : null}
-          </nav>
-          {socials.length > 0 && (
-            <ul className="m-0 flex list-none gap-4 p-0">
-              {socials.map(([name, url]) => (
-                <li key={name}>
-                  <a href={url} target="_blank" rel="noopener noreferrer" aria-label={name} title={name} className="t-colors grid size-6 place-items-center text-white hover:opacity-70">
-                    <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                      {SOCIAL_ICONS[name] ?? <circle cx="12" cy="12" r="8" />}
-                    </svg>
-                  </a>
+      <div className="relative mx-auto grid w-full max-w-[1200px] gap-10 px-[clamp(20px,4cqi,56px)] py-[clamp(40px,6cqi,72px)] lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.7fr)_minmax(0,0.7fr)_minmax(0,1fr)]">
+        <div>
+          <Wordmark href={page('/')} tone="dark" size={28} />
+          {footer.blurb ? (
+            <p className="m-0 mt-5 max-w-[36ch] text-[14px] leading-[1.55] text-white/85">{t(footer.blurb)}</p>
+          ) : null}
+          {footer.trustBadges.length > 0 ? (
+            <ul className="m-0 mt-6 flex list-none flex-wrap gap-2.5 p-0">
+              {footer.trustBadges.map((badge) => (
+                <li
+                  key={badge.label}
+                  className="inline-flex items-center gap-2 rounded-[8px] border border-white/35 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.06em] text-white/95"
+                >
+                  <Icon name={asIcon(badge.icon)} className="size-3.5 text-[var(--color-gold)]" />
+                  {t(badge.label)}
                 </li>
               ))}
             </ul>
-          )}
+          ) : null}
+        </div>
+
+        <FooterLinkColumn title={t(footer.quickLinksTitle)} links={footer.quickLinks.map((item) => ({ ...item, href: page(item.href), label: t(item.label) }))} />
+        <FooterLinkColumn title={t(footer.companyTitle)} links={footer.companyLinks.map((item) => ({ ...item, href: page(item.href), label: t(item.label) }))} />
+
+        <div>
+          <h2 className="display-serif m-0 text-[22px] font-normal text-white">
+            {t(footer.subscribeTitle)}
+            <span aria-hidden className="mt-2 block h-px w-10 bg-[var(--color-gold)]" />
+          </h2>
+          <p className="m-0 mt-4 text-[14px] leading-[1.5] text-white/85">{t(footer.subscribeNote)}</p>
+          <div className="mt-5">
+            <FooterSubscribe
+              locale={locale}
+              labels={{
+                title: t(footer.subscribeTitle),
+                note: t(footer.subscribeNote),
+                placeholder: t(footer.subscribePlaceholder),
+                button: t('Subscribe'),
+                done: t('Thank you. You are on the list.'),
+                error: t('That did not work. Check the address and try again.'),
+              }}
+            />
+          </div>
+          {socials.length > 0 ? (
+            <div className="mt-8">
+              <p className="m-0 text-[14px] font-semibold text-white">{t(footer.followTitle)}</p>
+              <ul className="m-0 mt-3 flex list-none flex-wrap gap-2.5 p-0">
+                {socials.map(([name, url]) => (
+                  <li key={name}>
+                    <a
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={name}
+                      title={name}
+                      className="t-colors grid size-10 place-items-center rounded-[10px] border border-white/40 text-white no-underline hover:border-[var(--color-gold)] hover:text-[var(--color-gold)]"
+                    >
+                      <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                        {SOCIAL_ICONS[name] ?? <circle cx="12" cy="12" r="8" />}
+                      </svg>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+        </div>
+      </div>
+
+      <div className="relative border-t border-[var(--color-gold)]/55">
+        <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-4 px-[clamp(20px,4cqi,56px)] py-5 md:flex-row md:items-center md:justify-between">
+          <p className="m-0 text-[13px] text-white/85">{copyright}</p>
+          <nav aria-label="Legal" className="flex flex-wrap items-center gap-x-3 gap-y-2 text-[13px]">
+            {footer.legalLinks.map((item, index) => (
+              <span key={item.href} className="inline-flex items-center gap-3">
+                {index > 0 ? <span aria-hidden className="text-white/40">|</span> : null}
+                <Link href={page(item.href)} className="t-colors text-white/90 no-underline hover:text-[var(--color-gold)] hover:underline">
+                  {t(item.label)}
+                </Link>
+              </span>
+            ))}
+          </nav>
+        </div>
+      </div>
+
+      {/* Quiet legal entity line for payments compliance — not part of the mockup chrome. */}
+      <div className="relative border-t border-white/10">
+        <div className="mx-auto max-w-[1200px] px-[clamp(20px,4cqi,56px)] py-4 text-[12px] leading-[1.6] text-white/55">
+          <p className="m-0">
+            {company.legalName} · {company.registrationLabel} {company.registrationNumber} · {company.registeredAddress}
+          </p>
         </div>
       </div>
     </footer>
+  );
+}
+
+function FooterLinkColumn({ title, links }: { title: string; links: { href: string; label: string }[] }) {
+  return (
+    <div className="min-w-0">
+      <h2 className="display-serif m-0 text-[22px] font-normal text-white">
+        {title}
+        <span aria-hidden className="mt-2 block h-px w-10 bg-[var(--color-gold)]" />
+      </h2>
+      <ul className="m-0 mt-5 flex list-none flex-col gap-3 p-0">
+        {links.map((item) => (
+          <li key={`${item.href}-${item.label}`}>
+            <Link href={item.href} className="t-colors inline-flex items-center gap-2 text-[14px] text-white/90 no-underline hover:text-[var(--color-gold)]">
+              <span aria-hidden className="text-[var(--color-gold)]">
+                ›
+              </span>
+              {item.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }

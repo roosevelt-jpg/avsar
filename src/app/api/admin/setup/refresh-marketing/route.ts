@@ -16,6 +16,10 @@ const SLUGS = new Set([
   'visa-and-relocation',
   'about',
   'contact',
+  'success-stories',
+  'news-and-insights',
+  'cookie-policy',
+  'faq',
 ]);
 
 /**

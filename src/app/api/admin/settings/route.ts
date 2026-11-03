@@ -38,11 +38,26 @@ const schemas = {
       .max(1000)
       .optional()
       .transform((value) => (value ? safeUrl(value) : '')),
-    socials: z.object({ instagram: url, facebook: url, linkedin: url, youtube: url }),
+    socials: z.object({ instagram: url, facebook: url, linkedin: url, youtube: url, tiktok: url }),
   }),
   announcement: z.object({ enabled: z.boolean(), text: text(240), linkLabel: text(60), href: url }),
   navigation: z.object({ items: z.array(nav).max(10), headerCta: z.object({ label: text(40), href: url, labels }) }),
-  footer: z.object({ blurb: text(400) }),
+  footer: z.object({
+    blurb: text(400),
+    backgroundImage: url,
+    backgroundImageAlt: text(160),
+    quickLinksTitle: text(60),
+    quickLinks: z.array(z.object({ label: text(60).min(1), href: url })).max(10),
+    companyTitle: text(60),
+    companyLinks: z.array(z.object({ label: text(60).min(1), href: url })).max(10),
+    legalLinks: z.array(z.object({ label: text(60).min(1), href: url })).max(8),
+    trustBadges: z.array(z.object({ label: text(60).min(1), icon: text(40) })).max(6),
+    subscribeTitle: text(80),
+    subscribeNote: text(240),
+    subscribePlaceholder: text(80),
+    followTitle: text(60),
+    copyright: text(160),
+  }),
   applications: z.object({ requirePaidAssessment: z.boolean(), allowQuickApply: z.boolean(), filmUrl: url, filmLabel: text(80) }),
   seo: z.object({
     defaultTitle: text(80),
