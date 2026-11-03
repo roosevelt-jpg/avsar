@@ -95,11 +95,47 @@ export type SiteSettings = {
   /** Copy on /employers. The placement fee stays under Company & pricing. */
   employerLanding: EmployerLanding;
   /**
+   * Chrome on /jobs: search placeholders, filter headings, card buttons and
+   * the live-stat labels. Counts are filled from the database at render time.
+   */
+  jobsBoard: JobsBoardSettings;
+  /**
    * Paid-traffic VSL funnel at /[locale]/go: video, headline and CTAs that
    * send the visitor to sign-up. Video falls back to Applications film, then
    * /video/intro.mp4, so the page never ships blank.
    */
   vsl: VslSettings;
+};
+
+/** Labels on the jobs board. {count} is replaced with a live figure. */
+export type JobsBoardSettings = {
+  searchKeywordPlaceholder: string;
+  searchLocationLabel: string;
+  searchCategoryLabel: string;
+  searchButton: string;
+  filterTitle: string;
+  clearAll: string;
+  categoryHeading: string;
+  experienceHeading: string;
+  employmentHeading: string;
+  salaryHeading: string;
+  salaryMinLabel: string;
+  salaryMaxLabel: string;
+  experienceEntry: string;
+  experienceMid: string;
+  experienceSenior: string;
+  resultsHeading: string;
+  sortLabel: string;
+  sortNewest: string;
+  sortSalary: string;
+  verifiedBadge: string;
+  viewDetails: string;
+  applyNow: string;
+  statsVacancies: string;
+  statsEmployers: string;
+  statsPlaced: string;
+  emptyTitle: string;
+  emptyBody: string;
 };
 
 export type VslSettings = {
@@ -182,6 +218,7 @@ export const SETTINGS_KEYS = [
   'emails',
   'conversion',
   'employerLanding',
+  'jobsBoard',
   'vsl',
 ] as const;
 
@@ -444,6 +481,35 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     ],
     contactTitle: 'Tell us what roles you need to fill.',
     contactNote: '{{fee}} per placement. Search is free.',
+  },
+  jobsBoard: {
+    searchKeywordPlaceholder: 'Job title, skill or keyword',
+    searchLocationLabel: 'Portugal',
+    searchCategoryLabel: 'Job category',
+    searchButton: 'Search jobs',
+    filterTitle: 'Filter opportunities',
+    clearAll: 'Clear all',
+    categoryHeading: 'Job category',
+    experienceHeading: 'Experience level',
+    employmentHeading: 'Employment type',
+    salaryHeading: 'Salary range (monthly)',
+    salaryMinLabel: 'Min',
+    salaryMaxLabel: 'Max',
+    experienceEntry: 'Entry level',
+    experienceMid: 'Mid level',
+    experienceSenior: 'Senior level',
+    resultsHeading: '{count} job opportunities',
+    sortLabel: 'Sort by',
+    sortNewest: 'Newest',
+    sortSalary: 'Salary',
+    verifiedBadge: 'Verified',
+    viewDetails: 'View details',
+    applyNow: 'Apply now',
+    statsVacancies: '{count} active vacancies',
+    statsEmployers: '{count} verified employers',
+    statsPlaced: '{count} candidates placed',
+    emptyTitle: 'No jobs match this search right now.',
+    emptyBody: 'Try another filter, or create your profile and we will tell you when one opens.',
   },
 };
 

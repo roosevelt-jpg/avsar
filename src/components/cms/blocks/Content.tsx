@@ -15,13 +15,17 @@ export function TrustBarBlock({ data }: Props) {
   const list = items(data, 'items');
   if (!list.length) return null;
   return (
-    <section className="px-[clamp(20px,4cqi,56px)]">
-      <ul className="mx-auto m-0 grid w-full max-w-[1200px] list-none grid-cols-1 border-t border-line p-0 lg:grid-cols-4">
+    <section className="border-b border-line bg-white px-[clamp(20px,4cqi,56px)] py-[clamp(22px,3cqi,32px)]">
+      <ul className="mx-auto m-0 grid w-full max-w-[1200px] list-none grid-cols-1 gap-5 p-0 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
         {list.map((item, index) => (
-          <li key={index} className="border-b border-line py-6 lg:border-b-0 lg:border-s lg:px-6 lg:py-8 lg:first:border-s-0">
-            <Icon name={str(item, 'icon')} className="size-5 text-ink" />
-            <p className="m-0 mt-4 text-[16px] font-semibold">{str(item, 'title')}</p>
-            <p className="m-0 mt-2 text-[14px] leading-[1.5] text-ink-2">{str(item, 'body')}</p>
+          <li key={index} className="flex items-start gap-3">
+            <span className="mt-0.5 grid size-10 shrink-0 place-items-center rounded-full border border-[var(--color-gold)]/40 text-[var(--color-gold)]">
+              <Icon name={str(item, 'icon')} className="size-5" />
+            </span>
+            <div className="min-w-0">
+              <p className="m-0 text-[15px] font-semibold text-[#0a088f]">{str(item, 'title')}</p>
+              {str(item, 'body') ? <p className="m-0 mt-1 text-[13px] leading-[1.45] text-ink-2">{str(item, 'body')}</p> : null}
+            </div>
           </li>
         ))}
       </ul>
@@ -49,6 +53,7 @@ export function StatsBlock({ data }: Props) {
 
 export function StepsBlock({ data }: Props) {
   const list = items(data, 'items');
+  if (str(data, 'layout') === 'journey') return <StepsJourney data={data} />;
   if (str(data, 'layout') === 'timeline') return <StepsTimeline data={data} />;
   return (
     <Section id="how">
@@ -68,6 +73,56 @@ export function StepsBlock({ data }: Props) {
           </li>
         ))}
       </ol>
+    </Section>
+  );
+}
+
+/**
+ * Side photograph with a horizontal step row. Matches the mockup journey:
+ * tram (or any CMS photo) on the left, four steps with arrows on the right.
+ */
+function StepsJourney({ data }: { data: BlockData }) {
+  const list = items(data, 'items');
+  const sideImage = str(data, 'sideImage');
+  return (
+    <Section id="how" className="!bg-white !py-[clamp(40px,6cqi,80px)]">
+      <div className="mb-[clamp(24px,3cqi,36px)] max-w-[720px]">
+        {str(data, 'eyebrow') ? (
+          <p className="m-0 mb-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--color-gold)]">{str(data, 'eyebrow')}</p>
+        ) : null}
+        {str(data, 'title') ? (
+          <h2 className="display-serif m-0 text-balance text-[clamp(30px,3.8cqi,46px)] leading-[1.1] text-[#0a088f]">{str(data, 'title')}</h2>
+        ) : null}
+        {str(data, 'intro') ? <p className="m-0 mt-3 text-[16px] leading-[1.55] text-ink-2">{str(data, 'intro')}</p> : null}
+      </div>
+      <div className={`grid grid-cols-1 items-start gap-[clamp(24px,3.5cqi,40px)] ${sideImage ? 'lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]' : ''}`}>
+        {sideImage ? (
+          <div className="relative aspect-[3/4] overflow-hidden rounded-[18px] bg-[#0a088f] sm:aspect-[4/5] lg:aspect-[3/4]">
+            <CmsImage src={sideImage} alt={str(data, 'sideImageAlt')} sizes="(max-width: 1024px) 100vw, 38vw" />
+          </div>
+        ) : null}
+        <ol className="m-0 grid list-none grid-cols-1 gap-5 p-0 sm:grid-cols-2 xl:grid-cols-4 xl:gap-3">
+          {list.map((item, index) => (
+            <li key={index} className="relative min-w-0 rounded-[14px] border border-line bg-[#f7f7fb] px-4 py-5">
+              {index < list.length - 1 ? (
+                <span
+                  aria-hidden
+                  className="absolute -end-2 top-1/2 z-10 hidden -translate-y-1/2 text-[18px] text-[var(--color-gold)] xl:block"
+                >
+                  →
+                </span>
+              ) : null}
+              <span className="grid size-10 place-items-center rounded-full border border-[var(--color-gold)]/45 text-[var(--color-gold)]">
+                <Icon name={str(item, 'icon') || 'check'} className="size-5" />
+              </span>
+              <p className="m-0 mt-4 font-mono text-[11px] tracking-[0.14em] text-[var(--color-gold)]">{String(index + 1).padStart(2, '0')}</p>
+              <h3 className="m-0 mt-2 text-[17px] font-semibold leading-[1.25] text-[#0a088f]">{str(item, 'title').replace(/^\d+\.\s*/, '')}</h3>
+              <p className="m-0 mt-2 text-[14px] leading-[1.5] text-ink-2">{str(item, 'body')}</p>
+              {str(item, 'meta') ? <p className="m-0 mt-3 text-[12px] font-medium text-muted">{str(item, 'meta')}</p> : null}
+            </li>
+          ))}
+        </ol>
+      </div>
     </Section>
   );
 }
@@ -189,10 +244,41 @@ function FeatureTiles({ data, locale, list, columns }: Props & { list: BlockData
   );
 }
 
+/** Line-icon row for Why Portugal: gold outline icons, no card chrome. */
+function FeatureIcons({ data, list, columns }: { data: BlockData; list: BlockData[]; columns: number }) {
+  return (
+    <Section className="!bg-white !py-[clamp(40px,6cqi,72px)]">
+      <div className="mb-[clamp(28px,4cqi,40px)] flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+        <div className="max-w-[520px]">
+          {str(data, 'eyebrow') ? (
+            <p className="m-0 mb-2 text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--color-gold)]">{str(data, 'eyebrow')}</p>
+          ) : null}
+          {str(data, 'title') ? (
+            <h2 className="display-serif m-0 text-balance text-[clamp(32px,4cqi,48px)] leading-[1.1] text-[#0a088f]">{str(data, 'title')}</h2>
+          ) : null}
+        </div>
+        {str(data, 'intro') ? <p className="m-0 max-w-[42ch] text-[15px] leading-[1.55] text-ink-2 lg:text-end">{str(data, 'intro')}</p> : null}
+      </div>
+      <ul className={`m-0 grid list-none grid-cols-1 gap-8 p-0 sm:grid-cols-2 ${columns >= 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-3'}`}>
+        {list.map((item, index) => (
+          <li key={index} className="min-w-0">
+            <span className="grid size-12 place-items-center rounded-[14px] border border-[var(--color-gold)]/50 text-[var(--color-gold)]">
+              <Icon name={str(item, 'icon')} className="size-6" />
+            </span>
+            <h3 className="m-0 mt-4 text-[18px] font-semibold tracking-[-0.01em] text-[#0a088f]">{str(item, 'title')}</h3>
+            <p className="m-0 mt-2 text-[14px] leading-[1.55] text-ink-2">{str(item, 'body')}</p>
+          </li>
+        ))}
+      </ul>
+    </Section>
+  );
+}
+
 export function FeaturesBlock({ data, locale }: Props) {
   const list = items(data, 'items');
   const columns = num(data, 'columns', 3);
   if (str(data, 'style') === 'tiles') return <FeatureTiles data={data} locale={locale} list={list} columns={columns} />;
+  if (str(data, 'style') === 'icons') return <FeatureIcons data={data} list={list} columns={columns} />;
   const grid = featureColumns(columns);
   return (
     <Section tone="surface">

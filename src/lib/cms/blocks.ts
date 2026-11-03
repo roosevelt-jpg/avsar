@@ -24,7 +24,7 @@ export type Field =
   | { kind: 'url'; name: string; label: string; help?: string }
   | { kind: 'media'; name: string; label: string; help?: string; accept: 'image' | 'video' | 'any'; optional?: boolean }
   | { kind: 'number'; name: string; label: string; help?: string; min: number; max: number }
-  | { kind: 'select'; name: string; label: string; help?: string; options: { value: string; label: string }[] }
+  | { kind: 'select'; name: string; label: string; help?: string; options: { value: string; label: string }[]; optional?: boolean }
   | { kind: 'boolean'; name: string; label: string; help?: string }
   /* optional: an empty link is left out of the saved data rather than stored
      as a blank pair, so content written without it stays unchanged. */
@@ -64,9 +64,24 @@ export const BLOCKS = {
     fields: [
       eyebrow,
       { kind: 'text', name: 'title', label: 'Headline', max: 160 },
+      {
+        kind: 'text',
+        name: 'accentWord',
+        label: 'Gold italic word',
+        help: 'A word inside the headline that is drawn in gold italic, e.g. "Portugal". Leave empty for a plain headline.',
+        max: 40,
+      },
       { kind: 'textarea', name: 'subtitle', label: 'Subtitle', rows: 3, max: 500 },
       { kind: 'link', name: 'primaryCta', label: 'Primary button' },
-      { kind: 'link', name: 'secondaryCta', label: 'Secondary link', help: 'Shown as a text link, so the primary button stays the one obvious action' },
+      { kind: 'link', name: 'secondaryCta', label: 'Secondary button', help: 'Outline button next to the primary action' },
+      {
+        kind: 'text',
+        name: 'badgeLabel',
+        label: 'Floating badge',
+        help: 'Short label over the hero photograph, e.g. "Work & Live in Portugal". Leave empty to hide.',
+        max: 60,
+      },
+      { kind: 'url', name: 'badgeHref', label: 'Badge link', help: 'Optional. Where the badge goes when pressed.' },
       {
         kind: 'media',
         name: 'filmUrl',
@@ -129,9 +144,22 @@ export const BLOCKS = {
           { value: 'none', label: 'None (centred text)' },
         ],
       },
-      { kind: 'media', name: 'mediaSrc', label: 'Image or film', accept: 'any' },
+      { kind: 'media', name: 'mediaSrc', label: 'Image or film', accept: 'any', help: 'Used when the slideshow below is empty.' },
       { kind: 'media', name: 'mediaPoster', label: 'Film poster image', accept: 'image' },
       { kind: 'text', name: 'mediaAlt', label: 'Image description (for screen readers)', max: 200 },
+      {
+        kind: 'list',
+        name: 'slides',
+        label: 'Slideshow',
+        help: 'Photographs that cycle beside the headline. When this list has items, it replaces the single image or film above.',
+        itemLabel: 'Slide',
+        max: 8,
+        fields: [
+          { kind: 'media', name: 'src', label: 'Photograph', accept: 'image' },
+          { kind: 'text', name: 'alt', label: 'Description', max: 160 },
+          { kind: 'text', name: 'caption', label: 'Caption', help: 'Optional short line on the photo', max: 80 },
+        ],
+      },
       {
         kind: 'list',
         name: 'stats',
@@ -144,7 +172,31 @@ export const BLOCKS = {
         ],
       },
     ],
-    empty: { eyebrow: '', title: 'New headline', subtitle: '', primaryCta: { label: '', href: '' }, secondaryCta: { label: '', href: '' }, filmUrl: '', filmLabel: '', highlights: [], intentsLabel: '', intents: [], bubbles: [], liveProof: false, routeMap: false, layout: 'split', mediaType: 'none', mediaSrc: '', mediaPoster: '', mediaAlt: '', stats: [] },
+    empty: {
+      eyebrow: '',
+      title: 'New headline',
+      accentWord: '',
+      subtitle: '',
+      primaryCta: { label: '', href: '' },
+      secondaryCta: { label: '', href: '' },
+      badgeLabel: '',
+      badgeHref: '',
+      filmUrl: '',
+      filmLabel: '',
+      highlights: [],
+      intentsLabel: '',
+      intents: [],
+      bubbles: [],
+      liveProof: false,
+      routeMap: false,
+      layout: 'split',
+      mediaType: 'none',
+      mediaSrc: '',
+      mediaPoster: '',
+      mediaAlt: '',
+      slides: [],
+      stats: [],
+    },
   },
   trust_bar: {
     label: 'Trust bar',
@@ -245,6 +297,14 @@ export const BLOCKS = {
         itemLabel: 'Step',
         max: 10,
         fields: [
+          {
+            kind: 'select',
+            name: 'icon',
+            label: 'Icon',
+            help: 'Used by the Journey layout. Leave blank for Cards or Timeline.',
+            options: iconOptions,
+            optional: true,
+          },
           { kind: 'text', name: 'title', label: 'Title', max: 100 },
           { kind: 'textarea', name: 'body', label: 'Body', rows: 3, max: 500 },
           { kind: 'text', name: 'meta', label: 'Small label', help: 'e.g. "Day 1" or "Free"', max: 40 },
@@ -255,14 +315,24 @@ export const BLOCKS = {
         kind: 'select',
         name: 'layout',
         label: 'Layout',
-        help: 'Timeline is two columns with a round photo and a dotted rule. Cards is a stacked list. Both use the same steps.',
+        help: 'Journey is a side photograph with a horizontal step row. Timeline is two columns with round photos. Cards is a stacked list.',
         options: [
           { value: 'cards', label: 'Cards' },
           { value: 'timeline', label: 'Timeline' },
+          { value: 'journey', label: 'Journey (photo + steps)' },
         ],
       },
+      {
+        kind: 'media',
+        name: 'sideImage',
+        label: 'Side photograph',
+        help: 'Used by the Journey layout. A tall photo of the place or the move.',
+        accept: 'image',
+        optional: true,
+      },
+      { kind: 'text', name: 'sideImageAlt', label: 'Side photograph description', max: 160 },
     ],
-    empty: { eyebrow: '', title: 'How it works', intro: '', items: [], layout: 'cards' },
+    empty: { eyebrow: '', title: 'How it works', intro: '', items: [], layout: 'cards', sideImage: '', sideImageAlt: '' },
   },
   features: {
     label: 'Feature grid',
@@ -308,10 +378,63 @@ export const BLOCKS = {
         options: [
           { value: 'cards', label: 'White cards' },
           { value: 'tiles', label: 'Photo and navy panel' },
+          { value: 'icons', label: 'Line icons (Why Portugal)' },
         ],
       },
     ],
     empty: { eyebrow: '', title: '', intro: '', columns: '3', items: [], style: 'cards', typing: false },
+  },
+  press_bar: {
+    label: 'Press logos',
+    description: 'A row of publication logos. Renders nothing until at least one logo is added — do not invent press mentions.',
+    fields: [
+      { kind: 'text', name: 'eyebrow', label: 'Label', help: 'e.g. "As featured in". Shown above the logos.', max: 80 },
+      {
+        kind: 'list',
+        name: 'items',
+        label: 'Logos',
+        itemLabel: 'Logo',
+        max: 12,
+        fields: [
+          { kind: 'text', name: 'name', label: 'Name', help: 'Used for the alt text', max: 80 },
+          { kind: 'media', name: 'logo', label: 'Logo image', accept: 'image' },
+          { kind: 'url', name: 'href', label: 'Link', help: 'Optional article or homepage' },
+        ],
+      },
+    ],
+    empty: { eyebrow: 'As featured in', items: [] },
+  },
+  employer_band: {
+    label: 'Employer band',
+    description: 'A navy call-out for employers: photo, headline, bullets and a hire button.',
+    fields: [
+      { kind: 'text', name: 'eyebrow', label: 'Eyebrow', max: 40 },
+      title,
+      { kind: 'textarea', name: 'body', label: 'Body', rows: 3, max: 400 },
+      {
+        kind: 'list',
+        name: 'bullets',
+        label: 'Bullets',
+        itemLabel: 'Bullet',
+        max: 6,
+        fields: [
+          { kind: 'select', name: 'icon', label: 'Icon', options: iconOptions },
+          { kind: 'text', name: 'text', label: 'Text', max: 120 },
+        ],
+      },
+      { kind: 'media', name: 'image', label: 'Photograph', accept: 'image' },
+      { kind: 'text', name: 'imageAlt', label: 'Photograph description', max: 160 },
+      { kind: 'link', name: 'cta', label: 'Button' },
+    ],
+    empty: {
+      eyebrow: 'For employers',
+      title: '',
+      body: '',
+      bullets: [],
+      image: '',
+      imageAlt: '',
+      cta: { label: '', href: '' },
+    },
   },
   split: {
     label: 'Image and text',

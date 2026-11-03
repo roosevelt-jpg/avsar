@@ -302,8 +302,14 @@ textarea {
   --color-tint-sage: rgba(10, 8, 143, 0.08);
 }
 
-/* The shopfront stays in the site sans. A display serif made the page read
-   as a magazine template. Footer column labels stay small and tracked out. */
+/* Display serif is reserved for marketing accents (hero “Portugal”,
+   section titles that opt in). Body and most headings stay Schibsted. */
+.market {
+  --color-gold: #c9a54a;
+  --color-gold-deep: #b8923a;
+  --color-gold-soft: rgba(201, 165, 74, 0.16);
+  --font-display: var(--font-dm-serif), "Times New Roman", serif;
+}
 .market :is(h1, h2) {
   font-family: var(--font-sans);
   font-weight: 600;
@@ -313,23 +319,49 @@ textarea {
   font-weight: 500;
   letter-spacing: 0;
 }
+.market .display-serif {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+.market .text-gold {
+  color: var(--color-gold);
+}
+.market .accent-italic {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--color-gold);
+}
 
-/* A solid navy button with white type. The terracotta border keeps it
-   visible when the button sits on a navy header, closer or footer. */
+/* Gold primary on the shopfront (mockup). Navy outline stays for the
+   second action. Terracotta remains on small labels and the header border. */
 .btn-gradient {
-  background-color: #0a088f;
+  background-color: #c9a54a;
   background-image: none;
-  color: #ffffff;
-  border: 1px solid #c96a4b;
-  border-radius: 2px;
+  color: #0a088f;
+  border: 1px solid #c9a54a;
+  border-radius: 999px;
   box-shadow: none;
-  transition: background-color 180ms ease;
+  transition: background-color 180ms ease, color 180ms ease;
 }
 .btn-gradient:hover {
-  background-color: #22209a;
+  background-color: #b8923a;
   background-image: none;
-  color: #ffffff;
+  color: #0a088f;
   filter: none;
+}
+.btn-outline-light {
+  background-color: transparent;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 999px;
+  transition: background-color 180ms ease, border-color 180ms ease;
+}
+.btn-outline-light:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: #ffffff;
+  color: #ffffff;
 }
 
 /* Older filled actions still say bg-ink and text-paper. On the shopfront
@@ -435,6 +467,11 @@ textarea {
   border: 1px solid var(--color-line-strong);
   background: var(--color-surface);
   color: var(--color-ink);
+}
+.market .hero-brand .stage-nav {
+  border-color: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
   font-size: 20px;
   line-height: 1;
 }

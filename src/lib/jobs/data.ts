@@ -1,6 +1,7 @@
 import { getAnonSupabase } from '@/lib/supabase/anon';
 import { getAdminSupabase } from '@/lib/supabase/admin';
-import { jobFromRow, type Job, type JobStatus } from './types';
+import { experienceYearsFilter, type ExperienceBand } from './board';
+import { jobFromRow, type EmploymentType, type Job, type JobStatus } from './types';
 
 /**
  * Reading job postings.
@@ -14,8 +15,16 @@ import { jobFromRow, type Job, type JobStatus } from './types';
 export type JobFilters = {
   q?: string;
   area?: string;
+  /** One or more area slugs from the sidebar checkboxes. */
+  areas?: string[];
   city?: string;
   position?: string;
+  employmentTypes?: EmploymentType[];
+  experience?: ExperienceBand[];
+  /** Monthly EUR floor / ceiling; jobs outside the band are hidden. */
+  salaryMin?: number;
+  salaryMax?: number;
+  sort?: 'newest' | 'salary';
   page?: number;
   pageSize?: number;
 };
@@ -31,22 +40,39 @@ export async function listPublishedJobs(filters: JobFilters = {}): Promise<JobPa
   const supabase = getAnonSupabase();
   if (!supabase) return { jobs: [], total: 0, page, pageSize };
 
-  let query = supabase
-    .from('job_postings')
-    .select(LIST_COLUMNS, { count: 'exact' })
-    .eq('status', 'published')
-    .order('featured', { ascending: false })
-    .order('published_at', { ascending: false })
-    .range((page - 1) * pageSize, page * pageSize - 1);
+  let query = supabase.from('job_postings').select(LIST_COLUMNS, { count: 'exact' }).eq('status', 'published');
 
   if (filters.q?.trim()) {
     /* websearch syntax tolerates whatever a candidate types: quotes, minus
        signs, stray punctuation, without throwing a syntax error. */
     query = query.textSearch('search', filters.q.trim(), { type: 'websearch', config: 'simple' });
   }
-  if (filters.area) query = query.eq('area', filters.area);
+  const areas = filters.areas?.length ? filters.areas : filters.area ? [filters.area] : [];
+  if (areas.length === 1) query = query.eq('area', areas[0]!);
+  else if (areas.length > 1) query = query.in('area', areas);
   if (filters.city) query = query.ilike('city', filters.city);
   if (filters.position) query = query.eq('position_slug', filters.position);
+  if (filters.employmentTypes?.length) query = query.in('employment_type', filters.employmentTypes);
+  if (filters.experience?.length) {
+    const clauses = filters.experience.map((band) => {
+      const { min, max } = experienceYearsFilter(band);
+      return `and(min_experience_years.gte.${min},min_experience_years.lte.${max})`;
+    });
+    query = query.or(clauses.join(','));
+  }
+  if (filters.salaryMin != null && Number.isFinite(filters.salaryMin)) {
+    query = query.or(`salary_max_eur.gte.${filters.salaryMin},salary_min_eur.gte.${filters.salaryMin}`);
+  }
+  if (filters.salaryMax != null && Number.isFinite(filters.salaryMax)) {
+    query = query.lte('salary_min_eur', filters.salaryMax);
+  }
+
+  if (filters.sort === 'salary') {
+    query = query.order('salary_max_eur', { ascending: false, nullsFirst: false }).order('featured', { ascending: false });
+  } else {
+    query = query.order('featured', { ascending: false }).order('published_at', { ascending: false });
+  }
+  query = query.range((page - 1) * pageSize, page * pageSize - 1);
 
   const { data, count, error } = await query;
   if (error) {

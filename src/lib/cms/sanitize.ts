@@ -37,7 +37,11 @@ function sanitizeField(field: Field, value: unknown): unknown {
     }
     case 'select': {
       const allowed = field.options.map((option) => option.value);
-      return typeof value === 'string' && allowed.includes(value) ? value : (allowed[0] ?? '');
+      if (typeof value === 'string' && allowed.includes(value)) return value;
+      /* Optional selects stay blank when the saved item never had the field,
+         so older step lists are not rewritten with the first icon. */
+      if (field.optional) return '';
+      return allowed[0] ?? '';
     }
     case 'boolean':
       return value === true;
@@ -75,6 +79,7 @@ function sanitizeObject(fields: Field[], raw: Record<string, unknown>): BlockDat
       if (!pair.label && !pair.href) continue;
     }
     if (field.kind === 'media' && field.optional && !value) continue;
+    if (field.kind === 'select' && field.optional && !value) continue;
     out[field.name] = value;
   }
   return out;

@@ -37,15 +37,10 @@ export type ResolvedPage = {
  * has none. Hiding the block in the console is respected, because a hidden
  * one still counts as present.
  */
-function ensureFeaturedEmployers(slug: string, blocks: Block[]): Block[] {
-  if (slug !== 'home' || blocks.some((block) => block.type === 'featured_employers')) return blocks;
-  const block: Block = { id: 'home-employers', type: 'featured_employers', data: { title: 'Featured employers' } };
-  const trust = blocks.findIndex((item) => item.type === 'trust_bar');
-  const hero = blocks.findIndex((item) => item.type === 'hero');
-  const index = trust >= 0 ? trust + 1 : hero >= 0 ? hero + 1 : 0;
-  const next = blocks.slice();
-  next.splice(index, 0, block);
-  return next;
+/* Featured employers stay optional. Staff add the block in the CMS when they
+   want the logo row; the home redesign no longer injects it automatically. */
+function ensureFeaturedEmployers(_slug: string, blocks: Block[]): Block[] {
+  return blocks;
 }
 
 function fromDefault(slug: string, locale: string): ResolvedPage | null {

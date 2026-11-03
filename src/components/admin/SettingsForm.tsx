@@ -343,6 +343,64 @@ export function EmployerLandingForm({ initial }: { initial: SiteSettings['employ
   );
 }
 
+/** Settings › chrome on /jobs. {count} is filled with a live database figure. */
+export function JobsBoardForm({ initial }: { initial: SiteSettings['jobsBoard'] }) {
+  /* Older saved rows may predate salaryMinLabel / sortLabel; fill from defaults. */
+  const [board, setBoard] = useState<SiteSettings['jobsBoard']>(() => ({
+    ...initial,
+    salaryMinLabel: initial.salaryMinLabel || 'Min',
+    salaryMaxLabel: initial.salaryMaxLabel || 'Max',
+    sortLabel: initial.sortLabel || 'Sort by',
+  }));
+  const saver = useSettingsSaver('jobsBoard');
+  const set = (key: keyof SiteSettings['jobsBoard'], value: string) => setBoard({ ...board, [key]: value });
+
+  return (
+    <div className="flex flex-col gap-5">
+      <Section title="Search bar" lead="Placeholders and the search button on /jobs.">
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Field label="Keyword placeholder"><input className={INPUT} value={board.searchKeywordPlaceholder} onChange={(e) => set('searchKeywordPlaceholder', e.target.value)} /></Field>
+          <Field label="Location label"><input className={INPUT} value={board.searchLocationLabel} onChange={(e) => set('searchLocationLabel', e.target.value)} /></Field>
+          <Field label="Category label"><input className={INPUT} value={board.searchCategoryLabel} onChange={(e) => set('searchCategoryLabel', e.target.value)} /></Field>
+          <Field label="Search button"><input className={INPUT} value={board.searchButton} onChange={(e) => set('searchButton', e.target.value)} /></Field>
+        </div>
+      </Section>
+      <Section title="Filters and results" lead="Sidebar headings, sort labels and the results line. Write {count} where a live number should appear.">
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Field label="Filter title"><input className={INPUT} value={board.filterTitle} onChange={(e) => set('filterTitle', e.target.value)} /></Field>
+          <Field label="Clear all"><input className={INPUT} value={board.clearAll} onChange={(e) => set('clearAll', e.target.value)} /></Field>
+          <Field label="Category heading"><input className={INPUT} value={board.categoryHeading} onChange={(e) => set('categoryHeading', e.target.value)} /></Field>
+          <Field label="Experience heading"><input className={INPUT} value={board.experienceHeading} onChange={(e) => set('experienceHeading', e.target.value)} /></Field>
+          <Field label="Employment heading"><input className={INPUT} value={board.employmentHeading} onChange={(e) => set('employmentHeading', e.target.value)} /></Field>
+          <Field label="Salary heading"><input className={INPUT} value={board.salaryHeading} onChange={(e) => set('salaryHeading', e.target.value)} /></Field>
+          <Field label="Salary · min"><input className={INPUT} value={board.salaryMinLabel} onChange={(e) => set('salaryMinLabel', e.target.value)} /></Field>
+          <Field label="Salary · max"><input className={INPUT} value={board.salaryMaxLabel} onChange={(e) => set('salaryMaxLabel', e.target.value)} /></Field>
+          <Field label="Entry level"><input className={INPUT} value={board.experienceEntry} onChange={(e) => set('experienceEntry', e.target.value)} /></Field>
+          <Field label="Mid level"><input className={INPUT} value={board.experienceMid} onChange={(e) => set('experienceMid', e.target.value)} /></Field>
+          <Field label="Senior level"><input className={INPUT} value={board.experienceSenior} onChange={(e) => set('experienceSenior', e.target.value)} /></Field>
+          <Field label="Results heading"><input className={INPUT} value={board.resultsHeading} onChange={(e) => set('resultsHeading', e.target.value)} /></Field>
+          <Field label="Sort label"><input className={INPUT} value={board.sortLabel} onChange={(e) => set('sortLabel', e.target.value)} /></Field>
+          <Field label="Sort · newest"><input className={INPUT} value={board.sortNewest} onChange={(e) => set('sortNewest', e.target.value)} /></Field>
+          <Field label="Sort · salary"><input className={INPUT} value={board.sortSalary} onChange={(e) => set('sortSalary', e.target.value)} /></Field>
+        </div>
+      </Section>
+      <Section title="Cards and live stats" lead="Every published job shows the verified badge. Stat lines use {count} from the live database — never invent a number here.">
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Field label="Verified badge"><input className={INPUT} value={board.verifiedBadge} onChange={(e) => set('verifiedBadge', e.target.value)} /></Field>
+          <Field label="View details"><input className={INPUT} value={board.viewDetails} onChange={(e) => set('viewDetails', e.target.value)} /></Field>
+          <Field label="Apply now"><input className={INPUT} value={board.applyNow} onChange={(e) => set('applyNow', e.target.value)} /></Field>
+          <Field label="Vacancies stat"><input className={INPUT} value={board.statsVacancies} onChange={(e) => set('statsVacancies', e.target.value)} /></Field>
+          <Field label="Employers stat"><input className={INPUT} value={board.statsEmployers} onChange={(e) => set('statsEmployers', e.target.value)} /></Field>
+          <Field label="Placed stat"><input className={INPUT} value={board.statsPlaced} onChange={(e) => set('statsPlaced', e.target.value)} /></Field>
+        </div>
+        <Field label="Empty title"><input className={INPUT} value={board.emptyTitle} onChange={(e) => set('emptyTitle', e.target.value)} /></Field>
+        <Field label="Empty body"><textarea className={INPUT} rows={2} value={board.emptyBody} onChange={(e) => set('emptyBody', e.target.value)} /></Field>
+      </Section>
+      <SaveBar onSave={() => saver.save(board)} state={saver.state} busy={saver.busy} />
+    </div>
+  );
+}
+
 /** Settings › VSL: paid-traffic funnel at /[locale]/go. */
 export function VslSettingsForm({ initial }: { initial: SiteSettings['vsl'] }) {
   const [vsl, setVsl] = useState(initial);

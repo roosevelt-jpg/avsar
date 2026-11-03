@@ -95,9 +95,9 @@ export function CmsButton({
   size?: 'sm' | 'md' | 'lg';
 }) {
   if (!href || !label) return null;
-  const className = `t-colors inline-flex items-center justify-center gap-2 rounded-[2px] border font-semibold uppercase tracking-[0.04em] no-underline ${
-    size === 'lg' ? 'px-6 py-3.5 text-[16px]' : size === 'sm' ? 'px-3 py-1.5 text-[12px]' : 'px-5 py-3 text-[15px]'
-  } ${BUTTON[variant]}`;
+  const className = `t-colors inline-flex items-center justify-center gap-2 border font-semibold uppercase tracking-[0.04em] no-underline ${
+    variant === 'primary' ? 'rounded-full' : 'rounded-[2px]'
+  } ${size === 'lg' ? 'px-6 py-3.5 text-[16px]' : size === 'sm' ? 'px-3 py-1.5 text-[12px]' : 'px-5 py-3 text-[15px]'} ${BUTTON[variant]}`;
   const resolved = localHref(locale, href);
   const external = /^https?:/i.test(resolved);
   if (external || resolved.startsWith('mailto:') || resolved.startsWith('tel:')) {

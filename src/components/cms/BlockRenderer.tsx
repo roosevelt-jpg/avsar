@@ -19,6 +19,7 @@ import { FeaturedEmployersBlock, FeaturedJobsBlock, JobCategoriesBlock } from '.
 import { LiveFunnelBlock } from './blocks/LiveFunnel';
 import { CandidateStoriesBlock, GalleryBlock, TestimonialsBlock, VideoBlock } from './blocks/Media';
 import { ContactCardsBlock, FaqBlock } from './blocks/Faq';
+import { EmployerBandBlock, PressBarBlock } from './blocks/Brand';
 
 /**
  * Renders a page's blocks in order.
@@ -58,6 +59,10 @@ export function BlockRenderer({ blocks, locale, settings }: { blocks: Block[]; l
             return <JobCategoriesBlock key={block.id} {...props} />;
           case 'featured_employers':
             return <FeaturedEmployersBlock key={block.id} {...props} />;
+          case 'press_bar':
+            return <PressBarBlock key={block.id} {...props} />;
+          case 'employer_band':
+            return <EmployerBandBlock key={block.id} {...props} />;
           case 'video':
             return <VideoBlock key={block.id} {...props} />;
           case 'gallery':
