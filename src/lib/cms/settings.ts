@@ -10,6 +10,10 @@ import {
 } from '@/lib/company/config';
 import { DEFAULT_EMAILS, type EmailSettings } from '@/lib/email/templates';
 import { isLocale, localePath, type Locale } from '@/lib/i18n/path';
+import {
+  DEFAULT_EMPLOYER_REGISTRATION,
+  type EmployerRegistrationSettings,
+} from '@/lib/cms/employer-registration';
 
 /**
  * Site settings: the public, editable configuration of the site.
@@ -42,6 +46,7 @@ export type NavItem = {
  */
 export const STATIC_SEO_PAGES = [
   { key: 'employers', label: 'Employers', path: '/employers' },
+  { key: 'employerRegister', label: 'Employer registration', path: '/employers/register' },
   { key: 'pricing', label: 'Pricing', path: '/pricing' },
   { key: 'signup', label: 'Register', path: '/signup' },
   { key: 'signin', label: 'Sign in', path: '/signin' },
@@ -94,6 +99,8 @@ export type SiteSettings = {
   conversion: ConversionSettings;
   /** Copy on /employers. The placement fee stays under Company & pricing. */
   employerLanding: EmployerLanding;
+  /** Multi-step enquiry at /employers/register. */
+  employerRegistration: EmployerRegistrationSettings;
   /**
    * Chrome on /jobs: search placeholders, filter headings, card buttons and
    * the live-stat labels. Counts are filled from the database at render time.
@@ -261,6 +268,7 @@ export const SETTINGS_KEYS = [
   'emails',
   'conversion',
   'employerLanding',
+  'employerRegistration',
   'jobsBoard',
   'vsl',
 ] as const;
@@ -369,6 +377,13 @@ export const DEFAULT_SETTINGS: SiteSettings = {
         description: 'Assessed candidates from India for hospitality, construction, cleaning and logistics roles in Portugal. Candidates never pay for a job; the employer pays the placement fee.',
         ogTitle: '',
         ogImage: '',
+      },
+      employerRegister: {
+        title: 'Employer registration · Submit hiring requirements',
+        description:
+          'Tell us the roles you need. We deliver a pre-screened shortlist from India with recruitment and relocation support to Portugal.',
+        ogTitle: '',
+        ogImage: '/photos/brand/employer-register-hero.jpg',
       },
       pricing: {
         title: 'Pricing',
@@ -521,7 +536,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     navPricing: 'Pricing',
     navCandidates: 'For candidates',
     ctaLabel: 'Hire Talent Today',
-    ctaHref: '#contact',
+    ctaHref: '/employers/register',
     secondaryCtaLabel: 'Book a Consultation',
     secondaryCtaHref: '#contact',
     eyebrow: 'FOR EMPLOYERS',
@@ -573,6 +588,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     contactNote: '{{fee}} per placement. Search is free.',
     searchHeading: 'Search the talent pool',
   },
+  employerRegistration: DEFAULT_EMPLOYER_REGISTRATION,
   jobsBoard: {
     searchKeywordPlaceholder: 'Job title, skill or keyword',
     searchLocationLabel: 'Portugal',
@@ -726,6 +742,56 @@ export function mergeSettings(rows: { key: string; value: unknown }[]): SiteSett
               .filter((step) => step.title && step.body)
               .slice(0, 6)
           : DEFAULT_SETTINGS.employerLanding.steps,
+    };
+  }
+  const storedReg = stored.employerRegistration as Partial<EmployerRegistrationSettings> | undefined;
+  if (storedReg) {
+    const stringList = (value: unknown, fallback: string[], max: number) =>
+      Array.isArray(value) && value.length > 0 ? value.map(String).filter(Boolean).slice(0, max) : fallback;
+    out.employerRegistration = {
+      ...DEFAULT_EMPLOYER_REGISTRATION,
+      ...storedReg,
+      headerLinks:
+        Array.isArray(storedReg.headerLinks) && storedReg.headerLinks.length > 0
+          ? storedReg.headerLinks
+              .filter((item): item is { label: string; href: string } => Boolean(item && typeof item === 'object'))
+              .map((item) => ({ label: String(item.label ?? ''), href: String(item.href ?? '') }))
+              .filter((item) => item.label && item.href)
+              .slice(0, 10)
+          : DEFAULT_EMPLOYER_REGISTRATION.headerLinks,
+      slides:
+        Array.isArray(storedReg.slides) && storedReg.slides.length > 0
+          ? storedReg.slides
+              .filter((slide): slide is { src: string; alt: string } => Boolean(slide && typeof slide === 'object'))
+              .map((slide) => ({ src: String(slide.src ?? ''), alt: String(slide.alt ?? '') }))
+              .filter((slide) => slide.src)
+              .slice(0, 8)
+          : DEFAULT_EMPLOYER_REGISTRATION.slides,
+      highlights:
+        Array.isArray(storedReg.highlights) && storedReg.highlights.length > 0
+          ? storedReg.highlights
+              .filter((item): item is { icon: string; label: string } => Boolean(item && typeof item === 'object'))
+              .map((item) => ({ icon: String(item.icon ?? 'check'), label: String(item.label ?? '') }))
+              .filter((item) => item.label)
+              .slice(0, 6)
+          : DEFAULT_EMPLOYER_REGISTRATION.highlights,
+      howSteps:
+        Array.isArray(storedReg.howSteps) && storedReg.howSteps.length > 0
+          ? storedReg.howSteps
+              .filter((item): item is { icon: string; title: string; body: string } => Boolean(item && typeof item === 'object'))
+              .map((item) => ({
+                icon: String(item.icon ?? 'check'),
+                title: String(item.title ?? ''),
+                body: String(item.body ?? ''),
+              }))
+              .filter((item) => item.title)
+              .slice(0, 6)
+          : DEFAULT_EMPLOYER_REGISTRATION.howSteps,
+      industryOptions: stringList(storedReg.industryOptions, DEFAULT_EMPLOYER_REGISTRATION.industryOptions, 20),
+      countryOptions: stringList(storedReg.countryOptions, DEFAULT_EMPLOYER_REGISTRATION.countryOptions, 20),
+      companySizeOptions: stringList(storedReg.companySizeOptions, DEFAULT_EMPLOYER_REGISTRATION.companySizeOptions, 12),
+      employmentOptions: stringList(storedReg.employmentOptions, DEFAULT_EMPLOYER_REGISTRATION.employmentOptions, 12),
+      timelineOptions: stringList(storedReg.timelineOptions, DEFAULT_EMPLOYER_REGISTRATION.timelineOptions, 12),
     };
   }
   const storedVsl = stored.vsl as Partial<VslSettings> | undefined;

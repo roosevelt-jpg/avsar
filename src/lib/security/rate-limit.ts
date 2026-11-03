@@ -36,6 +36,7 @@ export const RATE_LIMITS = {
   mediaSign: { name: 'media-sign', limit: 60, windowSeconds: 60 },
   vacancyRequest: { name: 'vacancy-request', limit: 10, windowSeconds: 3600 },
   contact: { name: 'contact', limit: 8, windowSeconds: 600 },
+  employerIntake: { name: 'employer-intake', limit: 6, windowSeconds: 600 },
   subscribe: { name: 'subscribe', limit: 5, windowSeconds: 600 },
   selfExport: { name: 'self-export', limit: 5, windowSeconds: 3600 },
   /* Places autocomplete fires as candidates type; keep Google quota safe. */

@@ -522,6 +522,131 @@ export function EmployerLandingForm({ initial }: { initial: SiteSettings['employ
   );
 }
 
+/** Settings › /employers/register mockup copy and form labels. */
+export function EmployerRegistrationForm({ initial }: { initial: SiteSettings['employerRegistration'] }) {
+  const [page, setPage] = useState(initial);
+  const saver = useSettingsSaver('employerRegistration');
+  const set = <K extends keyof SiteSettings['employerRegistration']>(key: K, value: SiteSettings['employerRegistration'][K]) =>
+    setPage({ ...page, [key]: value });
+  const lines = (value: string) =>
+    value
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean);
+
+  return (
+    <div className="flex flex-col gap-5">
+      <Section title="Hero" lead="Slideshow photographs and the three highlight chips. Paths under /photos/brand/…">
+        <Field label="Eyebrow"><input className={INPUT} value={page.eyebrow} onChange={(e) => set('eyebrow', e.target.value)} /></Field>
+        <Field label="Headline"><input className={INPUT} value={page.headline} onChange={(e) => set('headline', e.target.value)} /></Field>
+        <Field label="Introduction"><textarea className={INPUT} rows={3} value={page.intro} onChange={(e) => set('intro', e.target.value)} /></Field>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Field label="Header CTA"><input className={INPUT} value={page.headerCtaLabel} onChange={(e) => set('headerCtaLabel', e.target.value)} /></Field>
+          <Field label="Header CTA link"><input className={INPUT} value={page.headerCtaHref} onChange={(e) => set('headerCtaHref', e.target.value)} /></Field>
+        </div>
+        <p className="m-0 text-[13px] font-medium text-ink-2">Slides (one path per line: src|alt)</p>
+        <textarea
+          className={INPUT}
+          rows={4}
+          value={page.slides.map((slide) => `${slide.src}|${slide.alt}`).join('\n')}
+          onChange={(e) =>
+            set(
+              'slides',
+              lines(e.target.value).map((line) => {
+                const [src = '', ...rest] = line.split('|');
+                return { src: src.trim(), alt: rest.join('|').trim() };
+              }),
+            )
+          }
+        />
+        <p className="m-0 text-[13px] font-medium text-ink-2">Highlights (icon|label per line)</p>
+        <textarea
+          className={INPUT}
+          rows={3}
+          value={page.highlights.map((item) => `${item.icon}|${item.label}`).join('\n')}
+          onChange={(e) =>
+            set(
+              'highlights',
+              lines(e.target.value).map((line) => {
+                const [icon = 'check', ...rest] = line.split('|');
+                return { icon: icon.trim(), label: rest.join('|').trim() };
+              }),
+            )
+          }
+        />
+      </Section>
+
+      <Section title="How it works" lead="Four numbered steps beside the form.">
+        <Field label="Title"><input className={INPUT} value={page.howTitle} onChange={(e) => set('howTitle', e.target.value)} /></Field>
+        <p className="m-0 text-[13px] font-medium text-ink-2">Steps (icon|title|body per line)</p>
+        <textarea
+          className={INPUT}
+          rows={5}
+          value={page.howSteps.map((step) => `${step.icon}|${step.title}|${step.body}`).join('\n')}
+          onChange={(e) =>
+            set(
+              'howSteps',
+              lines(e.target.value).map((line) => {
+                const [icon = 'check', title = '', ...rest] = line.split('|');
+                return { icon: icon.trim(), title: title.trim(), body: rest.join('|').trim() };
+              }),
+            )
+          }
+        />
+      </Section>
+
+      <Section title="Quote card" lead="Leave quote empty until you have a real attribution. Empty quote hides the card.">
+        <Field label="Quote"><textarea className={INPUT} rows={2} value={page.quote} onChange={(e) => set('quote', e.target.value)} /></Field>
+        <Field label="Attribution"><input className={INPUT} value={page.quoteAttribution} onChange={(e) => set('quoteAttribution', e.target.value)} /></Field>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Field label="Image path"><input className={INPUT} value={page.quoteImage} onChange={(e) => set('quoteImage', e.target.value)} /></Field>
+          <Field label="Image alt"><input className={INPUT} value={page.quoteImageAlt} onChange={(e) => set('quoteImageAlt', e.target.value)} /></Field>
+        </div>
+      </Section>
+
+      <Section title="Form copy" lead="Labels and CTAs on the multi-step enquiry card.">
+        <Field label="Form title"><input className={INPUT} value={page.formTitle} onChange={(e) => set('formTitle', e.target.value)} /></Field>
+        <Field label="Form intro"><textarea className={INPUT} rows={2} value={page.formIntro} onChange={(e) => set('formIntro', e.target.value)} /></Field>
+        <div className="grid gap-3 sm:grid-cols-3">
+          <Field label="Step 1"><input className={INPUT} value={page.step1Label} onChange={(e) => set('step1Label', e.target.value)} /></Field>
+          <Field label="Step 2"><input className={INPUT} value={page.step2Label} onChange={(e) => set('step2Label', e.target.value)} /></Field>
+          <Field label="Step 3"><input className={INPUT} value={page.step3Label} onChange={(e) => set('step3Label', e.target.value)} /></Field>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Field label="Continue to hiring"><input className={INPUT} value={page.continueToHiring} onChange={(e) => set('continueToHiring', e.target.value)} /></Field>
+          <Field label="Continue to review"><input className={INPUT} value={page.continueToReview} onChange={(e) => set('continueToReview', e.target.value)} /></Field>
+          <Field label="Submit"><input className={INPUT} value={page.submitLabel} onChange={(e) => set('submitLabel', e.target.value)} /></Field>
+          <Field label="Book consultation"><input className={INPUT} value={page.bookConsultationLabel} onChange={(e) => set('bookConsultationLabel', e.target.value)} /></Field>
+          <Field label="Book consultation link"><input className={INPUT} value={page.bookConsultationHref} onChange={(e) => set('bookConsultationHref', e.target.value)} /></Field>
+          <Field label="Privacy note"><input className={INPUT} value={page.privacyNote} onChange={(e) => set('privacyNote', e.target.value)} /></Field>
+        </div>
+        <Field label="Success title"><input className={INPUT} value={page.successTitle} onChange={(e) => set('successTitle', e.target.value)} /></Field>
+        <Field label="Success body"><textarea className={INPUT} rows={2} value={page.successBody} onChange={(e) => set('successBody', e.target.value)} /></Field>
+      </Section>
+
+      <Section title="Dropdown options" lead="One option per line.">
+        <Field label="Industries">
+          <textarea className={INPUT} rows={4} value={page.industryOptions.join('\n')} onChange={(e) => set('industryOptions', lines(e.target.value))} />
+        </Field>
+        <Field label="Countries">
+          <textarea className={INPUT} rows={3} value={page.countryOptions.join('\n')} onChange={(e) => set('countryOptions', lines(e.target.value))} />
+        </Field>
+        <Field label="Company sizes">
+          <textarea className={INPUT} rows={3} value={page.companySizeOptions.join('\n')} onChange={(e) => set('companySizeOptions', lines(e.target.value))} />
+        </Field>
+        <Field label="Employment types">
+          <textarea className={INPUT} rows={3} value={page.employmentOptions.join('\n')} onChange={(e) => set('employmentOptions', lines(e.target.value))} />
+        </Field>
+        <Field label="Timelines">
+          <textarea className={INPUT} rows={3} value={page.timelineOptions.join('\n')} onChange={(e) => set('timelineOptions', lines(e.target.value))} />
+        </Field>
+      </Section>
+
+      <SaveBar onSave={() => saver.save(page)} state={saver.state} busy={saver.busy} />
+    </div>
+  );
+}
+
 /** Settings › chrome on /jobs. {count} is filled with a live database figure. */
 export function JobsBoardForm({ initial }: { initial: SiteSettings['jobsBoard'] }) {
   /* Older saved rows may predate salaryMinLabel / sortLabel; fill from defaults. */
