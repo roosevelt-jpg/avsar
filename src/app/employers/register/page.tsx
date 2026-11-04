@@ -131,7 +131,6 @@ export default async function EmployerRegisterPage() {
                   {page.quoteImage ? (
                     <div className="relative aspect-[16/11]">
                       <Image src={page.quoteImage} alt={page.quoteImageAlt} fill sizes="(max-width: 1024px) 100vw, 40vw" className="object-cover object-[center_35%]" />
-                      <div aria-hidden className="absolute inset-0 bg-[#142438]/30" />
                     </div>
                   ) : null}
                   <blockquote className="relative m-0 -mt-14 mx-4 mb-4 rounded-[14px] border border-line bg-white p-5 shadow-[0_12px_28px_-18px_rgba(20,36,56,0.4)]">

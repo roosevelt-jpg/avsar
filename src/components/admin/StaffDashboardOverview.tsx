@@ -27,10 +27,9 @@ export function StaffDashHero({
         fill
         priority
         sizes="(max-width: 1280px) 100vw, 1200px"
-        className="object-cover opacity-45"
+        className="object-cover"
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#142438]/95 via-[#142438]/75 to-[#142438]/35" />
-      <div className="relative z-[1] px-5 py-7 sm:px-8 sm:py-9 lg:max-w-[70%]">
+      <div className="hero-copy-legible relative z-[1] px-5 py-7 sm:px-8 sm:py-9 lg:max-w-[70%]">
         <div className="flex flex-wrap items-center gap-2.5">
           <p className="m-0 text-[12px] font-medium uppercase tracking-[0.14em] text-[#e8c56a]">Platform Overview</p>
           {roleLabel ? (
