@@ -98,10 +98,10 @@ export function StaffPlatformStatStrip({
   return (
     <ul className="m-0 grid list-none grid-cols-2 gap-3 p-0 sm:grid-cols-3 xl:grid-cols-7">
       {cards.map((card) => (
-        <li key={card.label}>
+        <li key={card.label} className="min-w-0">
           <Link
             href={card.href}
-            className="t-colors flex h-full flex-col rounded-[14px] border border-[#142438]/08 bg-white p-4 no-underline shadow-[0_8px_24px_-18px_rgba(20,36,56,0.35)] hover:border-[#b28a49]/45"
+            className="t-colors flex h-full min-w-0 flex-col overflow-hidden rounded-[14px] border border-[#142438]/08 bg-white p-4 no-underline shadow-[0_8px_24px_-18px_rgba(20,36,56,0.35)] hover:border-[#b28a49]/45"
           >
             <p className="m-0 text-[22px] font-semibold leading-none tracking-[-0.03em] text-[#142438]">
               {card.value.toLocaleString('en-GB')}
@@ -110,23 +110,23 @@ export function StaffPlatformStatStrip({
           </Link>
         </li>
       ))}
-      <li className="flex items-center gap-3 rounded-[14px] border border-[#142438]/08 bg-white p-4 shadow-[0_8px_24px_-18px_rgba(20,36,56,0.35)]">
-        <span
-          className="relative flex size-12 shrink-0 items-center justify-center rounded-full"
-          style={{
-            background: `conic-gradient(#b28a49 ${Math.max(0, Math.min(100, growthPct ?? 0))}%, #e8e4dc 0)`,
-          }}
-          aria-hidden
-        >
-          <span className="absolute inset-[3px] rounded-full bg-white" />
-          <span className="relative text-[11px] font-semibold text-[#142438]">
-            {growthPct == null ? '—' : `${growthPct}%`}
+      {/* Same vertical rhythm as the count cards so the ring + labels stay inside a narrow grid cell. */}
+      <li className="min-w-0 overflow-hidden rounded-[14px] border border-[#142438]/08 bg-white p-4 shadow-[0_8px_24px_-18px_rgba(20,36,56,0.35)]">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <span
+            className="relative flex size-8 shrink-0 items-center justify-center rounded-full"
+            style={{
+              background: `conic-gradient(#b28a49 ${Math.max(0, Math.min(100, growthPct ?? 0))}%, #e8e4dc 0)`,
+            }}
+            aria-hidden
+          >
+            <span className="absolute inset-[3px] rounded-full bg-white" />
           </span>
-        </span>
-        <div className="min-w-0">
-          <p className="m-0 text-[13px] font-semibold text-[#142438]">Platform Growth</p>
-          <p className="m-0 mt-0.5 text-[11px] text-[#5c7084]">New candidates vs prior period</p>
+          <p className="m-0 min-w-0 text-[22px] font-semibold leading-none tracking-[-0.03em] text-[#142438]">
+            {growthPct == null ? '—' : `${growthPct}%`}
+          </p>
         </div>
+        <p className="m-0 mt-1.5 text-[12px] leading-snug break-words text-[#5c7084]">Platform growth vs prior</p>
       </li>
     </ul>
   );

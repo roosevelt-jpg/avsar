@@ -622,8 +622,6 @@ textarea {
   max-width: 11rem;
   object-fit: contain;
   object-position: center;
-  opacity: 0.72;
-  filter: grayscale(1);
 }
 .press-logo-fallback {
   font-size: 13px;

@@ -122,7 +122,7 @@ export function DashboardStatStrip({
       {cards.map((card) => (
         <li
           key={card.label}
-          className="flex items-start gap-3 rounded-[14px] border border-[#142438]/08 bg-white p-4 shadow-[0_8px_24px_-18px_rgba(20,36,56,0.35)]"
+          className="flex min-w-0 items-start gap-3 overflow-hidden rounded-[14px] border border-[#142438]/08 bg-white p-4 shadow-[0_8px_24px_-18px_rgba(20,36,56,0.35)]"
         >
           <span className="flex size-10 shrink-0 items-center justify-center rounded-[10px] bg-[#142438]/06 text-[#b28a49]">
             {card.icon === 'ring' ? (
@@ -141,7 +141,7 @@ export function DashboardStatStrip({
           </span>
           <div className="min-w-0">
             <p className="m-0 text-[22px] font-semibold leading-none tracking-[-0.03em] text-[#142438]">{card.value}</p>
-            <p className="m-0 mt-1.5 text-[12px] leading-snug text-[#5c7084]">{card.label}</p>
+            <p className="m-0 mt-1.5 text-[12px] leading-snug break-words text-[#5c7084]">{card.label}</p>
           </div>
         </li>
       ))}

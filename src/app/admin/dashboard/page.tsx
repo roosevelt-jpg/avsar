@@ -122,16 +122,16 @@ export default async function ConsoleDashboard({ searchParams }: { searchParams:
           <p className="m-0 mb-3 font-mono text-[11px] uppercase tracking-[0.08em] text-muted">Needs attention</p>
           <ul className="m-0 grid list-none grid-cols-2 gap-3 p-0 lg:grid-cols-5">
             {now.map((item) => (
-              <li key={item.label}>
+              <li key={item.label} className="min-w-0">
                 <Link
                   href={item.href}
-                  className={`t-colors motion-row flex h-full flex-col justify-between gap-3 rounded-[14px] border px-4 py-4 no-underline ${
+                  className={`t-colors motion-row flex h-full min-w-0 flex-col justify-between gap-3 overflow-hidden rounded-[14px] border px-4 py-4 no-underline ${
                     item.urgent
                       ? 'border-[#b28a49]/50 bg-[#b28a49]/12 shadow-[0_12px_28px_-20px_rgba(178,138,73,0.55)]'
                       : 'border-[#142438]/08 bg-white hover:border-[#b28a49]/40'
                   }`}
                 >
-                  <span className="text-[13px] text-ink-2">{item.label}</span>
+                  <span className="text-[13px] leading-snug break-words text-ink-2">{item.label}</span>
                   <span className="text-[28px] font-semibold tabular-nums tracking-[-0.03em] text-[#142438]">
                     {item.value.toLocaleString('en-GB')}
                   </span>
@@ -218,7 +218,7 @@ export default async function ConsoleDashboard({ searchParams }: { searchParams:
       {kpis.length > 0 && (
         <ul className="m-0 mt-4 grid list-none grid-cols-1 gap-3 p-0 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
           {kpis.map((kpi) => (
-            <li key={kpi.key}>
+            <li key={kpi.key} className="min-w-0">
               <StatCard kpi={kpi} range={range} />
             </li>
           ))}
