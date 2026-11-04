@@ -37,6 +37,7 @@ export const EMAIL_IDS = [
   'interview_booked',
   'job_alerts',
   'newsletter_jobs',
+  'newsletter_insights',
   'reminder_package',
   'payment_received',
   'legal_review_ready',
@@ -65,6 +66,7 @@ export const EMAIL_META: EmailTemplateMeta[] = [
   { id: 'interview_booked', label: 'Interview booked', audience: 'Candidates', description: 'Sent when a recruiter books an interview and leaves "notify the candidate" on.', placeholders: ['first_name', 'job_title', 'reference', 'when', 'how', 'recruiter_note', 'join_link'] },
   { id: 'job_alerts', label: 'Weekly job alert', audience: 'Candidates', description: 'Weekly list of new jobs for the role a candidate chose. {{jobs}} is the list, one job per paragraph.', placeholders: ['first_name', 'role', 'count', 'jobs_heading', 'jobs'] },
   { id: 'newsletter_jobs', label: 'New jobs by email (footer)', audience: 'Leads', description: 'Weekly digest for people who left their email in the site footer. No role filter. {{jobs}} is the list, one job per paragraph.', placeholders: ['count', 'jobs_heading', 'jobs'] },
+  { id: 'newsletter_insights', label: 'News & insights letter', audience: 'Leads', description: 'Manual letter staff send from Email subscribers. {{title}} and {{body}} are the edition; the body is split into paragraphs.', placeholders: ['title', 'body'] },
   { id: 'reminder_package', label: 'Reminder: the two reports', audience: 'Candidates', description: 'Sent to people who finished the free assessment and have not bought both reports. {{price}} is the bundle price.', placeholders: ['first_name', 'price'] },
   { id: 'payment_received', label: 'Report payment received', audience: 'Candidates', description: 'Receipt after a successful report payment. {{price}} is the amount paid.', placeholders: ['first_name', 'price'] },
   { id: 'legal_review_ready', label: 'Legal review delivered', audience: 'Candidates', description: 'Sent when staff deliver a package buyer’s preliminary legal review.', placeholders: ['first_name'] },
@@ -136,6 +138,12 @@ export const DEFAULT_EMAILS: EmailSettings = {
     heading: '{{jobs_heading}}',
     body: 'New jobs opened this week on {{site_name}}. Applying is free.\n\n{{jobs}}',
     action: 'See all jobs',
+  },
+  newsletter_insights: {
+    subject: '{{title}}',
+    heading: '{{title}}',
+    body: '{{body}}\n\nRead this and earlier updates on the News & Insights page.',
+    action: 'News & Insights',
   },
   reminder_package: {
     subject: '{{first_name}}, the two reports are still available',

@@ -45,6 +45,6 @@ export function defaultPage(slug: string): DefaultPage | undefined {
 }
 
 /** Slugs that render at /[locale]/[slug] through the CMS catch-all. */
-export const CMS_ROUTED_SLUGS = DEFAULT_PAGES.filter((page) => page.slug !== 'home' && page.slug !== 'jobs').map(
-  (page) => page.slug,
-);
+export const CMS_ROUTED_SLUGS = DEFAULT_PAGES.filter(
+  (page) => page.slug !== 'home' && page.slug !== 'jobs' && page.slug !== 'news-and-insights',
+).map((page) => page.slug);

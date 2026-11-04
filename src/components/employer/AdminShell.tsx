@@ -96,7 +96,7 @@ const STAFF_NAV: Group[] = [
     items: [
       { href: '/admin/inbox', label: 'Leads & messages', permission: 'leads.manage' },
       { href: '/admin/chat', label: 'Live chat', permission: 'leads.manage' },
-      { href: '/admin/subscribers', label: 'Email subscribers', permission: 'leads.manage' },
+      { href: '/admin/subscribers', label: 'Subscribers & newsletters', permission: 'leads.manage' },
     ],
   },
   {

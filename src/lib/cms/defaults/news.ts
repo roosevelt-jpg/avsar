@@ -2,14 +2,15 @@ import { BRAND_SLIDES, INTRO_FILM, slidesWithCaptions } from '@/lib/cms/brand-me
 import { makeBlocks, type DefaultPage } from './make';
 
 /**
- * News and insights linked from the footer. Defaults are honest placeholders;
- * staff replace the rich text and gallery in the CMS when there is real news.
+ * News and insights linked from the footer. The public route also lists
+ * editions staff send from Email subscribers; this CMS shell stays quiet
+ * until there is something real to say — never staff-console instructions.
  */
 export const NEWS_AND_INSIGHTS: DefaultPage = {
   slug: 'news-and-insights',
   path: '/news-and-insights',
   title: 'News and insights',
-  purpose: 'Footer Company column. Admins publish updates here; the default page does not invent articles.',
+  purpose: 'Footer Company column. Admins publish updates from Email subscribers; the page does not invent articles.',
   seo: {
     title: 'News and insights · Portugal recruitment',
     description: 'Updates on recruiting from India to Portugal, visas and life at work — published by our team when there is something to say.',
@@ -24,8 +25,8 @@ export const NEWS_AND_INSIGHTS: DefaultPage = {
         subtitle:
           'When we have a real update — hiring seasons, visa process notes, or life after arrival — it appears here. Until then this page stays quiet rather than filled with invented posts.',
         primaryCta: { label: 'Browse jobs', href: '/jobs' },
-        secondaryCta: { label: 'Subscribe in the footer', href: '/contact' },
-        badgeLabel: 'Edited in CMS',
+        secondaryCta: { label: 'Contact us', href: '/contact' },
+        badgeLabel: 'From the team',
         badgeHref: '/news-and-insights',
         filmUrl: INTRO_FILM.url,
         filmLabel: INTRO_FILM.label,
@@ -42,11 +43,9 @@ export const NEWS_AND_INSIGHTS: DefaultPage = {
       'rich_text',
       {
         title: 'Latest from the team',
-        body: `There are no invented news posts in the default content.
+        body: `We publish here when there is something concrete to share: hiring demand in a sector, a change to the visa checklist (always confirmed before publishing), or practical notes for candidates already on the path.
 
-Staff can replace this section in **CMS › News & Insights** with dated updates: hiring demand in a sector, a change to the visa checklist (always confirmed before publishing), or practical notes for candidates already on the path.
-
-If you arrived from the footer looking for job alerts, leave your email in **Stay Connected** — that list is live.`,
+If you want those updates by email as well, leave your address in **Stay Connected** in the footer. Job openings and news letters go to that list.`,
       },
     ],
     [
