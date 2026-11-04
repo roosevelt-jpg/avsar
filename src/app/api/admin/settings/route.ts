@@ -62,11 +62,31 @@ const schemas = {
   seo: z.object({
     defaultTitle: text(80),
     defaultDescription: text(200),
+    defaultOgTitle: text(90),
+    defaultOgDescription: text(200),
     ogImage: url,
     pages: z.object(
       Object.fromEntries(
-        STATIC_SEO_PAGES.map(({ key }) => [key, z.object({ title: text(80), description: text(200), ogTitle: text(90), ogImage: url })]),
-      ) as Record<StaticSeoPage, z.ZodObject<{ title: z.ZodString; description: z.ZodString; ogTitle: z.ZodString; ogImage: typeof url }>>,
+        STATIC_SEO_PAGES.map(({ key }) => [
+          key,
+          z.object({
+            title: text(80),
+            description: text(200),
+            ogTitle: text(90),
+            ogDescription: text(200),
+            ogImage: url,
+          }),
+        ]),
+      ) as Record<
+        StaticSeoPage,
+        z.ZodObject<{
+          title: z.ZodString;
+          description: z.ZodString;
+          ogTitle: z.ZodString;
+          ogDescription: z.ZodString;
+          ogImage: typeof url;
+        }>
+      >,
     ),
   }),
   company: z.object({

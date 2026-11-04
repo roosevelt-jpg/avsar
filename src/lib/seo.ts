@@ -55,8 +55,9 @@ export async function pageMetadata(input: SeoInput): Promise<Metadata> {
 
   const title = fill(input.title) || settings.seo.defaultTitle;
   const description = fill(input.description) || settings.seo.defaultDescription;
-  const ogTitle = fill(input.ogTitle) || title;
-  const ogDescription = fill(input.ogDescription) || description;
+  const ogTitle = fill(input.ogTitle) || fill(settings.seo.defaultOgTitle) || title;
+  const ogDescription =
+    fill(input.ogDescription) || fill(settings.seo.defaultOgDescription) || description;
   const image = input.image || settings.seo.ogImage;
   const images = image ? [{ url: image, width: 1200, height: 630, alt: input.imageAlt || ogTitle }] : undefined;
 
@@ -93,6 +94,7 @@ export async function staticPageMetadata(key: StaticSeoPage, locale: string): Pr
     title: page.title,
     description: page.description,
     ogTitle: page.ogTitle,
+    ogDescription: page.ogDescription,
     image: page.ogImage,
     path: key === 'employers' ? path : localePath(locale, path),
     locale,

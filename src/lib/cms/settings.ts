@@ -54,7 +54,14 @@ export const STATIC_SEO_PAGES = [
   { key: 'go', label: 'VSL funnel', path: '/go' },
 ] as const;
 export type StaticSeoPage = (typeof STATIC_SEO_PAGES)[number]['key'];
-export type PageSeoSettings = { title: string; description: string; ogTitle: string; ogImage: string };
+export type PageSeoSettings = {
+  title: string;
+  description: string;
+  ogTitle: string;
+  /** Empty uses the search description when the page is shared. */
+  ogDescription: string;
+  ogImage: string;
+};
 
 export type SiteSettings = {
   general: {
@@ -90,7 +97,16 @@ export type SiteSettings = {
     filmUrl: string;
     filmLabel: string;
   };
-  seo: { defaultTitle: string; defaultDescription: string; ogImage: string; pages: Record<StaticSeoPage, PageSeoSettings> };
+  seo: {
+    defaultTitle: string;
+    defaultDescription: string;
+    /** WhatsApp / social card title when a page leaves Share title empty. */
+    defaultOgTitle: string;
+    /** WhatsApp / social card description when a page leaves Share description empty. */
+    defaultOgDescription: string;
+    ogImage: string;
+    pages: Record<StaticSeoPage, PageSeoSettings>;
+  };
   company: CompanySettings;
   pricing: PricingSettings;
   hiring: HiringSettings;
@@ -450,12 +466,16 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     defaultTitle: `${DEFAULT_COMPANY.tradingAs} · Jobs in Portugal for Indian talent`,
     defaultDescription:
       'Apply for real jobs in Portugal from India. Free to apply, no placement fees for candidates, UPI accepted, visa and relocation support included.',
+    defaultOgTitle: 'Jobs in Portugal for Indian talent · Apply free from your phone',
+    defaultOgDescription:
+      'Real jobs with Portuguese employers. Free to apply, no placement fees for candidates, UPI accepted, visa and relocation support.',
     ogImage: '/brand/og.png',
     pages: {
       employers: {
         title: 'Hire skilled workers from India',
         description: 'Assessed candidates from India for hospitality, construction, cleaning and logistics roles in Portugal. Candidates never pay for a job; the employer pays the placement fee.',
         ogTitle: '',
+        ogDescription: '',
         ogImage: '',
       },
       employerRegister: {
@@ -463,25 +483,35 @@ export const DEFAULT_SETTINGS: SiteSettings = {
         description:
           'Tell us the roles you need. We deliver a pre-screened shortlist from India with recruitment and relocation support to Portugal.',
         ogTitle: '',
+        ogDescription: '',
         ogImage: '/photos/brand/employer-register-hero.jpg',
       },
       pricing: {
         title: 'Pricing',
         description: 'Joining our candidate database is free. The skills report and the visa-requirements list are optional. Employers pay the placement fee.',
         ogTitle: '',
+        ogDescription: '',
         ogImage: '',
       },
       signup: {
         title: 'Register for jobs in Portugal',
         description: 'Create your free profile and take the assessment. It puts you in our candidate database for jobs in Portugal.',
         ogTitle: '',
+        ogDescription: '',
         ogImage: '',
       },
-      signin: { title: 'Sign in', description: 'Sign in to see your applications, your report and your next steps.', ogTitle: '', ogImage: '' },
+      signin: {
+        title: 'Sign in',
+        description: 'Sign in to see your applications, your report and your next steps.',
+        ogTitle: '',
+        ogDescription: '',
+        ogImage: '',
+      },
       assessment: {
         title: 'Skills and English assessment',
         description: 'The free skills and English assessment that puts you in our candidate database. You can take it on your phone.',
         ogTitle: '',
+        ogDescription: '',
         ogImage: '',
       },
       go: {
@@ -489,6 +519,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
         description:
           'Watch how the free skills test works, then create your profile. Real Portuguese employers, no placement fee for candidates.',
         ogTitle: 'Watch: India to Portugal jobs',
+        ogDescription: '',
         ogImage: '',
       },
     },

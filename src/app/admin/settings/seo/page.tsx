@@ -13,7 +13,7 @@ export default async function SeoSettingsPage() {
     <AdminShell current="/admin/settings/seo" isStaff>
       <AdminHeading
         title="Search & sharing"
-        lead="What Google shows, and the card WhatsApp, Facebook and LinkedIn show when a link is shared. Pages, jobs and legal pages have their own fields in their editors; these are the site defaults and the pages built in code."
+        lead="Edit the WhatsApp / social share card (title, description, image) here. The homepage can also override those fields in CMS › Pages › Home. Other CMS pages and jobs keep their own fields in their editors."
       />
       <SettingsTabs current="/admin/settings/seo" />
       <div className="mt-8">
