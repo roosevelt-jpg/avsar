@@ -54,9 +54,10 @@ export function DashboardHero({
         fill
         priority
         sizes="(max-width: 1024px) 100vw, 900px"
-        className="object-cover"
+        className="object-cover opacity-45"
       />
-      <div className="hero-copy-legible relative z-[1] px-5 py-7 sm:px-8 sm:py-9 lg:max-w-[58%]">
+      <div className="absolute inset-0 bg-gradient-to-r from-[#142438]/95 via-[#142438]/75 to-[#142438]/35" />
+      <div className="relative z-[1] px-5 py-7 sm:px-8 sm:py-9 lg:max-w-[58%]">
         <div className="mb-2 flex flex-wrap items-center gap-2.5">
           <p className="m-0 text-[12px] font-medium uppercase tracking-[0.14em] text-[#e8c56a]">Your dashboard</p>
           <span
@@ -326,9 +327,10 @@ export function RelocationPromoCard({ locale }: { locale: Locale }) {
         alt=""
         fill
         sizes="(max-width: 1024px) 100vw, 320px"
-        className="object-cover"
+        className="object-cover opacity-40"
       />
-      <div className="hero-copy-legible relative z-[1] flex h-full min-h-[220px] flex-col justify-end p-5">
+      <div className="absolute inset-0 bg-[#142438]/55" />
+      <div className="relative z-[1] flex h-full min-h-[220px] flex-col justify-end p-5">
         <h2 className="m-0 text-[17px] font-semibold tracking-[-0.02em]">Visa &amp; Relocation Support</h2>
         <p className="m-0 mt-2 text-[13px] leading-[1.55] text-white/85">
           Get step-by-step guidance on work visas, travel and settling in Portugal.

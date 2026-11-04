@@ -75,8 +75,11 @@ export function EmployerRegisterHero({
           />
         </div>
       ))}
+      <div className="absolute inset-0 bg-[#142438]/45" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#142438]/94 via-[#142438]/78 to-transparent" />
+
       <div className="relative z-10 mx-auto flex w-full max-w-[1200px] flex-col justify-center px-[clamp(20px,4cqi,56px)] py-[clamp(56px,9cqi,108px)]">
-        <div className="hero-copy-legible max-w-[640px]">
+        <div className="max-w-[640px]">
           {eyebrow ? (
             <p className="m-0 inline-flex items-center gap-2.5 text-[12px] font-semibold uppercase tracking-[0.18em] text-[var(--color-gold)]">
               <span aria-hidden className="h-px w-7 bg-[var(--color-gold)]" />

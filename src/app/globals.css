@@ -461,13 +461,6 @@ textarea {
   }
 }
 
-/* Readable white copy on full-bleed heroes without darkening the photograph. */
-.hero-copy-legible {
-  text-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.7),
-    0 6px 28px rgba(0, 0, 0, 0.45);
-}
-
 .shop-header {
   position: relative;
   background: #142438;

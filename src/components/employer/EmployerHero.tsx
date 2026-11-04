@@ -103,8 +103,13 @@ export function EmployerHero({
         </div>
       ))}
 
+      <div
+        aria-hidden
+        className="absolute inset-0 bg-[linear-gradient(105deg,rgba(20,36,56,0.90)_0%,rgba(20,36,56,0.74)_40%,rgba(20,36,56,0.38)_68%,rgba(20,36,56,0.22)_100%)]"
+      />
+
       <div className="relative z-10 mx-auto flex min-h-[min(72dvh,760px)] w-full max-w-[1200px] flex-col justify-center px-[clamp(16px,4cqi,56px)] py-[clamp(40px,8cqi,96px)] sm:min-h-[min(88vh,760px)]">
-        <div className="hero-copy-legible max-w-[36rem]">
+        <div className="max-w-[36rem]">
           {eyebrow ? (
             <p className="m-0 inline-flex items-center gap-2.5 text-[12px] font-semibold uppercase tracking-[0.18em] text-[var(--color-gold)]">
               <span aria-hidden className="h-px w-7 bg-[var(--color-gold)]" />

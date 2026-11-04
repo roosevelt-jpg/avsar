@@ -70,10 +70,11 @@ export function CmsDashHero({ canEdit }: { canEdit: boolean }) {
         fill
         priority
         sizes="(max-width: 1280px) 100vw, 1200px"
-        className="object-cover"
+        className="object-cover opacity-40"
       />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#142438]/95 via-[#142438]/80 to-[#142438]/45" />
       <div className="relative z-[1] grid items-center gap-6 px-5 py-7 sm:px-8 sm:py-9 lg:grid-cols-[1.2fr_0.8fr]">
-        <div className="hero-copy-legible">
+        <div>
           <p className="m-0 text-[12px] font-medium uppercase tracking-[0.14em] text-[#e8c56a]">Website &amp; CMS Management</p>
           <h1
             className="m-0 mt-2 text-[clamp(24px,3.2cqi,36px)] font-semibold leading-[1.12] tracking-[-0.02em]"

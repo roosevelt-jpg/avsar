@@ -180,11 +180,13 @@ export default async function JobPage({ params }: Params) {
       <main>
         <section className="relative isolate overflow-hidden bg-[#142438] text-white">
           <div className="absolute inset-0" aria-hidden>
-            <Image src={heroPhoto} alt="" fill priority sizes="100vw" className="object-cover object-[center_30%]" />
+            <Image src={heroPhoto} alt="" fill priority sizes="100vw" className="object-cover object-[center_30%] opacity-55" />
+            <div className="absolute inset-0 bg-[#142438]/60" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#142438] via-[#142438]/88 to-[#142438]/35" />
           </div>
 
           <div className="relative mx-auto grid w-full max-w-[1200px] grid-cols-1 items-end gap-8 px-[clamp(20px,4cqi,56px)] pb-[clamp(36px,5cqi,56px)] pt-[clamp(32px,5cqi,56px)] lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
-            <div className="hero-copy-legible min-w-0">
+            <div className="min-w-0">
               <nav aria-label="Breadcrumb" className="mb-5 flex flex-wrap items-center gap-1.5 text-[12px] text-white/70">
                 <Link href={localePath(locale, '/')} className="inline-flex items-center gap-1 text-white/70 no-underline hover:text-white">
                   <Icon name="home" className="size-3.5" />

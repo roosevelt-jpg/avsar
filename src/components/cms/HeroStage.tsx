@@ -89,8 +89,14 @@ export function HeroStage({
             </div>
           );
         })}
+        {slides.length > 0 ? (
+          <>
+            <div className="absolute inset-0 bg-[#142438]/48" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#142438]/92 via-[#142438]/72 to-[#142438]/28" />
+          </>
+        ) : null}
         <div className="relative mx-auto flex min-h-[min(72dvh,760px)] w-full max-w-[1200px] flex-col justify-center px-[clamp(16px,4cqi,56px)] py-[clamp(40px,9cqi,112px)] sm:min-h-[min(88vh,760px)]">
-          <div className="hero-copy-legible max-w-[640px]">
+          <div className="max-w-[640px]">
             {lead ? <div className="mb-4">{lead}</div> : null}
             {children}
           </div>
