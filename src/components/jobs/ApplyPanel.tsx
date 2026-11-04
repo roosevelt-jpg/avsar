@@ -38,7 +38,7 @@ type JobSummary = { id: string; slug: string; title: string; questions: Screenin
 const CV_MAX_BYTES = 5 * 1024 * 1024;
 const CV_TYPES = new Set(['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']);
 
-const INPUT = 'w-full rounded-[12px] border border-line bg-paper px-3.5 py-3 text-[16px] outline-none focus:border-ink';
+const INPUT = 'w-full rounded-[8px] border border-[#142438]/18 bg-white px-3.5 py-3 text-[16px] text-[#142438] outline-none placeholder:text-[#5c7084]/70 focus:border-[#b28a49]';
 
 export function ApplyPanel({
   locale,
@@ -206,7 +206,11 @@ export function ApplyPanel({
     }
   }
 
-  const card = 'rounded-[24px] border border-line bg-surface p-6 shadow-[0_24px_60px_-36px_rgba(27,26,23,0.45)]';
+  const card = 'rounded-[18px] border border-line bg-white p-6 shadow-[0_18px_40px_-28px_rgba(20,36,56,0.35)]';
+  const primaryBtn =
+    'btn-gradient t-colors mt-5 flex w-full cursor-pointer items-center justify-center rounded-[8px] border-0 px-5 py-3.5 text-[16px] font-semibold no-underline disabled:cursor-wait disabled:opacity-60';
+  const secondaryBtn =
+    'mt-3 flex w-full items-center justify-center rounded-[8px] border border-[#142438]/20 bg-white px-5 py-3 text-[15px] font-medium text-[#142438] no-underline hover:bg-[#f7f4ee]';
 
   if (done || (viewer.kind === 'candidate' && viewer.existing)) {
     const reference = done?.reference ?? (viewer.kind === 'candidate' ? viewer.existing?.reference : '');
@@ -224,7 +228,7 @@ export function ApplyPanel({
             : `Status: ${viewer.kind === 'candidate' ? viewer.existing?.label : ''}.`}
         </p>
         <p className="m-0 mt-3 font-mono text-[13px] text-muted">Reference {reference}</p>
-        <Link href={localePath(locale, '/dashboard/applications')} className="mt-5 flex justify-center rounded-full bg-ink px-5 py-3 text-[15px] font-medium text-paper no-underline">
+        <Link href={localePath(locale, '/dashboard/applications')} className={primaryBtn}>
           Track my application
         </Link>
         {/* The moment of highest intent: they have just asked for a job. The
@@ -236,7 +240,7 @@ export function ApplyPanel({
             <p className="m-0 mt-1 text-[14px] leading-[1.55] text-ink-2">
               Free, up to 90 minutes on your phone. Your result goes to the employer with this application, and a score above {shortlistMinScore / 10} out of 10 qualifies you for the shortlist.
             </p>
-            <Link href={localePath(locale, '/assessment')} className="mt-3 flex justify-center rounded-full bg-ink px-5 py-3 text-[15px] font-medium text-paper no-underline hover:bg-ink-hover">
+            <Link href={localePath(locale, '/assessment')} className={primaryBtn.replace('mt-5', 'mt-3')}>
               Start the skills test
             </Link>
           </div>
@@ -250,7 +254,7 @@ export function ApplyPanel({
       <div className={card}>
         <h2 className="m-0 text-[20px] font-semibold">Applications closed</h2>
         <p className="m-0 mt-2 text-[15px] text-ink-2">This job is no longer accepting applications.</p>
-        <Link href={localePath(locale, '/jobs')} className="mt-5 flex justify-center rounded-full bg-ink px-5 py-3 text-[15px] text-paper no-underline">See open jobs</Link>
+        <Link href={localePath(locale, '/jobs')} className={primaryBtn}>See open jobs</Link>
       </div>
     );
   }
@@ -260,7 +264,7 @@ export function ApplyPanel({
       <div className={card}>
         <h2 className="m-0 text-[20px] font-semibold">Signed in as staff</h2>
         <p className="m-0 mt-2 text-[15px] text-ink-2">Candidates apply from their own accounts. Manage this job in the console.</p>
-        <Link href="/admin/jobs" className="mt-5 flex justify-center rounded-full bg-ink px-5 py-3 text-[15px] text-paper no-underline">Open the console</Link>
+        <Link href="/admin/jobs" className={primaryBtn}>Open the console</Link>
       </div>
     );
   }
@@ -270,7 +274,7 @@ export function ApplyPanel({
       <div className={card}>
         <h2 className="m-0 text-[20px] font-semibold">Finish your profile to apply</h2>
         <p className="m-0 mt-2 text-[15px] text-ink-2">Your account needs a candidate profile first. It takes a minute.</p>
-        <Link href={localePath(locale, '/signup')} className="mt-5 flex justify-center rounded-full bg-ink px-5 py-3 text-[15px] text-paper no-underline">Complete my profile</Link>
+        <Link href={localePath(locale, '/signup')} className={primaryBtn}>Complete my profile</Link>
       </div>
     );
   }
@@ -280,10 +284,18 @@ export function ApplyPanel({
   if (anonymous && !allowQuickApply) {
     return (
       <div className={card}>
-        <h2 className="m-0 text-[22px] font-semibold tracking-[-0.02em]">Apply for this job</h2>
-        <p className="m-0 mt-2 text-[15px] text-ink-2">Create a free profile or sign in to apply.</p>
-        <Link href={localePath(locale, '/signup')} className="mt-5 flex justify-center rounded-full bg-ink px-5 py-3 text-[15px] font-medium text-paper no-underline">Create my profile</Link>
-        <Link href={signInHref} className="mt-3 flex justify-center rounded-full border border-line-strong px-5 py-3 text-[15px] text-ink no-underline">Sign in</Link>
+        <Link href={localePath(locale, '/signup')} className={primaryBtn.replace('mt-5', 'mt-0')}>
+          Apply for This Job →
+        </Link>
+        <Link href={localePath(locale, '/signup')} className={secondaryBtn}>
+          Create Free Profile
+        </Link>
+        <p className="m-0 mt-3 text-center text-[13px] leading-[1.45] text-muted">
+          Apply faster and get matched with more opportunities.
+        </p>
+        <Link href={signInHref} className="mt-3 flex justify-center text-[14px] text-ink-2 no-underline hover:underline">
+          Sign in
+        </Link>
       </div>
     );
   }
@@ -293,7 +305,7 @@ export function ApplyPanel({
       <div className="flex items-start justify-between gap-3">
         <div>
           <h2 className="m-0 text-[22px] font-semibold tracking-[-0.02em]">
-            {anonymous ? 'Apply in one minute' : `Apply, ${viewer.kind === 'candidate' ? viewer.firstName : ''}`}
+            {anonymous ? 'Apply for this job' : `Apply, ${viewer.kind === 'candidate' ? viewer.firstName : ''}`}
           </h2>
           <p className="m-0 mt-1 text-[14px] text-muted">Free · no placement fee{salary ? ` · ${salary}` : ''}</p>
         </div>
@@ -426,19 +438,23 @@ export function ApplyPanel({
         </p>
       )}
 
-      <button
-        type="submit"
-        disabled={busy}
-        className="t-colors mt-5 w-full cursor-pointer rounded-full border-0 bg-ink px-5 py-3.5 text-[16px] font-semibold text-paper hover:bg-ink-hover disabled:cursor-wait disabled:opacity-60"
-      >
-        {busy ? 'Sending…' : anonymous ? 'Create account and apply' : 'Apply now'}
+      <button type="submit" disabled={busy} className={primaryBtn}>
+        {busy ? 'Sending…' : 'Apply for This Job →'}
       </button>
 
-      {anonymous && (
-        <p className="m-0 mt-4 text-center text-[14px] text-muted">
-          Already registered? <Link href={signInHref} className="prose-link">Sign in</Link>
-        </p>
-      )}
+      {anonymous ? (
+        <>
+          <Link href={localePath(locale, '/signup')} className={secondaryBtn}>
+            Create Free Profile
+          </Link>
+          <p className="m-0 mt-3 text-center text-[13px] leading-[1.45] text-muted">
+            Apply faster and get matched with more opportunities.{' '}
+            <Link href={signInHref} className="prose-link">
+              Sign in
+            </Link>
+          </p>
+        </>
+      ) : null}
     </form>
   );
 }

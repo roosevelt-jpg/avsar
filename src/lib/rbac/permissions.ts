@@ -67,7 +67,7 @@ export const PERMISSION_GROUPS: { group: string; items: { key: Permission; label
       { key: 'candidates.view', label: 'View candidates and talent pool' },
       { key: 'candidates.export', label: 'Export candidate data' },
       { key: 'cv.review', label: 'Review CVs and assessments' },
-      { key: 'leads.manage', label: 'Inbox: contact messages and leads' },
+      { key: 'leads.manage', label: 'Inbox and live chat' },
       { key: 'relocation.manage', label: 'Relocation: documents, plans, stories, identity release' },
     ],
   },

@@ -3,25 +3,16 @@
  *
  * Written the way email has to be written rather than the way the site is:
  * tables for layout, every style inline, nothing that depends on a stylesheet
- * surviving Gmail. What looks like a step backwards is the only thing that
- * renders the same in Gmail, Apple Mail and Outlook.
- *
- * Two deliberate restrictions:
- *
- *  - No web font. Clients strip the link or ignore the face, and a message
- *    that falls back unevenly looks worse than one that never tried. The site's
- *    typography does not travel; its colour and its spacing do.
- *  - One image, the mark, and the message reads completely without it. Images
- *    are blocked by default in a lot of inboxes, so the name is live text
- *    beside it rather than part of the picture.
+ * surviving Gmail. Brand colours match the mockup Master Spec (navy + gold).
  */
 
-const INK = '#1B1A17';
-const PAPER = '#F4F4F5';
+const NAVY = '#142438';
+const GOLD = '#b28a49';
+const PAPER = '#F7F4EE';
 const SURFACE = '#FFFFFF';
-const TERRACOTTA = '#B9583A';
-const MUTED = '#6E6A61';
-const LINE = '#E3DFD6';
+const INK = '#142438';
+const MUTED = '#5C7084';
+const LINE = '#D9E0E8';
 
 const FONT =
   "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif";
@@ -82,17 +73,15 @@ export function renderEmail(layout: EmailLayout): string {
   /* A button made of a table, because a padded anchor collapses in Outlook. */
   const button = action
     ? `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:28px 0 8px;">
-<tr><td align="center" bgcolor="${INK}" style="border-radius:12px;">
-<a href="${escape(action.url)}" style="display:inline-block;padding:15px 30px;font-family:${FONT};font-size:16px;font-weight:600;color:#FFFFFF;text-decoration:none;border-radius:12px;">${escape(action.label)}</a>
+<tr><td align="center" bgcolor="${GOLD}" style="border-radius:8px;">
+<a href="${escape(action.url)}" style="display:inline-block;padding:14px 28px;font-family:${FONT};font-size:16px;font-weight:600;color:${NAVY};text-decoration:none;border-radius:8px;">${escape(action.label)} →</a>
 </td></tr></table>`
     : '';
 
-  /* The same link again as text. Some clients will not open a styled button,
-     and some readers will not press one they cannot see the destination of. */
   const fallback =
     action && fallbackNote
       ? `<p style="margin:12px 0 0;font-size:13px;line-height:1.5;color:${MUTED};">${escape(fallbackNote)}</p>
-<p style="margin:6px 0 0;font-size:13px;line-height:1.5;word-break:break-all;"><a href="${escape(action.url)}" style="color:${TERRACOTTA};">${escape(action.url)}</a></p>`
+<p style="margin:6px 0 0;font-size:13px;line-height:1.5;word-break:break-all;"><a href="${escape(action.url)}" style="color:${GOLD};">${escape(action.url)}</a></p>`
       : '';
 
   const tail = closing?.length
@@ -141,13 +130,10 @@ export function renderEmail(layout: EmailLayout): string {
 
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;font-family:${FONT};">
 
-<tr><td bgcolor="${INK}" style="background-color:${INK};border-radius:20px 20px 0 0;padding:22px 24px;">
+<tr><td bgcolor="${NAVY}" style="background-color:${NAVY};border-radius:12px 12px 0 0;padding:22px 24px;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
-<td style="padding-right:14px;vertical-align:middle;width:72px;">
-<img src="${escape(origin)}/brand/email-mark.png" width="63" height="36" alt="${escape(brand.name)}" style="display:block;border:0;width:63px;height:36px;max-width:100%;">
-</td>
-<td style="vertical-align:middle;font-family:${FONT};font-size:18px;line-height:1.25;font-weight:600;color:${PAPER};letter-spacing:-0.02em;">
-${escape(brand.name)}${brand.slogan ? `<br><span style="display:inline-block;margin-top:4px;font-size:12px;font-weight:400;color:#C8C5BE;letter-spacing:0;">${escape(brand.slogan)}</span>` : ''}
+<td style="vertical-align:middle;">
+<img src="${escape(origin)}/brand/email-mark.png" width="210" height="40" alt="${escape(brand.name)}" style="display:block;border:0;width:210px;height:40px;max-width:100%;">
 </td>
 </tr></table>
 </td></tr>
@@ -157,7 +143,7 @@ ${escape(brand.name)}${brand.slogan ? `<br><span style="display:inline-block;mar
 ${body}${button}${fallback}${tail}
 </td></tr>
 
-<tr><td bgcolor="${SURFACE}" style="background-color:${SURFACE};padding:0 24px 28px;border-left:1px solid ${LINE};border-right:1px solid ${LINE};border-bottom:1px solid ${LINE};border-radius:0 0 20px 20px;">
+<tr><td bgcolor="${SURFACE}" style="background-color:${SURFACE};padding:0 24px 28px;border-left:1px solid ${LINE};border-right:1px solid ${LINE};border-bottom:1px solid ${LINE};border-radius:0 0 12px 12px;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top:1px solid ${LINE};">
 <tr><td style="padding-top:20px;font-size:12px;line-height:1.65;color:${MUTED};">
 <strong style="color:${INK};font-weight:600;">${escape(brand.name)}</strong>${brand.slogan ? ` &middot; ${escape(brand.slogan)}` : ''}<br>

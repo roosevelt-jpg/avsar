@@ -49,6 +49,13 @@ export const jobInputSchema = z
     heroImageUrl: z.string().trim().max(500).nullable(),
     featured: z.boolean(),
     closesAt: z.string().datetime({ offset: true }).nullable(),
+    expectedStartOn: z
+      .string()
+      .trim()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .nullable()
+      .optional()
+      .transform((value) => value ?? null),
     seoTitle: z.string().trim().max(70).nullable(),
     seoDescription: z.string().trim().max(170).nullable(),
   })

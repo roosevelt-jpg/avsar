@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { Wordmark } from '@/components/ui/Wordmark';
 import { LocaleToggle } from './LocaleToggle';
-import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import type { Locale } from '@/lib/i18n';
 import { localePath } from '@/lib/i18n/path';
 import { AccountMenu } from '@/components/auth/AccountMenu';
@@ -62,7 +61,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
             <span className="announce-dot" aria-hidden />
             <span>{announcement.text}</span>
             {announcement.href && announcement.linkLabel ? (
-              <Link href={localHref(locale, announcement.href)} className="font-semibold text-[#c96a4b] underline underline-offset-[3px]">
+              <Link href={localHref(locale, announcement.href)} className="font-semibold text-[#b28a49] underline underline-offset-[3px]">
                 {announcement.linkLabel}
               </Link>
             ) : null}
@@ -70,44 +69,34 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
         </div>
       ) : null}
 
-      <header className="shop-header sticky top-0 z-40 px-[clamp(16px,4cqi,56px)] py-[14px]">
-        {/* Nothing in the bar may wrap: a two-line "Visa & relocation" doubles
-            the header height. The full menu appears only from xl, where six
-            links, the toggles and the button fit on one line; below that the
-            menu button carries them. */}
-        <div className="mx-auto flex w-full max-w-[1280px] items-center justify-between gap-3 whitespace-nowrap sm:gap-6">
-          <Wordmark href={localePath(locale, '/')} tone="dark" size={22} />
+      <header className="shop-header sticky top-0 z-40 px-[clamp(16px,4cqi,56px)] py-4">
+        {/* Mockup header: large wordmark, white nav, outline Sign in, gold CTA. */}
+        <div className="mx-auto flex w-full max-w-[1280px] items-center justify-between gap-4 whitespace-nowrap sm:gap-6">
+          <Wordmark href={localePath(locale, '/')} tone="dark" size={40} />
 
           <MarketNav
             items={navigation.items.map((item) => ({ href: localHref(locale, item.href), label: navLabel(item, locale) }))}
-            className={`hidden min-w-0 items-center gap-[clamp(12px,1.3vw,20px)] text-[14.5px] font-medium ${wide}`}
-            linkClassName="t-colors"
+            className={`hidden min-w-0 items-center gap-[clamp(14px,1.4vw,22px)] text-[15px] font-medium text-white ${wide}`}
+            linkClassName="t-colors text-white/95 hover:text-[var(--color-gold)]"
           />
 
           <div className="flex shrink-0 items-center gap-3 [&>*]:shrink-0">
-            <a
-              href={`tel:${general.supportPhone.replace(/\s/g, '')}`}
-              dir="ltr"
-              className="t-colors hidden whitespace-nowrap font-mono text-[13px] tabular-nums text-[#c96a4b] no-underline hover:text-[#e8c4b6] 2xl:inline"
-            >
-              {general.supportPhone}
-            </a>
             <LocaleToggle locale={locale} />
-            <ThemeToggle className="hidden sm:grid" />
             <AccountMenu locale={locale} />
             {showCta ? (
               <Link
                 href={localHref(locale, navigation.headerCta.href)}
-                className="btn-gradient t-colors hidden rounded-full px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.02em] no-underline md:inline-flex"
+                className="btn-gradient t-colors hidden items-center gap-1.5 rounded-[8px] px-4 py-2.5 text-[14px] font-semibold normal-case tracking-normal no-underline md:inline-flex"
               >
                 {ctaLabel(navigation.headerCta, locale)}
+                <span aria-hidden>→</span>
               </Link>
             ) : null}
 
             <details className={`group relative ${narrow}`}>
               <summary
                 aria-label="Menu"
-                className="grid size-10 cursor-pointer list-none place-items-center rounded-[4px] border border-[#c96a4b]/50 bg-transparent text-[#c96a4b] [&::-webkit-details-marker]:hidden"
+                className="grid size-10 cursor-pointer list-none place-items-center rounded-[8px] border border-white/55 bg-transparent text-white [&::-webkit-details-marker]:hidden"
               >
                 <svg viewBox="0 0 24 24" className="size-5 group-open:hidden" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
                   <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
@@ -116,30 +105,25 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
                   <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
                 </svg>
               </summary>
-              <div className="absolute end-0 top-12 w-[min(86vw,320px)] rounded-[12px] border border-[#c96a4b]/40 bg-[#0a088f] p-3 text-[#c96a4b] shadow-[0_24px_60px_-24px_rgba(8,20,36,0.7)]">
+              <div className="absolute end-0 top-12 w-[min(86vw,320px)] rounded-[12px] border border-white/20 bg-[#142438] p-3 text-white shadow-[0_24px_60px_-24px_rgba(8,20,36,0.7)]">
                 <nav aria-label="Mobile" className="flex flex-col">
                   {navigation.items.map((item) => (
                     <Link
                       key={item.href}
                       href={localHref(locale, item.href)}
-                      className="t-colors rounded-[12px] px-3 py-3 text-[16px] text-white no-underline hover:bg-white/10"
+                      className="t-colors rounded-[8px] px-3 py-3 text-[16px] text-white no-underline hover:bg-white/10"
                     >
                       {navLabel(item, locale)}
                     </Link>
                   ))}
                 </nav>
-                <div className="mt-2 flex items-center justify-between gap-3 border-t border-line px-3 pt-3">
-                  <ThemeToggle className="sm:hidden" />
-                  <a href={`tel:${general.supportPhone.replace(/\s/g, '')}`} dir="ltr" className="font-mono text-[13px] text-ink-2 no-underline">
-                    {general.supportPhone}
-                  </a>
-                </div>
                 {showCta ? (
                   <Link
                     href={localHref(locale, navigation.headerCta.href)}
-                    className="btn-gradient mt-3 flex justify-center rounded-full px-4 py-3 text-[14px] font-semibold uppercase tracking-[0.04em] no-underline"
+                    className="btn-gradient mt-3 flex items-center justify-center gap-1.5 rounded-[8px] px-4 py-3 text-[14px] font-semibold normal-case tracking-normal no-underline"
                   >
                     {ctaLabel(navigation.headerCta, locale)}
+                    <span aria-hidden>→</span>
                   </Link>
                 ) : null}
               </div>

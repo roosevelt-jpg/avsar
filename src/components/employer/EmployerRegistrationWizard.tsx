@@ -7,7 +7,7 @@ import { IDEMPOTENCY_HEADER, useIdempotencyKey } from '@/components/security/use
 import type { EmployerRegistrationSettings } from '@/lib/cms/employer-registration';
 
 const field =
-  't-colors w-full rounded-[10px] border border-line bg-[#f7f8fa] px-3.5 py-3 text-[15px] text-ink outline-none focus:border-[#0a088f] focus:bg-white';
+  't-colors w-full rounded-[10px] border border-line bg-[#f7f8fa] px-3.5 py-3 text-[15px] text-ink outline-none focus:border-[#142438] focus:bg-white';
 const labelCls = 'mb-1.5 block text-[13px] font-medium text-ink-2';
 
 type FormState = {
@@ -62,7 +62,15 @@ export function EmployerRegistrationWizard({ copy }: { copy: EmployerRegistratio
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) => setForm((prev) => ({ ...prev, [key]: value }));
 
   const step1Ready =
-    form.companyName.trim() !== '' && form.fullName.trim() !== '' && form.email.trim() !== '';
+    form.companyName.trim() !== '' &&
+    form.industry.trim() !== '' &&
+    form.country.trim() !== '' &&
+    form.city.trim() !== '' &&
+    form.companySize.trim() !== '' &&
+    form.fullName.trim() !== '' &&
+    form.jobTitle.trim() !== '' &&
+    form.email.trim() !== '' &&
+    form.phone.trim() !== '';
   const step2Ready = form.roleTitle.trim() !== '';
 
   async function submit() {
@@ -121,8 +129,8 @@ export function EmployerRegistrationWizard({ copy }: { copy: EmployerRegistratio
 
   if (done) {
     return (
-      <div className="rounded-[18px] border border-line bg-white p-8 text-center shadow-[0_18px_40px_-24px_rgba(10,8,143,0.4)]">
-        <h3 className="display-serif m-0 text-[28px] text-[#0a088f]">{copy.successTitle}</h3>
+      <div className="rounded-[18px] border border-line bg-white p-8 text-center shadow-[0_18px_40px_-24px_rgba(20,36,56,0.4)]">
+        <h3 className="display-serif m-0 text-[28px] text-[#142438]">{copy.successTitle}</h3>
         <p className="m-0 mt-3 text-[15px] leading-[1.55] text-ink-2">{copy.successBody}</p>
       </div>
     );
@@ -135,8 +143,8 @@ export function EmployerRegistrationWizard({ copy }: { copy: EmployerRegistratio
   ];
 
   return (
-    <div className="rounded-[18px] border border-line bg-white p-5 shadow-[0_18px_40px_-24px_rgba(10,8,143,0.4)] sm:p-7">
-      <h2 className="display-serif m-0 text-[clamp(22px,2.6cqi,28px)] font-normal text-[#0a088f]">{copy.formTitle}</h2>
+    <div className="rounded-[18px] border border-line bg-white p-5 shadow-[0_18px_40px_-24px_rgba(20,36,56,0.4)] sm:p-7">
+      <h2 className="display-serif m-0 text-[clamp(22px,2.6cqi,28px)] font-normal text-[#142438]">{copy.formTitle}</h2>
       <p className="m-0 mt-2 text-[14px] leading-[1.5] text-ink-2">{copy.formIntro}</p>
 
       <ol className="m-0 mt-6 flex list-none items-center gap-0 p-0">
@@ -148,12 +156,12 @@ export function EmployerRegistrationWizard({ copy }: { copy: EmployerRegistratio
               <div className="flex min-w-0 flex-col items-center gap-1.5">
                 <span
                   className={`grid size-8 place-items-center rounded-full text-[13px] font-semibold ${
-                    active || doneStep ? 'bg-[var(--color-gold)] text-[#0a088f]' : 'border border-line bg-paper text-muted'
+                    active || doneStep ? 'bg-[var(--color-gold)] text-[#142438]' : 'border border-line bg-paper text-muted'
                   }`}
                 >
                   {item.n}
                 </span>
-                <span className={`hidden text-center text-[11px] font-medium sm:block ${active ? 'text-[#0a088f]' : 'text-muted'}`}>
+                <span className={`hidden text-center text-[11px] font-medium sm:block ${active ? 'text-[#142438]' : 'text-muted'}`}>
                   {item.label}
                 </span>
               </div>
@@ -177,20 +185,20 @@ export function EmployerRegistrationWizard({ copy }: { copy: EmployerRegistratio
         {step === 1 ? (
           <div className="flex flex-col gap-6">
             <fieldset className="m-0 border-0 p-0">
-              <legend className="mb-3 text-[14px] font-semibold text-[#0a088f]">{copy.companySectionTitle}</legend>
+              <legend className="mb-3 text-[14px] font-semibold text-[#142438]">{copy.companySectionTitle}</legend>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="sm:col-span-2">
                   <label className={labelCls} htmlFor="companyName">
-                    {copy.companyNameLabel} <span className="text-[#c96a4b]">*</span>
+                    {copy.companyNameLabel} <span className="text-[#b28a49]">*</span>
                   </label>
                   <input id="companyName" className={field} required value={form.companyName} placeholder={copy.companyNamePlaceholder} onChange={(e) => set('companyName', e.target.value)} />
                 </div>
                 <div>
                   <label className={labelCls} htmlFor="industry">
-                    {copy.industryLabel}
+                    {copy.industryLabel} <span className="text-[#b28a49]">*</span>
                   </label>
-                  <select id="industry" className={field} value={form.industry} onChange={(e) => set('industry', e.target.value)}>
-                    <option value="">Select</option>
+                  <select id="industry" className={field} required value={form.industry} onChange={(e) => set('industry', e.target.value)}>
+                    <option value="">Select industry</option>
                     {copy.industryOptions.map((option) => (
                       <option key={option} value={option}>
                         {option}
@@ -200,9 +208,9 @@ export function EmployerRegistrationWizard({ copy }: { copy: EmployerRegistratio
                 </div>
                 <div>
                   <label className={labelCls} htmlFor="country">
-                    {copy.countryLabel}
+                    {copy.countryLabel} <span className="text-[#b28a49]">*</span>
                   </label>
-                  <select id="country" className={field} value={form.country} onChange={(e) => set('country', e.target.value)}>
+                  <select id="country" className={field} required value={form.country} onChange={(e) => set('country', e.target.value)}>
                     {copy.countryOptions.map((option) => (
                       <option key={option} value={option}>
                         {option}
@@ -212,9 +220,9 @@ export function EmployerRegistrationWizard({ copy }: { copy: EmployerRegistratio
                 </div>
                 <div>
                   <label className={labelCls} htmlFor="city">
-                    {copy.cityLabel}
+                    {copy.cityLabel} <span className="text-[#b28a49]">*</span>
                   </label>
-                  <input id="city" className={field} value={form.city} placeholder={copy.cityPlaceholder} onChange={(e) => set('city', e.target.value)} />
+                  <input id="city" className={field} required value={form.city} placeholder={copy.cityPlaceholder} onChange={(e) => set('city', e.target.value)} />
                 </div>
                 <div>
                   <label className={labelCls} htmlFor="website">
@@ -222,12 +230,12 @@ export function EmployerRegistrationWizard({ copy }: { copy: EmployerRegistratio
                   </label>
                   <input id="website" className={field} value={form.website} placeholder={copy.websitePlaceholder} onChange={(e) => set('website', e.target.value)} />
                 </div>
-                <div className="sm:col-span-2">
+                <div>
                   <label className={labelCls} htmlFor="companySize">
-                    {copy.companySizeLabel}
+                    {copy.companySizeLabel} <span className="text-[#b28a49]">*</span>
                   </label>
-                  <select id="companySize" className={field} value={form.companySize} onChange={(e) => set('companySize', e.target.value)}>
-                    <option value="">Select</option>
+                  <select id="companySize" className={field} required value={form.companySize} onChange={(e) => set('companySize', e.target.value)}>
+                    <option value="">Select company size</option>
                     {copy.companySizeOptions.map((option) => (
                       <option key={option} value={option}>
                         {option}
@@ -239,31 +247,51 @@ export function EmployerRegistrationWizard({ copy }: { copy: EmployerRegistratio
             </fieldset>
 
             <fieldset className="m-0 border-0 p-0">
-              <legend className="mb-3 text-[14px] font-semibold text-[#0a088f]">{copy.contactSectionTitle}</legend>
+              <legend className="mb-3 text-[14px] font-semibold text-[#142438]">{copy.contactSectionTitle}</legend>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
                   <label className={labelCls} htmlFor="fullName">
-                    {copy.fullNameLabel} <span className="text-[#c96a4b]">*</span>
+                    {copy.fullNameLabel} <span className="text-[#b28a49]">*</span>
                   </label>
                   <input id="fullName" className={field} required value={form.fullName} placeholder={copy.fullNamePlaceholder} onChange={(e) => set('fullName', e.target.value)} />
                 </div>
                 <div>
                   <label className={labelCls} htmlFor="jobTitle">
-                    {copy.jobTitleLabel}
+                    {copy.jobTitleLabel} <span className="text-[#b28a49]">*</span>
                   </label>
-                  <input id="jobTitle" className={field} value={form.jobTitle} placeholder={copy.jobTitlePlaceholder} onChange={(e) => set('jobTitle', e.target.value)} />
+                  <input id="jobTitle" className={field} required value={form.jobTitle} placeholder={copy.jobTitlePlaceholder} onChange={(e) => set('jobTitle', e.target.value)} />
                 </div>
                 <div>
                   <label className={labelCls} htmlFor="email">
-                    {copy.emailLabel} <span className="text-[#c96a4b]">*</span>
+                    {copy.emailLabel} <span className="text-[#b28a49]">*</span>
                   </label>
                   <input id="email" type="email" className={field} required value={form.email} placeholder={copy.emailPlaceholder} onChange={(e) => set('email', e.target.value)} />
                 </div>
                 <div>
                   <label className={labelCls} htmlFor="phone">
-                    {copy.phoneLabel}
+                    {copy.phoneLabel} <span className="text-[#b28a49]">*</span>
                   </label>
-                  <input id="phone" className={field} value={form.phone} placeholder={copy.phonePlaceholder} onChange={(e) => set('phone', e.target.value)} />
+                  <div className="flex gap-2">
+                    <span
+                      aria-hidden
+                      className="inline-flex shrink-0 items-center gap-1.5 rounded-[10px] border border-line bg-[#f7f8fa] px-3 text-[14px] text-ink-2"
+                    >
+                      <svg viewBox="0 0 24 16" className="h-3.5 w-5 rounded-[2px]" aria-hidden>
+                        <rect width="24" height="16" fill="#006600" />
+                        <rect x="9" width="15" height="16" fill="#FF0000" />
+                        <circle cx="9" cy="8" r="2.6" fill="#FFCC00" />
+                      </svg>
+                      +351
+                    </span>
+                    <input
+                      id="phone"
+                      className={field}
+                      required
+                      value={form.phone}
+                      placeholder={copy.phonePlaceholder}
+                      onChange={(e) => set('phone', e.target.value)}
+                    />
+                  </div>
                 </div>
               </div>
             </fieldset>
@@ -272,11 +300,11 @@ export function EmployerRegistrationWizard({ copy }: { copy: EmployerRegistratio
 
         {step === 2 ? (
           <fieldset className="m-0 border-0 p-0">
-            <legend className="mb-3 text-[14px] font-semibold text-[#0a088f]">{copy.hiringSectionTitle}</legend>
+            <legend className="mb-3 text-[14px] font-semibold text-[#142438]">{copy.hiringSectionTitle}</legend>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="sm:col-span-2">
                 <label className={labelCls} htmlFor="roleTitle">
-                  {copy.roleTitleLabel} <span className="text-[#c96a4b]">*</span>
+                  {copy.roleTitleLabel} <span className="text-[#b28a49]">*</span>
                 </label>
                 <input id="roleTitle" className={field} required value={form.roleTitle} placeholder={copy.roleTitlePlaceholder} onChange={(e) => set('roleTitle', e.target.value)} />
               </div>
@@ -330,7 +358,7 @@ export function EmployerRegistrationWizard({ copy }: { copy: EmployerRegistratio
 
         {step === 3 ? (
           <div>
-            <h3 className="m-0 text-[14px] font-semibold text-[#0a088f]">{copy.reviewSectionTitle}</h3>
+            <h3 className="m-0 text-[14px] font-semibold text-[#142438]">{copy.reviewSectionTitle}</h3>
             <dl className="m-0 mt-4 grid gap-3 text-[14px] sm:grid-cols-2">
               {[
                 [copy.companyNameLabel, form.companyName],
@@ -356,7 +384,7 @@ export function EmployerRegistrationWizard({ copy }: { copy: EmployerRegistratio
             </dl>
             {form.notes ? (
               <p className="m-0 mt-3 rounded-[10px] border border-line bg-[#f7f8fa] px-3 py-2.5 text-[14px] text-ink-2">
-                <span className="font-semibold text-[#0a088f]">{copy.notesLabel}: </span>
+                <span className="font-semibold text-[#142438]">{copy.notesLabel}: </span>
                 {form.notes}
               </p>
             ) : null}
@@ -370,35 +398,40 @@ export function EmployerRegistrationWizard({ copy }: { copy: EmployerRegistratio
 
         <div className="mt-6 flex flex-col gap-3">
           {step > 1 ? (
-            <button type="button" className="rounded-full border border-line bg-white px-4 py-3 text-[14px] font-semibold text-[#0a088f]" onClick={() => setStep((s) => s - 1)}>
+            <button
+              type="button"
+              className="rounded-[10px] border border-line bg-white px-4 py-3 text-[14px] font-semibold text-[#142438]"
+              onClick={() => setStep((s) => s - 1)}
+            >
               {copy.backLabel}
             </button>
           ) : null}
-          <button
-            type="submit"
-            disabled={
-              busy ||
-              (step === 1 && !step1Ready) ||
-              (step === 2 && !step2Ready) ||
-              (step === 3 && turnstileEnabled && !challenge)
-            }
-            className="btn-gradient t-colors inline-flex w-full cursor-pointer items-center justify-center gap-2 px-5 py-3.5 text-[15px] font-semibold disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {step === 1 ? copy.continueToHiring : step === 2 ? copy.continueToReview : copy.submitLabel}
-            <span aria-hidden>→</span>
-          </button>
-          {step === 1 ? (
-            <Link
-              href={copy.bookConsultationHref}
-              className="t-colors inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#0a088f]/20 bg-white px-5 py-3 text-[14px] font-semibold text-[#0a088f] no-underline"
+          <div className={`grid gap-3 ${step === 1 ? 'sm:grid-cols-[1.35fr_1fr]' : ''}`}>
+            <button
+              type="submit"
+              disabled={
+                busy ||
+                (step === 1 && !step1Ready) ||
+                (step === 2 && !step2Ready) ||
+                (step === 3 && turnstileEnabled && !challenge)
+              }
+              className="t-colors inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-[10px] bg-[#b28a49] px-5 py-3.5 text-[15px] font-semibold text-[#142438] hover:bg-[#c49a58] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
-                <rect x="4" y="5" width="16" height="15" rx="2" />
-                <path d="M8 3v4M16 3v4M4 10h16" strokeLinecap="round" />
-              </svg>
-              {copy.bookConsultationLabel}
-            </Link>
-          ) : null}
+              {step === 1 ? `${copy.continueToHiring} →` : step === 2 ? `${copy.continueToReview} →` : copy.submitLabel}
+            </button>
+            {step === 1 ? (
+              <Link
+                href={copy.bookConsultationHref}
+                className="t-colors inline-flex w-full items-center justify-center gap-2 rounded-[10px] border border-[#142438]/25 bg-white px-5 py-3.5 text-[14px] font-semibold text-[#142438] no-underline"
+              >
+                <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
+                  <rect x="4" y="5" width="16" height="15" rx="2" />
+                  <path d="M8 3v4M16 3v4M4 10h16" strokeLinecap="round" />
+                </svg>
+                {copy.bookConsultationLabel}
+              </Link>
+            ) : null}
+          </div>
         </div>
 
         <p className="m-0 mt-5 flex items-start gap-2 text-[12px] leading-[1.45] text-muted">

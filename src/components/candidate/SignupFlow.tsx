@@ -2,24 +2,45 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useCallback, useMemo, useState } from 'react';
-import { Mono } from '@/components/ui/Mono';
+import { useCallback, useState } from 'react';
 import { Turnstile, TURNSTILE_HEADER } from '@/components/security/Turnstile';
 import { PlacePicker } from '@/components/candidate/PlacePicker';
+import { Icon } from '@/components/cms/primitives';
 import { DIAL_CODES, DEFAULT_COUNTRY } from '@/lib/data/dial-codes';
 import { phoneFields } from '@/lib/validation';
 import { AREAS, POSITIONS, positionsInArea, type PositionSlug } from '@/lib/data/positions';
+import { siteText } from '@/lib/cms/localize';
 import { fill, type Dictionary, type Locale, localePath } from '@/lib/i18n';
 
+type Gender = 'male' | 'female' | 'other';
 type Errors = Partial<
-  Record<'fullName' | 'mobile' | 'email' | 'password' | 'cityState' | 'consent' | 'form', string>
+  Record<
+    | 'fullName'
+    | 'mobile'
+    | 'email'
+    | 'password'
+    | 'dateOfBirth'
+    | 'gender'
+    | 'nationality'
+    | 'cityState'
+    | 'relocate'
+    | 'consent'
+    | 'form',
+    string
+  >
 >;
+
+const FORM_STEPS = [
+  'Personal Details',
+  'Professional Details',
+  'Documents',
+  'Review & Submit',
+] as const;
 
 export function SignupFlow({
   locale,
   t,
   initialPosition,
-  /** Set when the browser has come back from Checkout with a confirmed payment. */
   confirmedReceipt,
 }: {
   locale: Locale;
@@ -29,8 +50,9 @@ export function SignupFlow({
 }) {
   const router = useRouter();
   const s = t.signup;
+  const tx = (english: string) => siteText(locale, english);
 
-  const [step, setStep] = useState(confirmedReceipt ? 3 : 0);
+  const [step, setStep] = useState(0);
   const [errors, setErrors] = useState<Errors>({});
   const [busy, setBusy] = useState(false);
   const [receipt] = useState(confirmedReceipt ?? '');
@@ -40,9 +62,11 @@ export function SignupFlow({
   const [country, setCountry] = useState(DEFAULT_COUNTRY);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState('');
+  const [gender, setGender] = useState<Gender | null>('male');
+  const [nationality, setNationality] = useState('Indian');
+  const [willingToRelocate, setWillingToRelocate] = useState<boolean | null>(true);
   const [hasPassport, setHasPassport] = useState<boolean | null>(null);
-  /* Set once the account exists, so Continue cannot open a second one if the
-     candidate steps back to the first screen and forward again. */
   const [registered, setRegistered] = useState(false);
   const [challenge, setChallenge] = useState<string | null>(null);
   const [challengeKey, setChallengeKey] = useState(0);
@@ -50,36 +74,43 @@ export function SignupFlow({
   const [position, setPosition] = useState<PositionSlug>(initialPosition);
   const [years, setYears] = useState(0);
   const [cityState, setCityState] = useState('');
-  /* Place search country, seeded from the phone country on step 1. */
   const [placeCountry, setPlaceCountry] = useState(DEFAULT_COUNTRY);
-
   const [consent, setConsent] = useState(false);
-
-  const titles = useMemo(() => [s.title0, s.title1], [s.title0, s.title1]);
 
   const validateStep = useCallback((): boolean => {
     const next: Errors = {};
     if (step === 0) {
       if (fullName.trim().length < 2) next.fullName = s.errRequired;
-      /* The same library the server validates with, so the form cannot pass
-         something the API will then refuse, or refuse something it would take. */
       if (!phoneFields.safeParse({ country, mobile }).success) next.mobile = s.errMobile;
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.trim())) next.email = s.errEmail;
       if (password.length < 8) next.password = s.errPassword;
+      if (!dateOfBirth) next.dateOfBirth = s.errRequired;
+      if (!gender) next.gender = s.errRequired;
+      if (nationality.trim().length < 2) next.nationality = s.errRequired;
+      if (cityState.trim().length < 2) next.cityState = s.errRequired;
+      if (willingToRelocate === null) next.relocate = s.errRequired;
     }
-    if (step === 1 && cityState.trim().length < 2) next.cityState = s.errRequired;
-    if (step === 1 && !consent) next.consent = s.errConsent;
+    if (step === 2 && hasPassport === null) next.form = s.errRequired;
+    if (step === 3 && !consent) next.consent = s.errConsent;
     setErrors(next);
     return Object.keys(next).length === 0;
-  }, [step, fullName, mobile, country, email, password, cityState, consent, s]);
+  }, [
+    step,
+    fullName,
+    mobile,
+    country,
+    email,
+    password,
+    dateOfBirth,
+    gender,
+    nationality,
+    cityState,
+    willingToRelocate,
+    hasPassport,
+    consent,
+    s,
+  ]);
 
-  /**
-   * Saves the profile and sends them into the assessment.
-   *
-   * Nothing is charged here any more. The fee is collected afterwards, from the
-   * dashboard, once there is a report to unlock; this step ends with the one
-   * thing the candidate came to do.
-   */
   async function submitProfile() {
     setBusy(true);
     setErrors({});
@@ -96,6 +127,10 @@ export function SignupFlow({
           position,
           yearsExperience: years,
           cityState: cityState.trim(),
+          dateOfBirth,
+          gender,
+          nationality: nationality.trim(),
+          willingToRelocate: willingToRelocate ?? false,
           consent: true,
         }),
       });
@@ -111,13 +146,6 @@ export function SignupFlow({
     }
   }
 
-  /**
-   * Opens the account, and starts the session, at the first step.
-   *
-   * Everything after this runs signed in, so an abandoned application can be
-   * resumed instead of restarted, and so nothing waits for an email to arrive.
-   * The address is proved later; see /api/auth/register.
-   */
   async function register() {
     setBusy(true);
     setErrors({});
@@ -135,21 +163,22 @@ export function SignupFlow({
           mobile: mobile.replace(/[\s-]/g, ''),
           email: email.trim(),
           password,
-          hasPassport: hasPassport ?? false,
+          hasPassport: false,
+          dateOfBirth,
+          gender,
+          nationality: nationality.trim(),
+          willingToRelocate: willingToRelocate ?? false,
+          cityState: cityState.trim(),
         }),
       });
 
       const data = (await response.json().catch(() => null)) as { status?: string } | null;
 
-      /* Turnstile tokens are single use, so any refusal needs a fresh check. */
       if (data?.status !== 'created') {
         setChallenge(null);
         setChallengeKey((k) => k + 1);
       }
 
-      /* Supabase will not tell the browser that an address is taken, so the
-         server answers instead. Without this the candidate would be shown
-         "check your email" for an account they already have. */
       if (data?.status === 'account_exists') {
         setBusy(false);
         setErrors({ email: s.errAccountExists });
@@ -172,8 +201,6 @@ export function SignupFlow({
       setBusy(false);
       setPlaceCountry(country);
       setStep(1);
-      /* The layout reads the session server side, so the header and the
-         account menu are stale until this runs. */
       router.refresh();
     } catch (error) {
       console.error('[signup] register failed', error);
@@ -188,7 +215,7 @@ export function SignupFlow({
       void register();
       return;
     }
-    if (step === 1) {
+    if (step === 3) {
       void submitProfile();
       return;
     }
@@ -203,8 +230,7 @@ export function SignupFlow({
     setStep(step - 1);
   }
 
-  /* --------------------------------------------------------------- success */
-  if (step === 3) {
+  if (receipt) {
     return (
       <div className="max-w-[620px]">
         <span
@@ -216,9 +242,7 @@ export function SignupFlow({
         <h1 className="mt-6 mb-3 text-[clamp(26px,3.4cqi,38px)] font-semibold leading-[1.1] tracking-[-0.03em]">
           {s.successTitle}
         </h1>
-        <p className="m-0 mb-8 text-[16px] leading-[1.55] text-ink-2">
-          {fill(s.successBody, { receipt })}
-        </p>
+        <p className="m-0 mb-8 text-[16px] leading-[1.55] text-ink-2">{fill(s.successBody, { receipt })}</p>
         <Link
           href={localePath(locale, '/assessment')}
           className="btn-gradient t-colors inline-block px-5 py-3 text-[15px] font-semibold no-underline"
@@ -229,279 +253,406 @@ export function SignupFlow({
     );
   }
 
+  const continueLabel =
+    step === 0
+      ? tx('Continue to Professional Details')
+      : step === 1
+        ? tx('Continue to Documents')
+        : step === 2
+          ? tx('Continue to Review')
+          : tx('Submit profile');
+
   return (
-    <div className="max-w-[620px] flex-1">
-      {/* stepper */}
-      <ol className="m-0 mb-9 grid list-none grid-cols-2 gap-3 p-0">
-        {[s.stepAccount, s.stepProfile].map((label, index) => (
-          <li key={label}>
-            <div
-              className={`h-1 rounded-full ${index <= step ? 'bg-ink' : 'bg-line'}`}
-              aria-hidden
-            />
-            <Mono className={`mt-2.5 block ${index <= step ? 'text-ink' : 'text-muted'}`}>
-              {index + 1}. {label}
-            </Mono>
-          </li>
-        ))}
+    <div className="mx-auto w-full max-w-[640px]">
+      <h2 className="display-serif m-0 text-[clamp(26px,3.4cqi,36px)] font-normal leading-[1.12] text-[#142438]">
+        {tx('Create Your Free Profile')}
+      </h2>
+      <p className="m-0 mt-2 text-[14px] leading-[1.55] text-ink-2">
+        {tx('Join professionals from India building their careers in Portugal.')}
+      </p>
+
+      <ol className="m-0 mt-8 grid list-none grid-cols-2 gap-x-3 gap-y-4 p-0 sm:grid-cols-4">
+        {FORM_STEPS.map((label, index) => {
+          const active = index === step;
+          const done = index < step;
+          return (
+            <li key={label} className="relative min-w-0 text-center">
+              {index < FORM_STEPS.length - 1 ? (
+                <span
+                  aria-hidden
+                  className={`absolute start-[calc(50%+18px)] top-4 hidden h-px w-[calc(100%-36px)] sm:block ${
+                    done ? 'bg-[var(--color-gold)]' : 'bg-line'
+                  }`}
+                />
+              ) : null}
+              <span
+                className={`relative z-[1] mx-auto grid size-8 place-items-center rounded-full text-[13px] font-bold ${
+                  active || done
+                    ? 'bg-[var(--color-gold)] text-white'
+                    : 'border border-line-strong bg-white text-muted'
+                }`}
+              >
+                {done ? '✓' : index + 1}
+              </span>
+              <p
+                className={`m-0 mt-2 text-[12px] leading-[1.3] ${
+                  active ? 'font-semibold text-[#142438]' : 'font-medium text-muted'
+                }`}
+              >
+                {tx(label)}
+              </p>
+            </li>
+          );
+        })}
       </ol>
 
-      <h1 className="m-0 mb-7 text-[clamp(26px,3.4cqi,38px)] font-semibold leading-[1.1] tracking-[-0.03em]">
-        {titles[step]}
-      </h1>
+      <div className="mt-9">
+        {step === 0 ? (
+          <div className="flex flex-col gap-5">
+            <Field label={tx('Full Name')} requiredMark error={errors.fullName}>
+              <InputShell icon="users" error={!!errors.fullName}>
+                <input
+                  value={fullName}
+                  onChange={(event) => setFullName(event.target.value)}
+                  autoComplete="name"
+                  placeholder={tx('e.g. Rahul Sharma')}
+                  className={bareInput}
+                />
+              </InputShell>
+            </Field>
 
-      {/* ------------------------------------------------------- step 1 account */}
-      {step === 0 && (
-        <div className="flex flex-col gap-5">
-          <Field label={s.fullName} hint={s.fullNameHint} error={errors.fullName}>
-            <input
-              value={fullName}
-              onChange={(event) => setFullName(event.target.value)}
-              autoComplete="name"
-              className={inputClass(!!errors.fullName)}
-            />
-          </Field>
+            <Field label={tx('Email Address')} requiredMark error={errors.email}>
+              <InputShell icon="chat" error={!!errors.email}>
+                <input
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  placeholder={tx('e.g. rahul@email.com')}
+                  className={bareInput}
+                />
+              </InputShell>
+            </Field>
 
-          {/*
-            Country and number, as one control.
-
-            It was a fixed `+91` with ten digits beside it, which told anybody
-            outside India that the form was not for them. A native `<select>`
-            rather than a styled listbox: on a phone it opens the system picker,
-            which is searchable, scrollable to two hundred and forty-five
-            entries, and already works with a screen reader.
-          */}
-          <Field label={s.mobile} error={errors.mobile}>
-            <div className="flex items-stretch overflow-hidden rounded-[12px] border border-line-strong bg-surface focus-within:border-ink t-colors">
-              <select
-                value={country}
-                onChange={(event) => setCountry(event.target.value)}
-                /* Country code and number read left to right in every locale:
-                   a dialling code is a number, not prose. */
-                dir="ltr"
-                aria-label={s.countryCode}
-                autoComplete="tel-country-code"
-                className="max-w-[9.5rem] shrink-0 cursor-pointer border-0 border-r border-line-strong bg-surface-subtle py-3 pl-3.5 pr-2 font-mono text-[14px] text-ink-2 outline-none"
+            <Field label={tx('Phone Number')} requiredMark error={errors.mobile}>
+              <div
+                className={`flex items-stretch overflow-hidden rounded-[10px] border bg-white focus-within:border-[#142438] ${
+                  errors.mobile ? 'border-accent-deep' : 'border-line-strong'
+                }`}
               >
-                {DIAL_CODES.map((entry) => (
-                  <option key={entry.country} value={entry.country}>
-                    {entry.country} +{entry.dial}
+                <select
+                  value={country}
+                  onChange={(event) => setCountry(event.target.value)}
+                  dir="ltr"
+                  aria-label={s.countryCode}
+                  autoComplete="tel-country-code"
+                  className="max-w-[9.5rem] shrink-0 cursor-pointer border-0 border-r border-line-strong bg-[#f7f7fb] py-3 pl-3 pr-2 font-mono text-[13px] text-ink-2 outline-none"
+                >
+                  {DIAL_CODES.map((entry) => (
+                    <option key={entry.country} value={entry.country}>
+                      {entry.country} +{entry.dial}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  value={mobile}
+                  onChange={(event) => setMobile(event.target.value.replace(/[^\d\s-]/g, ''))}
+                  dir="ltr"
+                  inputMode="tel"
+                  autoComplete="tel-national"
+                  maxLength={20}
+                  placeholder="98765 43210"
+                  className="w-full border-0 bg-transparent px-3.5 py-3 text-[15px] outline-none"
+                />
+              </div>
+            </Field>
+
+            <Field label={tx('Create a password')} requiredMark hint={tx('At least 8 characters')} error={errors.password}>
+              <InputShell icon="shield" error={!!errors.password}>
+                <input
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  type="password"
+                  autoComplete="new-password"
+                  className={bareInput}
+                />
+              </InputShell>
+            </Field>
+
+            <Field label={tx('Date of Birth')} requiredMark error={errors.dateOfBirth}>
+              <InputShell icon="clock" error={!!errors.dateOfBirth}>
+                <input
+                  value={dateOfBirth}
+                  onChange={(event) => setDateOfBirth(event.target.value)}
+                  type="date"
+                  className={bareInput}
+                />
+              </InputShell>
+            </Field>
+
+            <fieldset className="m-0 border-0 p-0">
+              <legend className="mb-2.5 p-0 text-[14px] font-medium text-[#142438]">
+                {tx('Gender')} <span className="text-accent-deep">*</span>
+              </legend>
+              <div className="flex flex-wrap gap-2">
+                {(
+                  [
+                    { label: tx('Male'), value: 'male' as const },
+                    { label: tx('Female'), value: 'female' as const },
+                    { label: tx('Other'), value: 'other' as const },
+                  ] as const
+                ).map((option) => (
+                  <RadioChip
+                    key={option.value}
+                    label={option.label}
+                    active={gender === option.value}
+                    onClick={() => setGender(option.value)}
+                  />
+                ))}
+              </div>
+              {errors.gender ? <p className="m-0 mt-1.5 text-[13px] text-accent-deep">{errors.gender}</p> : null}
+            </fieldset>
+
+            <Field label={tx('Nationality')} requiredMark error={errors.nationality}>
+              <InputShell icon="globe" error={!!errors.nationality}>
+                <input
+                  value={nationality}
+                  onChange={(event) => setNationality(event.target.value)}
+                  className={bareInput}
+                />
+              </InputShell>
+            </Field>
+
+            <div>
+              <PlacePicker
+                value={cityState}
+                onChange={setCityState}
+                country={placeCountry}
+                onCountryChange={setPlaceCountry}
+                label={`${tx('Current Location')} *`}
+                countryLabel={tx('Country')}
+                error={errors.cityState}
+                inputClassName={inputClass(!!errors.cityState)}
+                language={locale}
+              />
+            </div>
+
+            <fieldset className="m-0 border-0 p-0">
+              <legend className="mb-2.5 p-0 text-[14px] font-medium text-[#142438]">
+                {tx('Willing to Relocate to Portugal?')} <span className="text-accent-deep">*</span>
+              </legend>
+              <div className="flex flex-wrap gap-2">
+                <RadioChip label={tx('Yes')} active={willingToRelocate === true} onClick={() => setWillingToRelocate(true)} />
+                <RadioChip label={tx('No')} active={willingToRelocate === false} onClick={() => setWillingToRelocate(false)} />
+              </div>
+              {errors.relocate ? <p className="m-0 mt-1.5 text-[13px] text-accent-deep">{errors.relocate}</p> : null}
+            </fieldset>
+
+            {!registered && <Turnstile key={challengeKey} onToken={setChallenge} />}
+          </div>
+        ) : null}
+
+        {step === 1 ? (
+          <div className="flex flex-col gap-6">
+            <fieldset className="m-0 border-0 p-0">
+              <legend className="mb-2.5 p-0 text-[14px] font-medium text-[#142438]">
+                {s.mainSector} <span className="text-accent-deep">*</span>
+              </legend>
+              <div className="flex flex-col gap-3.5" role="radiogroup" aria-label={s.mainSector}>
+                {AREAS.map((area) => {
+                  const positions = positionsInArea(area.slug);
+                  if (positions.length === 0) return null;
+                  return (
+                    <div key={area.slug}>
+                      <p className="m-0 mb-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted">
+                        {area.label}
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {positions.map((option) => {
+                          const index = POSITIONS.findIndex((item) => item.slug === option.slug);
+                          const active = position === option.slug;
+                          return (
+                            <RadioChip
+                              key={option.slug}
+                              label={t.sectors[index] ?? option.label}
+                              active={active}
+                              onClick={() => setPosition(option.slug)}
+                            />
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </fieldset>
+
+            <Field label={s.years} requiredMark>
+              <select value={years} onChange={(event) => setYears(Number(event.target.value))} className={inputClass(false)}>
+                {s.yearOptions.map((label, index) => (
+                  <option key={label} value={index}>
+                    {label}
                   </option>
                 ))}
               </select>
-              <input
-                value={mobile}
-                onChange={(event) => setMobile(event.target.value.replace(/[^\d\s-]/g, ''))}
-                dir="ltr"
-                inputMode="tel"
-                autoComplete="tel-national"
-                maxLength={20}
-                className="w-full border-0 bg-transparent px-3.5 py-3 text-[16px] outline-none"
-              />
-            </div>
-          </Field>
-
-          <Field label={s.email} error={errors.email}>
-            <input
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              type="email"
-              inputMode="email"
-              autoComplete="email"
-              className={inputClass(!!errors.email)}
-            />
-          </Field>
-
-          <Field label={s.passwordLabel} hint={s.passwordHint} error={errors.password}>
-            <input
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              type="password"
-              /* Tells a password manager to offer to save it. Without it many
-                 of them stay silent on a field they read as a login. */
-              autoComplete="new-password"
-              className={inputClass(!!errors.password)}
-            />
-          </Field>
-
-          <fieldset className="m-0 border-0 p-0">
-            <legend className="mb-2.5 p-0 text-[15px] font-medium">{s.passportQ}</legend>
-            <div className="flex gap-2">
-              {[
-                { label: s.passportYes, value: true },
-                { label: s.passportNo, value: false },
-              ].map((option) => (
-                <button
-                  key={option.label}
-                  type="button"
-                  aria-pressed={hasPassport === option.value}
-                  onClick={() => setHasPassport(option.value)}
-                  className={`t-colors cursor-pointer rounded-full border px-[18px] py-2.5 text-[14px] ${
-                    hasPassport === option.value
-                      ? 'border-ink bg-ink text-paper'
-                      : 'border-line-strong bg-surface text-ink hover:border-ink'
-                  }`}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
-          </fieldset>
-
-          {!registered && <Turnstile key={challengeKey} onToken={setChallenge} />}
-        </div>
-      )}
-
-      {/* ------------------------------------------------------- step 2 profile */}
-      {step === 1 && (
-        <div className="flex flex-col gap-6">
-          <fieldset className="m-0 border-0 p-0">
-            <legend className="mb-2.5 p-0 text-[15px] font-medium">{s.mainSector}</legend>
-            <div className="flex flex-col gap-3.5" role="radiogroup" aria-label={s.mainSector}>
-              {AREAS.map((area) => {
-                const positions = positionsInArea(area.slug);
-                if (positions.length === 0) return null;
-                return (
-                  <div key={area.slug}>
-                    <Mono className="mb-1.5 block text-muted">{area.label.toUpperCase()}</Mono>
-                    <div className="flex flex-wrap gap-2">
-                      {positions.map((option) => {
-                        const index = POSITIONS.findIndex((item) => item.slug === option.slug);
-                        const active = position === option.slug;
-                        return (
-                          <button
-                            key={option.slug}
-                            type="button"
-                            role="radio"
-                            aria-checked={active}
-                            onClick={() => setPosition(option.slug)}
-                            className={`t-colors cursor-pointer rounded-full border px-[14px] py-2 text-[14px] ${
-                              active
-                                ? 'border-ink bg-ink text-paper'
-                                : 'border-line-strong bg-surface text-ink hover:border-ink'
-                            }`}
-                          >
-                            {t.sectors[index] ?? option.label}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </fieldset>
-
-          <Field label={s.years}>
-            <select
-              value={years}
-              onChange={(event) => setYears(Number(event.target.value))}
-              className={inputClass(false)}
-            >
-              {s.yearOptions.map((label, index) => (
-                <option key={label} value={index}>
-                  {label}
-                </option>
-              ))}
-            </select>
-          </Field>
-
-          <div>
-            <PlacePicker
-              value={cityState}
-              onChange={setCityState}
-              country={placeCountry}
-              onCountryChange={setPlaceCountry}
-              label={s.cityState}
-              countryLabel="Country"
-              error={errors.cityState}
-              inputClassName={inputClass(!!errors.cityState)}
-              language={locale}
-            />
+            </Field>
           </div>
+        ) : null}
 
-          {/*
-            The account is free. The statement name belongs on the pay screen,
-            after the score, where CheckoutTrust already prints it.
-          */}
+        {step === 2 ? (
+          <div className="flex flex-col gap-5">
+            <p className="m-0 text-[14px] leading-[1.55] text-ink-2">
+              {tx('Tell us about your passport. You can upload your CV and other documents from your dashboard after the free skills test.')}
+            </p>
+            <fieldset className="m-0 border-0 p-0">
+              <legend className="mb-2.5 p-0 text-[14px] font-medium text-[#142438]">
+                {s.passportQ} <span className="text-accent-deep">*</span>
+              </legend>
+              <div className="flex flex-wrap gap-2">
+                <RadioChip label={s.passportYes} active={hasPassport === true} onClick={() => setHasPassport(true)} />
+                <RadioChip label={s.passportNo} active={hasPassport === false} onClick={() => setHasPassport(false)} />
+              </div>
+            </fieldset>
+            {errors.form ? <p className="m-0 text-[13px] text-accent-deep">{errors.form}</p> : null}
+          </div>
+        ) : null}
 
-          {/* Mandatory odds disclosure. The button stays disabled until it is checked. */}
-          <label className="mt-2 flex cursor-pointer items-start gap-3 rounded-[12px] border border-line bg-surface-subtle p-4">
-            <input
-              type="checkbox"
-              checked={consent}
-              onChange={(event) => setConsent(event.target.checked)}
-              className="sr-only-focusable peer"
-              aria-describedby="consent-text"
-            />
-            <span
-              aria-hidden
-              className="mt-px flex size-[20px] shrink-0 items-center justify-center rounded-[6px] border border-line-strong text-[13px] font-semibold text-paper peer-checked:border-ink peer-checked:bg-ink"
-              style={consent ? { background: 'var(--color-ink)', borderColor: 'var(--color-ink)' } : undefined}
-            >
-              {consent ? '✓' : ''}
-            </span>
-            <span id="consent-text" className="text-[13px] leading-[1.55] text-ink-2">
-              {s.consentNoPlacement}{' '}
-              <Link href={localePath(locale, '/selection-rules')} className="prose-link">
-                {s.consentRules}
-              </Link>{' '}
-              &amp;{' '}
-              <Link href={localePath(locale, '/refund-policy')} className="prose-link">
-                {s.consentRefund}
-              </Link>{' '}
-              &amp;{' '}
-              <Link href={localePath(locale, '/terms')} className="prose-link">
-                {t.footerTerms}
-              </Link>
-              .
-            </span>
-          </label>
+        {step === 3 ? (
+          <div className="flex flex-col gap-5">
+            <dl className="m-0 grid list-none grid-cols-1 gap-3 rounded-[12px] border border-line bg-[#f7f7fb] p-4 text-[14px] sm:grid-cols-2">
+              <ReviewItem label={tx('Full Name')} value={fullName} />
+              <ReviewItem label={tx('Email Address')} value={email} />
+              <ReviewItem label={tx('Phone Number')} value={`${country} ${mobile}`} />
+              <ReviewItem label={tx('Date of Birth')} value={dateOfBirth} />
+              <ReviewItem label={tx('Gender')} value={gender ? tx(gender === 'male' ? 'Male' : gender === 'female' ? 'Female' : 'Other') : '—'} />
+              <ReviewItem label={tx('Nationality')} value={nationality} />
+              <ReviewItem label={tx('Current Location')} value={cityState} />
+              <ReviewItem
+                label={tx('Willing to Relocate to Portugal?')}
+                value={willingToRelocate ? tx('Yes') : tx('No')}
+              />
+              <ReviewItem
+                label={s.mainSector}
+                value={t.sectors[POSITIONS.findIndex((item) => item.slug === position)] ?? position}
+              />
+              <ReviewItem label={s.years} value={s.yearOptions[years] ?? String(years)} />
+              <ReviewItem label={s.passportQ} value={hasPassport ? s.passportYes : s.passportNo} />
+            </dl>
 
-          {errors.consent && <p className="m-0 text-[13px] text-accent-deep">{errors.consent}</p>}
-          {errors.form && <p className="m-0 text-[13px] text-accent-deep">{errors.form}</p>}
-        </div>
-      )}
+            <label className="flex cursor-pointer items-start gap-3">
+              <input
+                type="checkbox"
+                checked={consent}
+                onChange={(event) => setConsent(event.target.checked)}
+                className="sr-only-focusable peer"
+                aria-describedby="consent-text"
+              />
+              <span
+                aria-hidden
+                className={`mt-0.5 flex size-[20px] shrink-0 items-center justify-center rounded-[5px] border text-[12px] font-semibold ${
+                  consent
+                    ? 'border-[var(--color-gold)] bg-[var(--color-gold)] text-white'
+                    : 'border-line-strong bg-white text-transparent'
+                }`}
+              >
+                ✓
+              </span>
+              <span id="consent-text" className="text-[13px] leading-[1.55] text-ink-2">
+                {tx('I agree to the')}{' '}
+                <Link href={localePath(locale, '/terms')} className="prose-link">
+                  {tx('Terms of Service')}
+                </Link>{' '}
+                {tx('and')}{' '}
+                <Link href={localePath(locale, '/privacy')} className="prose-link">
+                  {tx('Privacy Policy')}
+                </Link>
+                . {s.consentNoPlacement}{' '}
+                <Link href={localePath(locale, '/selection-rules')} className="prose-link">
+                  {s.consentRules}
+                </Link>
+                .
+              </span>
+            </label>
+            {errors.consent ? <p className="m-0 text-[13px] text-accent-deep">{errors.consent}</p> : null}
+            {errors.form ? <p className="m-0 text-[13px] text-accent-deep">{errors.form}</p> : null}
+          </div>
+        ) : null}
+      </div>
 
-      {/* navigation */}
-      <div className="mt-9 flex items-center gap-3">
+      <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
         <button
           type="button"
           onClick={back}
-          className="t-colors cursor-pointer rounded-[12px] border border-line-strong bg-surface px-5 py-3 text-[15px] hover:border-ink"
+          className="t-colors order-2 cursor-pointer rounded-[10px] border border-line-strong bg-white px-5 py-3 text-[15px] hover:border-ink sm:order-1"
         >
           {s.back}
         </button>
         <button
           type="button"
           onClick={next}
-          disabled={busy || (step === 1 && !consent)}
-          className="btn-gradient t-colors cursor-pointer px-5 py-3 text-[15px] font-semibold disabled:cursor-not-allowed disabled:opacity-100"
+          disabled={busy || (step === 3 && !consent)}
+          className="btn-gradient t-colors order-1 w-full cursor-pointer px-5 py-3.5 text-[15px] font-semibold disabled:cursor-not-allowed disabled:opacity-100 sm:order-2 sm:flex-1"
         >
-          {step === 1 ? s.startAssessment : s.continue}
+          {busy ? tx('Please wait…') : (
+            <>
+              {continueLabel}
+              <span aria-hidden> →</span>
+            </>
+          )}
         </button>
       </div>
     </div>
   );
 }
 
-/* -------------------------------------------------------------------------- */
+const bareInput =
+  'w-full border-0 bg-transparent px-3.5 py-3 text-[15px] outline-none';
+
+function ReviewItem({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="min-w-0">
+      <dt className="m-0 text-[11px] font-semibold uppercase tracking-[0.1em] text-muted">{label}</dt>
+      <dd className="m-0 mt-1 truncate font-medium text-[#142438]">{value || '—'}</dd>
+    </div>
+  );
+}
+
+function RadioChip({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      aria-pressed={active}
+      onClick={onClick}
+      className={`t-colors cursor-pointer rounded-full border px-4 py-2.5 text-[14px] font-medium ${
+        active
+          ? 'border-[var(--color-gold)] bg-[var(--color-gold)] text-white'
+          : 'border-line-strong bg-white text-[#142438] hover:border-[#142438]'
+      }`}
+    >
+      {label}
+    </button>
+  );
+}
 
 function Field({
   label,
   hint,
   error,
+  requiredMark,
   children,
 }: {
   label: string;
   hint?: string;
   error?: string;
+  requiredMark?: boolean;
   children: React.ReactNode;
 }) {
   return (
     <label className="block">
-      <span className="mb-2 block text-[15px] font-medium">
+      <span className="mb-2 block text-[14px] font-medium text-[#142438]">
         {label}
+        {requiredMark ? <span className="text-accent-deep"> *</span> : null}
         {hint ? <span className="ml-1.5 font-normal text-muted">({hint})</span> : null}
       </span>
       {children}
@@ -510,8 +661,31 @@ function Field({
   );
 }
 
+function InputShell({
+  icon,
+  error,
+  children,
+}: {
+  icon: string;
+  error?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      className={`flex items-stretch overflow-hidden rounded-[10px] border bg-white focus-within:border-[#142438] ${
+        error ? 'border-accent-deep' : 'border-line-strong'
+      }`}
+    >
+      <span className="grid place-items-center border-r border-line-strong bg-[#f7f7fb] px-3 text-muted">
+        <Icon name={icon} className="size-4" />
+      </span>
+      <div className="min-w-0 flex-1">{children}</div>
+    </div>
+  );
+}
+
 function inputClass(hasError: boolean): string {
-  return `t-colors w-full rounded-[12px] border bg-surface px-3.5 py-3 text-[16px] outline-none ${
-    hasError ? 'border-accent-deep' : 'border-line-strong focus:border-ink'
+  return `t-colors w-full rounded-[10px] border bg-white px-3.5 py-3 text-[15px] outline-none ${
+    hasError ? 'border-accent-deep' : 'border-line-strong focus:border-[#142438]'
   }`;
 }

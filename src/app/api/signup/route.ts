@@ -57,26 +57,41 @@ export async function POST(request: Request) {
 
   if (supabase) {
     const CONSENT_VERSION = (await getSiteSettings()).hiring.consentVersion;
-    const { error } = await supabase
+    const baseUpdate = {
+      full_name: input.fullName,
+      has_passport: input.hasPassport,
+      position: input.position,
+      /* The enum the item bank is keyed on, derived rather than sent: a
+         browser must not be able to pick which questions it gets. */
+      sector: itemSectorFor(input.position),
+      years_experience_band: input.yearsExperience,
+      english_self_rating: input.englishSelf ?? null,
+      city_state: input.cityState,
+      profile_completed_at: new Date().toISOString(),
+      /* Stored, not just validated: this is the odds-disclosure consent, and
+         it is the record that matters if the fee model is ever challenged. */
+      consent_selection_odds_at: new Date().toISOString(),
+      consent_version: CONSENT_VERSION,
+      locale,
+    };
+    const personalUpdate = {
+      ...(input.dateOfBirth ? { date_of_birth: input.dateOfBirth } : {}),
+      ...(input.gender ? { gender: input.gender } : {}),
+      ...(input.nationality ? { nationality: input.nationality } : {}),
+      ...(typeof input.willingToRelocate === 'boolean'
+        ? { willing_to_relocate: input.willingToRelocate }
+        : {}),
+    };
+
+    let { error } = await supabase
       .from('candidates')
-      .update({
-        full_name: input.fullName,
-        has_passport: input.hasPassport,
-        position: input.position,
-        /* The enum the item bank is keyed on, derived rather than sent: a
-           browser must not be able to pick which questions it gets. */
-        sector: itemSectorFor(input.position),
-        years_experience_band: input.yearsExperience,
-        english_self_rating: input.englishSelf ?? null,
-        city_state: input.cityState,
-        profile_completed_at: new Date().toISOString(),
-        /* Stored, not just validated: this is the odds-disclosure consent, and
-           it is the record that matters if the fee model is ever challenged. */
-        consent_selection_odds_at: new Date().toISOString(),
-        consent_version: CONSENT_VERSION,
-        locale,
-      })
+      .update({ ...baseUpdate, ...personalUpdate })
       .eq('id', candidateId);
+
+    if (error && Object.keys(personalUpdate).length > 0) {
+      console.warn('[signup] retrying without personal columns', error.message);
+      ({ error } = await supabase.from('candidates').update(baseUpdate).eq('id', candidateId));
+    }
 
     if (error) {
       console.error('[signup] profile update failed', error);

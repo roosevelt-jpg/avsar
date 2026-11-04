@@ -2,14 +2,14 @@
 
 Date: 2026-11-03. Stack stays: Next.js 16 App Router, React 19, Supabase, zod, Tailwind v4. No second CMS.
 
-## Palette conflict
+## Palette
 
 | Source | Navy | Gold |
 |---|---|---|
-| Live / owner-approved (prior mockup work) | `#0a088f` | `#c9a54a` |
-| Master Spec | `#142438` | `#b28a49` |
+| Master Spec / mockups (canonical) | `#142438` | `#b28a49` |
+| Retired (old live build) | `#0a088f` | `#c9a54a` |
 
-**Decision for this rebuild:** keep live `#0a088f` / `#c9a54a` unless the owner explicitly switches after Phase 0.
+**Decision:** marketing uses the Master Spec palette only. The old bright navy/gold is gone from shopfront tokens and hardcoded marketing hexes.
 
 ## Public marketing routes
 

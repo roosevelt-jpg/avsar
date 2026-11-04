@@ -36,7 +36,7 @@ export default async function EmployerApplicants() {
         }
       />
 
-      <dl className="m-0 mt-6 grid grid-cols-2 gap-3 sm:grid-cols-5">
+      <dl id="interviews" className="m-0 mt-6 grid scroll-mt-24 grid-cols-2 gap-3 sm:grid-cols-5">
         {[
           ['Shortlisted', metrics.shortlisted],
           ['Interviewing', metrics.interviewing],

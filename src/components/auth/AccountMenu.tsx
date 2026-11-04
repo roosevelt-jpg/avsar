@@ -25,10 +25,13 @@ export async function AccountMenu({
 
   if (viewer.role === 'anonymous') {
     return (
-      /* An icon on phones: "Sign in" runs to fourteen characters in Malayalam
-         and Tamil, which pushed the menu button off a 360px screen. The word
-         stays as the accessible name and returns from the sm breakpoint. */
-      <Link href={localePath(locale, '/applicant/signin')} title={t.signIn} className="inline-flex items-center px-2.5 py-2 text-[15px] no-underline text-ink">
+      /* Mockup: outline “Sign In” on the navy header. Icon-only under sm so
+         long scripts do not shove the menu off a phone. */
+      <Link
+        href={localePath(locale, '/applicant/signin')}
+        title={t.signIn}
+        className="inline-flex items-center rounded-[8px] border border-white/55 px-3.5 py-2 text-[14px] font-medium text-white no-underline hover:bg-white/10"
+      >
         <svg viewBox="0 0 24 24" className="size-5 sm:hidden" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
           <circle cx="12" cy="8" r="3.5" />
           <path d="M5 19.5c1.2-3.3 3.9-5 7-5s5.8 1.7 7 5" strokeLinecap="round" />

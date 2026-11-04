@@ -51,6 +51,7 @@ type FormState = {
   heroImageUrl: string;
   featured: boolean;
   closesAt: string;
+  expectedStartOn: string;
   seoTitle: string;
   seoDescription: string;
 };
@@ -87,6 +88,7 @@ function toForm(job: Job | null): FormState {
     heroImageUrl: job?.heroImageUrl ?? '',
     featured: job?.featured ?? false,
     closesAt: job?.closesAt ? job.closesAt.slice(0, 10) : '',
+    expectedStartOn: job?.expectedStartOn ? job.expectedStartOn.slice(0, 10) : '',
     seoTitle: job?.seoTitle ?? '',
     seoDescription: job?.seoDescription ?? '',
   };
@@ -129,6 +131,7 @@ function toPayload(form: FormState) {
     heroImageUrl: form.heroImageUrl || null,
     featured: form.featured,
     closesAt: form.closesAt ? new Date(`${form.closesAt}T23:59:59Z`).toISOString() : null,
+    expectedStartOn: form.expectedStartOn || null,
     seoTitle: form.seoTitle || null,
     seoDescription: form.seoDescription || null,
   };
@@ -394,6 +397,14 @@ export function JobForm({
             <label className="flex items-center gap-2 text-[14px]"><input type="checkbox" checked={form.featured} onChange={(e) => set('featured', e.target.checked)} /> Featured (shown first)</label>
             <L label="Applications close on" help="Leave empty to keep it open until you close it.">
               <input type="date" className={INPUT} value={form.closesAt} onChange={(e) => set('closesAt', e.target.value)} />
+            </L>
+            <L label="Expected start" help="Optional. Shown on the job page Key Facts strip.">
+              <input
+                type="date"
+                className={INPUT}
+                value={form.expectedStartOn}
+                onChange={(e) => set('expectedStartOn', e.target.value)}
+              />
             </L>
           </div>
         </section>

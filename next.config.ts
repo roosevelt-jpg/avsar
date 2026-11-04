@@ -86,7 +86,16 @@ const nextConfig: NextConfig = {
      about case, so the page was never uploaded and /admin/cvs 404ed. The
      old address stays as a redirect for bookmarks and the sidebar. */
   async redirects() {
-    return [{ source: '/admin/cvs', destination: '/admin/cv-queue', permanent: false }];
+    /* Short mockup/bookmark paths → canonical CMS slugs. Locale-prefixed
+       variants cover every non-English public URL the proxy serves. */
+    const locale = ':locale(hi|bn|mr|te|ta|ur|gu|kn|or|ml|pa|as|ar)';
+    return [
+      { source: '/admin/cvs', destination: '/admin/cv-queue', permanent: false },
+      { source: '/visa', destination: '/visa-and-relocation', permanent: true },
+      { source: `/${locale}/visa`, destination: `/${locale}/visa-and-relocation`, permanent: true },
+      { source: '/news', destination: '/news-and-insights', permanent: true },
+      { source: `/${locale}/news`, destination: `/${locale}/news-and-insights`, permanent: true },
+    ];
   },
 };
 

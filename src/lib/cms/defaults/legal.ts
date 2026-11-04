@@ -1,3 +1,4 @@
+import { BRAND_SLIDES, slidesWithCaptions } from '@/lib/cms/brand-media';
 import { makeBlocks, type DefaultPage } from './make';
 
 /**
@@ -296,74 +297,107 @@ export const CONTACT: DefaultPage = {
   slug: 'contact',
   path: '/contact',
   title: 'Contact',
-  purpose: 'The contact form, the registered office and the addresses for candidates, employers and scam reports.',
+  purpose: 'Contact mockup: overlay hero, trust bar, pathway cards beside the enquiry form, and a direct-contact strip from Settings.',
   seo: {
     title: 'Contact us',
-    description: 'Write to us about a job, an application or the visa. Registered office, emails for candidates and employers, and how to report a scam.',
+    description: 'Write to us about a job, an application or hiring. Phone, WhatsApp and email come from Settings. Report anyone who asks for money.',
   },
   blocks: makeBlocks('contact', [
     [
       'hero',
       {
-        eyebrow: 'Contact',
-        title: 'Talk to the team about Portugal careers',
-        accentWord: 'Portugal',
+        eyebrow: 'Contact us',
+        title: 'Get in Touch with S&A Recruitment',
+        accentWord: 'S&A',
         subtitle:
-          'Questions about a job, an application or the visa reach a person on our team. We answer within two working days. Office details below come from Settings — we do not invent phone numbers for the page.',
-        primaryCta: { label: 'Create free profile', href: '/signup' },
-        secondaryCta: { label: 'See open jobs', href: '/jobs' },
-        badgeLabel: 'India → Portugal',
-        badgeHref: '/contact',
-        filmUrl: '/video/intro.mp4',
-        filmLabel: 'Watch how it works · under a minute',
-        highlights: ['Candidates and families', 'Employers hiring in Portugal', 'Report anyone asking for money'],
+          'Have a question about a job, need support with an application, or want to hire talent for Portugal? A person on our team answers within two working days.',
+        primaryCta: { label: 'Send an Enquiry', href: '#contact-form' },
+        secondaryCta: { label: 'Book a Consultation', href: '#contact-form' },
+        badgeLabel: '',
+        badgeHref: '',
+        filmUrl: '',
+        filmLabel: '',
+        highlights: [],
+        layout: 'overlay',
         mediaType: 'image',
-        mediaSrc: '/photos/brand/employer-handshake.jpg',
-        mediaPoster: '/video/intro-poster.jpg',
-        mediaAlt: 'Conversation about working in Portugal',
-        slides: [
-          { src: '/photos/brand/employer-handshake.jpg', alt: 'Talking through a Portugal career move', caption: '' },
-          { src: '/photos/phone.jpg', alt: 'Support on WhatsApp and phone', caption: '' },
-          { src: '/photos/brand/hero-workers.jpg', alt: 'Candidates preparing for Portugal', caption: '' },
-          { src: '/photos/lisbon.jpg', alt: 'Lisbon skyline', caption: '' },
-        ],
+        mediaSrc: '/photos/lisbon.jpg',
+        mediaPoster: '',
+        mediaAlt: 'Lisbon rooftops and castle hill overlooking the Tagus',
+        slides: slidesWithCaptions(BRAND_SLIDES.contact),
         stats: [],
+      },
+    ],
+    [
+      'trust_bar',
+      {
+        items: [
+          {
+            icon: 'phone',
+            title: 'Responsive Support',
+            body: 'A person answers within two working days during office hours.',
+          },
+          {
+            icon: 'shield',
+            title: 'Trusted & Professional',
+            body: 'Licensed recruitment for candidates from India and employers in Portugal.',
+          },
+          {
+            icon: 'globe',
+            title: 'Candidates & Employers',
+            body: 'One team for job questions, hiring requests and scam reports.',
+          },
+        ],
       },
     ],
     [
       'contact_form',
       {
-        title: 'Send a message',
-        intro:
-          'Questions about a job, an application or the visa, and reports of anyone asking you for money, all reach the same team. A person reads every message.',
+        title: 'Send Us an Enquiry',
+        intro: '',
+        secureNote: 'Your information is secure. We only use it to answer your enquiry.',
+        pathways: [
+          {
+            icon: 'users',
+            title: 'For Candidates',
+            body: 'Questions about jobs, the free test, visas or your application.',
+            ctaLabel: 'Get Candidate Support',
+            href: '#contact-form',
+            image: '/photos/brand/hero-workers.jpg',
+          },
+          {
+            icon: 'briefcase',
+            title: 'For Employers',
+            body: 'Tell us the roles you need in Portugal. We shortlist assessed candidates.',
+            ctaLabel: 'Hire Talent Today',
+            href: '/employers',
+            image: '/photos/brand/employer-handshake.jpg',
+          },
+          {
+            icon: 'clock',
+            title: 'Book a Consultation',
+            body: 'Prefer a call? Send an enquiry and ask for a consultation time.',
+            ctaLabel: 'Schedule a Meeting',
+            href: '#contact-form',
+            image: '/photos/documents.jpg',
+          },
+        ],
       },
     ],
     [
-      'document',
+      'contact_cards',
       {
-        title: '',
-        updated: '',
-        body: `## Registered office
-
-${ENTITY}
-
-## Offices
-
-{{offices}}
-
-{{office_hours}}
-
-## Candidates
-
-{{support_email}}. We answer within two working days, and give a decision on an application within {{response_days}} days.
-
-## Employers
-
-{{employer_email}}
-
-## If anyone asks you for money
-
-Nobody is authorised to charge a candidate anything beyond the skills report and the visa-requirements list paid on this site. Not an agent, not an intermediary, not anyone claiming to represent us. If it happens, tell us at {{report_email}}. You can do it without giving your name, and it will not affect your application.`,
+        eyebrow: '',
+        title: 'Get in Touch Directly',
+        intro: '',
+        layout: 'direct',
+      },
+    ],
+    [
+      'notice',
+      {
+        tone: 'warning',
+        title: 'If anyone asks you for money',
+        body: `Nobody is authorised to charge a candidate anything beyond the skills report and the visa-requirements list paid on this site. Not an agent, not an intermediary, not anyone claiming to represent us. Tell us at {{report_email}} — you can do it without giving your name.`,
       },
     ],
   ]),

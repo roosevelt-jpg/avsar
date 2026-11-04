@@ -14,7 +14,8 @@
 export const ICONS = [
   'shield', 'check', 'rupee', 'globe', 'home', 'chat', 'briefcase', 'plane',
   'document', 'star', 'clock', 'users', 'phone', 'heart', 'graduation', 'map',
-  'euro',
+  'euro', 'bolt', 'calendar', 'building', 'headset', 'bed', 'hardhat', 'truck',
+  'gear', 'more',
 ] as const;
 export type IconName = (typeof ICONS)[number];
 
@@ -132,6 +133,7 @@ export const BLOCKS = {
         options: [
           { value: 'split', label: 'Text beside the media' },
           { value: 'stacked', label: 'Text centred, media wide underneath' },
+          { value: 'overlay', label: 'Full-bleed photograph with text over it' },
         ],
       },
       {
@@ -203,6 +205,15 @@ export const BLOCKS = {
     description: 'A row of short reassurance points with icons.',
     fields: [
       {
+        kind: 'select',
+        name: 'style',
+        label: 'Style',
+        options: [
+          { value: 'row', label: 'Icon beside text' },
+          { value: 'stats', label: 'Icon above label (About page)' },
+        ],
+      },
+      {
         kind: 'list',
         name: 'items',
         label: 'Points',
@@ -215,7 +226,7 @@ export const BLOCKS = {
         ],
       },
     ],
-    empty: { items: [] },
+    empty: { style: 'row', items: [] },
   },
   stats: {
     label: 'Numbers',
@@ -320,6 +331,7 @@ export const BLOCKS = {
           { value: 'cards', label: 'Cards' },
           { value: 'timeline', label: 'Timeline' },
           { value: 'journey', label: 'Journey (photo + steps)' },
+          { value: 'process', label: 'Centered process row (How it works)' },
         ],
       },
       {
@@ -331,8 +343,34 @@ export const BLOCKS = {
         optional: true,
       },
       { kind: 'text', name: 'sideImageAlt', label: 'Side photograph description', max: 160 },
+      {
+        kind: 'text',
+        name: 'sideImageCaption',
+        label: 'Side photograph caption',
+        help: 'Optional overlay on the Journey photo, e.g. “Start your new life in Portugal”.',
+        max: 80,
+      },
+      {
+        kind: 'select',
+        name: 'sideImageSide',
+        label: 'Photograph side',
+        options: [
+          { value: 'left', label: 'Left' },
+          { value: 'right', label: 'Right' },
+        ],
+      },
     ],
-    empty: { eyebrow: '', title: 'How it works', intro: '', items: [], layout: 'cards', sideImage: '', sideImageAlt: '' },
+    empty: {
+      eyebrow: '',
+      title: 'How it works',
+      intro: '',
+      items: [],
+      layout: 'cards',
+      sideImage: '',
+      sideImageAlt: '',
+      sideImageCaption: '',
+      sideImageSide: 'left',
+    },
   },
   features: {
     label: 'Feature grid',
@@ -379,10 +417,50 @@ export const BLOCKS = {
           { value: 'cards', label: 'White cards' },
           { value: 'tiles', label: 'Photo and navy panel' },
           { value: 'icons', label: 'Line icons (Why Portugal)' },
+          { value: 'mission', label: 'Mission & vision beside a photograph' },
+          { value: 'value_cards', label: 'Elevated value cards (About page)' },
+          { value: 'visa_desk', label: 'Visa checklist + relocation cards' },
+          { value: 'sector_cards', label: 'Centered sector cards (Why Portugal)' },
+          { value: 'support_grid', label: 'Photo + 2×2 support cards (How it works)' },
         ],
       },
+      {
+        kind: 'media',
+        name: 'sideImage',
+        label: 'Side photograph',
+        help: 'Used by Mission & vision and Visa desk. Leave empty for other styles.',
+        accept: 'image',
+        optional: true,
+      },
+      { kind: 'text', name: 'sideImageAlt', label: 'Side photograph description', max: 160 },
+      {
+        kind: 'text',
+        name: 'checklistTitle',
+        label: 'Checklist title',
+        help: 'Visa desk only. Left column heading, e.g. “Key Visa Requirements”.',
+        max: 80,
+      },
+      {
+        kind: 'stringList',
+        name: 'checklist',
+        label: 'Checklist',
+        help: 'Visa desk only. One document or requirement per line.',
+        max: 12,
+      },
     ],
-    empty: { eyebrow: '', title: '', intro: '', columns: '3', items: [], style: 'cards', typing: false },
+    empty: {
+      eyebrow: '',
+      title: '',
+      intro: '',
+      columns: '3',
+      items: [],
+      style: 'cards',
+      typing: false,
+      sideImage: '',
+      sideImageAlt: '',
+      checklistTitle: '',
+      checklist: [],
+    },
   },
   press_bar: {
     label: 'Press logos',
@@ -412,6 +490,16 @@ export const BLOCKS = {
       title,
       { kind: 'textarea', name: 'body', label: 'Body', rows: 3, max: 400 },
       {
+        kind: 'select',
+        name: 'layout',
+        label: 'Layout',
+        options: [
+          { value: 'employer', label: 'Employer hire band' },
+          { value: 'home', label: 'Home (copy | photo | bullets)' },
+          { value: 'why', label: 'Why choose us (About page)' },
+        ],
+      },
+      {
         kind: 'list',
         name: 'bullets',
         label: 'Bullets',
@@ -430,6 +518,7 @@ export const BLOCKS = {
       eyebrow: 'For employers',
       title: '',
       body: '',
+      layout: 'employer',
       bullets: [],
       image: '',
       imageAlt: '',
@@ -482,8 +571,28 @@ export const BLOCKS = {
           { value: 'left', label: 'Left' },
         ],
       },
+      {
+        kind: 'select',
+        name: 'style',
+        label: 'Style',
+        options: [
+          { value: 'default', label: 'Default split' },
+          { value: 'stacked', label: 'Stacked photos + checklist (Why Portugal)' },
+        ],
+      },
     ],
-    empty: { eyebrow: '', title: '', body: '', bullets: [], cta: { label: '', href: '' }, image: '', imageAlt: '', imageSide: 'right', gallery: [] },
+    empty: {
+      eyebrow: '',
+      title: '',
+      body: '',
+      bullets: [],
+      cta: { label: '', href: '' },
+      image: '',
+      imageAlt: '',
+      imageSide: 'right',
+      gallery: [],
+      style: 'default',
+    },
   },
   featured_jobs: {
     label: 'Open jobs',
@@ -601,8 +710,27 @@ export const BLOCKS = {
       { kind: 'textarea', name: 'body', label: 'Body', rows: 3, max: 500 },
       { kind: 'link', name: 'primary', label: 'Primary button' },
       { kind: 'link', name: 'secondary', label: 'Secondary button' },
+      {
+        kind: 'select',
+        name: 'style',
+        label: 'Style',
+        options: [
+          { value: 'band', label: 'Full-width navy band' },
+          { value: 'banner', label: 'Rounded banner with photo (Visa page)' },
+        ],
+      },
+      { kind: 'media', name: 'image', label: 'Photograph', help: 'Banner style only.', accept: 'image', optional: true },
+      { kind: 'text', name: 'imageAlt', label: 'Photograph description', max: 160 },
     ],
-    empty: { title: '', body: '', primary: { label: '', href: '' }, secondary: { label: '', href: '' } },
+    empty: {
+      title: '',
+      body: '',
+      primary: { label: '', href: '' },
+      secondary: { label: '', href: '' },
+      style: 'band',
+      image: '',
+      imageAlt: '',
+    },
   },
   rich_text: {
     label: 'Text',
@@ -645,8 +773,21 @@ export const BLOCKS = {
   contact_cards: {
     label: 'Contact cards',
     description: 'Phone, WhatsApp, email and office, read from Site settings.',
-    fields: [eyebrow, title, intro],
-    empty: { eyebrow: '', title: 'Talk to a person', intro: '' },
+    fields: [
+      eyebrow,
+      title,
+      intro,
+      {
+        kind: 'select',
+        name: 'layout',
+        label: 'Layout',
+        options: [
+          { value: 'cards', label: 'Light cards' },
+          { value: 'direct', label: 'Navy direct-contact strip (contact page)' },
+        ],
+      },
+    ],
+    empty: { eyebrow: '', title: 'Talk to a person', intro: '', layout: 'cards' },
   },
   document: {
     label: 'Document',
@@ -668,9 +809,40 @@ export const BLOCKS = {
   },
   contact_form: {
     label: 'Contact form',
-    description: 'The message form. Messages arrive in the console inbox.',
-    fields: [{ kind: 'text', name: 'title', label: 'Page title', help: 'Shown as the main heading', max: 160 }, intro],
-    empty: { title: 'Contact us', intro: '' },
+    description: 'Enquiry desk: optional pathway cards beside the form. Messages arrive in the console inbox.',
+    fields: [
+      { kind: 'text', name: 'title', label: 'Form title', help: 'Shown above the enquiry form', max: 160 },
+      intro,
+      {
+        kind: 'text',
+        name: 'secureNote',
+        label: 'Secure note',
+        help: 'Short line under the send button. Leave empty to hide.',
+        max: 160,
+      },
+      {
+        kind: 'list',
+        name: 'pathways',
+        label: 'Side pathways',
+        help: 'Cards to the left of the form on the contact page. Empty = form only.',
+        itemLabel: 'Pathway',
+        max: 4,
+        fields: [
+          { kind: 'select', name: 'icon', label: 'Icon', options: iconOptions },
+          { kind: 'text', name: 'title', label: 'Title', max: 60 },
+          { kind: 'textarea', name: 'body', label: 'Detail', rows: 2, max: 200 },
+          { kind: 'text', name: 'ctaLabel', label: 'Link label', max: 60 },
+          { kind: 'url', name: 'href', label: 'Goes to' },
+          { kind: 'media', name: 'image', label: 'Photograph', accept: 'image', optional: true },
+        ],
+      },
+    ],
+    empty: {
+      title: 'Send us an enquiry',
+      intro: '',
+      secureNote: '',
+      pathways: [],
+    },
   },
 } satisfies Record<string, Definition>;
 

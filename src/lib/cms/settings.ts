@@ -143,6 +143,13 @@ export type FooterSettings = {
 
 /** Labels on the jobs board. {count} is replaced with a live figure. */
 export type JobsBoardSettings = {
+  /** Hero shell on /jobs (mockup). */
+  heroEyebrow: string;
+  heroHeadline: string;
+  heroAccentWord: string;
+  heroIntro: string;
+  heroImage: string;
+  heroImageAlt: string;
   searchKeywordPlaceholder: string;
   searchLocationLabel: string;
   searchCategoryLabel: string;
@@ -165,8 +172,12 @@ export type JobsBoardSettings = {
   verifiedBadge: string;
   viewDetails: string;
   applyNow: string;
+  /** Shell figures on the hero ribbon (editable in Settings). */
+  statsVacanciesValue: string;
   statsVacancies: string;
+  statsEmployersValue: string;
   statsEmployers: string;
+  statsPlacedValue: string;
   statsPlaced: string;
   emptyTitle: string;
   emptyBody: string;
@@ -234,7 +245,7 @@ export type EmployerLandingIndustry = { icon: string; label: string };
 /**
  * The /employers page. Everything on that landing is edited here; the
  * placement fee in contactNote is {{fee}}, filled from Company & pricing.
- * Live counts use {count} and are filled from the database at render time.
+ * Stat figures are shell copy from Settings (mockup ribbon), not live DB counts.
  */
 export type EmployerLanding = {
   wordmarkSuffix: string;
@@ -244,7 +255,9 @@ export type EmployerLanding = {
   navHow: string;
   navPricing: string;
   navCandidates: string;
-  /** Header and hero primary button. Default: Hire talent. */
+  /** Compact CTA in the navy header. */
+  headerCtaLabel: string;
+  /** Hero / closing primary button. */
   ctaLabel: string;
   ctaHref: string;
   secondaryCtaLabel: string;
@@ -255,15 +268,15 @@ export type EmployerLanding = {
   accentWord: string;
   intro: string;
   badgeLabel: string;
+  badgeSubtext: string;
   badgeHref: string;
   slides: EmployerLandingSlide[];
-  /** {count} → assessed candidates. */
+  statsCandidatesValue: string;
   statsCandidates: string;
-  /** {count} → industries listed below. */
+  statsIndustriesValue: string;
   statsIndustries: string;
-  /** {count} → funnel hired. */
+  statsPlacedValue: string;
   statsPlaced: string;
-  /** Editable hiring-time claim (not a live count). */
   hiringTimeValue: string;
   hiringTimeLabel: string;
   reasonsTitle: string;
@@ -398,7 +411,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   footer: {
     blurb: 'A specialist international recruitment agency connecting skilled professionals with trusted employers in Portugal.',
     backgroundImage: '/photos/lisbon.jpg',
-    backgroundImageAlt: 'Lisbon at dusk — the Tagus and the city lights',
+    backgroundImageAlt: 'Lisbon skyline — bridge lights and the waterfront at dusk',
     quickLinksTitle: 'Quick Links',
     quickLinks: [
       { label: 'Home', href: '/' },
@@ -602,6 +615,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     navHow: 'How it works',
     navPricing: 'Pricing',
     navCandidates: 'For candidates',
+    headerCtaLabel: 'Hire Talent',
     ctaLabel: 'Hire Talent Today',
     ctaHref: '/employers/register',
     secondaryCtaLabel: 'Book a Consultation',
@@ -611,39 +625,41 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     accentWord: 'Portugal',
     intro:
       'A trusted recruitment partner for Portuguese companies, connecting you with skilled, pre-screened and job-ready professionals.',
-    badgeLabel: 'Portugal Talent Programme · Skilled · Verified · Compliant',
-    badgeHref: '#contact',
+    badgeLabel: 'Portugal Talent Programme',
+    badgeSubtext: 'Skilled • Verified • Compliant',
+    badgeHref: '/employers/register',
     slides: [
       { src: '/photos/brand/employer-handshake.jpg', alt: 'Employer and candidate shaking hands in Portugal' },
       { src: '/photos/brand/hero-workers.jpg', alt: 'Skilled professionals ready to work in Portugal' },
       { src: '/photos/brand/hero-chef.jpg', alt: 'A chef in a Portuguese restaurant kitchen' },
       { src: '/photos/brand/hero-construction.jpg', alt: 'A construction worker on a Portuguese building site' },
-      { src: '/photos/brand/hero-hospitality.jpg', alt: 'A hospitality professional with Lisbon rooftops behind them' },
-      { src: '/photos/lisbon.jpg', alt: 'Lisbon waterfront where many employers hire' },
-      { src: '/photos/brand/journey-tram.jpg', alt: 'Everyday Lisbon street scene' },
+      { src: '/photos/brand/hero-hospitality.jpg', alt: 'A hospitality professional with Lisbon rooftops' },
     ],
+    statsCandidatesValue: '1,200+',
     statsCandidates: 'Pre-screened Candidates',
+    statsIndustriesValue: '20+',
     statsIndustries: 'Key Industries',
-    statsPlaced: 'Candidates Placed',
+    statsPlacedValue: '98%',
+    statsPlaced: 'Placement Success',
     hiringTimeValue: '30–45 Days',
     hiringTimeLabel: 'Average Hiring Time',
     reasonsTitle: 'Why Partner With Us?',
     reasons: [
-      { icon: 'check', title: 'Pre-Screened Talent', body: 'Skills, experience and documentation verified.' },
-      { icon: 'document', title: 'Compliance & Visas', body: 'Full relocation and legal support.' },
-      { icon: 'clock', title: 'Faster Hiring', body: 'Shortlists in days, not months.' },
-      { icon: 'users', title: 'Dedicated Support', body: 'A dedicated team from hiring to onboarding.' },
+      { icon: 'users', title: 'Pre-Screened Talent', body: 'Skills, experience and documentation verified.' },
+      { icon: 'shield', title: 'Compliance & Visas', body: 'Full relocation and legal support.' },
+      { icon: 'bolt', title: 'Faster Hiring', body: 'Shortlists in days, not months.' },
+      { icon: 'headset', title: 'Dedicated Support', body: 'A dedicated team from hiring to onboarding.' },
     ],
     industriesTitle: 'Access Skilled Talent Across Key Industries',
     industriesImage: '/photos/brand/journey-tram.jpg',
     industriesImageAlt: 'A yellow Lisbon tram on a historic street',
     industries: [
-      { icon: 'home', label: 'Hospitality & Tourism' },
-      { icon: 'briefcase', label: 'Construction & Trades' },
-      { icon: 'plane', label: 'Logistics & Warehouse' },
+      { icon: 'bed', label: 'Hospitality & Tourism' },
+      { icon: 'hardhat', label: 'Construction & Trades' },
+      { icon: 'truck', label: 'Logistics & Warehouse' },
       { icon: 'heart', label: 'Healthcare & Caregiving' },
-      { icon: 'star', label: 'Manufacturing & Production' },
-      { icon: 'globe', label: 'More Industries' },
+      { icon: 'gear', label: 'Manufacturing & Production' },
+      { icon: 'more', label: 'More Industries' },
     ],
     stepsTitle: 'From search to first shift',
     steps: [
@@ -659,31 +675,41 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   },
   employerRegistration: DEFAULT_EMPLOYER_REGISTRATION,
   jobsBoard: {
+    heroEyebrow: 'JOB OPPORTUNITIES',
+    heroHeadline: 'Explore Verified Jobs in Portugal',
+    heroAccentWord: 'Portugal',
+    heroIntro:
+      'Discover real, company-verified opportunities for skilled professionals from India. Apply, get matched, and start your journey to work and live in Portugal.',
+    heroImage: '/photos/brand/jobs-hero-1.jpg',
+    heroImageAlt: 'A chef and a construction worker smiling with Lisbon rooftops behind them',
     searchKeywordPlaceholder: 'Job title, skill or keyword',
     searchLocationLabel: 'Portugal',
     searchCategoryLabel: 'Job category',
-    searchButton: 'Search jobs',
-    filterTitle: 'Filter opportunities',
-    clearAll: 'Clear all',
-    categoryHeading: 'Job category',
-    experienceHeading: 'Experience level',
-    employmentHeading: 'Employment type',
-    salaryHeading: 'Salary range (monthly)',
+    searchButton: 'Search Jobs',
+    filterTitle: 'Filter Opportunities',
+    clearAll: 'Clear All',
+    categoryHeading: 'Job Category',
+    experienceHeading: 'Experience Level',
+    employmentHeading: 'Employment Type',
+    salaryHeading: 'Salary Range (Monthly)',
     salaryMinLabel: 'Min',
     salaryMaxLabel: 'Max',
-    experienceEntry: 'Entry level',
-    experienceMid: 'Mid level',
-    experienceSenior: 'Senior level',
-    resultsHeading: '{count} job opportunities',
+    experienceEntry: 'Entry Level',
+    experienceMid: 'Mid Level',
+    experienceSenior: 'Senior Level',
+    resultsHeading: '{count}+ Job Opportunities',
     sortLabel: 'Sort by',
     sortNewest: 'Newest',
     sortSalary: 'Salary',
     verifiedBadge: 'Verified',
-    viewDetails: 'View details',
-    applyNow: 'Apply now',
-    statsVacancies: '{count} active vacancies',
-    statsEmployers: '{count} verified employers',
-    statsPlaced: '{count} candidates placed',
+    viewDetails: 'View Details',
+    applyNow: 'Apply Now',
+    statsVacanciesValue: '150+',
+    statsVacancies: 'Active Vacancies',
+    statsEmployersValue: '60+',
+    statsEmployers: 'Verified Employers',
+    statsPlacedValue: '1,200+',
+    statsPlaced: 'Candidates Placed',
     emptyTitle: 'No jobs match this search right now.',
     emptyBody: 'Try another filter, or create your profile and we will tell you when one opens.',
   },

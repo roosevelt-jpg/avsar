@@ -502,7 +502,7 @@ export function EmployerLandingForm({ initial }: { initial: SiteSettings['employ
         </ul>
       </Section>
 
-      <Section title="Hero" lead="Full-bleed slideshow and pitch on /employers. Counts below the hero are live from the database — never invent a figure in the labels.">
+      <Section title="Hero" lead="Full-bleed hero and pitch on /employers. Shell figures below are edited in the stats strip.">
         <div className="grid gap-3 sm:grid-cols-2">
           <Field label="Eyebrow"><input className={INPUT} value={page.eyebrow} onChange={(e) => set('eyebrow', e.target.value)} /></Field>
           <Field label="Accent word (gold italic)"><input className={INPUT} value={page.accentWord} onChange={(e) => set('accentWord', e.target.value)} /></Field>
@@ -510,11 +510,13 @@ export function EmployerLandingForm({ initial }: { initial: SiteSettings['employ
         <Field label="Headline"><textarea className={INPUT} rows={2} value={page.headline} onChange={(e) => set('headline', e.target.value)} /></Field>
         <Field label="Introduction"><textarea className={INPUT} rows={3} value={page.intro} onChange={(e) => set('intro', e.target.value)} /></Field>
         <div className="grid gap-3 sm:grid-cols-2">
+          <Field label="Header CTA"><input className={INPUT} value={page.headerCtaLabel} onChange={(e) => set('headerCtaLabel', e.target.value)} /></Field>
           <Field label="Primary CTA"><input className={INPUT} value={page.ctaLabel} onChange={(e) => set('ctaLabel', e.target.value)} /></Field>
           <Field label="Primary CTA link"><input className={INPUT} value={page.ctaHref} onChange={(e) => set('ctaHref', e.target.value)} /></Field>
           <Field label="Secondary CTA"><input className={INPUT} value={page.secondaryCtaLabel} onChange={(e) => set('secondaryCtaLabel', e.target.value)} /></Field>
           <Field label="Secondary CTA link"><input className={INPUT} value={page.secondaryCtaHref} onChange={(e) => set('secondaryCtaHref', e.target.value)} /></Field>
-          <Field label="Badge"><input className={INPUT} value={page.badgeLabel} onChange={(e) => set('badgeLabel', e.target.value)} /></Field>
+          <Field label="Badge title"><input className={INPUT} value={page.badgeLabel} onChange={(e) => set('badgeLabel', e.target.value)} /></Field>
+          <Field label="Badge subtext"><input className={INPUT} value={page.badgeSubtext} onChange={(e) => set('badgeSubtext', e.target.value)} /></Field>
           <Field label="Badge link"><input className={INPUT} value={page.badgeHref} onChange={(e) => set('badgeHref', e.target.value)} /></Field>
         </div>
         <p className="m-0 mt-2 text-[13px] font-medium text-ink-2">Slideshow photographs</p>
@@ -565,11 +567,14 @@ export function EmployerLandingForm({ initial }: { initial: SiteSettings['employ
         </div>
       </Section>
 
-      <Section title="Live stats strip" lead="Numbers are filled live. The hiring-time value is a claim you set; keep it honest.">
+      <Section title="Stats strip" lead="Shell figures shown on the cream ribbon under the hero. Edit carefully — these are marketing claims.">
         <div className="grid gap-3 sm:grid-cols-2">
+          <Field label="Candidates value"><input className={INPUT} value={page.statsCandidatesValue} onChange={(e) => set('statsCandidatesValue', e.target.value)} /></Field>
           <Field label="Candidates label"><input className={INPUT} value={page.statsCandidates} onChange={(e) => set('statsCandidates', e.target.value)} /></Field>
+          <Field label="Industries value"><input className={INPUT} value={page.statsIndustriesValue} onChange={(e) => set('statsIndustriesValue', e.target.value)} /></Field>
           <Field label="Industries label"><input className={INPUT} value={page.statsIndustries} onChange={(e) => set('statsIndustries', e.target.value)} /></Field>
-          <Field label="Placed label"><input className={INPUT} value={page.statsPlaced} onChange={(e) => set('statsPlaced', e.target.value)} /></Field>
+          <Field label="Success value"><input className={INPUT} value={page.statsPlacedValue} onChange={(e) => set('statsPlacedValue', e.target.value)} /></Field>
+          <Field label="Success label"><input className={INPUT} value={page.statsPlaced} onChange={(e) => set('statsPlaced', e.target.value)} /></Field>
           <Field label="Hiring time value"><input className={INPUT} value={page.hiringTimeValue} onChange={(e) => set('hiringTimeValue', e.target.value)} /></Field>
           <Field label="Hiring time label"><input className={INPUT} value={page.hiringTimeLabel} onChange={(e) => set('hiringTimeLabel', e.target.value)} /></Field>
         </div>
@@ -747,7 +752,7 @@ export function EmployerRegistrationForm({ initial }: { initial: SiteSettings['e
         />
       </Section>
 
-      <Section title="Quote card" lead="Leave quote empty until you have a real attribution. Empty quote hides the card.">
+      <Section title="Quote card" lead="Shell quote under How it works. Empty quote hides the card.">
         <Field label="Quote"><textarea className={INPUT} rows={2} value={page.quote} onChange={(e) => set('quote', e.target.value)} /></Field>
         <Field label="Attribution"><input className={INPUT} value={page.quoteAttribution} onChange={(e) => set('quoteAttribution', e.target.value)} /></Field>
         <div className="grid gap-3 sm:grid-cols-2">
@@ -801,7 +806,7 @@ export function EmployerRegistrationForm({ initial }: { initial: SiteSettings['e
 
 /** Settings › chrome on /jobs. {count} is filled with a live database figure. */
 export function JobsBoardForm({ initial }: { initial: SiteSettings['jobsBoard'] }) {
-  /* Older saved rows may predate salaryMinLabel / sortLabel; fill from defaults. */
+  /* Older saved rows may predate newer shell fields; fill from defaults. */
   const [board, setBoard] = useState<SiteSettings['jobsBoard']>(() => ({
     ...initial,
     salaryMinLabel: initial.salaryMinLabel || 'Min',
@@ -813,6 +818,18 @@ export function JobsBoardForm({ initial }: { initial: SiteSettings['jobsBoard'] 
 
   return (
     <div className="flex flex-col gap-5">
+      <Section title="Hero" lead="Full-bleed photograph and pitch on /jobs.">
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Field label="Eyebrow"><input className={INPUT} value={board.heroEyebrow} onChange={(e) => set('heroEyebrow', e.target.value)} /></Field>
+          <Field label="Accent word"><input className={INPUT} value={board.heroAccentWord} onChange={(e) => set('heroAccentWord', e.target.value)} /></Field>
+        </div>
+        <Field label="Headline"><input className={INPUT} value={board.heroHeadline} onChange={(e) => set('heroHeadline', e.target.value)} /></Field>
+        <Field label="Introduction"><textarea className={INPUT} rows={3} value={board.heroIntro} onChange={(e) => set('heroIntro', e.target.value)} /></Field>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Field label="Image path"><input className={INPUT} value={board.heroImage} onChange={(e) => set('heroImage', e.target.value)} /></Field>
+          <Field label="Image alt"><input className={INPUT} value={board.heroImageAlt} onChange={(e) => set('heroImageAlt', e.target.value)} /></Field>
+        </div>
+      </Section>
       <Section title="Search bar" lead="Placeholders and the search button on /jobs.">
         <div className="grid gap-3 sm:grid-cols-2">
           <Field label="Keyword placeholder"><input className={INPUT} value={board.searchKeywordPlaceholder} onChange={(e) => set('searchKeywordPlaceholder', e.target.value)} /></Field>
@@ -840,14 +857,17 @@ export function JobsBoardForm({ initial }: { initial: SiteSettings['jobsBoard'] 
           <Field label="Sort · salary"><input className={INPUT} value={board.sortSalary} onChange={(e) => set('sortSalary', e.target.value)} /></Field>
         </div>
       </Section>
-      <Section title="Cards and live stats" lead="Every published job shows the verified badge. Stat lines use {count} from the live database — never invent a number here.">
+      <Section title="Cards and hero stats" lead="Every published job shows the verified badge. Hero ribbon figures are shell copy from the mockup.">
         <div className="grid gap-3 sm:grid-cols-2">
           <Field label="Verified badge"><input className={INPUT} value={board.verifiedBadge} onChange={(e) => set('verifiedBadge', e.target.value)} /></Field>
           <Field label="View details"><input className={INPUT} value={board.viewDetails} onChange={(e) => set('viewDetails', e.target.value)} /></Field>
           <Field label="Apply now"><input className={INPUT} value={board.applyNow} onChange={(e) => set('applyNow', e.target.value)} /></Field>
-          <Field label="Vacancies stat"><input className={INPUT} value={board.statsVacancies} onChange={(e) => set('statsVacancies', e.target.value)} /></Field>
-          <Field label="Employers stat"><input className={INPUT} value={board.statsEmployers} onChange={(e) => set('statsEmployers', e.target.value)} /></Field>
-          <Field label="Placed stat"><input className={INPUT} value={board.statsPlaced} onChange={(e) => set('statsPlaced', e.target.value)} /></Field>
+          <Field label="Vacancies value"><input className={INPUT} value={board.statsVacanciesValue} onChange={(e) => set('statsVacanciesValue', e.target.value)} /></Field>
+          <Field label="Vacancies label"><input className={INPUT} value={board.statsVacancies} onChange={(e) => set('statsVacancies', e.target.value)} /></Field>
+          <Field label="Employers value"><input className={INPUT} value={board.statsEmployersValue} onChange={(e) => set('statsEmployersValue', e.target.value)} /></Field>
+          <Field label="Employers label"><input className={INPUT} value={board.statsEmployers} onChange={(e) => set('statsEmployers', e.target.value)} /></Field>
+          <Field label="Placed value"><input className={INPUT} value={board.statsPlacedValue} onChange={(e) => set('statsPlacedValue', e.target.value)} /></Field>
+          <Field label="Placed label"><input className={INPUT} value={board.statsPlaced} onChange={(e) => set('statsPlaced', e.target.value)} /></Field>
         </div>
         <Field label="Empty title"><input className={INPUT} value={board.emptyTitle} onChange={(e) => set('emptyTitle', e.target.value)} /></Field>
         <Field label="Empty body"><textarea className={INPUT} rows={2} value={board.emptyBody} onChange={(e) => set('emptyBody', e.target.value)} /></Field>

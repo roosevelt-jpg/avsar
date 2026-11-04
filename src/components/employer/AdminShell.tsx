@@ -3,8 +3,14 @@ import { Wordmark } from '@/components/ui/Wordmark';
 import { HeaderClock } from '@/components/admin/HeaderClock';
 import { ProfileMenu } from '@/components/admin/ProfileMenu';
 import { ConsoleSearch, type SearchPage, type SearchTarget } from '@/components/admin/ConsoleSearch';
+import { StaffDashShell } from '@/components/admin/StaffDashShell';
+import { PresenceHeartbeat } from '@/components/admin/PresenceHeartbeat';
+import { EmployerDashShell } from '@/components/employer/EmployerDashShell';
 import { getViewer } from '@/lib/auth';
+import { getSiteSettings } from '@/lib/cms/data';
+import { listEmployerApplicants } from '@/lib/employer/portal';
 import { can, getStaffAccess } from '@/lib/rbac/server';
+import { SUPABASE_URL } from '@/lib/supabase/config';
 import { getServerSupabase } from '@/lib/supabase/server';
 import { unseenCount } from '@/lib/notifications/staff';
 import { grants, roleName, type Permission } from '@/lib/rbac/permissions';
@@ -41,17 +47,17 @@ const ICONS = {
 
 const STAFF_NAV: Group[] = [
   {
-    label: 'Overview',
+    label: 'Dashboard',
     icon: 'overview',
     pinned: true,
     items: [
-      { href: '/admin/dashboard', label: 'Dashboard', permission: 'dashboard.view' },
-      { href: '/admin/analysis', label: 'Insights', permission: 'dashboard.view' },
+      { href: '/admin/dashboard', label: 'Overview', permission: 'dashboard.view' },
+      { href: '/admin/analysis', label: 'Reports & Analytics', permission: 'dashboard.view' },
       { href: '/admin/notifications', label: 'Notifications' },
     ],
   },
   {
-    label: 'Hiring',
+    label: 'Jobs & Hiring',
     icon: 'hiring',
     items: [
       { href: '/admin/jobs', label: 'Jobs', permission: 'jobs.view' },
@@ -67,11 +73,16 @@ const STAFF_NAV: Group[] = [
       { href: '/admin', label: 'Talent search', permission: 'candidates.view' },
       { href: '/admin/shortlists', label: 'Shortlists', permission: 'candidates.view' },
       { href: '/admin/cv-queue', label: 'CV queue', permission: 'cv.review' },
-      { href: '/admin/items', label: 'Assessment items', permission: 'cv.review' },
+      { href: '/admin/items', label: 'Assessments', permission: 'cv.review' },
     ],
   },
   {
-    label: 'Relocation & legal',
+    label: 'Employers',
+    icon: 'employers',
+    items: [{ href: '/admin/employers', label: 'Employer accounts', permission: 'employers.manage' }],
+  },
+  {
+    label: 'Relocation & Visa',
     icon: 'relocation',
     items: [
       { href: '/admin/legal-reviews', label: 'Legal reviews', permission: 'relocation.manage' },
@@ -84,12 +95,12 @@ const STAFF_NAV: Group[] = [
     icon: 'crm',
     items: [
       { href: '/admin/inbox', label: 'Leads & messages', permission: 'leads.manage' },
+      { href: '/admin/chat', label: 'Live chat', permission: 'leads.manage' },
       { href: '/admin/subscribers', label: 'Email subscribers', permission: 'leads.manage' },
-      { href: '/admin/employers', label: 'Employers', permission: 'employers.manage' },
     ],
   },
   {
-    label: 'Finance',
+    label: 'Payments & Finance',
     icon: 'finance',
     items: [
       { href: '/admin/payments', label: 'Payments', permission: 'payments.view' },
@@ -97,12 +108,16 @@ const STAFF_NAV: Group[] = [
     ],
   },
   {
-    label: 'Website',
+    label: 'Website & CMS',
     icon: 'website',
     items: [
-      { href: '/admin/cms', label: 'Pages', permission: 'cms.view' },
+      { href: '/admin/cms', label: 'Pages & Content', permission: 'cms.view' },
+      { href: '/admin/settings/navigation', label: 'Navigation Menus', permission: 'settings.manage' },
+      { href: '/admin/cms/media', label: 'Media Library', permission: 'media.manage' },
+      { href: '/admin/settings/vsl', label: 'Banners & Sliders', permission: 'settings.manage' },
+      { href: '/admin/inbox', label: 'Forms & Submissions', permission: 'leads.manage' },
+      { href: '/admin/settings/seo', label: 'SEO & Analytics', permission: 'settings.manage' },
       { href: '/admin/assistant', label: 'Assistant brain', permission: 'cms.edit' },
-      { href: '/admin/cms/media', label: 'Media library', permission: 'media.manage' },
     ],
   },
   { label: 'Settings', icon: 'settings', items: SETTINGS_TABS },
@@ -235,17 +250,91 @@ export async function AdminShell({
     ...(access ? [{ href: '/admin/security', label: 'Sign-in security' }] : []),
   ];
 
-  /* The search box gets the same permission-filtered pages as the sidebar,
-     plus the free-text searches this person may run. */
-  const searchPages: SearchPage[] = groups.flatMap((group) => group.items.map((item) => ({ href: item.href, label: item.label, group: group.label })));
+  const searchPages: SearchPage[] = groups.flatMap((group) =>
+    group.items.map((item) => ({ href: item.href, label: item.label, group: group.label })),
+  );
   const searchTargets: SearchTarget[] = [
     ...(!access || can(access, 'candidates.view')
       ? [{ label: 'Search talent', base: isStaff ? '/admin?q=' : '/admin/employer?q=' }]
       : !isStaff
         ? [{ label: 'Search talent', base: '/admin/employer?q=' }]
         : []),
-    ...(access && can(access, 'applications.view') ? [{ label: 'Search applications', base: '/admin/applications?q=' }] : []),
+    ...(access && can(access, 'applications.view')
+      ? [{ label: 'Search applications', base: '/admin/applications?q=' }]
+      : []),
   ];
+
+  /* Staff get the super-admin mockup navy shell. */
+  if (isStaff && access) {
+    const settings = await getSiteSettings();
+    const awaiting = await applicationBadgeCount();
+    const staffGroups = groups.map((group) => ({
+      label: group.label,
+      icon: ICONS[group.icon],
+      pinned: group.pinned,
+      items: group.items.map((item) => ({
+        ...item,
+        badge: item.href === '/admin/applications' ? awaiting : undefined,
+      })),
+    }));
+    return (
+      <StaffDashShell
+        current={current}
+        groups={staffGroups}
+        displayName={displayName}
+        email={email}
+        roleLabel={roleLabel}
+        avatarUrl={avatarUrl}
+        unseen={unseen}
+        searchPages={searchPages}
+        searchTargets={searchTargets}
+        menuLinks={menuLinks}
+        whatsapp={settings.general.whatsapp}
+      >
+        <PresenceHeartbeat enabled={can(access, 'leads.manage')} />
+        {children}
+      </StaffDashShell>
+    );
+  }
+
+  /* Employers get the mockup navy shell. */
+  if (!isStaff && viewer?.role === 'employer') {
+    const [settings, applicants, employerRow] = await Promise.all([
+      getSiteSettings(),
+      listEmployerApplicants(),
+      supabase
+        ?.from('employers')
+        .select('name, vetted_at, logo_path')
+        .eq('id', viewer.employer.employerId)
+        .maybeSingle() ?? Promise.resolve({ data: null }),
+    ]);
+    const row = employerRow.data as { name?: string; vetted_at?: string | null; logo_path?: string | null } | null;
+    const companyName = row?.name?.trim() || viewer.employer.name;
+    const logoPath = typeof row?.logo_path === 'string' ? row.logo_path : '';
+    const logoUrl =
+      logoPath && SUPABASE_URL
+        ? `${SUPABASE_URL}/storage/v1/object/public/employer-logos/${logoPath}`
+        : avatarUrl;
+    const initials = companyName
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase() ?? '')
+      .join('');
+    return (
+      <EmployerDashShell
+        current={current}
+        companyName={companyName}
+        verified={Boolean(row?.vetted_at)}
+        initials={initials}
+        avatarUrl={logoUrl}
+        email={email}
+        applicantBadge={applicants.length}
+        whatsapp={settings.general.whatsapp}
+      >
+        <div className="mx-auto w-full max-w-[1180px]">{children}</div>
+      </EmployerDashShell>
+    );
+  }
 
   return (
     <div className="avsar-root console-atmosphere min-h-screen max-w-[100vw] overflow-x-clip lg:grid lg:grid-cols-[264px_minmax(0,1fr)]">
@@ -315,12 +404,27 @@ export async function AdminShell({
   );
 }
 
+async function applicationBadgeCount(): Promise<number> {
+  const supabase = await getServerSupabase();
+  if (!supabase) return 0;
+  const { count } = await supabase
+    .from('applications')
+    .select('id', { count: 'exact', head: true })
+    .eq('status', 'submitted');
+  return count ?? 0;
+}
+
 /** The heading block the inner pages share. */
 export function AdminHeading({ title, lead, actions }: { title: string; lead?: string; actions?: React.ReactNode }) {
   return (
     <div className="flex flex-wrap items-end justify-between gap-4">
       <div>
-        <h1 className="m-0 text-[clamp(24px,3cqi,32px)] font-semibold leading-[1.1] tracking-[-0.03em]">{title}</h1>
+        <h1
+          className="m-0 text-[clamp(24px,3cqi,34px)] font-semibold leading-[1.1] tracking-[-0.02em] text-ink"
+          style={{ fontFamily: 'var(--font-display)' }}
+        >
+          {title}
+        </h1>
         {lead && <p className="mt-2 mb-0 max-w-[72ch] text-[15px] leading-[1.6] text-ink-2">{lead}</p>}
       </div>
       {actions ? <div className="flex flex-wrap gap-2">{actions}</div> : null}
@@ -331,7 +435,7 @@ export function AdminHeading({ title, lead, actions }: { title: string; lead?: s
 /** What a list says when it is empty, instead of an empty table. */
 export function AdminEmpty({ children }: { children: React.ReactNode }) {
   return (
-    <p className="mt-7 mb-0 rounded-[12px] border border-line bg-surface-subtle px-5 py-4 text-[14px] leading-[1.6] text-muted">
+    <p className="mt-7 mb-0 rounded-[14px] border border-line bg-surface px-5 py-4 text-[14px] leading-[1.6] text-muted shadow-[0_8px_24px_-18px_rgba(20,36,56,0.35)]">
       {children}
     </p>
   );
@@ -344,8 +448,10 @@ export function AdminButton({ href, children, variant = 'dark' }: { href: string
   return (
     <Link
       href={href}
-      className={`t-colors inline-flex items-center rounded-full px-4 py-2 text-[14px] font-medium no-underline ${
-        variant === 'dark' ? 'bg-ink text-paper hover:bg-ink-hover' : 'border border-line-strong bg-surface text-ink hover:border-ink'
+      className={`t-colors inline-flex items-center rounded-[8px] px-4 py-2.5 text-[14px] font-semibold no-underline ${
+        variant === 'dark'
+          ? 'bg-accent text-ink hover:bg-[#c9a35f]'
+          : 'border border-line-strong bg-surface text-ink hover:border-ink'
       }`}
     >
       {children}

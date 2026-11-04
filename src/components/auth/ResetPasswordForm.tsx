@@ -114,7 +114,7 @@ export function ResetPasswordForm({
           type="button"
           onClick={savePassword}
           disabled={busy || !password || !confirm}
-          className="t-colors mt-6 w-full cursor-pointer rounded-[12px] border-0 bg-[#0a088f] px-5 py-3 text-[15px] font-medium text-white hover:bg-[#22209a] disabled:cursor-not-allowed disabled:bg-[#0a088f] disabled:text-white disabled:opacity-100"
+          className="t-colors mt-6 w-full cursor-pointer rounded-[12px] border-0 bg-[#142438] px-5 py-3 text-[15px] font-medium text-white hover:bg-[#1c3550] disabled:cursor-not-allowed disabled:bg-[#142438] disabled:text-white disabled:opacity-100"
         >
           Save password
         </button>
@@ -163,7 +163,7 @@ export function ResetPasswordForm({
         type="button"
         onClick={requestReset}
         disabled={busy || !email}
-        className="t-colors mt-6 w-full cursor-pointer rounded-[12px] border-0 bg-[#0a088f] px-5 py-3 text-[15px] font-medium text-white hover:bg-[#22209a] disabled:cursor-not-allowed disabled:bg-[#0a088f] disabled:text-white disabled:opacity-100"
+        className="t-colors mt-6 w-full cursor-pointer rounded-[12px] border-0 bg-[#142438] px-5 py-3 text-[15px] font-medium text-white hover:bg-[#1c3550] disabled:cursor-not-allowed disabled:bg-[#142438] disabled:text-white disabled:opacity-100"
       >
         Send reset link
       </button>

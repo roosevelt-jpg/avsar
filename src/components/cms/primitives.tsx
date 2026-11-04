@@ -57,7 +57,7 @@ export function SectionHeading({
        words are wider than a phone. */
     <div className={`mb-[clamp(28px,4cqi,48px)] min-w-0 break-words ${align === 'center' ? 'mx-auto text-center' : ''} max-w-[760px]`}>
       {eyebrow ? (
-        <p className="m-0 mb-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#c96a4b]">
+        <p className="m-0 mb-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#b28a49]">
           {eyebrow}
         </p>
       ) : null}
@@ -72,13 +72,12 @@ export function SectionHeading({
 }
 
 const BUTTON = {
-  /* The filled action is the recruitment blue. "dark" is the quieter
-     second button, for when two actions sit side by side. */
+  /* Mockup CTAs: gold fill primary, outline secondary on dark heroes. */
   primary: 'btn-gradient',
-  dark: 'border border-[#c96a4b] bg-[#0a088f] text-white hover:bg-[#22209a]',
-  light: 'bg-surface text-ink border-line-strong hover:border-ink',
-  ghostDark: 'bg-transparent text-on-night border-dark-line hover:border-on-night',
-  white: 'bg-on-night text-night border-transparent hover:bg-white',
+  dark: 'border border-white/55 bg-transparent text-white hover:bg-white/10',
+  light: 'bg-white text-[#142438] border-[#142438]/20 hover:border-[#142438]',
+  ghostDark: 'bg-transparent text-white border-white/55 hover:bg-white/10',
+  white: 'bg-white text-[#142438] border-transparent hover:bg-[#f7f4ee]',
 } as const;
 
 export function CmsButton({
@@ -95,21 +94,27 @@ export function CmsButton({
   size?: 'sm' | 'md' | 'lg';
 }) {
   if (!href || !label) return null;
-  const className = `t-colors inline-flex items-center justify-center gap-2 border font-semibold uppercase tracking-[0.04em] no-underline ${
-    variant === 'primary' ? 'rounded-full' : 'rounded-[2px]'
-  } ${size === 'lg' ? 'px-6 py-3.5 text-[16px]' : size === 'sm' ? 'px-3 py-1.5 text-[12px]' : 'px-5 py-3 text-[15px]'} ${BUTTON[variant]}`;
+  const className = `t-colors inline-flex items-center justify-center gap-2 rounded-[8px] border font-semibold normal-case tracking-normal no-underline ${
+    size === 'lg' ? 'px-6 py-3.5 text-[16px]' : size === 'sm' ? 'px-3.5 py-2 text-[13px]' : 'px-5 py-3 text-[15px]'
+  } ${BUTTON[variant]}`;
   const resolved = localHref(locale, href);
   const external = /^https?:/i.test(resolved);
+  const content = (
+    <>
+      {label}
+      {variant === 'primary' ? <span aria-hidden>→</span> : null}
+    </>
+  );
   if (external || resolved.startsWith('mailto:') || resolved.startsWith('tel:')) {
     return (
       <a href={resolved} className={className} target={external ? '_blank' : undefined} rel={external ? 'noopener noreferrer' : undefined}>
-        {label}
+        {content}
       </a>
     );
   }
   return (
     <Link href={resolved} className={className}>
-      {label}
+      {content}
     </Link>
   );
 }
@@ -215,12 +220,38 @@ const PATHS: Record<IconName, ReactNode> = {
   graduation: <path d="M2 9l10-5 10 5-10 5-10-5z M6 11v5c0 1.5 3 3 6 3s6-1.5 6-3v-5" />,
   map: <path d="M12 21s-6-6-6-11a6 6 0 0112 0c0 5-6 11-6 11z M12 12a2 2 0 100-4 2 2 0 000 4z" />,
   euro: <path d="M17.5 6.5A6.5 6.5 0 007 12a6.5 6.5 0 0010.5 5.5 M4.5 10.5h9 M4.5 13.5h9" />,
+  bolt: <path d="M13 2L4 14h7l-1 8 10-14h-7l0-6z" />,
+  calendar: (
+    <>
+      <rect x="4" y="5" width="16" height="15" rx="2" />
+      <path d="M8 3v4M16 3v4M4 10h16" />
+    </>
+  ),
+  building: <path d="M4 20V6l8-3 8 3v14 M4 20h16 M9 20v-5h6v5 M9 9h1.5 M13.5 9H15 M9 12.5h1.5 M13.5 12.5H15" />,
+  headset: <path d="M5 13a7 7 0 0114 0v4a2 2 0 01-2 2h-1v-5h3 M5 14h3v5H6a2 2 0 01-2-2v-1 M12 21h2" />,
+  bed: <path d="M3 18V10h18v8 M3 18h18 M3 14h18 M7 10V8a2 2 0 012-2h2a2 2 0 012 2v2" />,
+  hardhat: <path d="M4 14h16v2H4z M6 14a6 6 0 0112 0 M12 5v3" />,
+  truck: <path d="M3 16V7h11v9 M14 10h4l3 3v3h-7 M6.5 18.5a1.5 1.5 0 100-3 1.5 1.5 0 000 3z M17.5 18.5a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />,
+  gear: (
+    <>
+      <circle cx="12" cy="12" r="3" />
+      <path d="M12 3v2.5 M12 18.5V21 M3 12h2.5 M18.5 12H21 M5.6 5.6l1.8 1.8 M16.6 16.6l1.8 1.8 M18.4 5.6l-1.8 1.8 M7.4 16.6l-1.8 1.8" />
+    </>
+  ),
+  more: (
+    <>
+      <circle cx="6" cy="12" r="1.35" fill="currentColor" stroke="none" />
+      <circle cx="12" cy="12" r="1.35" fill="currentColor" stroke="none" />
+      <circle cx="18" cy="12" r="1.35" fill="currentColor" stroke="none" />
+    </>
+  ),
 };
 
+/** Thin gold-friendly stroke icons matching the mockup line-art style. */
 export function Icon({ name, className = 'size-6' }: { name: string; className?: string }) {
   const path = PATHS[name as IconName] ?? PATHS.check;
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden className={className}>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden className={className}>
       {path}
     </svg>
   );

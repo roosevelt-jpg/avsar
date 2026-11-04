@@ -110,14 +110,14 @@ function JobListCard({
   const category = job.area ? siteText(locale, areaLabel(job.area)) : '';
 
   return (
-    <article className="group relative grid grid-cols-1 overflow-hidden rounded-[16px] border border-line bg-white shadow-[0_10px_28px_-22px_rgba(10,8,143,0.35)] sm:grid-cols-[140px_minmax(0,1fr)] lg:grid-cols-[148px_minmax(0,1fr)_auto]">
-      <div className="relative aspect-[4/3] bg-[#f3f4f8] sm:aspect-auto sm:min-h-[148px]">
+    <article className="relative grid grid-cols-1 overflow-hidden rounded-[14px] border border-[#e6e0d6] bg-white shadow-[0_10px_28px_-22px_rgba(20,36,56,0.28)] sm:grid-cols-[132px_minmax(0,1fr)]">
+      <div className="relative aspect-[4/3] bg-[#f3eee6] sm:aspect-auto sm:min-h-[168px]">
         {image ? (
           <Image
             src={image}
             alt=""
             fill
-            sizes="(max-width: 640px) 100vw, 148px"
+            sizes="(max-width: 640px) 100vw, 132px"
             unoptimized={!image.startsWith('/')}
             priority={priority}
             className="object-cover"
@@ -127,56 +127,82 @@ function JobListCard({
         )}
       </div>
 
-      <div className="flex min-w-0 flex-col gap-3 p-4 sm:p-5">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="inline-flex items-center gap-1 rounded-full border border-[var(--color-gold)]/40 bg-[var(--color-gold-soft)] px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-[#0a088f]">
-            <span aria-hidden className="text-[var(--color-gold)]">
-              ✓
+      <div className="relative flex min-w-0 flex-col gap-3 p-4 sm:p-5">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-1 rounded-[6px] bg-[#b28a49] px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-[#142438]">
+              <span aria-hidden>✓</span>
+              {verified}
             </span>
-            {verified}
-          </span>
-          {job.featured ? (
-            <span className="rounded-full bg-[#0a088f] px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-white">
-              {siteText(locale, 'Featured')}
-            </span>
-          ) : null}
+            {job.featured ? (
+              <span className="rounded-[6px] bg-[#142438] px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-white">
+                {siteText(locale, 'Featured')}
+              </span>
+            ) : null}
+          </div>
+          <div className="flex shrink-0 items-start gap-2">
+            {salary ? (
+              <p className="m-0 hidden max-w-[11rem] rounded-[8px] bg-[#f3eee6] px-3 py-2 text-end text-[13px] font-semibold leading-[1.35] text-[#142438] sm:block">
+                {salary}
+              </p>
+            ) : null}
+            {saved !== undefined ? <SaveJobButton jobId={job.id} initialSaved={saved} /> : null}
+          </div>
         </div>
 
         <div>
-          <h3 className="m-0 text-[clamp(18px,2cqi,22px)] font-semibold leading-[1.25] tracking-[-0.02em] text-[#0a088f]">
+          <h3 className="display-serif m-0 text-[clamp(20px,2.2cqi,24px)] font-normal leading-[1.2] text-[#142438]">
             <Link href={href} className="text-inherit no-underline hover:underline">
               {job.title}
             </Link>
           </h3>
-          <ul className="m-0 mt-2 flex list-none flex-wrap gap-x-4 gap-y-1 p-0 text-[13px] text-ink-2">
-            <li>{jobLocation(job)}</li>
-            {category ? <li>{category}</li> : null}
-            <li>{siteText(locale, EMPLOYMENT_LABELS[job.employmentType])}</li>
+          <ul className="m-0 mt-2.5 flex list-none flex-wrap gap-x-4 gap-y-1.5 p-0 text-[13px] text-ink-2">
+            <li className="inline-flex items-center gap-1.5">
+              <svg viewBox="0 0 24 24" className="size-3.5 text-[var(--color-gold)]" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
+                <path d="M12 21s-6-6-6-11a6 6 0 0112 0c0 5-6 11-6 11z" />
+                <circle cx="12" cy="10" r="2" />
+              </svg>
+              {jobLocation(job)}
+            </li>
+            {category ? (
+              <li className="inline-flex items-center gap-1.5">
+                <svg viewBox="0 0 24 24" className="size-3.5 text-[var(--color-gold)]" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
+                  <path d="M4 7h16M4 12h16M4 17h10" strokeLinecap="round" />
+                </svg>
+                {category}
+              </li>
+            ) : null}
+            <li className="inline-flex items-center gap-1.5">
+              <svg viewBox="0 0 24 24" className="size-3.5 text-[var(--color-gold)]" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
+                <path d="M4 8h16v11H4z M9 8V5h6v3" />
+              </svg>
+              {siteText(locale, EMPLOYMENT_LABELS[job.employmentType])}
+            </li>
           </ul>
         </div>
 
-        {job.summary ? <p className="m-0 line-clamp-2 text-[14px] leading-[1.5] text-muted">{job.summary}</p> : null}
+        {job.summary ? <p className="m-0 line-clamp-2 text-[14px] leading-[1.5] text-ink-2">{job.summary}</p> : null}
 
-        <div className="mt-auto flex flex-wrap items-center gap-2 pt-1">
-          {saved !== undefined ? <SaveJobButton jobId={job.id} initialSaved={saved} /> : null}
+        {salary ? (
+          <p className="m-0 rounded-[8px] bg-[#f3eee6] px-3 py-2 text-[13px] font-semibold text-[#142438] sm:hidden">{salary}</p>
+        ) : null}
+
+        <div className="mt-auto flex flex-wrap items-center justify-end gap-2 pt-1">
           <Link
             href={href}
-            className="t-colors inline-flex items-center rounded-full border border-line-strong bg-white px-4 py-2 text-[13px] font-semibold text-[#0a088f] no-underline hover:border-[#0a088f]"
+            className="t-colors inline-flex items-center rounded-[8px] border border-[#142438]/25 bg-white px-4 py-2 text-[13px] font-semibold text-[#142438] no-underline hover:border-[#142438]"
           >
             {viewDetails}
           </Link>
-          <Link href={href} className="btn-gradient t-colors inline-flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold no-underline">
+          <Link
+            href={href}
+            className="t-colors inline-flex items-center gap-1.5 rounded-[8px] bg-[#b28a49] px-4 py-2 text-[13px] font-semibold text-[#142438] no-underline hover:bg-[#c49a58]"
+          >
             {applyNow}
             <span aria-hidden>→</span>
           </Link>
         </div>
       </div>
-
-      {salary ? (
-        <div className="flex items-start justify-end border-t border-line bg-[var(--color-gold-soft)] px-4 py-4 sm:border-t-0 lg:border-s lg:px-5">
-          <p className="m-0 max-w-[12ch] text-end text-[15px] font-semibold leading-[1.35] text-[#0a088f]">{salary}</p>
-        </div>
-      ) : null}
     </article>
   );
 }

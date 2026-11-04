@@ -30,7 +30,9 @@ export async function SettingsTabs({ current }: { current: string }) {
               <Link
                 href={tab.href}
                 aria-current={active ? 'page' : undefined}
-                className={`-mb-px block border-b-2 px-3 py-2.5 text-[14px] no-underline ${active ? 'border-ink font-medium text-ink' : 'border-transparent text-muted hover:text-ink'}`}
+                className={`-mb-px block border-b-2 px-3 py-2.5 text-[14px] no-underline ${
+                  active ? 'border-accent font-semibold text-ink' : 'border-transparent text-muted hover:text-ink'
+                }`}
               >
                 {tab.label}
               </Link>

@@ -50,14 +50,14 @@ export function FooterSubscribe({ locale, labels }: { locale: Locale; labels: La
             inputMode="email"
             dir="ltr"
             placeholder={labels.placeholder}
-            className="min-w-0 flex-1 rounded-s-[8px] border border-white/55 border-e-0 bg-[#0a088f]/55 px-3.5 py-2.5 text-[14px] text-white placeholder:text-white/55 focus:border-[var(--color-gold)] focus:outline-none"
+            className="min-w-0 flex-1 rounded-s-[8px] border border-white/55 border-e-0 bg-[#142438]/55 px-3.5 py-2.5 text-[14px] text-white placeholder:text-white/55 focus:border-[var(--color-gold)] focus:outline-none"
           />
           <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
           <button
             type="submit"
             disabled={state === 'sending'}
             aria-label={labels.button}
-            className="t-colors grid size-[46px] shrink-0 place-items-center rounded-e-[8px] border-0 bg-[var(--color-gold)] text-[#0a088f] disabled:opacity-60 hover:bg-[var(--color-gold-deep)]"
+            className="t-colors grid size-[46px] shrink-0 place-items-center rounded-e-[8px] border-0 bg-[#b28a49] text-[#142438] disabled:opacity-60 hover:bg-[#9a743c]"
           >
             <span aria-hidden className="text-[18px] font-bold leading-none rtl:-scale-x-100">
               →

@@ -47,9 +47,9 @@ export default async function ResetPasswordPage({
     <AuthShell
       header={
         <>
-          <Wordmark href={localePath(locale, '/')} />
-          <p className="m-0 text-[14px] text-ink-2">
-            <Link href={localePath(locale, '/signin')} className="prose-link">
+          <Wordmark href={localePath(locale, '/')} tone="dark" />
+          <p className="m-0 text-[14px] text-white/80">
+            <Link href={localePath(locale, '/signin')} className="t-colors text-white underline-offset-2 hover:text-[var(--color-gold)] hover:underline">
               Sign in
             </Link>
           </p>

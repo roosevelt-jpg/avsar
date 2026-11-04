@@ -1,15 +1,12 @@
 import type { ComponentProps } from 'react';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Mono } from '@/components/ui/Mono';
-import { Wordmark } from '@/components/ui/Wordmark';
+import { AdminButton, AdminHeading, AdminShell } from '@/components/employer/AdminShell';
 import { CvReviewPanel } from '@/components/employer/CvReviewPanel';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { rubricFor, RUBRIC_VERSION } from '@/lib/cv/rubric';
 import { SECTOR_SLUGS, sectorLabel, type SectorSlug } from '@/lib/data/sectors';
 import { requirePermission } from '@/lib/rbac/server';
 import { logDataAccess } from '@/lib/privacy/log';
-import { AccountMenu } from '@/components/auth/AccountMenu';
 
 export const metadata = { title: 'CV review' };
 
@@ -61,30 +58,21 @@ export default async function CvReviewPage({ params }: { params: Promise<{ id: s
   const staleRubric = row.rubricVersion !== RUBRIC_VERSION;
 
   return (
-    <div className="avsar-root">
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-line px-[clamp(20px,4cqi,56px)] py-[18px]">
-        <Wordmark href="/admin" suffix="review" accent="employer" />
-        <span className="flex flex-wrap items-center gap-4">
-          <Link href="/admin/cv-queue" className="text-[15px] no-underline text-ink-2 hover:text-employer t-colors">
-            Back to the CV queue
-          </Link>
-          <AccountMenu locale="en" tone="employer" />
-        </span>
-      </header>
+    <AdminShell current="/admin/cv-queue" isStaff>
+      <AdminHeading
+        title="Review before deciding"
+        lead={`${sectorLabel(sector)} CV assessment`}
+        actions={<AdminButton href="/admin/cv-queue" variant="light">Back to the CV queue</AdminButton>}
+      />
 
-      <main className="px-[clamp(20px,4cqi,56px)] py-[clamp(28px,4cqi,48px)]">
-        <Mono className="text-muted">{sectorLabel(sector).toUpperCase()} · CV ASSESSMENT</Mono>
-        <h1 className="mt-3 mb-6 text-[clamp(26px,3.6cqi,42px)] font-semibold leading-[1.1] tracking-[-0.03em]">
-          Review before deciding
-        </h1>
+      {staleRubric && (
+        <p className="mt-6 mb-0 rounded-[14px] border border-accent bg-accent-tint px-4 py-3 text-[13px] text-ink">
+          Scored under rubric {row.rubricVersion}; the current rubric is {RUBRIC_VERSION}. Criterion labels and
+          weights may have changed since.
+        </p>
+      )}
 
-        {staleRubric && (
-          <p className="mt-0 mb-6 rounded-[12px] border border-accent bg-accent-tint px-4 py-3 text-[13px] text-ink">
-            Scored under rubric {row.rubricVersion}; the current rubric is {RUBRIC_VERSION}. Criterion
-            labels and weights may have changed since.
-          </p>
-        )}
-
+      <div className="mt-7">
         <CvReviewPanel
           assessmentId={row.id}
           suggestedScore={row.suggestedScore}
@@ -101,7 +89,7 @@ export default async function CvReviewPage({ params }: { params: Promise<{ id: s
             rubricVersion: row.rubricVersion,
           }}
         />
-      </main>
-    </div>
+      </div>
+    </AdminShell>
   );
 }

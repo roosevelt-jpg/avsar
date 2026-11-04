@@ -3,9 +3,13 @@ export function Pill({ children, tone = 'neutral' }: { children: React.ReactNode
   const tones = {
     neutral: 'bg-surface border border-line text-ink-2',
     accent: 'bg-accent-tint text-accent-deep',
-    success: 'bg-success/15 text-[oklch(0.42_0.12_150)]',
+    success: 'bg-[#2f7d4a]/15 text-[#2f7d4a]',
     muted: 'bg-canvas text-muted',
     dark: 'bg-ink text-paper',
   } as const;
-  return <span className={`inline-flex items-center whitespace-nowrap rounded-full px-2.5 py-0.5 text-[12px] font-medium ${tones[tone]}`}>{children}</span>;
+  return (
+    <span className={`inline-flex items-center whitespace-nowrap rounded-full px-2.5 py-0.5 text-[12px] font-medium ${tones[tone]}`}>
+      {children}
+    </span>
+  );
 }

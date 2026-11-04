@@ -9,12 +9,13 @@ export const runtime = 'nodejs';
 export const maxDuration = 60;
 
 /**
- * Inbound WhatsApp. Meta calls this when someone writes to the company number.
+ * Inbound WhatsApp.
  *
- * The verify token and the app secret come from Settings › Integrations.
- * A message that fails the signature is ignored. The reply uses the same
- * notes as the website, then goes back as ordinary text inside Meta's
- * 24-hour window.
+ * Meta Cloud API: GET verify + POST with X-Hub-Signature-256.
+ * Green API (`WHATSAPP_PROVIDER=green`): POST with `Authorization: Bearer
+ * GREEN_WEBHOOK_TOKEN` (or `?token=`), body shaped like Green incomingMessage.
+ *
+ * Replies use the same company notes as the website assistant.
  */
 export async function GET(request: Request) {
   await refreshIntegrations();
@@ -31,11 +32,23 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   await refreshIntegrations();
+  const provider = (process.env.WHATSAPP_PROVIDER ?? 'meta').trim().toLowerCase();
   const raw = await request.text();
+
+  if (provider === 'green') {
+    if (!greenAuthorized(request)) {
+      return NextResponse.json({ error: 'forbidden' }, { status: 403 });
+    }
+    return handleGreen(raw);
+  }
+
   if (!signed(raw, request.headers.get('x-hub-signature-256'))) {
     return NextResponse.json({ error: 'forbidden' }, { status: 403 });
   }
+  return handleMeta(raw);
+}
 
+async function handleMeta(raw: string) {
   const payload = JSON.parse(raw) as {
     entry?: { changes?: { value?: { messages?: { id?: string; from?: string; type?: string; text?: { body?: string } }[] } }[] }[];
   };
@@ -62,6 +75,60 @@ export async function POST(request: Request) {
   }
 
   return NextResponse.json({ ok: true });
+}
+
+async function handleGreen(raw: string) {
+  const payload = JSON.parse(raw) as {
+    typeWebhook?: string;
+    idMessage?: string;
+    senderData?: { sender?: string; chatId?: string };
+    messageData?: {
+      typeMessage?: string;
+      textMessageData?: { textMessage?: string };
+      extendedTextMessageData?: { text?: string };
+    };
+  };
+
+  if (payload.typeWebhook && payload.typeWebhook !== 'incomingMessageReceived') {
+    return NextResponse.json({ ok: true, ignored: payload.typeWebhook });
+  }
+
+  const text =
+    payload.messageData?.textMessageData?.textMessage?.trim() ||
+    payload.messageData?.extendedTextMessageData?.text?.trim() ||
+    '';
+  const from =
+    payload.senderData?.sender?.replace(/@c\.us$/i, '') ||
+    payload.senderData?.chatId?.replace(/@c\.us$/i, '') ||
+    '';
+  const id = payload.idMessage ?? '';
+  const admin = getAdminSupabase();
+  if (!text || !from || !id || !admin) return NextResponse.json({ ok: true });
+
+  const { data: seen } = await admin.from('assistant_messages').select('id').eq('external_id', id).maybeSingle();
+  if (seen) return NextResponse.json({ ok: true, duplicate: true });
+
+  const result = await answerQuestion({
+    question: text,
+    threadKey: from.replace(/[^\d]/g, '').slice(0, 80),
+    channel: 'whatsapp',
+    externalId: id,
+  });
+  await sendWhatsAppText(from, result.reply);
+  return NextResponse.json({ ok: true });
+}
+
+function greenAuthorized(request: Request): boolean {
+  const expected = process.env.GREEN_WEBHOOK_TOKEN?.trim();
+  if (!expected) return false;
+  const header = request.headers.get('authorization') ?? '';
+  const bearer = header.toLowerCase().startsWith('bearer ') ? header.slice(7).trim() : '';
+  const query = new URL(request.url).searchParams.get('token')?.trim() ?? '';
+  const given = bearer || query || request.headers.get('x-green-webhook-token')?.trim() || '';
+  if (!given) return false;
+  const a = Buffer.from(expected);
+  const b = Buffer.from(given);
+  return a.length === b.length && timingSafeEqual(a, b);
 }
 
 function signed(raw: string, header: string | null): boolean {

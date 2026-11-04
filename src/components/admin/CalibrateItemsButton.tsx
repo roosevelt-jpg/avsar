@@ -33,7 +33,7 @@ export function CalibrateItemsButton() {
         type="button"
         onClick={() => void run()}
         disabled={busy}
-        className="t-colors cursor-pointer rounded-full border border-line-strong bg-surface px-3.5 py-1.5 text-[13px] font-medium text-ink hover:border-ink disabled:opacity-40"
+        className="t-colors cursor-pointer rounded-[8px] border border-line-strong bg-surface px-3.5 py-2 text-[13px] font-semibold text-ink hover:border-ink disabled:opacity-40"
       >
         {busy ? 'Recomputing…' : 'Recompute weights'}
       </button>

@@ -4,11 +4,19 @@ import { notFound } from 'next/navigation';
 import { Mono } from '@/components/ui/Mono';
 import { VisibilityToggle } from '@/components/candidate/VisibilityToggle';
 import { DashboardNav } from '@/components/candidate/DashboardNav';
+import {
+  ApplicationProgressPanel,
+  DashboardHero,
+  DashboardStatStrip,
+  NextStepsChecklist,
+  RecommendedJobsPanel,
+  RelocationJourneyStrip,
+  RelocationPromoCard,
+  profileCompletionPct,
+} from '@/components/candidate/DashboardOverviewShell';
 import { listCandidateApplications } from '@/lib/applications/data';
 import { STATUS_META } from '@/lib/applications/status';
-import { ApplicationStats } from '@/components/candidate/ApplicationStats';
 import { JourneyStatus } from '@/components/candidate/JourneyStatus';
-import { DashboardNextStep } from '@/components/candidate/DashboardNextStep';
 import { VerifyEmailBanner } from '@/components/candidate/VerifyEmailBanner';
 import { UnlockReport } from '@/components/candidate/UnlockReport';
 import { PackageOfferBanner } from '@/components/candidate/PackageOfferBanner';
@@ -32,7 +40,7 @@ import { getServerSupabase } from '@/lib/supabase/server';
 import { sectorLabel, SECTOR_SLUGS, type SectorSlug } from '@/lib/data/sectors';
 import { englishBand, skillBand } from '@/lib/report/bands';
 import { listSavedJobs } from '@/lib/jobs/saved';
-import { listPublishedJobs } from '@/lib/jobs/data';
+import { listPublishedJobs, recommendedJobs } from '@/lib/jobs/data';
 import { formatSalary } from '@/lib/jobs/types';
 import { interviewTimes } from '@/lib/interviews/time';
 import { deliveredReviewFor } from '@/lib/legal/review';
@@ -184,10 +192,24 @@ export default async function DashboardPage({
     getFunnelStats(),
   ]);
   const openJobs = publishedJobs.jobs;
+  const recommended = await recommendedJobs(
+    candidate.position,
+    applications.map((application) => application.job.id),
+    3,
+  );
   const tx = (english: string) => siteText(locale, english);
   const nextInterview = applications
     .flatMap((application) => application.interviews.map((interview) => ({ interview, application })))
     .sort((a, b) => a.interview.startsAt.localeCompare(b.interview.startsAt))[0];
+  const activeApplications = applications.filter((a) => STATUS_META[a.status].tone !== 'stopped');
+  const interviewCount = applications.filter((a) => a.status === 'interview' || a.interviews.length > 0).length;
+  const relocationOpen = relocation.plan
+    ? relocation.plan.milestones.filter((m) => m.status === 'pending' || m.status === 'in_progress' || m.status === 'blocked')
+        .length
+    : relocation.documents.filter((doc) => doc.status !== 'verified').length;
+  const profilePct = profileCompletionPct(status, applications.length);
+  const matchedJobs = publishedJobs.total ?? openJobs.length;
+  const journeyMilestones = relocation.plan?.milestones ?? [];
 
   const stats = !r ? [] : [
     { label: d.overall, value: String(r.overall), suffix: '/100', note: fill(d.overallNote, { percentile: r.percentile }), dark: true },
@@ -204,15 +226,30 @@ export default async function DashboardPage({
 
   const firstName = candidate.fullName.split(' ')[0] ?? candidate.fullName;
 
-  return (
-    <div className="dash-atmosphere min-h-screen">
-      <DashboardNav locale={locale} current="overview" />
+  const shareUrl = `${await publicOrigin()}${localePath(locale, '/for-your-family')}`;
+  const providerName = getPaymentProvider().name;
+  const providerMode =
+    providerName === 'eximpe'
+      ? process.env.EXIMPE_ENV === 'production'
+        ? 'production'
+        : 'sandbox'
+      : providerName === 'paytm'
+        ? process.env.PAYTM_ENV === 'production'
+          ? 'production'
+          : 'sandbox'
+        : process.env.CASHFREE_ENV === 'production'
+          ? 'production'
+          : 'sandbox';
 
-      <main
-        className={`mx-auto w-full max-w-[1120px] px-[clamp(16px,4cqi,56px)] py-[clamp(24px,4cqi,56px)] ${
-          status.awaitingPayment ? 'pb-28 md:pb-[clamp(28px,5cqi,64px)]' : ''
-        }`}
-      >
+  return (
+    <DashboardNav
+      locale={locale}
+      current="overview"
+      candidate={{ fullName: candidate.fullName, emailConfirmed: candidate.emailConfirmed }}
+      savedCount={savedJobs.length}
+      whatsapp={settings.general.whatsapp}
+    >
+      <div className={`mx-auto w-full max-w-[1180px] ${status.awaitingPayment ? 'pb-28' : ''}`}>
         {unverifiedEmail && <VerifyEmailBanner email={unverifiedEmail} t={t} />}
 
         <OfferScroll active={status.awaitingPayment && (showOffer || paymentCancelled)} />
@@ -224,7 +261,7 @@ export default async function DashboardPage({
         {justPaid && status.paid ? (
           <section
             id="family-share"
-            className="mb-6 scroll-mt-24 rounded-[20px] border border-accent bg-accent-tint p-[clamp(18px,2.5cqi,24px)]"
+            className="mb-6 scroll-mt-24 rounded-[16px] border border-[#b28a49] bg-[#b28a49]/12 p-5"
           >
             <h2 className="m-0 text-[20px] font-semibold tracking-[-0.02em]">
               {tx('Payment received. Share progress with family')}
@@ -234,7 +271,10 @@ export default async function DashboardPage({
                 'Create a private link so your family can see your job, city and visa steps — without salary, employer name or documents. Scroll to the family section below.',
               )}
             </p>
-            <a href="#family" className="t-colors mt-4 inline-flex rounded-full bg-ink px-4 py-2.5 text-[14px] font-medium text-paper no-underline hover:bg-ink-hover">
+            <a
+              href="#family"
+              className="t-colors mt-4 inline-flex rounded-[8px] bg-[#142438] px-4 py-2.5 text-[14px] font-medium text-white no-underline hover:bg-[#1e334d]"
+            >
               {tx('Create a family link')}
             </a>
           </section>
@@ -246,46 +286,62 @@ export default async function DashboardPage({
           </div>
         ) : null}
 
-        {status.awaitingPayment ? <LegalReviewSample locale={locale} /> : null}
+        <div className="flex flex-col gap-5">
+          <DashboardHero locale={locale} firstName={firstName} assessmentComplete={status.assessmentComplete} />
+          <DashboardStatStrip
+            matchedJobs={matchedJobs}
+            inProgress={activeApplications.length}
+            interviews={interviewCount}
+            relocationOpen={relocationOpen}
+            profilePct={profilePct}
+          />
+          <div className="grid gap-4 lg:grid-cols-[1.15fr_0.9fr_0.85fr]">
+            <ApplicationProgressPanel locale={locale} applications={applications} />
+            <NextStepsChecklist
+              locale={locale}
+              status={status}
+              applicationCount={applications.length}
+              hasInterview={Boolean(nextInterview) || interviewCount > 0}
+            />
+            <RelocationPromoCard locale={locale} />
+          </div>
+          <div className="grid gap-4 lg:grid-cols-[1.35fr_1fr]">
+            <RecommendedJobsPanel locale={locale} jobs={recommended.length ? recommended : openJobs} />
+            <RelocationJourneyStrip applications={applications} milestones={journeyMilestones} />
+          </div>
+        </div>
+
+        {status.awaitingPayment ? <div className="mt-8"><LegalReviewSample locale={locale} /></div> : null}
 
         {status.awaitingPayment && reportReady && r ? (
-          <ReportPreview
-            locale={locale}
-            overall={r.overall}
-            breakdown={r.breakdown}
-            shortlistMin={settings.hiring.shortlistMinScore}
-            price={prices.skills}
-            bundle={prices.bundle}
-          />
+          <div className="mt-6">
+            <ReportPreview
+              locale={locale}
+              overall={r.overall}
+              breakdown={r.breakdown}
+              shortlistMin={settings.hiring.shortlistMinScore}
+              price={prices.skills}
+              bundle={prices.bundle}
+            />
+          </div>
         ) : null}
 
-        <DemandStrip
-          locale={locale}
-          jobCount={publishedJobs.total ?? openJobs.length}
-          titles={openJobs.slice(0, 3).map((job) => job.title)}
-          funnel={funnel}
-        />
+        <div className="mt-6">
+          <DemandStrip
+            locale={locale}
+            jobCount={publishedJobs.total ?? openJobs.length}
+            titles={openJobs.slice(0, 3).map((job) => job.title)}
+            funnel={funnel}
+          />
+        </div>
 
-        <DashboardNextStep
-          locale={locale}
-          status={status}
-          firstName={firstName}
-          prices={prices}
-          shortlistMin={settings.hiring.shortlistMinScore}
-          nextInterview={
-            nextInterview
-              ? {
-                  title: nextInterview.application.job.title,
-                  when: interviewTimes(nextInterview.interview.startsAt).both,
-                }
-              : null
-          }
-          applicationCount={applications.length}
-          familyLinkCount={relocation.familyLinks.filter((link) => !link.revokedAt).length}
-          highlightFamily={justPaid && status.paid}
-        />
+        {nextInterview ? (
+          <p className="m-0 mt-4 rounded-[12px] border border-[#b28a49]/35 bg-[#b28a49]/10 px-4 py-3 text-[14px] text-[#142438]">
+            Next interview: <strong>{nextInterview.application.job.title}</strong> ·{' '}
+            {interviewTimes(nextInterview.interview.startsAt).both}
+          </p>
+        ) : null}
 
-        {/* Fee ask after the free score preview so they buy clarity, not a guess. */}
         {status.awaitingPayment && (
           <div className="motion-rise mt-8" style={{ ['--delay' as string]: '80ms' }}>
             <UnlockReport
@@ -302,78 +358,15 @@ export default async function DashboardPage({
               methods={availablePaymentMethods()}
               lines={ownLines}
               voiceUrl={settings.general.familyVoiceUrl}
-              shareUrl={`${await publicOrigin()}${localePath(locale, '/for-your-family')}`}
-              provider={getPaymentProvider().name}
-              providerMode={(() => {
-                const name = getPaymentProvider().name;
-                if (name === 'eximpe') return process.env.EXIMPE_ENV === 'production' ? 'production' : 'sandbox';
-                if (name === 'paytm') return process.env.PAYTM_ENV === 'production' ? 'production' : 'sandbox';
-                return process.env.CASHFREE_ENV === 'production' ? 'production' : 'sandbox';
-              })()}
+              shareUrl={shareUrl}
+              provider={providerName}
+              providerMode={providerMode}
             />
           </div>
         )}
 
-        <section className="motion-rise mt-10" style={{ ['--delay' as string]: '120ms' }}>
-          <div className="flex flex-wrap items-end justify-between gap-3 border-b border-line pb-4">
-            <div>
-              <h2 className="m-0 text-[22px] font-semibold tracking-[-0.02em]">My applications</h2>
-              <p className="m-0 mt-1 text-[14px] text-muted">Where each application stands right now.</p>
-            </div>
-            <div className="flex gap-2">
-              <Link
-                href={localePath(locale, '/jobs')}
-                className="t-colors rounded-full border border-line-strong px-4 py-2 text-[14px] text-ink no-underline hover:border-ink"
-              >
-                Find jobs
-              </Link>
-              {applications.length > 0 && (
-                <Link
-                  href={localePath(locale, '/dashboard/applications')}
-                  className="t-colors rounded-full bg-ink px-4 py-2 text-[14px] text-paper no-underline hover:bg-ink-hover"
-                >
-                  Track all
-                </Link>
-              )}
-            </div>
-          </div>
-          {applications.length > 0 && (
-            <div className="mt-5">
-              <ApplicationStats applications={applications} />
-            </div>
-          )}
-          {applications.length === 0 ? (
-            <p className="m-0 mt-5 text-[15px] leading-[1.6] text-ink-2">
-              You have not applied to a job yet. Applying is free:{' '}
-              <Link href={localePath(locale, '/jobs')} className="prose-link">
-                see open jobs
-              </Link>
-              .
-            </p>
-          ) : (
-            <ul className="m-0 mt-2 flex list-none flex-col p-0">
-              {applications.slice(0, 4).map((application) => (
-                <li
-                  key={application.id}
-                  className="motion-row t-colors flex flex-wrap items-center justify-between gap-3 border-b border-line-soft py-4 last:border-b-0"
-                >
-                  <div>
-                    <p className="m-0 text-[15px] font-medium">{application.job.title}</p>
-                    <p className="m-0 font-mono text-[12px] text-muted">
-                      {application.job.city} · {application.reference}
-                    </p>
-                  </div>
-                  <span className="rounded-full bg-accent-tint px-3 py-1 text-[13px] text-accent-deep">
-                    {STATUS_META[application.status].candidateTitle}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-
         {savedJobs.length > 0 && (
-          <section className="motion-rise mt-10" style={{ ['--delay' as string]: '160ms' }}>
+          <section id="saved" className="motion-rise mt-10 scroll-mt-24" style={{ ['--delay' as string]: '160ms' }}>
             <h2 className="m-0 text-[22px] font-semibold tracking-[-0.02em]">Saved jobs</h2>
             <p className="m-0 mt-1 text-[14px] text-muted">Jobs you marked with the heart. Closed jobs drop off this list.</p>
             <ul className="m-0 mt-2 flex list-none flex-col p-0">
@@ -395,7 +388,7 @@ export default async function DashboardPage({
                   </div>
                   <Link
                     href={localePath(locale, `/jobs/${job.slug}`)}
-                    className="t-colors rounded-full border border-line-strong px-4 py-2 text-[14px] text-ink no-underline hover:border-ink"
+                    className="t-colors rounded-[8px] border border-line-strong px-4 py-2 text-[14px] text-ink no-underline hover:border-ink"
                   >
                     View and apply
                   </Link>
@@ -418,7 +411,7 @@ export default async function DashboardPage({
                 {status.ownsSkills && candidate.emailConfirmed ? (
                   <Link
                     href={localePath(locale, '/dashboard/report.pdf')}
-                    className="t-colors rounded-full border border-line-strong bg-surface px-4 py-2.5 text-[14px] no-underline hover:border-ink"
+                    className="t-colors rounded-[8px] border border-line-strong bg-surface px-4 py-2.5 text-[14px] no-underline hover:border-ink"
                   >
                     {d.download}
                   </Link>
@@ -426,7 +419,7 @@ export default async function DashboardPage({
                 {pack ? (
                   <Link
                     href={localePath(locale, '/dashboard/cv.pdf')}
-                    className="t-colors rounded-full border border-line-strong bg-surface px-4 py-2.5 text-[14px] no-underline hover:border-ink"
+                    className="t-colors rounded-[8px] border border-line-strong bg-surface px-4 py-2.5 text-[14px] no-underline hover:border-ink"
                   >
                     {d.downloadCv}
                   </Link>
@@ -434,7 +427,7 @@ export default async function DashboardPage({
                 {legalReview ? (
                   <Link
                     href={localePath(locale, '/dashboard/legal.pdf')}
-                    className="t-colors rounded-full border border-line-strong bg-surface px-4 py-2.5 text-[14px] no-underline hover:border-ink"
+                    className="t-colors rounded-[8px] border border-line-strong bg-surface px-4 py-2.5 text-[14px] no-underline hover:border-ink"
                   >
                     {d.downloadLegal}
                   </Link>
@@ -451,20 +444,20 @@ export default async function DashboardPage({
                 {stats.map((stat) => (
                   <li
                     key={stat.label}
-                    className={`rounded-[20px] border p-[22px] ${
-                      stat.dark ? 'border-ink bg-ink text-paper' : 'border-line/80 bg-surface'
+                    className={`rounded-[16px] border p-[22px] ${
+                      stat.dark ? 'border-[#142438] bg-[#142438] text-white' : 'border-line/80 bg-white'
                     }`}
                   >
-                    <Mono className={stat.dark ? 'text-dark-muted' : 'text-muted'}>{stat.label}</Mono>
+                    <Mono className={stat.dark ? 'text-white/60' : 'text-muted'}>{stat.label}</Mono>
                     <p className="mt-3 mb-1 text-[34px] font-semibold leading-none tracking-[-0.03em]">
                       {stat.value}
                       {stat.suffix ? (
-                        <span className={`text-[16px] font-normal ${stat.dark ? 'text-dark-muted' : 'text-muted'}`}>
+                        <span className={`text-[16px] font-normal ${stat.dark ? 'text-white/60' : 'text-muted'}`}>
                           {stat.suffix}
                         </span>
                       ) : null}
                     </p>
-                    <p className={`m-0 text-[13px] ${stat.dark ? 'text-dark-muted-2' : 'text-muted'}`}>{stat.note}</p>
+                    <p className={`m-0 text-[13px] ${stat.dark ? 'text-white/55' : 'text-muted'}`}>{stat.note}</p>
                   </li>
                 ))}
               </ul>
@@ -487,7 +480,7 @@ export default async function DashboardPage({
                     <Mono className="text-muted">{axis.score}</Mono>
                   </div>
                   <div className="h-1.5 overflow-hidden rounded-full bg-line-soft">
-                    <div className="motion-fill h-full rounded-full bg-accent" style={{ width: `${axis.score}%` }} />
+                    <div className="motion-fill h-full rounded-full bg-[#b28a49]" style={{ width: `${axis.score}%` }} />
                   </div>
                 </li>
               ))}
@@ -527,7 +520,7 @@ export default async function DashboardPage({
               {legalReview ? (
                 <Link
                   href={localePath(locale, '/dashboard/legal.pdf')}
-                  className="t-colors rounded-full border border-line-strong bg-surface px-4 py-2.5 text-[14px] no-underline hover:border-ink"
+                  className="t-colors rounded-[8px] border border-line-strong bg-surface px-4 py-2.5 text-[14px] no-underline hover:border-ink"
                 >
                   {d.downloadLegal}
                 </Link>
@@ -590,11 +583,11 @@ export default async function DashboardPage({
             field="optIn"
           />
         </div>
-      </main>
+      </div>
 
       {status.awaitingPayment ? (
         <StickyPackageCta href="#package" label={settings.conversion.stickyCtaLabel} />
       ) : null}
-    </div>
+    </DashboardNav>
   );
 }

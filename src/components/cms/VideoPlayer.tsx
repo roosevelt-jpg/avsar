@@ -84,11 +84,13 @@ export function FilmButton({ src, poster, label, tone = 'light' }: { src: string
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className={`t-colors inline-flex cursor-pointer items-center gap-2.5 border-0 bg-transparent p-0 text-[15px] font-medium ${
-          tone === 'dark' ? 'text-on-night hover:text-accent-on-dark' : 'text-ink hover:text-accent'
-        }`}
+        className={
+          tone === 'dark'
+            ? 'btn-outline-light t-colors inline-flex cursor-pointer items-center gap-2 px-5 py-3 text-[14px] font-semibold'
+            : 't-colors inline-flex cursor-pointer items-center gap-2.5 border-0 bg-transparent p-0 text-[15px] font-medium text-ink hover:text-accent'
+        }
       >
-        <span aria-hidden className="grid size-9 place-items-center rounded-full border border-current">
+        <span aria-hidden className={tone === 'dark' ? '' : 'grid size-9 place-items-center rounded-full border border-current'}>
           <PlayIcon className="ms-0.5 size-4" />
         </span>
         {label}

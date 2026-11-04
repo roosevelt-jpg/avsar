@@ -1,28 +1,36 @@
 import Link from 'next/link';
-import { AdminButton, AdminHeading, AdminShell, Pill } from '@/components/employer/AdminShell';
+import { AdminShell, Pill } from '@/components/employer/AdminShell';
 import { StatCard } from '@/components/admin/analytics/StatCard';
 import { TrendChart } from '@/components/admin/analytics/TrendChart';
 import { Funnel } from '@/components/admin/analytics/Funnel';
 import { ConversionFunnel } from '@/components/admin/analytics/ConversionFunnel';
 import { BarList } from '@/components/admin/analytics/BarList';
 import { LiveUpdates } from '@/components/admin/analytics/LiveUpdates';
+import {
+  StaffDashHero,
+  StaffPlatformHealth,
+  StaffPlatformStatStrip,
+  StaffQuickActions,
+  StaffSystemInsights,
+  growthFromKpis,
+} from '@/components/admin/StaffDashboardOverview';
 import { listApplicationsForConsole, listUpcomingInterviews, type AdminApplicationRow, type UpcomingInterview } from '@/lib/applications/data';
 import { interviewTimes } from '@/lib/interviews/time';
 import { STATUS_META } from '@/lib/applications/status';
 import { getAnalytics, parseRange, RANGES } from '@/lib/console/analytics';
+import { getPlatformSnapshot } from '@/lib/console/platform-snapshot';
 import { workQueue } from '@/lib/console/due';
 import { getSiteSettings } from '@/lib/cms/data';
 import { can, requirePermission } from '@/lib/rbac/server';
-import { getServerSupabase } from '@/lib/supabase/server';
 
 export const metadata = { title: 'Console' };
 export const dynamic = 'force-dynamic';
 
 function Panel({ title, note, children }: { title: string; note?: string; children: React.ReactNode }) {
   return (
-    <section className="motion-rise rounded-[20px] border border-line/70 bg-surface/95 p-5 shadow-[0_1px_2px_rgba(27,26,23,0.04)]">
+    <section className="motion-rise rounded-[14px] border border-[#142438]/08 bg-white p-5 shadow-[0_8px_24px_-18px_rgba(20,36,56,0.35)]">
       <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
-        <h2 className="m-0 text-[16px] font-semibold tracking-[-0.02em]">{title}</h2>
+        <h2 className="m-0 text-[16px] font-semibold tracking-[-0.02em] text-[#142438]">{title}</h2>
         {note ? <span className="font-mono text-[11px] text-muted">{note}</span> : null}
       </div>
       {children}
@@ -48,7 +56,7 @@ export default async function ConsoleDashboard({ searchParams }: { searchParams:
   const showCandidates = can(access, 'candidates.view');
 
   const settings = await getSiteSettings();
-  const [analytics, recent, interviews, queue] = await Promise.all([
+  const [analytics, recent, interviews, queue, snapshot] = await Promise.all([
     getAnalytics(range),
     showApps ? listApplicationsForConsole({}) : Promise.resolve({ rows: [] as AdminApplicationRow[], total: 0, pageSize: 0 }),
     showApps ? listUpcomingInterviews() : Promise.resolve([] as UpcomingInterview[]),
@@ -59,6 +67,7 @@ export default async function ConsoleDashboard({ searchParams }: { searchParams:
       leads: can(access, 'leads.manage'),
       relocation: can(access, 'relocation.manage'),
     }),
+    getPlatformSnapshot(),
   ]);
 
   const kpis = analytics.kpis.filter((kpi) => {
@@ -80,27 +89,30 @@ export default async function ConsoleDashboard({ searchParams }: { searchParams:
   /* Shortcuts to the jobs people come here to do, each shown only to a role
      that can do it. */
   const shortcuts = [
-    can(access, 'jobs.edit') && { href: '/admin/jobs/new', label: 'Post a job', note: 'Draft, then publish', icon: 'M12 5v14M5 12h14' },
-    showApps && { href: '/admin/applications?status=submitted', label: 'Review applications', note: `${analytics.live.awaitingReview.toLocaleString('en-IN')} waiting`, icon: 'M9 12l2 2 4-4M5 4h14v16H5z' },
-    can(access, 'candidates.view') && { href: '/admin', label: 'Search talent', note: 'Everyone with a finished test', icon: 'M11 4.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zM16 16l4.5 4.5' },
-    can(access, 'leads.manage') && { href: '/admin/inbox', label: 'CRM', note: 'Leads and messages', icon: 'M4 5h16v11H9l-5 4V5Zm4 5h8M8 13h5' },
-    can(access, 'relocation.manage') && { href: '/admin/legal-reviews', label: 'Legal reviews', note: 'Owed to package buyers', icon: 'M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z' },
-    showMoney && { href: '/admin/payments', label: 'Payments', note: 'Receipts and refunds', icon: 'M3 7h18v10H3zM3 10h18' },
-    can(access, 'cms.edit') && { href: '/admin/cms', label: 'Edit website', note: 'Pages and media', icon: 'M4 20h4L19 9l-4-4L4 16v4z' },
-  ].filter(Boolean) as { href: string; label: string; note: string; icon: string }[];
+    can(access, 'jobs.edit') && { href: '/admin/jobs/new', label: 'Post a Job', note: 'Draft, then publish' },
+    can(access, 'employers.manage') && { href: '/admin/employers', label: 'Add Employer', note: 'Company accounts' },
+    can(access, 'candidates.view') && { href: '/admin', label: 'Add Candidate', note: 'Search the talent pool' },
+    can(access, 'staff.manage') && { href: '/admin/staff', label: 'Create User', note: 'Invite console staff' },
+    can(access, 'cms.edit') && { href: '/admin/cms', label: 'Manage Pages', note: 'Website CMS' },
+    can(access, 'dashboard.view') && { href: '/admin/analysis', label: 'View Reports', note: 'Insights' },
+    showApps && { href: '/admin/applications?status=submitted', label: 'Review applications', note: `${analytics.live.awaitingReview.toLocaleString('en-GB')} waiting` },
+    can(access, 'leads.manage') && { href: '/admin/inbox', label: 'CRM', note: 'Leads and messages' },
+    can(access, 'relocation.manage') && { href: '/admin/legal-reviews', label: 'Legal reviews', note: 'Package buyers' },
+    showMoney && { href: '/admin/payments', label: 'Payments', note: 'Receipts and refunds' },
+  ].filter(Boolean) as { href: string; label: string; note: string }[];
 
-  const supabase = await getServerSupabase();
-  const { data: auth } = (await supabase?.auth.getUser()) ?? { data: { user: null } };
-  const fullName = typeof auth.user?.user_metadata?.full_name === 'string' ? (auth.user.user_metadata.full_name as string) : '';
-  const firstName = fullName.trim().split(/\s+/)[0] ?? '';
+  const growthPct = growthFromKpis(analytics.kpis);
 
   return (
     <AdminShell current="/admin/dashboard" isStaff>
-      <AdminHeading
-        title={firstName ? `Welcome back, ${firstName}` : 'Dashboard'}
-        lead="What needs attention now, and how recruitment is going. Every number opens the list behind it."
-        actions={can(access, 'jobs.edit') ? <AdminButton href="/admin/jobs/new">Post a job</AdminButton> : undefined}
-      />
+      <div className="flex flex-col gap-5">
+        <StaffDashHero
+          canPostJob={can(access, 'jobs.edit')}
+          canAddEmployer={can(access, 'employers.manage')}
+          canEditCms={can(access, 'cms.edit')}
+        />
+        <StaffPlatformStatStrip snapshot={snapshot} growthPct={growthPct} />
+      </div>
 
       {/* Attention queue first: the reason staff open the console. */}
       {now.length > 0 && (
@@ -111,15 +123,15 @@ export default async function ConsoleDashboard({ searchParams }: { searchParams:
               <li key={item.label}>
                 <Link
                   href={item.href}
-                  className={`t-colors motion-row flex h-full flex-col justify-between gap-3 rounded-[18px] border px-4 py-4 no-underline ${
+                  className={`t-colors motion-row flex h-full flex-col justify-between gap-3 rounded-[14px] border px-4 py-4 no-underline ${
                     item.urgent
-                      ? 'border-accent/50 bg-accent-tint shadow-[0_12px_28px_-20px_rgba(180,90,40,0.55)]'
-                      : 'border-line/80 bg-surface/95 hover:border-line-strong'
+                      ? 'border-[#b28a49]/50 bg-[#b28a49]/12 shadow-[0_12px_28px_-20px_rgba(178,138,73,0.55)]'
+                      : 'border-[#142438]/08 bg-white hover:border-[#b28a49]/40'
                   }`}
                 >
                   <span className="text-[13px] text-ink-2">{item.label}</span>
-                  <span className="text-[28px] font-semibold tabular-nums tracking-[-0.03em] text-ink">
-                    {item.value.toLocaleString('en-IN')}
+                  <span className="text-[28px] font-semibold tabular-nums tracking-[-0.03em] text-[#142438]">
+                    {item.value.toLocaleString('en-GB')}
                   </span>
                 </Link>
               </li>
@@ -211,37 +223,18 @@ export default async function ConsoleDashboard({ searchParams }: { searchParams:
         </ul>
       )}
 
-      {shortcuts.length > 0 && (
-        <nav aria-label="Shortcuts" className="mt-5">
-          <p className="m-0 mb-2 font-mono text-[11px] uppercase tracking-[0.08em] text-muted">Quick links</p>
-          <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
-            {shortcuts.map((item) => (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  className="t-colors inline-flex items-center gap-2 rounded-full border border-line/80 bg-surface/90 px-3.5 py-2 text-[13px] text-ink no-underline hover:border-ink"
-                >
-                  <svg viewBox="0 0 24 24" className="size-3.5 text-muted" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
-                    <path d={item.icon} strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                  <span className="font-medium">{item.label}</span>
-                  <span className="hidden text-muted sm:inline">· {item.note}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      )}
-
-      <div className="mt-6 grid gap-4 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
-        <Panel title="Daily activity" note={`Last ${range} days`}>
+      <div className="mt-6 grid gap-4 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,0.9fr)]">
+        <Panel title="Applications & hiring trend" note={`Last ${range} days`}>
           <TrendChart daily={analytics.daily} />
         </Panel>
-        {showApps && (
+        {showApps ? (
           <Panel title="Hiring funnel" note="This period's applications, by furthest stage">
             <Funnel stages={analytics.funnel} />
           </Panel>
+        ) : (
+          <div />
         )}
+        <StaffQuickActions items={shortcuts.slice(0, 6)} />
       </div>
 
       {showCandidates && (
@@ -284,32 +277,35 @@ export default async function ConsoleDashboard({ searchParams }: { searchParams:
         </div>
       )}
 
-      <div className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
-        {showMoney && (
-          <Panel title="How candidates pay" note={totalPaid ? `${totalPaid.toLocaleString('en-IN')} payments` : undefined}>
-            <BarList
-              rows={analytics.paymentMethods.map((m) => ({ label: m.label === 'NETBANKING' ? 'Net banking' : m.label === 'CARD' ? 'Card' : m.label, value: m.value }))}
-              suffix={(row) => (totalPaid ? `${Math.round((row.value / totalPaid) * 100)}%` : '')}
-              empty="No payments in this period yet."
-            />
-          </Panel>
-        )}
-        {showApps && (
-          <Panel title="Latest activity">
+      <div className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.9fr)_minmax(0,0.9fr)]">
+        {showApps ? (
+          <Panel title="Recent activity">
             {recent.rows.length === 0 ? (
               <p className="m-0 text-[14px] text-muted">No applications yet. They appear here as soon as candidates apply.</p>
             ) : (
               <ul className="m-0 flex list-none flex-col divide-y divide-line-soft p-0">
                 {recent.rows.slice(0, 7).map((row) => (
                   <li key={row.id}>
-                    <Link href={`/admin/applications/${row.id}`} className="flex flex-wrap items-center justify-between gap-3 py-2.5 text-ink no-underline hover:text-employer">
+                    <Link
+                      href={`/admin/applications/${row.id}`}
+                      className="flex flex-wrap items-center justify-between gap-3 py-2.5 text-ink no-underline hover:text-[#b28a49]"
+                    >
                       <span>
                         <span className="block text-[14px] font-medium">{row.candidate.fullName}</span>
                         <span className="block text-[12px] text-muted">
-                          {row.job.title} · {row.job.city} · {new Date(row.statusChangedAt).toLocaleDateString('en-GB')}
+                          {row.job.title} · {row.job.city} ·{' '}
+                          {new Date(row.statusChangedAt).toLocaleDateString('en-GB')}
                         </span>
                       </span>
-                      <Pill tone={STATUS_META[row.status].tone === 'success' ? 'success' : row.status === 'submitted' ? 'accent' : 'neutral'}>
+                      <Pill
+                        tone={
+                          STATUS_META[row.status].tone === 'success'
+                            ? 'success'
+                            : row.status === 'submitted'
+                              ? 'accent'
+                              : 'neutral'
+                        }
+                      >
                         {STATUS_META[row.status].label}
                       </Pill>
                     </Link>
@@ -318,8 +314,38 @@ export default async function ConsoleDashboard({ searchParams }: { searchParams:
               </ul>
             )}
           </Panel>
+        ) : showMoney ? (
+          <Panel title="How candidates pay" note={totalPaid ? `${totalPaid.toLocaleString('en-GB')} payments` : undefined}>
+            <BarList
+              rows={analytics.paymentMethods.map((m) => ({
+                label: m.label === 'NETBANKING' ? 'Net banking' : m.label === 'CARD' ? 'Card' : m.label,
+                value: m.value,
+              }))}
+              suffix={(row) => (totalPaid ? `${Math.round((row.value / totalPaid) * 100)}%` : '')}
+              empty="No payments in this period yet."
+            />
+          </Panel>
+        ) : (
+          <div />
         )}
+        <StaffSystemInsights snapshot={snapshot} />
+        <StaffPlatformHealth snapshot={snapshot} />
       </div>
+
+      {showMoney && showApps ? (
+        <div className="mt-4">
+          <Panel title="How candidates pay" note={totalPaid ? `${totalPaid.toLocaleString('en-GB')} payments` : undefined}>
+            <BarList
+              rows={analytics.paymentMethods.map((m) => ({
+                label: m.label === 'NETBANKING' ? 'Net banking' : m.label === 'CARD' ? 'Card' : m.label,
+                value: m.value,
+              }))}
+              suffix={(row) => (totalPaid ? `${Math.round((row.value / totalPaid) * 100)}%` : '')}
+              empty="No payments in this period yet."
+            />
+          </Panel>
+        </div>
+      ) : null}
     </AdminShell>
   );
 }

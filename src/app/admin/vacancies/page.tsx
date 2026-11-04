@@ -39,14 +39,18 @@ export default async function EmployerVacancies() {
         lead={`The roles you have asked us to fill for ${portal.name}. A recruiter turns each request into a posting, checks it with you, and publishes it; until then candidates cannot see it.`}
       />
 
-      <p className="m-0 mt-6 max-w-[640px] text-[15px] text-ink-2">
-        {portal.name} is on the homepage employer row. A logo replaces the name in that row.
-      </p>
-      <div className="mt-3">
-        <EmployerLogoField employerId={portal.employerId} hasLogo={hasLogo} />
+      <div id="company" className="scroll-mt-24">
+        <p className="m-0 mt-6 max-w-[640px] text-[15px] text-ink-2">
+          {portal.name} is on the homepage employer row. A logo replaces the name in that row.
+        </p>
+        <div className="mt-3">
+          <EmployerLogoField employerId={portal.employerId} hasLogo={hasLogo} />
+        </div>
       </div>
 
-      <VacancyRequestForm />
+      <div id="request" className="scroll-mt-24">
+        <VacancyRequestForm />
+      </div>
 
       {vacancies.length === 0 ? (
         <AdminEmpty>No vacancies yet. Send a request above and it appears here.</AdminEmpty>

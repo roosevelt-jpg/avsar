@@ -207,24 +207,43 @@ export async function POST(request: Request) {
    * null until the next step; the constraint added in 0010 only requires them
    * once the candidate has paid.
    */
-  const { data: candidate, error: candidateError } = await admin
+  const baseRow = {
+    cohort_id: COHORT.id,
+    auth_user_id: userId,
+    full_name: input.fullName,
+    phone,
+    phone_hash: phoneHash,
+    email,
+    has_passport: input.hasPassport,
+    payment_status: 'pending',
+    locale,
+    ...(input.cityState ? { city_state: input.cityState } : {}),
+  };
+  /* Personal mockup fields need migration 0037. Retry without them if the
+     project has not applied that migration yet. */
+  const personalRow = {
+    ...(input.dateOfBirth ? { date_of_birth: input.dateOfBirth } : {}),
+    ...(input.gender ? { gender: input.gender } : {}),
+    ...(input.nationality ? { nationality: input.nationality } : {}),
+    ...(typeof input.willingToRelocate === 'boolean'
+      ? { willing_to_relocate: input.willingToRelocate }
+      : {}),
+  };
+
+  let { data: candidate, error: candidateError } = await admin
     .from('candidates')
-    .upsert(
-      {
-        cohort_id: COHORT.id,
-        auth_user_id: userId,
-        full_name: input.fullName,
-        phone,
-        phone_hash: phoneHash,
-        email,
-        has_passport: input.hasPassport,
-        payment_status: 'pending',
-        locale,
-      },
-      { onConflict: 'phone_hash,cohort_id' },
-    )
+    .upsert({ ...baseRow, ...personalRow }, { onConflict: 'phone_hash,cohort_id' })
     .select('id')
     .single();
+
+  if (candidateError && Object.keys(personalRow).length > 0) {
+    console.warn('[register] retrying without personal columns', candidateError.message);
+    ({ data: candidate, error: candidateError } = await admin
+      .from('candidates')
+      .upsert(baseRow, { onConflict: 'phone_hash,cohort_id' })
+      .select('id')
+      .single());
+  }
 
   if (candidateError || !candidate) {
     console.error('[register] candidate upsert failed', candidateError);

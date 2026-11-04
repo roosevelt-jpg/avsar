@@ -1,6 +1,11 @@
 import { BRAND_SLIDES, INTRO_FILM, slidesWithCaptions } from '@/lib/cms/brand-media';
 import { makeBlocks, type DefaultPage } from './make';
 
+/**
+ * Why Portugal — shell from the “Start Your Portugal Career Journey” mockup
+ * (Why Portugal active nav). Layout matches the PNG; no invented job counts
+ * or satisfaction rates. Sector labels match roles we actually recruit for.
+ */
 export const WHY_PORTUGAL: DefaultPage = {
   slug: 'why-portugal',
   path: '/why-portugal',
@@ -16,105 +21,98 @@ export const WHY_PORTUGAL: DefaultPage = {
       'hero',
       {
         eyebrow: 'Why Portugal',
-        title: 'A European job, with European rights in Portugal',
+        title: 'Build Your Career and a Better Life in Portugal',
         accentWord: 'Portugal',
         subtitle:
-          'Portugal is one of the safest countries in Europe, with a growing economy, a large and welcoming Indian community, and employers who need skilled people now.',
-        primaryCta: { label: 'See jobs in Portugal', href: '/jobs' },
-        secondaryCta: { label: 'Visa and relocation', href: '/visa-and-relocation' },
-        badgeLabel: 'Work & live in Europe',
-        badgeHref: '/why-portugal',
+          'Join a growing community of international professionals enjoying great jobs, safety, quality of life, and long-term opportunities in Europe.',
+        primaryCta: { label: 'Explore Job Opportunities', href: '/jobs' },
+        secondaryCta: { label: '', href: '' },
+        badgeLabel: '',
+        badgeHref: '',
         filmUrl: INTRO_FILM.url,
-        filmLabel: INTRO_FILM.label,
-        highlights: ['14 salary payments a year', 'Written contract', 'Public healthcare after registration'],
+        filmLabel: 'Watch: Life in Portugal',
+        highlights: [],
+        layout: 'overlay',
         mediaType: 'image',
         mediaSrc: '/photos/lisbon.jpg',
         mediaPoster: INTRO_FILM.poster,
-        mediaAlt: 'Lisbon waterfront and skyline',
+        mediaAlt: 'Lisbon rooftops and the 25 de Abril Bridge at sunset',
         slides: slidesWithCaptions(BRAND_SLIDES.portugal),
         stats: [],
       },
     ],
     [
-      'features',
+      'trust_bar',
       {
-        eyebrow: 'Your rights at work',
-        title: 'What every worker in Portugal is entitled to',
-        intro: 'These come from Portuguese labour law, not from a favour by the employer. They apply to you from your first day.',
-        columns: '3',
+        style: 'stats',
         items: [
-          { icon: 'rupee', title: '14 salary payments a year', body: 'Twelve monthly salaries plus a holiday payment and a Christmas payment, by law.' },
-          { icon: 'clock', title: '40-hour week', body: 'A normal working week is 40 hours. Overtime is limited and paid at a higher rate.' },
-          { icon: 'star', title: '22 days paid holiday', body: 'At least 22 working days of paid annual leave, plus public holidays.' },
-          { icon: 'heart', title: 'Public healthcare', body: 'Once registered, you use the national health service (SNS) like any resident.' },
-          { icon: 'shield', title: 'Social security', body: 'Contributions build your entitlement to sick pay, parental leave, unemployment support and a pension.' },
-          { icon: 'document', title: 'A written contract', body: 'Your terms are written down in a contract you read before you sign, in a language you understand.' },
+          { icon: 'briefcase', title: 'Growing Job Market Across Key Sectors', body: '' },
+          { icon: 'heart', title: 'High Quality of Life', body: '' },
+          { icon: 'shield', title: 'Safe & Welcoming Environment', body: '' },
+          { icon: 'globe', title: 'Gateway to Europe (EU)', body: '' },
+          { icon: 'home', title: 'Path to Long-Term Residency', body: '' },
         ],
       },
     ],
     [
       'split',
       {
-        eyebrow: 'Life in Portugal',
-        title: 'Safe, sunny, and already home to thousands of Indians',
-        body:
-          'Portugal has a mild climate, a relaxed pace of life and consistently ranks among the safest countries in the world. Lisbon has Indian grocery shops, restaurants, temples and gurdwaras, and a community from Kerala, Punjab, Gujarat and Goa that has been there for decades.\n\nRent is the largest cost, especially in Lisbon. That is why jobs through us include housing and meals, so more of your salary is yours to keep.',
+        eyebrow: '',
+        title: 'Why Professionals Choose Portugal',
+        body: '',
         bullets: [
-          'Direct flights and one-stop connections to Delhi, Mumbai and Kochi',
-          'English widely spoken in cities and in hospitality',
-          'A residence permit lets you travel across the Schengen area',
-          'Family reunification is possible once you hold a residence permit',
+          'Diverse career opportunities in sectors like hospitality, construction, logistics, healthcare and more.',
+          'Competitive and fair salaries with EU labour protection.',
+          'Affordable cost of living compared to many EU countries.',
+          'Excellent healthcare, education and public services.',
+          'A warm, multicultural and family-friendly environment.',
+          'Opportunity for long-term residency and a future in Europe.',
         ],
-        cta: { label: 'Visa and residence explained', href: '/visa-and-relocation' },
-        image: '/photos/selected/housing.jpg',
-        imageAlt: 'Housing included with many jobs in Portugal',
+        cta: { label: '', href: '' },
+        image: '/photos/brand/journey-tram.jpg',
+        imageAlt: 'A yellow Lisbon tram on a historic street',
         imageSide: 'left',
+        style: 'stacked',
+        gallery: [
+          { src: '/photos/brand/journey-tram.jpg', alt: 'A yellow Lisbon tram on a historic street' },
+          { src: '/photos/lisbon.jpg', alt: 'Portuguese coast and waterfront' },
+        ],
       },
     ],
     [
-      'gallery',
+      'features',
       {
-        eyebrow: 'Portugal',
-        title: 'Places and workplaces candidates ask about',
-        items: BRAND_SLIDES.portugal.map((slide) => ({
-          image: slide.src,
-          alt: slide.alt,
-          caption: '',
-        })),
-      },
-    ],
-    [
-      'faq',
-      {
-        eyebrow: 'Common questions',
-        title: 'Portugal compared',
+        eyebrow: '',
+        title: 'In-Demand Sectors in Portugal',
         intro: '',
+        columns: '4',
+        style: 'sector_cards',
+        sideImage: '',
+        sideImageAlt: '',
+        checklistTitle: '',
+        checklist: [],
+        typing: false,
         items: [
-          {
-            question: 'How does Portugal compare with the Gulf?',
-            answer:
-              'Gulf salaries can look higher on paper, but in Portugal you have a European contract, 14 payments a year, healthcare, social security, the right to change employer under the law, and a residence permit that can lead to long-term residence and bringing your family.',
-          },
-          {
-            question: 'Will I earn enough to send money home?',
-            answer:
-              'It depends on the role, the city and your spending. Jobs we publish show the salary range. Housing and meals included with the job make a large difference, because rent is the biggest cost in Lisbon and Porto.',
-          },
-          {
-            question: 'Do I need Portuguese before I arrive?',
-            answer:
-              'Most roles we recruit for need basic English. Many employers offer Portuguese lessons after you start. Learning some phrases before you fly helps day-to-day life.',
-          },
+          { icon: 'home', title: 'Hospitality & Tourism', body: '', link: { label: '', href: '' }, image: '' },
+          { icon: 'briefcase', title: 'Construction & Infrastructure', body: '', link: { label: '', href: '' }, image: '' },
+          { icon: 'plane', title: 'Logistics & Supply Chain', body: '', link: { label: '', href: '' }, image: '' },
+          { icon: 'heart', title: 'Healthcare & Caregiving', body: '', link: { label: '', href: '' }, image: '' },
+          { icon: 'document', title: 'Manufacturing & Production', body: '', link: { label: '', href: '' }, image: '' },
+          { icon: 'star', title: 'Agriculture & Food Processing', body: '', link: { label: '', href: '' }, image: '' },
+          { icon: 'users', title: 'Other Skilled Roles', body: '', link: { label: '', href: '' }, image: '' },
         ],
       },
     ],
     [
       'cta',
       {
-        title: 'Ready to see real jobs in Portugal?',
-        body: 'Every posting shows the salary, the city and what is included.',
-        primary: { label: 'Browse jobs', href: '/jobs' },
-        secondary: { label: 'Create free profile', href: '/signup' },
+        title: 'Ready to Start Your Journey to Portugal?',
+        body: 'Create your free profile today, take the skills test, and get matched with verified job opportunities.',
+        primary: { label: 'Create Free Profile', href: '/signup' },
+        secondary: { label: '', href: '' },
+        style: 'banner',
+        image: '/photos/lisbon.jpg',
+        imageAlt: 'Lisbon landmark — start of a career in Portugal',
       },
     ],
   ]),

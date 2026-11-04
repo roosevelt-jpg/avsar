@@ -149,7 +149,7 @@ export function SignInForm({
             type="button"
             onClick={verifyCode}
             disabled={busy || code.length !== 6}
-            className="t-colors mt-5 w-full cursor-pointer rounded-[12px] border-0 bg-[#0a088f] px-5 py-3 text-[15px] font-medium text-white hover:bg-[#22209a] disabled:cursor-not-allowed disabled:bg-[#0a088f] disabled:text-white disabled:opacity-100"
+            className="t-colors mt-5 w-full cursor-pointer rounded-[12px] border-0 bg-[#142438] px-5 py-3 text-[15px] font-medium text-white hover:bg-[#1c3550] disabled:cursor-not-allowed disabled:bg-[#142438] disabled:text-white disabled:opacity-100"
           >
             {a.verify}
           </button>
@@ -204,7 +204,7 @@ export function SignInForm({
             type="button"
             onClick={mode === 'password' ? signInWithPassword : sendCode}
             disabled={busy || !email || (mode === 'password' && !password)}
-            className="t-colors mt-6 w-full cursor-pointer rounded-[12px] border-0 bg-[#0a088f] px-5 py-3 text-[15px] font-medium text-white hover:bg-[#22209a] disabled:cursor-not-allowed disabled:bg-[#0a088f] disabled:text-white disabled:opacity-100"
+            className="t-colors mt-6 w-full cursor-pointer rounded-[12px] border-0 bg-[#142438] px-5 py-3 text-[15px] font-medium text-white hover:bg-[#1c3550] disabled:cursor-not-allowed disabled:bg-[#142438] disabled:text-white disabled:opacity-100"
           >
             {mode === 'password' ? a.signInWithPassword : a.sendCode}
           </button>

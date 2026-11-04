@@ -58,13 +58,26 @@ export function toE164(country: string, mobile: string): string | null {
  */
 export const password = z.string().min(8).max(200);
 
-const accountFields = z.object({
+const personalFields = z.object({
+  dateOfBirth: z
+    .string()
+    .trim()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'invalid_date')
+    .optional(),
+  gender: z.enum(['male', 'female', 'other']).optional(),
+  nationality: z.string().trim().min(2).max(80).optional(),
+  willingToRelocate: z.boolean().optional(),
+});
+
+const accountFields = z
+  .object({
     fullName: z.string().trim().min(2).max(120),
     country: z.string().length(2).toUpperCase(),
     mobile: z.string().trim().max(24),
     email: z.string().trim().email().max(200),
-  hasPassport: z.boolean(),
-});
+    hasPassport: z.boolean(),
+  })
+  .merge(personalFields);
 
 /**
  * The phone check, applied where a schema is finished rather than in the middle.
@@ -86,7 +99,13 @@ function withPhoneCheck<T extends z.ZodTypeAny>(schema: T) {
 export const signupAccountSchema = withPhoneCheck(accountFields);
 
 /** The first step: enough to open the account, and nothing more. */
-export const registerSchema = withPhoneCheck(accountFields.extend({ password }));
+export const registerSchema = withPhoneCheck(
+  accountFields.extend({
+    password,
+    /* Optional on register: the mockup personal step collects city early. */
+    cityState: z.string().trim().min(2).max(120).optional(),
+  }),
+);
 
 export type RegisterInput = z.infer<typeof registerSchema>;
 

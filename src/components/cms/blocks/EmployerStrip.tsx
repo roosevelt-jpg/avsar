@@ -79,12 +79,12 @@ export function EmployerStrip({
       <li
         key={`${group}-${employer.id}`}
         aria-hidden={group >= repeat ? true : undefined}
-        className="me-4 flex h-[76px] w-[168px] shrink-0 items-center justify-center rounded-[8px] border border-[#0a088f]/10 bg-white px-4 shadow-[0_1px_2px_rgba(10,8,143,0.06)]"
+        className="me-4 flex h-[76px] w-[168px] shrink-0 items-center justify-center rounded-[8px] border border-[#142438]/10 bg-white px-4 shadow-[0_1px_2px_rgba(20,36,56,0.06)]"
       >
         {employer.logoUrl ? (
           <Image src={employer.logoUrl} alt={group < repeat ? employer.name : ''} width={140} height={40} unoptimized className="max-h-10 w-auto object-contain" />
         ) : (
-          <span className="line-clamp-2 text-center text-[14px] font-semibold leading-tight text-[#0a088f]">{employer.name}</span>
+          <span className="line-clamp-2 text-center text-[14px] font-semibold leading-tight text-[#142438]">{employer.name}</span>
         )}
       </li>
     ));
@@ -99,7 +99,7 @@ export function EmployerStrip({
       <button
         type="button"
         aria-label={previousLabel}
-        className="absolute start-0 top-1/2 grid size-10 -translate-y-1/2 cursor-pointer place-items-center rounded-full border border-[#c96a4b] bg-white text-[#0a088f] shadow-[0_1px_2px_rgba(10,8,143,0.08)] hover:bg-[#0a088f] hover:text-white"
+        className="absolute start-0 top-1/2 grid size-10 -translate-y-1/2 cursor-pointer place-items-center rounded-full border border-[#b28a49] bg-white text-[#142438] shadow-[0_1px_2px_rgba(20,36,56,0.08)] hover:bg-[#142438] hover:text-white"
         onClick={() => place(offset.current - STRIDE)}
       >
         <svg viewBox="0 0 24 24" className="size-5 rtl:-scale-x-100" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden>
@@ -109,7 +109,7 @@ export function EmployerStrip({
       <button
         type="button"
         aria-label={nextLabel}
-        className="absolute end-0 top-1/2 grid size-10 -translate-y-1/2 cursor-pointer place-items-center rounded-full border border-[#c96a4b] bg-white text-[#0a088f] shadow-[0_1px_2px_rgba(10,8,143,0.08)] hover:bg-[#0a088f] hover:text-white"
+        className="absolute end-0 top-1/2 grid size-10 -translate-y-1/2 cursor-pointer place-items-center rounded-full border border-[#b28a49] bg-white text-[#142438] shadow-[0_1px_2px_rgba(20,36,56,0.08)] hover:bg-[#142438] hover:text-white"
         onClick={() => place(offset.current + STRIDE)}
       >
         <svg viewBox="0 0 24 24" className="size-5 rtl:-scale-x-100" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden>

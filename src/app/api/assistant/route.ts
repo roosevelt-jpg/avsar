@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
+import { listActiveAgents, listOnlineStaff } from '@/lib/assistant/agents';
 import { answerQuestion } from '@/lib/assistant/reply';
 import { RATE_LIMITS, clientIp, rateLimit, rateLimitedResponse } from '@/lib/security/rate-limit';
 
@@ -9,7 +10,29 @@ export const maxDuration = 60;
 const bodySchema = z.object({
   message: z.string().trim().min(2).max(500),
   thread: z.string().trim().regex(/^[a-zA-Z0-9-]{8,80}$/),
+  agent: z.string().trim().regex(/^[a-z][a-z0-9-]{1,40}$/).optional(),
+  staff: z.string().uuid().optional(),
 });
+
+/** Agent picker + online staff for the floating desk. */
+export async function GET() {
+  const [agents, staff] = await Promise.all([listActiveAgents(), listOnlineStaff()]);
+  return NextResponse.json({
+    agents: agents.map((agent) => ({
+      id: agent.id,
+      slug: agent.slug,
+      displayName: agent.displayName,
+      title: agent.title,
+      department: agent.department,
+      avatarPath: agent.avatarPath,
+    })),
+    staff: staff.map((person) => ({
+      userId: person.userId,
+      displayName: person.displayName,
+      avatarUrl: person.avatarUrl,
+    })),
+  });
+}
 
 /**
  * A question from the site window. The answer is built from site settings and
@@ -28,6 +51,8 @@ export async function POST(request: Request) {
       question: parsed.data.message,
       threadKey: parsed.data.thread,
       channel: 'web',
+      agentSlug: parsed.data.agent,
+      staffUserId: parsed.data.staff,
     });
     return NextResponse.json(result);
   } catch (error) {

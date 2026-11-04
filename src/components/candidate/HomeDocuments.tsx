@@ -37,11 +37,11 @@ export async function HomeDocuments({ locale }: { locale: Locale }) {
   if (items.length === 0) return null;
 
   return (
-    <section className="border-b border-[rgba(10,8,143,0.12)] bg-[#fbfcfe]">
+    <section className="border-b border-[rgba(20,36,56,0.12)] bg-[#fbfcfe]">
       <div className="mx-auto flex max-w-[1120px] flex-wrap items-center gap-x-6 gap-y-3 px-5 py-4">
-        <p className="m-0 text-[14px] font-medium text-[#0a088f]">{d.documents}</p>
+        <p className="m-0 text-[14px] font-medium text-[#142438]">{d.documents}</p>
         {items.map((item) => (
-          <Link key={item.href} href={item.href} className="text-[14px] text-[#0a088f] underline decoration-[#c96a4b] underline-offset-4">
+          <Link key={item.href} href={item.href} className="text-[14px] text-[#142438] underline decoration-[#b28a49] underline-offset-4">
             {item.label}
           </Link>
         ))}

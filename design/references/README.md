@@ -9,7 +9,7 @@ Canonical PNGs from `mockdesign.zip` (Phase 0). Prefer this folder over duplicat
 | `Lisbon Restaurant Service Opportunity.png` | `/[locale]/jobs/[slug]` | Phase 3 |
 | `Create Your Portugal Career Profile.png` | `/[locale]/signup` | Phase 3 |
 | `Your Portugal Career Journey Begins.png` | `/[locale]/how-it-works` | Phase 3 (hero / journey) |
-| `Start Your Portugal Career Journey.png` | `/[locale]/how-it-works` | Phase 3 (alternate / CTA composition) |
+| `Start Your Portugal Career Journey.png` | `/[locale]/why-portugal` | Why Portugal shell (filename in zip; active nav is Why Portugal) |
 | `Visa & Relocation Journey to Portugal.png` | `/[locale]/visa-and-relocation` (CMS slug `visa`) | Phase 3 |
 | `Portugal Talent Recruitment Landing Page.png` | `/employers` | Already redesigned |
 | `S&A Recruitment Employer Registration Landing Page.png` | `/employers/register` | Already redesigned |
@@ -18,8 +18,8 @@ Canonical PNGs from `mockdesign.zip` (Phase 0). Prefer this folder over duplicat
 
 ## Gaps
 
-- No dedicated **Why Portugal** PNG in the zip. Align `/[locale]/why-portugal` to the same design system (navy/gold, ivory, display-serif) and existing CMS defaults; do not invent mockup-only stats.
-- Spec palette `#142438` / `#b28a49` vs live owner-approved `#0a088f` / `#c9a54a` — keep live unless owner switches after Phase 0.
+- **Why Portugal** mockup ships as `Start Your Portugal Career Journey.png` (zip naming). Use that file for `/[locale]/why-portugal`.
+- Palette is Master Spec `#142438` (navy) / `#b28a49` (gold). Old live `#0a088f` / `#c9a54a` is not used.
 
 ## Honesty
 

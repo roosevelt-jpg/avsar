@@ -47,7 +47,7 @@ export function FrameCycle({ frames, alt }: { frames: { src: string; alt: string
               key={frame.src}
               type="button"
               aria-label={frame.alt || `Image ${frameIndex + 1}`}
-              className={`h-1.5 rounded-full ${frameIndex === index ? 'w-6 bg-[#c96a4b]' : 'w-1.5 bg-white/80'}`}
+              className={`h-1.5 rounded-full ${frameIndex === index ? 'w-6 bg-[#b28a49]' : 'w-1.5 bg-white/80'}`}
               onClick={() => setIndex(frameIndex)}
             />
           ))}

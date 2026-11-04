@@ -1,8 +1,18 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { Icon } from '@/components/cms/primitives';
 
-type Item = { id: string; label: string };
+type Item = { id: string; label: string; icon?: string };
+
+const ICONS: Record<string, string> = {
+  overview: 'document',
+  company: 'briefcase',
+  benefits: 'heart',
+  requirements: 'check',
+  location: 'map',
+  apply: 'users',
+};
 
 /**
  * Sticky in-page nav for the job detail mockup. Anchors only — no fake tabs
@@ -34,21 +44,22 @@ export function JobSectionNav({ items }: { items: Item[] }) {
   if (items.length === 0) return null;
 
   return (
-    <nav
-      aria-label="On this page"
-      className="sticky top-[72px] z-20 -mx-1 overflow-x-auto px-1 py-2"
-    >
-      <ul className="m-0 flex list-none gap-2 rounded-[14px] border border-line bg-white p-1.5 shadow-[0_12px_32px_-20px_rgba(10,8,143,0.45)]">
+    <nav aria-label="On this page" className="sticky top-[72px] z-20 -mx-1 overflow-x-auto px-1 py-2">
+      <ul className="m-0 flex list-none gap-1.5 rounded-[12px] border border-[#142438]/10 bg-white p-1.5 shadow-[0_14px_36px_-22px_rgba(20,36,56,0.4)]">
         {items.map((item) => {
           const on = item.id === active;
+          const icon = item.icon || ICONS[item.id] || 'check';
           return (
             <li key={item.id} className="shrink-0">
               <a
                 href={`#${item.id}`}
-                className={`inline-flex items-center rounded-[10px] px-3.5 py-2 text-[13px] font-semibold no-underline transition-colors ${
-                  on ? 'bg-[var(--color-gold)] text-[#0a088f]' : 'text-ink-2 hover:bg-ivory'
+                className={`inline-flex items-center gap-2 rounded-[8px] px-3.5 py-2.5 text-[13px] font-semibold no-underline transition-colors ${
+                  on
+                    ? 'bg-[var(--color-gold)] text-[#142438]'
+                    : 'text-ink-2 hover:bg-[#f7f4ef]'
                 }`}
               >
+                <Icon name={icon} className={`size-3.5 ${on ? 'text-[#142438]' : 'text-[var(--color-gold)]'}`} />
                 {item.label}
               </a>
             </li>

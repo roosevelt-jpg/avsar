@@ -31,7 +31,9 @@ function accentTitle(title: string, accentWord: string): ReactNode {
   return (
     <>
       {before}
-      <em className="accent-italic">{match}</em>
+      <em className="accent-italic not-italic" style={{ fontStyle: 'italic', color: '#b28a49' }}>
+        {match}
+      </em>
       {after}
     </>
   );
@@ -52,9 +54,11 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
   const badgeLabel = str(data, 'badgeLabel');
   const badgeHref = str(data, 'badgeHref');
   const accentWord = str(data, 'accentWord');
+  const layout = str(data, 'layout');
   const Heading = first ? 'h1' : 'h2';
+  const overlay = layout === 'overlay';
   /* A slideshow or a primary button marks the mockup-style brand hero. */
-  const brand = cmsSlides.length > 0 || Boolean(primary && badgeLabel);
+  const brand = !overlay && (cmsSlides.length > 0 || Boolean(primary && badgeLabel));
 
   const slides: HeroSlide[] = [];
   if (cmsSlides.length > 0) {
@@ -108,24 +112,35 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
         ]
       : [];
 
+  const stageVariant = overlay ? 'overlay' : brand ? 'brand' : 'default';
+  const onDark = brand || overlay;
+  const highlightIcons = ['shield', 'document', 'plane', 'users'] as const;
+
   return (
     <HeroStage
       slides={slides}
-      variant={brand ? 'brand' : 'default'}
-      badge={badgeLabel ? { label: badgeLabel, href: badgeHref ? localHref(locale, badgeHref) : undefined } : null}
+      variant={stageVariant}
+      badge={
+        badgeLabel
+          ? { label: badgeLabel, href: badgeHref ? localHref(locale, badgeHref) : undefined }
+          : null
+      }
       lead={
         str(data, 'eyebrow') ? (
-          brand ? (
-            <p className="eyebrow-gold m-0">{str(data, 'eyebrow')}</p>
+          onDark ? (
+            <p className="m-0 inline-flex items-center gap-2.5 text-[12px] font-semibold uppercase tracking-[0.18em] text-[var(--color-gold)]">
+              <span aria-hidden className="h-px w-7 bg-[var(--color-gold)]" />
+              {str(data, 'eyebrow')}
+            </p>
           ) : (
-            <p className="m-0 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#c96a4b]">{str(data, 'eyebrow')}</p>
+            <p className="m-0 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#b28a49]">{str(data, 'eyebrow')}</p>
           )
         ) : null
       }
     >
       <Heading
         className={`m-0 text-balance break-words leading-[1.08] tracking-[-0.02em] ${
-          brand
+          onDark
             ? 'display-serif text-[clamp(36px,5.2cqi,64px)] font-normal text-white'
             : 'text-[clamp(34px,4.6cqi,56px)] font-semibold'
         }`}
@@ -133,13 +148,13 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
         {accentTitle(str(data, 'title'), accentWord)}
       </Heading>
       {str(data, 'subtitle') ? (
-        <p className={`mt-5 mb-0 max-w-[42ch] text-[clamp(16px,1.7cqi,19px)] leading-[1.55] ${brand ? 'text-white/85' : 'text-ink-2'}`}>
+        <p className={`mt-5 mb-0 max-w-[46ch] text-[clamp(16px,1.7cqi,19px)] leading-[1.55] ${onDark ? 'text-white/85' : 'text-ink-2'}`}>
           {str(data, 'subtitle')}
         </p>
       ) : null}
 
       {(primary || secondary || film) && (
-        <div className={`flex flex-wrap items-center gap-3 ${intents.length && !brand ? 'mt-6' : 'mt-8'}`}>
+        <div className={`flex flex-wrap items-center gap-3 ${intents.length && !onDark ? 'mt-6' : 'mt-8'}`}>
           {primary ? (
             <Link
               href={localHref(locale, primary.href)}
@@ -153,7 +168,7 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
             <Link
               href={localHref(locale, secondary.href)}
               className={
-                brand
+                onDark
                   ? 'btn-outline-light t-colors inline-flex items-center gap-2 px-5 py-3 text-[14px] font-semibold no-underline'
                   : 't-colors inline-flex items-center rounded-[999px] border border-line-strong bg-white px-5 py-3 text-[14px] font-semibold text-ink no-underline hover:border-ink'
               }
@@ -166,7 +181,7 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
               src={film}
               poster={str(data, 'mediaPoster') || undefined}
               label={filmLabel}
-              tone={brand ? 'dark' : 'light'}
+              tone={onDark ? 'dark' : 'light'}
             />
           ) : null}
         </div>
@@ -182,7 +197,7 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
               <li key={index}>
                 <Link
                   href={localHref(locale, str(intent, 'href'))}
-                  className="t-colors inline-flex items-center gap-2 rounded-[2px] border border-[#c96a4b] bg-[#0a088f] px-3.5 py-2 text-[14px] font-medium text-white no-underline hover:bg-[#22209a]"
+                  className="t-colors inline-flex items-center gap-2 rounded-[2px] border border-[#b28a49] bg-[#142438] px-3.5 py-2 text-[14px] font-medium text-white no-underline hover:bg-[#1c3550]"
                 >
                   {str(intent, 'icon') ? <Icon name={str(intent, 'icon')} className="size-[18px] text-white" /> : null}
                   {str(intent, 'label')}
@@ -199,7 +214,20 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
         </div>
       ) : null}
 
-      {highlights.length > 0 && (
+      {highlights.length > 0 && overlay ? (
+        <ul className="m-0 mt-10 flex list-none flex-wrap gap-x-8 gap-y-4 p-0">
+          {highlights.map((item, index) => (
+            <li key={item} className="flex max-w-[11rem] flex-col items-start gap-2.5">
+              <span className="grid size-10 place-items-center text-[var(--color-gold)]">
+                <Icon name={highlightIcons[index] ?? 'check'} className="size-6" />
+              </span>
+              <span className="text-[13px] font-medium leading-[1.35] text-white/95">{item}</span>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+
+      {highlights.length > 0 && !overlay && (
         <ul
           className={`m-0 mt-8 grid list-none grid-cols-1 gap-3 p-0 sm:grid-cols-2 ${
             brand ? 'text-white/90 lg:grid-cols-4' : 'flex flex-wrap gap-x-5 gap-y-2 text-ink-2'
@@ -214,9 +242,9 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
         </ul>
       )}
 
-      {proof.length > 0 && (
+      {proof.length > 0 && !overlay && (
         <div className={`mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 border-t pt-6 ${brand ? 'border-white/20' : 'border-line'}`}>
-          <span className={`inline-flex items-center gap-2 font-mono text-[12px] uppercase tracking-[0.12em] ${brand ? 'text-[var(--color-gold)]' : 'text-[#c96a4b]'}`}>
+          <span className={`inline-flex items-center gap-2 font-mono text-[12px] uppercase tracking-[0.12em] ${brand ? 'text-[var(--color-gold)]' : 'text-[#b28a49]'}`}>
             <span aria-hidden className="size-[7px] animate-pulse rounded-full bg-success" />
             {siteText(locale, 'Live')}
           </span>
@@ -229,7 +257,7 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
         </div>
       )}
 
-      {stats.length > 0 && !brand && (
+      {stats.length > 0 && !brand && !overlay && (
         <dl className="m-0 mt-10 grid max-w-[560px] grid-cols-3 gap-6 border-t border-line pt-6">
           {stats.map((stat, index) => (
             <div key={index} className="min-w-0">

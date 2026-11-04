@@ -9,12 +9,10 @@ import { EmployerHero } from '@/components/employer/EmployerHero';
 import { Icon } from '@/components/cms/primitives';
 import { getSiteSettings } from '@/lib/cms/data';
 import { formatMoney } from '@/lib/company/config';
-import { assessedCount } from '@/lib/company/data';
-import { getFunnelStats } from '@/lib/stats/funnel';
 import { localHref } from '@/lib/cms/settings';
 import { staticPageMetadata } from '@/lib/seo';
 
-/* Settings saves revalidate this page; live counts refresh hourly. */
+/* Settings saves revalidate this page. */
 export const revalidate = 3600;
 
 export async function generateMetadata() {
@@ -22,24 +20,21 @@ export async function generateMetadata() {
 }
 
 /**
- * Employer landing — rebuilt to the brand mockup.
+ * Employer landing — Portugal Talent Recruitment mockup shell.
  *
- * Copy, photographs and CTAs come from Settings › Conversion › Employer
- * landing. Counts are live from the database (never typed-in marketing
- * figures). The old search-first layout is gone.
+ * Copy, photographs, CTAs and the stats ribbon come from Settings › Employer
+ * landing. Contact form still posts through the existing intake wiring.
  */
 export default async function EmployersPage() {
-  const [settings, assessed, funnel] = await Promise.all([getSiteSettings(), assessedCount(), getFunnelStats()]);
+  const settings = await getSiteSettings();
   const page = settings.employerLanding;
   const { company, pricing } = settings;
   const fee = formatMoney(pricing.employerPlacementFeeMinor, 'EUR');
-  const number = new Intl.NumberFormat('en-GB');
-  const industryCount = page.industries.length;
 
   const stats = [
-    { value: number.format(assessed), label: page.statsCandidates, icon: 'users' as const },
-    { value: number.format(industryCount), label: page.statsIndustries, icon: 'briefcase' as const },
-    { value: number.format(funnel.hired), label: page.statsPlaced, icon: 'check' as const },
+    { value: page.statsCandidatesValue, label: page.statsCandidates, icon: 'users' as const },
+    { value: page.statsIndustriesValue, label: page.statsIndustries, icon: 'building' as const },
+    { value: page.statsPlacedValue, label: page.statsPlaced, icon: 'shield' as const },
     { value: page.hiringTimeValue, label: page.hiringTimeLabel, icon: 'clock' as const },
   ];
 
@@ -49,8 +44,8 @@ export default async function EmployersPage() {
   }));
 
   return (
-    <div className="avsar-root bg-[#f5f6f8] text-ink">
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-[#0a088f] text-white">
+    <div className="avsar-root market bg-[#f7f4ef] text-ink">
+      <header className="sticky top-0 z-40 border-b border-white/10 bg-[#142438] text-white">
         <div className="mx-auto flex w-full max-w-[1280px] items-center justify-between gap-3 px-[clamp(16px,4cqi,56px)] py-[14px]">
           <Wordmark href="/employers" tone="dark" size={20} />
 
@@ -74,8 +69,11 @@ export default async function EmployersPage() {
           <div className="flex shrink-0 items-center gap-2 sm:gap-3">
             <LocaleToggle locale="en" />
             <AccountMenu locale="en" tone="employer" />
-            <Link href={page.ctaHref || '#contact'} className="btn-gradient t-colors hidden items-center gap-1.5 rounded-full px-4 py-2 text-[13px] font-semibold no-underline md:inline-flex">
-              {page.ctaLabel}
+            <Link
+              href={page.ctaHref || '/employers/register'}
+              className="t-colors hidden items-center gap-1.5 rounded-[8px] bg-[#b28a49] px-4 py-2 text-[13px] font-semibold text-[#142438] no-underline hover:bg-[#c49a58] md:inline-flex"
+            >
+              {page.headerCtaLabel || page.ctaLabel}
               <span aria-hidden>→</span>
             </Link>
 
@@ -91,7 +89,7 @@ export default async function EmployersPage() {
                   <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
                 </svg>
               </summary>
-              <div className="absolute end-0 top-12 w-[min(86vw,320px)] rounded-[12px] border border-white/15 bg-[#0a088f] p-3 shadow-[0_24px_60px_-24px_rgba(8,20,36,0.7)]">
+              <div className="absolute end-0 top-12 w-[min(86vw,320px)] rounded-[12px] border border-white/15 bg-[#142438] p-3 shadow-[0_24px_60px_-24px_rgba(8,20,36,0.7)]">
                 <nav aria-label="Mobile" className="flex flex-col">
                   {navItems.map((item) => (
                     <Link key={item.href} href={item.href} className="rounded-[10px] px-3 py-3 text-[15px] text-white no-underline hover:bg-white/10">
@@ -99,8 +97,11 @@ export default async function EmployersPage() {
                     </Link>
                   ))}
                 </nav>
-                <Link href={page.ctaHref || '#contact'} className="btn-gradient mt-3 flex justify-center rounded-full px-4 py-3 text-[14px] font-semibold no-underline">
-                  {page.ctaLabel}
+                <Link
+                  href={page.ctaHref || '/employers/register'}
+                  className="mt-3 flex justify-center rounded-[8px] bg-[#b28a49] px-4 py-3 text-[14px] font-semibold text-[#142438] no-underline"
+                >
+                  {page.headerCtaLabel || page.ctaLabel}
                 </Link>
               </div>
             </details>
@@ -115,23 +116,31 @@ export default async function EmployersPage() {
           accentWord={page.accentWord}
           intro={page.intro}
           primaryLabel={page.ctaLabel}
-          primaryHref={page.ctaHref || '#contact'}
+          primaryHref={page.ctaHref || '/employers/register'}
           secondaryLabel={page.secondaryCtaLabel}
           secondaryHref={page.secondaryCtaHref || '#contact'}
           badgeLabel={page.badgeLabel}
-          badgeHref={page.badgeHref || '#contact'}
+          badgeSubtext={page.badgeSubtext}
+          badgeHref={page.badgeHref || '/employers/register'}
           slides={page.slides}
         />
 
-        <section className="border-y border-line bg-[#eef0f4] px-[clamp(20px,4cqi,56px)] py-8 sm:py-10">
-          <ul className="mx-auto m-0 grid max-w-[1200px] list-none grid-cols-1 gap-6 p-0 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-            {stats.map((stat) => (
-              <li key={stat.label} className="flex items-start gap-3">
-                <span className="mt-0.5 grid size-10 shrink-0 place-items-center rounded-full border border-[var(--color-gold)]/45 text-[var(--color-gold)]">
-                  <Icon name={stat.icon} className="size-5" />
+        <section className="border-y border-[#e4ddd2] bg-[#f3eee6] px-[clamp(20px,4cqi,56px)] py-9 sm:py-11">
+          <ul className="mx-auto m-0 grid max-w-[1200px] list-none grid-cols-1 gap-0 p-0 sm:grid-cols-2 lg:grid-cols-4">
+            {stats.map((stat, index) => (
+              <li
+                key={stat.label}
+                className={`flex items-start gap-3 px-0 py-4 sm:px-6 sm:py-0 ${
+                  index > 0 ? 'lg:border-s lg:border-[#d9d0c3]' : ''
+                }`}
+              >
+                <span className="mt-0.5 grid size-10 shrink-0 place-items-center text-[var(--color-gold)]">
+                  <Icon name={stat.icon} className="size-6" />
                 </span>
                 <div>
-                  <p className="m-0 text-[clamp(26px,3cqi,34px)] font-semibold leading-none tracking-[-0.03em] text-[#0a088f]">{stat.value}</p>
+                  <p className="m-0 text-[clamp(26px,3cqi,34px)] font-semibold leading-none tracking-[-0.03em] text-[#142438]">
+                    {stat.value}
+                  </p>
                   <p className="m-0 mt-1.5 text-[13px] font-medium leading-[1.35] text-ink-2">{stat.label}</p>
                 </div>
               </li>
@@ -139,23 +148,20 @@ export default async function EmployersPage() {
           </ul>
         </section>
 
-        <section id="why" className="bg-white px-[clamp(20px,4cqi,56px)] py-[clamp(48px,7cqi,88px)]">
+        <section id="why" className="bg-[#f7f4ef] px-[clamp(20px,4cqi,56px)] py-[clamp(48px,7cqi,88px)]">
           <div className="mx-auto w-full max-w-[1200px]">
-            <h2 className="display-serif m-0 text-[clamp(28px,3.6cqi,42px)] font-normal leading-[1.15] text-[#0a088f]">
+            <h2 className="display-serif m-0 text-[clamp(28px,3.6cqi,42px)] font-normal leading-[1.15] text-[#142438]">
               {page.reasonsTitle}
             </h2>
             <span aria-hidden className="mt-3 block h-1 w-14 rounded-full bg-[var(--color-gold)]" />
 
             <ul className="m-0 mt-10 grid list-none grid-cols-1 gap-5 p-0 sm:grid-cols-2 lg:grid-cols-4">
               {page.reasons.map((reason) => (
-                <li
-                  key={reason.title}
-                  className="rounded-[14px] border border-line bg-white p-5 shadow-[0_12px_28px_-20px_rgba(10,8,143,0.35)]"
-                >
-                  <span className="grid size-11 place-items-center rounded-full bg-[var(--color-gold-soft)] text-[var(--color-gold-deep)]">
+                <li key={reason.title} className="rounded-[14px] border border-[#e8e1d6] bg-[#fbf8f3] p-5">
+                  <span className="grid size-11 place-items-center rounded-full border border-[var(--color-gold)]/40 text-[var(--color-gold)]">
                     <Icon name={reason.icon} className="size-5" />
                   </span>
-                  <h3 className="m-0 mt-4 text-[17px] font-semibold text-[#0a088f]">{reason.title}</h3>
+                  <h3 className="m-0 mt-4 text-[17px] font-semibold text-[#142438]">{reason.title}</h3>
                   <p className="m-0 mt-2 text-[14px] leading-[1.5] text-ink-2">{reason.body}</p>
                 </li>
               ))}
@@ -163,52 +169,57 @@ export default async function EmployersPage() {
           </div>
         </section>
 
-        <section id="industries" className="bg-[#0a088f] px-[clamp(20px,4cqi,56px)] py-[clamp(40px,6cqi,72px)] text-white">
-          <div className="mx-auto grid w-full max-w-[1200px] grid-cols-1 items-stretch gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-12">
-            <div className="relative min-h-[220px] overflow-hidden rounded-[16px] bg-[#1614a8] lg:min-h-[320px]">
-              <Image
-                src={page.industriesImage}
-                alt={page.industriesImageAlt}
-                fill
-                sizes="(max-width: 1024px) 100vw, 42vw"
-                className="object-cover"
-              />
-            </div>
-            <div className="flex flex-col justify-center">
-              <h2 className="display-serif m-0 text-[clamp(26px,3.2cqi,40px)] font-normal leading-[1.15] text-white">
-                {page.industriesTitle}
-              </h2>
-              <ul className="m-0 mt-8 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2">
-                {page.industries.map((industry) => (
-                  <li key={industry.label} className="flex items-center gap-3 text-[15px] font-medium text-white/95">
-                    <span className="grid size-10 shrink-0 place-items-center rounded-full border border-[var(--color-gold)]/50 text-[var(--color-gold)]">
-                      <Icon name={industry.icon} className="size-4" />
-                    </span>
-                    {industry.label}
-                  </li>
-                ))}
-              </ul>
+        <section id="industries" className="bg-[#f7f4ef] px-[clamp(20px,4cqi,56px)] pb-[clamp(40px,6cqi,72px)]">
+          <div className="mx-auto w-full max-w-[1200px] overflow-hidden rounded-[20px] bg-[#142438] text-white">
+            <div className="grid grid-cols-1 items-stretch lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+              <div className="relative min-h-[240px] lg:min-h-[340px]">
+                <Image
+                  src={page.industriesImage}
+                  alt={page.industriesImageAlt}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 45vw"
+                  className="object-cover"
+                />
+              </div>
+              <div className="flex flex-col justify-center px-[clamp(22px,4cqi,48px)] py-[clamp(28px,4cqi,44px)]">
+                <h2 className="display-serif m-0 text-[clamp(26px,3.2cqi,40px)] font-normal leading-[1.15] text-white">
+                  {page.industriesTitle}
+                </h2>
+                <ul className="m-0 mt-8 grid list-none grid-cols-1 gap-x-6 gap-y-5 p-0 sm:grid-cols-2">
+                  {page.industries.map((industry) => (
+                    <li key={industry.label} className="flex items-center gap-3 text-[15px] font-medium text-white/95">
+                      <span className="grid size-10 shrink-0 place-items-center text-[var(--color-gold)]">
+                        <Icon name={industry.icon} className="size-5" />
+                      </span>
+                      {industry.label}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
         </section>
 
-        <section className="px-[clamp(20px,4cqi,56px)] py-[clamp(40px,6cqi,72px)]">
-          <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-6 rounded-[20px] border border-line bg-[#f3eee6] px-[clamp(22px,4cqi,48px)] py-[clamp(28px,4cqi,44px)] lg:flex-row lg:items-center lg:justify-between lg:gap-10">
+        <section className="bg-[#f7f4ef] px-[clamp(20px,4cqi,56px)] pb-[clamp(40px,6cqi,72px)]">
+          <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-6 rounded-[20px] border border-[#e4ddd2] bg-[#f3eee6] px-[clamp(22px,4cqi,48px)] py-[clamp(28px,4cqi,44px)] lg:flex-row lg:items-center lg:justify-between lg:gap-10">
             <div className="max-w-[36rem]">
-              <h2 className="display-serif m-0 text-[clamp(26px,3.2cqi,40px)] font-normal leading-[1.15] text-[#0a088f]">
+              <h2 className="display-serif m-0 text-[clamp(26px,3.2cqi,40px)] font-normal leading-[1.15] text-[#142438]">
                 {page.closingTitle}
               </h2>
               <p className="m-0 mt-3 text-[15px] leading-[1.55] text-ink-2">{page.closingBody}</p>
             </div>
-            <div className="hidden h-16 w-px shrink-0 bg-[var(--color-gold)]/50 lg:block" aria-hidden />
+            <div className="hidden h-16 w-px shrink-0 bg-[var(--color-gold)]/55 lg:block" aria-hidden />
             <div className="flex flex-wrap items-center gap-3">
-              <Link href={page.ctaHref || '#contact'} className="btn-gradient t-colors inline-flex items-center gap-2 px-5 py-3 text-[14px] font-semibold no-underline">
+              <Link
+                href={page.ctaHref || '/employers/register'}
+                className="t-colors inline-flex items-center gap-2 rounded-[10px] bg-[#b28a49] px-5 py-3 text-[14px] font-semibold text-[#142438] no-underline hover:bg-[#c49a58]"
+              >
                 {page.ctaLabel}
                 <span aria-hidden>→</span>
               </Link>
               <Link
                 href={page.secondaryCtaHref || '#contact'}
-                className="t-colors inline-flex items-center gap-2 rounded-full border border-[#0a088f]/25 bg-white px-5 py-3 text-[14px] font-semibold text-[#0a088f] no-underline hover:border-[#0a088f]"
+                className="t-colors inline-flex items-center gap-2 rounded-[10px] border border-[#142438]/25 bg-white px-5 py-3 text-[14px] font-semibold text-[#142438] no-underline hover:border-[#142438]"
               >
                 <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
                   <rect x="4" y="5" width="16" height="15" rx="2" />
@@ -220,10 +231,11 @@ export default async function EmployersPage() {
           </div>
         </section>
 
-        <section id="contact" className="bg-white px-[clamp(20px,4cqi,56px)] pb-[clamp(56px,8cqi,96px)]">
+        {/* Existing contact wiring — kept below the mockup shell CTA. */}
+        <section id="contact" className="bg-white px-[clamp(20px,4cqi,56px)] pb-[clamp(56px,8cqi,96px)] pt-4">
           <div className="mx-auto grid w-full max-w-[1200px] gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,560px)]">
             <div>
-              <h2 className="display-serif m-0 text-[clamp(24px,3cqi,36px)] font-normal text-[#0a088f]">{page.contactTitle}</h2>
+              <h2 className="display-serif m-0 text-[clamp(24px,3cqi,36px)] font-normal text-[#142438]">{page.contactTitle}</h2>
               <p className="m-0 mt-3 text-[15px] text-ink-2">{page.contactNote.replaceAll('{{fee}}', fee)}</p>
               {company.employerEmail ? (
                 <p className="m-0 mt-3 text-[15px] text-ink-2">
@@ -231,7 +243,7 @@ export default async function EmployersPage() {
                 </p>
               ) : null}
             </div>
-            <div className="rounded-[16px] border border-line bg-[#f5f6f8] px-5 pt-1 pb-6 sm:px-7">
+            <div className="rounded-[16px] border border-line bg-[#f7f4ef] px-5 pt-1 pb-6 sm:px-7">
               <ContactForm variant="employer" />
             </div>
           </div>

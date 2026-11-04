@@ -35,7 +35,7 @@ export function MarketNav({
             {item.label}
             <span
               aria-hidden
-              className={`absolute inset-x-0 -bottom-1.5 h-[2px] origin-left bg-[#c96a4b] transition-transform duration-300 ${
+              className={`absolute inset-x-0 -bottom-1.5 h-[2px] origin-left bg-[#b28a49] transition-transform duration-300 ${
                 current ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
               }`}
             />

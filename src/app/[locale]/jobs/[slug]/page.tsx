@@ -1,21 +1,20 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { SiteHeader } from '@/components/candidate/SiteHeader';
 import { Markdown } from '@/components/cms/Markdown';
 import { Icon } from '@/components/cms/primitives';
-import { FilmButton } from '@/components/cms/VideoPlayer';
 import { ApplyPanel, type ApplyViewer } from '@/components/jobs/ApplyPanel';
 import { JobCard, jobImage } from '@/components/jobs/JobCard';
 import { JobSectionNav } from '@/components/jobs/JobSectionNav';
 import { SaveJobButton } from '@/components/jobs/SaveJobButton';
-import { MarketingEyebrow } from '@/components/marketing/MarketingEyebrow';
-import { MarketingSlideshow } from '@/components/marketing/MarketingSlideshow';
-import { BRAND_SLIDES, INTRO_FILM } from '@/lib/cms/brand-media';
+import { BRAND_SLIDES } from '@/lib/cms/brand-media';
 import { savedJobIds } from '@/lib/jobs/saved';
 import { getViewer, hasPaid } from '@/lib/auth';
 import { getSiteSettings } from '@/lib/cms/data';
 import { localizeJob, siteText } from '@/lib/cms/localize';
+import { areaLabel } from '@/lib/data/positions';
 import { getPublishedJob, recommendedJobs } from '@/lib/jobs/data';
 import { EMPLOYMENT_LABELS, formatSalary, HOUSING_LABELS, isOpen, jobLocation } from '@/lib/jobs/types';
 import { isLocale, localePath } from '@/lib/i18n';
@@ -85,39 +84,63 @@ export default async function JobPage({ params }: Params) {
   const image = jobImage(job);
   const others = (await recommendedJobs(job.positionSlug, [job.id], 3)).map((other) => localizeJob(other, locale));
   const t = (english: string) => siteText(locale, english);
+  const dateLocale = locale === 'en' ? 'en-GB' : locale;
 
-  const heroSlides = [
-    ...(image ? [{ src: image, alt: `${job.title}, ${job.city}` }] : []),
-    ...BRAND_SLIDES.jobDetailFallback.map((slide) => ({ src: slide.src, alt: slide.alt })),
-  ].filter((slide, index, all) => all.findIndex((other) => other.src === slide.src) === index);
-
-  const filmUrl = settings.applications.filmUrl.trim() || INTRO_FILM.url;
-  const filmLabel = settings.applications.filmLabel.trim() || INTRO_FILM.label;
+  const heroPhoto = image || '/photos/kitchen.jpg';
+  const sidePhoto = image && image !== '/photos/kitchen.jpg' ? image : '/photos/brand/hero-hospitality.jpg';
 
   const metaRow = [
     { icon: 'map', label: jobLocation(job) },
+    ...(job.area ? [{ icon: 'star' as const, label: areaLabel(job.area) }] : []),
     { icon: 'briefcase', label: t(EMPLOYMENT_LABELS[job.employmentType]) },
-    ...(job.area ? [{ icon: 'star' as const, label: job.area.replace(/-/g, ' ') }] : []),
   ];
 
   const offerItems = [
-    salary ? { icon: 'euro', label: salary } : null,
-    { icon: 'home', label: `${t(HOUSING_LABELS[job.housing])}${job.mealsIncluded ? ` · ${t('meals included')}` : ''}` },
-    { icon: 'document', label: t('Written employment contract') },
+    salary ? { icon: 'euro', title: t('Competitive Monthly Salary'), detail: salary } : null,
+    {
+      icon: 'home',
+      title: t('Accommodation Support'),
+      detail: t(HOUSING_LABELS[job.housing]),
+    },
+    job.mealsIncluded ? { icon: 'heart', title: t('Meals During Work'), detail: t('Staff meal on shift') } : null,
+    {
+      icon: 'shield',
+      title: t('Work Contract & Legal Employment'),
+      detail: t('Written employment under Portuguese law'),
+    },
     {
       icon: 'plane',
-      label: job.visaSponsored ? t('Employer supports the work visa') : t('You need the right to work'),
+      title: t('Visa & Relocation Assistance'),
+      detail: job.visaSponsored ? t('Supported after a successful offer') : t('You need the right to work'),
     },
-    { icon: 'users', label: `${job.openings} ${t('openings')}` },
-    { icon: 'globe', label: job.minEnglish ? `${job.minEnglish} ${t('or above')}` : t('Basic English') },
-  ].filter(Boolean) as { icon: string; label: string }[];
+    {
+      icon: 'star',
+      title: t('Career Growth Opportunities'),
+      detail: t('Build experience with a verified Portuguese employer'),
+    },
+  ].filter(Boolean) as { icon: string; title: string; detail: string }[];
 
   const navItems = [
-    { id: 'overview', label: t('Job details') },
-    ...(job.responsibilities.length ? [{ id: 'responsibilities', label: t('What you will do') }] : []),
-    ...(job.requirements.length ? [{ id: 'requirements', label: t('Requirements') }] : []),
-    ...(job.benefits.length || offerItems.length ? [{ id: 'benefits', label: t('Benefits') }] : []),
-    { id: 'apply', label: t('Apply') },
+    { id: 'overview', label: t('Job Details'), icon: 'document' },
+    ...(job.employerDisplay ? [{ id: 'company', label: t('Company'), icon: 'briefcase' }] : []),
+    ...(job.benefits.length || offerItems.length ? [{ id: 'benefits', label: t('Benefits'), icon: 'heart' }] : []),
+    ...(job.requirements.length ? [{ id: 'requirements', label: t('Requirements'), icon: 'check' }] : []),
+    { id: 'location', label: t('Location'), icon: 'map' },
+  ];
+
+  const deadlineLabel = job.closesAt
+    ? new Intl.DateTimeFormat(dateLocale, { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(job.closesAt))
+    : t('Open until filled');
+
+  const startLabel = job.expectedStartOn
+    ? new Intl.DateTimeFormat(dateLocale, { month: 'short', year: 'numeric' }).format(new Date(`${job.expectedStartOn}T12:00:00Z`))
+    : null;
+
+  const keyFacts = [
+    { icon: 'clock', label: t('Application Deadline'), value: deadlineLabel },
+    { icon: 'users', label: t('Open Positions'), value: String(job.openings) },
+    ...(startLabel ? [{ icon: 'briefcase' as const, label: t('Expected Start Date'), value: startLabel }] : []),
+    { icon: 'globe', label: t('Work Location'), value: jobLocation(job) },
   ];
 
   const jsonLd = {
@@ -155,143 +178,155 @@ export default async function JobPage({ params }: Params) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
       <SiteHeader locale={locale} />
       <main>
-        <section className="relative overflow-hidden bg-[#0a088f] text-white">
-          <MarketingSlideshow slides={heroSlides} className="absolute inset-0 opacity-35" sizes="100vw" />
-          <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-[#0a088f] via-[#0a088f]/92 to-[#0a088f]/55" />
-          <div className="relative mx-auto w-full max-w-[1200px] px-[clamp(20px,4cqi,56px)] py-[clamp(36px,6cqi,72px)]">
-            <nav aria-label="Breadcrumb" className="mb-6 font-mono text-[12px] text-white/70">
-              <Link href={localePath(locale, '/')} className="text-white/70 no-underline hover:text-white">
-                {t('Home')}
-              </Link>
-              <span aria-hidden> › </span>
-              <Link href={localePath(locale, '/jobs')} className="text-white/70 no-underline hover:text-white">
-                {t('Jobs')}
-              </Link>
-              <span aria-hidden> › </span>
-              <span className="text-white">{job.title}</span>
-            </nav>
+        <section className="relative isolate overflow-hidden bg-[#142438] text-white">
+          <div className="absolute inset-0" aria-hidden>
+            <Image src={heroPhoto} alt="" fill priority sizes="100vw" className="object-cover object-[center_30%] opacity-55" />
+            <div className="absolute inset-0 bg-[#142438]/60" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#142438] via-[#142438]/88 to-[#142438]/35" />
+          </div>
 
-            <div className="grid items-end gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
-              <div>
-                {open ? (
-                  <p className="m-0 mb-4 inline-flex items-center gap-2 rounded-full border border-[var(--color-gold)]/60 bg-[var(--color-gold)]/15 px-3 py-1 text-[12px] font-semibold text-[var(--color-gold)]">
-                    <Icon name="check" className="size-3.5" />
-                    {t('Verified opportunity')}
-                  </p>
-                ) : null}
-                <MarketingEyebrow className="text-[var(--color-gold)]">{t('Job details')}</MarketingEyebrow>
-                <h1 className="display-serif m-0 mt-3 text-balance text-[clamp(32px,4.8cqi,56px)] font-normal leading-[1.06]">
-                  {job.title}
-                </h1>
-                {job.employerDisplay ? <p className="m-0 mt-3 text-[17px] text-white/85">{job.employerDisplay}</p> : null}
-                <ul className="m-0 mt-6 flex list-none flex-wrap items-center gap-x-5 gap-y-3 p-0 text-[14px] text-white/90">
-                  {metaRow.map((item) => (
-                    <li key={item.label} className="inline-flex items-center gap-2 capitalize">
-                      <Icon name={item.icon} className="size-4 text-[var(--color-gold)]" />
-                      {item.label}
-                    </li>
-                  ))}
-                  {salary ? (
-                    <li className="inline-flex items-center rounded-full bg-[var(--color-gold)] px-3.5 py-1.5 text-[13px] font-semibold text-[#0a088f]">
-                      <bdi>{salary}</bdi>
-                    </li>
-                  ) : null}
-                </ul>
-                {job.summary ? <p className="m-0 mt-6 max-w-[58ch] text-[16px] leading-[1.6] text-white/88">{job.summary}</p> : null}
-                <div className="mt-6">
-                  <FilmButton src={filmUrl} poster={INTRO_FILM.poster} label={t(filmLabel)} tone="dark" />
-                </div>
-                {!open ? (
-                  <p className="m-0 mt-6 rounded-[12px] border border-white/25 bg-white/10 px-5 py-4 text-[15px]">
-                    {t('This job is no longer taking applications. See similar jobs below.')}
-                  </p>
-                ) : null}
-              </div>
+          <div className="relative mx-auto grid w-full max-w-[1200px] grid-cols-1 items-end gap-8 px-[clamp(20px,4cqi,56px)] pb-[clamp(36px,5cqi,56px)] pt-[clamp(32px,5cqi,56px)] lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
+            <div className="min-w-0">
+              <nav aria-label="Breadcrumb" className="mb-5 flex flex-wrap items-center gap-1.5 text-[12px] text-white/70">
+                <Link href={localePath(locale, '/')} className="inline-flex items-center gap-1 text-white/70 no-underline hover:text-white">
+                  <Icon name="home" className="size-3.5" />
+                  <span className="sr-only">{t('Home')}</span>
+                </Link>
+                <span aria-hidden>›</span>
+                <Link href={localePath(locale, '/jobs')} className="text-white/70 no-underline hover:text-white">
+                  {t('Jobs')}
+                </Link>
+                <span aria-hidden>›</span>
+                <span className="text-white">{job.title}</span>
+              </nav>
 
-              <div className="relative hidden min-h-[300px] lg:block">
-                <MarketingSlideshow slides={heroSlides} className="absolute inset-0" rounded sizes="420px" />
-                {saved !== undefined ? <SaveJobButton jobId={job.id} initialSaved={saved} className="absolute end-4 top-4 z-10" /> : null}
+              {open ? (
+                <p className="m-0 mb-4 inline-flex items-center gap-2 rounded-full bg-[var(--color-gold)] px-3.5 py-1.5 text-[12px] font-semibold text-[#142438]">
+                  <Icon name="check" className="size-3.5" />
+                  {t('Verified Opportunity')}
+                </p>
+              ) : null}
+
+              <h1 className="display-serif m-0 text-balance text-[clamp(34px,5cqi,56px)] font-normal leading-[1.06]">
+                {job.title}
+              </h1>
+
+              <ul className="m-0 mt-6 flex list-none flex-wrap items-center gap-x-5 gap-y-3 p-0 text-[14px] text-white/92">
+                {metaRow.map((item) => (
+                  <li key={item.label} className="inline-flex items-center gap-2">
+                    <Icon name={item.icon} className="size-4 text-[var(--color-gold)]" />
+                    {item.label}
+                  </li>
+                ))}
+                {salary ? (
+                  <li className="inline-flex items-center rounded-full bg-[var(--color-gold)] px-3.5 py-1.5 text-[13px] font-semibold text-[#142438]">
+                    <bdi>{salary}</bdi>
+                  </li>
+                ) : null}
+              </ul>
+
+              {job.summary ? (
+                <p className="m-0 mt-6 max-w-[54ch] text-[16px] leading-[1.6] text-white/88">{job.summary}</p>
+              ) : null}
+
+              {!open ? (
+                <p className="m-0 mt-6 rounded-[12px] border border-white/25 bg-white/10 px-5 py-4 text-[15px]">
+                  {t('This job is no longer taking applications. See similar jobs below.')}
+                </p>
+              ) : null}
+            </div>
+
+            <div className="relative hidden min-h-[320px] lg:block">
+              <div className="absolute inset-x-0 bottom-0 top-6 overflow-hidden rounded-[18px]">
+                <Image src={sidePhoto} alt={`${job.title}, ${job.city}`} fill sizes="420px" className="object-cover object-[center_20%]" priority />
               </div>
+              {saved !== undefined ? <SaveJobButton jobId={job.id} initialSaved={saved} className="absolute end-4 top-4 z-10" /> : null}
             </div>
           </div>
         </section>
 
-        <div className="bg-ivory px-[clamp(20px,4cqi,56px)] py-[clamp(28px,5cqi,48px)]">
-          <div className="mx-auto grid w-full max-w-[1200px] gap-[clamp(28px,4cqi,48px)] lg:grid-cols-[minmax(0,1fr)_360px]">
+        <div className="bg-[#f5f6f8] px-[clamp(20px,4cqi,56px)] py-[clamp(24px,4cqi,40px)]">
+          <div className="mx-auto grid w-full max-w-[1200px] gap-[clamp(24px,3.5cqi,40px)] lg:grid-cols-[minmax(0,1fr)_340px]">
             <div className="min-w-0">
               <JobSectionNav items={navItems} />
-              <article className="mt-4 rounded-[18px] border border-line bg-white p-[clamp(20px,3cqi,36px)] shadow-[0_18px_40px_-28px_rgba(10,8,143,0.35)]">
-                <section id="overview">
-                  {job.description ? (
-                    <>
-                      <h2 className="display-serif m-0 mb-4 text-[28px] font-normal tracking-[-0.02em]">{t('About the job')}</h2>
-                      <Markdown text={job.description} locale={locale} className="text-[16px] text-ink-2" />
-                    </>
-                  ) : (
-                    <h2 className="display-serif m-0 text-[28px] font-normal tracking-[-0.02em]">{t('About the job')}</h2>
-                  )}
-                </section>
 
-                {job.responsibilities.length > 0 ? (
-                  <section id="responsibilities" className="mt-10">
-                    <h2 className="display-serif m-0 mb-4 text-[24px] font-normal tracking-[-0.02em]">{t('What you will do')}</h2>
-                    <ul className="m-0 flex list-none flex-col gap-3 p-0">
-                      {job.responsibilities.map((item) => (
-                        <li key={item} className="flex gap-3 text-[16px] leading-[1.55] text-ink-2">
-                          <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-[var(--color-gold-soft)] text-[var(--color-gold-deep)]">
-                            <Icon name="check" className="size-4" />
-                          </span>
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </section>
-                ) : null}
+              <article className="mt-4 rounded-[18px] border border-[#142438]/08 bg-white p-[clamp(22px,3cqi,40px)] shadow-[0_18px_40px_-28px_rgba(20,36,56,0.35)]">
+                <section id="overview">
+                  <h2 className="display-serif m-0 mb-4 text-[28px] font-normal tracking-[-0.02em] text-[#142438]">
+                    {t('Job Overview')}
+                  </h2>
+                  {job.description ? <Markdown text={job.description} locale={locale} className="text-[16px] text-ink-2" /> : null}
+                  {job.responsibilities.length > 0 ? (
+                    <>
+                      <h3 className="display-serif m-0 mt-8 mb-4 text-[22px] font-normal tracking-[-0.02em] text-[#142438]">
+                        {t('Key Responsibilities')}
+                      </h3>
+                      <CheckList items={job.responsibilities} />
+                    </>
+                  ) : null}
+                </section>
 
                 {job.requirements.length > 0 ? (
                   <section id="requirements" className="mt-10">
-                    <h2 className="display-serif m-0 mb-4 text-[24px] font-normal tracking-[-0.02em]">{t('What the employer is looking for')}</h2>
-                    <ul className="m-0 flex list-none flex-col gap-3 p-0">
-                      {job.requirements.map((item) => (
-                        <li key={item} className="flex gap-3 text-[16px] leading-[1.55] text-ink-2">
-                          <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-[var(--color-gold-soft)] text-[var(--color-gold-deep)]">
-                            <Icon name="check" className="size-4" />
-                          </span>
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
+                    <h2 className="display-serif m-0 mb-4 text-[24px] font-normal tracking-[-0.02em] text-[#142438]">
+                      {t('Requirements')}
+                    </h2>
+                    <CheckList items={job.requirements} />
+                  </section>
+                ) : null}
+
+                {job.employerDisplay ? (
+                  <section id="company" className="mt-10">
+                    <h2 className="display-serif m-0 mb-4 text-[24px] font-normal tracking-[-0.02em] text-[#142438]">
+                      {t('Company')}
+                    </h2>
+                    <p className="m-0 text-[16px] leading-[1.6] text-ink-2">
+                      {job.employerDisplay}. {t('Every posting is confirmed with the Portuguese employer before it goes live.')}
+                    </p>
                   </section>
                 ) : null}
 
                 <section id="benefits" className="mt-10">
-                  <h2 className="display-serif m-0 mb-5 text-[24px] font-normal tracking-[-0.02em]">{t('What you get')}</h2>
+                  <h2 className="display-serif m-0 mb-5 text-[24px] font-normal tracking-[-0.02em] text-[#142438]">
+                    {t('What We Offer')}
+                  </h2>
                   {job.benefits.length > 0 ? (
-                    <ul className="m-0 mb-6 flex list-none flex-col gap-3 p-0">
-                      {job.benefits.map((item) => (
-                        <li key={item} className="flex gap-3 text-[16px] leading-[1.55] text-ink-2">
-                          <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-[var(--color-gold-soft)] text-[var(--color-gold-deep)]">
-                            <Icon name="check" className="size-4" />
-                          </span>
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
+                    <div className="mb-6">
+                      <CheckList items={job.benefits} />
+                    </div>
                   ) : null}
-                  <ul className="m-0 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3">
+                  <ul className="m-0 grid list-none grid-cols-1 gap-3 p-0 sm:grid-cols-2 lg:grid-cols-3">
                     {offerItems.map((item) => (
-                      <li key={item.label} className="flex gap-3 rounded-[14px] border border-line bg-ivory px-4 py-3 text-[14px] text-ink-2">
-                        <span className="grid size-9 shrink-0 place-items-center rounded-full border border-[var(--color-gold)]/40 text-[var(--color-gold-deep)]">
-                          <Icon name={item.icon} className="size-[18px]" />
+                      <li
+                        key={item.title}
+                        className="flex flex-col gap-3 rounded-[14px] border border-[#142438]/08 bg-[#f7f4ef] px-4 py-4"
+                      >
+                        <span className="grid size-10 place-items-center rounded-[10px] bg-white text-[var(--color-gold)] shadow-[0_8px_18px_-12px_rgba(20,36,56,0.35)]">
+                          <Icon name={item.icon} className="size-5" />
                         </span>
-                        <bdi className="self-center font-medium text-ink">{item.label}</bdi>
+                        <div className="min-w-0">
+                          <p className="m-0 text-[14px] font-semibold leading-[1.3] text-[#142438]">{item.title}</p>
+                          <p className="m-0 mt-1 text-[13px] leading-[1.45] text-ink-2">
+                            <bdi>{item.detail}</bdi>
+                          </p>
+                        </div>
                       </li>
                     ))}
                   </ul>
                 </section>
 
-                <section className="mt-10 rounded-[16px] border border-line bg-ivory p-6">
-                  <h2 className="m-0 text-[18px] font-semibold">{t('Free to apply. No placement fee.')}</h2>
+                <section id="location" className="mt-10">
+                  <h2 className="display-serif m-0 mb-4 text-[24px] font-normal tracking-[-0.02em] text-[#142438]">
+                    {t('Location')}
+                  </h2>
+                  <p className="m-0 flex items-start gap-3 text-[16px] leading-[1.6] text-ink-2">
+                    <Icon name="map" className="mt-1 size-5 shrink-0 text-[var(--color-gold)]" />
+                    <span>{jobLocation(job)}</span>
+                  </p>
+                </section>
+
+                <section className="mt-10 rounded-[16px] border border-line bg-[#f7f4ef] p-6">
+                  <h2 className="m-0 text-[18px] font-semibold text-[#142438]">{t('Free to apply. No placement fee.')}</h2>
                   <p className="m-0 mt-2 text-[15px] leading-[1.6] text-ink-2">
                     {t('You never pay to be hired. If anyone asks you for money for this job outside this website, it is not us.')}{' '}
                     <Link href={localePath(locale, '/stay-safe')} className="prose-link">
@@ -313,33 +348,55 @@ export default async function JobPage({ params }: Params) {
                 shortlistMinScore={settings.hiring.shortlistMinScore}
                 salary={salary}
               />
-              <div className="overflow-hidden rounded-[16px] border border-line bg-white shadow-[0_18px_40px_-28px_rgba(10,8,143,0.35)]">
-                <MarketingSlideshow
-                  slides={BRAND_SLIDES.portugal.map((slide) => ({ src: slide.src, alt: slide.alt }))}
-                  className="aspect-[16/9]"
-                  sizes="360px"
-                />
+
+              <dl className="m-0 grid grid-cols-2 gap-3 rounded-[16px] border border-[#142438]/08 bg-white p-4 shadow-[0_18px_40px_-28px_rgba(20,36,56,0.35)]">
+                {keyFacts.map((fact) => (
+                  <div key={fact.label} className="rounded-[12px] bg-[#f7f4ef] px-3 py-3">
+                    <dt className="m-0 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.04em] text-ink-2">
+                      <Icon name={fact.icon} className="size-3.5 text-[var(--color-gold)]" />
+                      {fact.label}
+                    </dt>
+                    <dd className="m-0 mt-1 text-[14px] font-semibold text-[#142438]">{fact.value}</dd>
+                  </div>
+                ))}
+              </dl>
+
+              <div className="overflow-hidden rounded-[16px] border border-[#142438]/08 bg-white shadow-[0_18px_40px_-28px_rgba(20,36,56,0.35)]">
+                <div className="relative aspect-[16/10]">
+                  <Image
+                    src={BRAND_SLIDES.portugal[0]?.src || '/photos/lisbon.jpg'}
+                    alt={t('Lisbon rooftops')}
+                    fill
+                    sizes="340px"
+                    className="object-cover"
+                  />
+                </div>
                 <div className="p-5">
-                  <h2 className="display-serif m-0 text-[22px] font-normal">{t('Work and live in Portugal')}</h2>
+                  <h2 className="display-serif m-0 flex items-center gap-2 text-[22px] font-normal text-[#142438]">
+                    <span aria-hidden className="text-[20px] leading-none">
+                      🇵🇹
+                    </span>
+                    {t('Work & Live in Portugal')}
+                  </h2>
                   <ul className="m-0 mt-3 flex list-none flex-col gap-2 p-0 text-[14px] text-ink-2">
                     <li className="flex gap-2">
-                      <Icon name="check" className="mt-0.5 size-4 shrink-0 text-[var(--color-gold-deep)]" />
-                      {t('European work experience on a written contract')}
+                      <Icon name="check" className="mt-0.5 size-4 shrink-0 text-[var(--color-gold)]" />
+                      {t('European work experience')}
                     </li>
                     <li className="flex gap-2">
-                      <Icon name="check" className="mt-0.5 size-4 shrink-0 text-[var(--color-gold-deep)]" />
-                      {t('Housing and meals included with many roles')}
+                      <Icon name="check" className="mt-0.5 size-4 shrink-0 text-[var(--color-gold)]" />
+                      {t('Safe cities and a high quality of life')}
                     </li>
                     <li className="flex gap-2">
-                      <Icon name="check" className="mt-0.5 size-4 shrink-0 text-[var(--color-gold-deep)]" />
-                      {t('Visa file prepared with you after a successful offer')}
+                      <Icon name="check" className="mt-0.5 size-4 shrink-0 text-[var(--color-gold)]" />
+                      {t('Path to long-term residency')}
                     </li>
                   </ul>
                   <Link
                     href={localePath(locale, '/why-portugal')}
-                    className="mt-4 inline-flex items-center gap-1 text-[14px] font-semibold text-[#0a088f] no-underline"
+                    className="mt-4 inline-flex items-center gap-1 text-[14px] font-semibold text-[var(--color-gold)] no-underline hover:underline"
                   >
-                    {t('Learn more about living in Portugal')} <span aria-hidden>→</span>
+                    {t('Learn More About Living in Portugal')} <span aria-hidden>→</span>
                   </Link>
                 </div>
               </div>
@@ -350,7 +407,9 @@ export default async function JobPage({ params }: Params) {
         {others.length > 0 ? (
           <section className="bg-white px-[clamp(20px,4cqi,56px)] py-[clamp(48px,7cqi,80px)]">
             <div className="mx-auto w-full max-w-[1200px]">
-              <h2 className="display-serif m-0 mb-6 text-[28px] font-normal tracking-[-0.02em]">{t('Similar jobs')}</h2>
+              <h2 className="display-serif m-0 mb-6 text-[28px] font-normal tracking-[-0.02em] text-[#142438]">
+                {t('Similar jobs')}
+              </h2>
               <ul className="m-0 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3">
                 {others.map((other) => (
                   <li key={other.id}>
@@ -363,5 +422,20 @@ export default async function JobPage({ params }: Params) {
         ) : null}
       </main>
     </>
+  );
+}
+
+function CheckList({ items }: { items: string[] }) {
+  return (
+    <ul className="m-0 flex list-none flex-col gap-3 p-0">
+      {items.map((item) => (
+        <li key={item} className="flex gap-3 text-[16px] leading-[1.55] text-ink-2">
+          <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-[var(--color-gold)]/15 text-[var(--color-gold)]">
+            <Icon name="check" className="size-3.5" />
+          </span>
+          {item}
+        </li>
+      ))}
+    </ul>
   );
 }

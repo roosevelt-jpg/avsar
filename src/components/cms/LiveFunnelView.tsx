@@ -70,7 +70,7 @@ export function LiveFunnelView({
     const progress = Math.min(100, Math.round((stats.completed / Math.max(1, minSample)) * 100));
     const stages = [labels.completed, labels.qualified, labels.shortlisted, labels.hired];
     return (
-      <div aria-live="polite" className="rounded-[12px] border border-dashed border-[#0a088f]/20 bg-white p-4">
+      <div aria-live="polite" className="rounded-[12px] border border-dashed border-[#142438]/20 bg-white p-4">
         <p className="m-0 text-[14px] leading-[1.45] text-[#3d5168]">
           {pendingText
             .replace(/\{\{\s*finished\s*\}\}/g, number.format(stats.completed))
@@ -86,21 +86,21 @@ export function LiveFunnelView({
             </span>
             <span className="font-mono tabular-nums">{progress}%</span>
           </div>
-          <div className="h-1.5 overflow-hidden rounded-full bg-[#0a088f]/10" aria-hidden>
-            <div className="h-full rounded-full bg-[#c96a4b]" style={{ width: `${Math.max(progress, stats.completed > 0 ? 4 : 0)}%` }} />
+          <div className="h-1.5 overflow-hidden rounded-full bg-[#142438]/10" aria-hidden>
+            <div className="h-full rounded-full bg-[#b28a49]" style={{ width: `${Math.max(progress, stats.completed > 0 ? 4 : 0)}%` }} />
           </div>
         </div>
 
         <p className="m-0 mt-3 mb-2 font-mono text-[11px] uppercase tracking-[0.12em] text-muted">{labels.per100}</p>
         <ol className="m-0 grid list-none grid-cols-1 gap-2 p-0 sm:grid-cols-2">
           {stages.map((label) => (
-            <li key={label} className="rounded-[8px] border border-[#0a088f]/10 bg-[#f7f7fb] px-3 py-2">
+            <li key={label} className="rounded-[8px] border border-[#142438]/10 bg-[#f7f7fb] px-3 py-2">
               <div className="flex items-baseline gap-2">
-                <span className="text-[16px] font-semibold leading-none text-[#0a088f]/35 tabular-nums">—</span>
+                <span className="text-[16px] font-semibold leading-none text-[#142438]/35 tabular-nums">—</span>
                 <span className="text-[13px] leading-[1.3] text-[#3d5168]">{label}</span>
               </div>
-              <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-[#0a088f]/10" aria-hidden>
-                <div className="h-full w-[18%] rounded-full bg-[#c96a4b]" />
+              <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-[#142438]/10" aria-hidden>
+                <div className="h-full w-[18%] rounded-full bg-[#b28a49]" />
               </div>
             </li>
           ))}
@@ -129,7 +129,7 @@ export function LiveFunnelView({
               <span className="ms-auto font-mono text-[12px] text-muted tabular-nums">{number.format(row.count)}</span>
             </div>
             <div className="mt-3 h-2 overflow-hidden rounded-full bg-canvas" aria-hidden>
-              <div className="h-full rounded-full bg-[#c96a4b]" style={{ width: `${row.width}%` }} />
+              <div className="h-full rounded-full bg-[#b28a49]" style={{ width: `${row.width}%` }} />
             </div>
           </li>
         ))}

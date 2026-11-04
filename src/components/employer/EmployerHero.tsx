@@ -18,15 +18,17 @@ function accentTitle(title: string, accentWord: string): ReactNode {
   return (
     <>
       {before}
-      <em className="accent-italic">{match}</em>
+      <em className="accent-italic not-italic" style={{ fontStyle: 'italic', color: '#b28a49' }}>
+        {match}
+      </em>
       {after}
     </>
   );
 }
 
 /**
- * Full-bleed employer hero: slideshow of placement photographs behind the
- * pitch, matching the mockup. Pause on hover or reduced-motion preference.
+ * Full-bleed employer hero matching the Portugal Talent Recruitment mockup:
+ * photograph behind copy, gold dashed eyebrow, dual CTAs, programme badge.
  */
 export function EmployerHero({
   eyebrow,
@@ -38,6 +40,7 @@ export function EmployerHero({
   secondaryLabel,
   secondaryHref,
   badgeLabel,
+  badgeSubtext,
   badgeHref,
   slides,
 }: {
@@ -50,6 +53,7 @@ export function EmployerHero({
   secondaryLabel: string;
   secondaryHref: string;
   badgeLabel: string;
+  badgeSubtext: string;
   badgeHref: string;
   slides: EmployerLandingSlide[];
 }) {
@@ -78,7 +82,7 @@ export function EmployerHero({
     <section
       aria-roledescription="carousel"
       aria-label="Employer introduction"
-      className="relative min-h-[min(88vh,760px)] overflow-hidden bg-[#0a088f] text-white"
+      className="relative min-h-[min(88vh,760px)] overflow-hidden bg-[#142438] text-white"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
@@ -99,31 +103,36 @@ export function EmployerHero({
         </div>
       ))}
 
-      {/* Soft navy veil so the white type stays readable on bright slides. */}
       <div
         aria-hidden
-        className="absolute inset-0 bg-[linear-gradient(105deg,rgba(10,8,143,0.88)_0%,rgba(10,8,143,0.72)_42%,rgba(10,8,143,0.35)_70%,rgba(10,8,143,0.2)_100%)]"
+        className="absolute inset-0 bg-[linear-gradient(105deg,rgba(20,36,56,0.90)_0%,rgba(20,36,56,0.74)_40%,rgba(20,36,56,0.38)_68%,rgba(20,36,56,0.22)_100%)]"
       />
 
       <div className="relative z-10 mx-auto flex min-h-[min(88vh,760px)] w-full max-w-[1200px] flex-col justify-center px-[clamp(20px,4cqi,56px)] py-[clamp(56px,8cqi,96px)]">
-        <div className="max-w-[34rem]">
+        <div className="max-w-[36rem]">
           {eyebrow ? (
-            <p className="m-0 text-[12px] font-semibold uppercase tracking-[0.18em] text-[var(--color-gold)]">{eyebrow}</p>
+            <p className="m-0 inline-flex items-center gap-2.5 text-[12px] font-semibold uppercase tracking-[0.18em] text-[var(--color-gold)]">
+              <span aria-hidden className="h-px w-7 bg-[var(--color-gold)]" />
+              {eyebrow}
+            </p>
           ) : null}
           <h1 className="display-serif m-0 mt-4 text-balance text-[clamp(36px,5.4cqi,64px)] font-normal leading-[1.08] tracking-[-0.02em]">
             {accentTitle(headline, accentWord)}
           </h1>
-          {intro ? <p className="m-0 mt-5 max-w-[40ch] text-[clamp(16px,1.7cqi,19px)] leading-[1.55] text-white/88">{intro}</p> : null}
+          {intro ? <p className="m-0 mt-5 max-w-[42ch] text-[clamp(16px,1.7cqi,19px)] leading-[1.55] text-white/88">{intro}</p> : null}
 
           <div className="mt-8 flex flex-wrap items-center gap-3">
-            <Link href={primaryHref} className="btn-gradient t-colors inline-flex items-center gap-2 px-5 py-3 text-[14px] font-semibold no-underline">
+            <Link
+              href={primaryHref}
+              className="t-colors inline-flex items-center gap-2 rounded-[10px] bg-[#b28a49] px-5 py-3 text-[14px] font-semibold text-[#142438] no-underline hover:bg-[#c49a58]"
+            >
               {primaryLabel}
               <span aria-hidden>→</span>
             </Link>
             {secondaryLabel ? (
               <Link
                 href={secondaryHref}
-                className="btn-outline-light t-colors inline-flex items-center gap-2 px-5 py-3 text-[14px] font-semibold no-underline"
+                className="t-colors inline-flex items-center gap-2 rounded-[10px] border border-white/70 bg-[#142438]/35 px-5 py-3 text-[14px] font-semibold text-white no-underline hover:bg-[#142438]/55"
               >
                 <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
                   <rect x="4" y="5" width="16" height="15" rx="2" />
@@ -137,27 +146,26 @@ export function EmployerHero({
 
         {badgeLabel ? (
           <div className="mt-10 self-start lg:absolute lg:bottom-10 lg:end-[clamp(20px,4cqi,56px)] lg:mt-0 lg:self-auto">
-            {badgeHref ? (
-              <Link
-                href={badgeHref}
-                className="inline-flex max-w-[min(100%,28rem)] items-center gap-2.5 rounded-full bg-white px-4 py-2.5 text-[13px] font-semibold text-[#0a088f] no-underline shadow-[0_12px_32px_rgba(0,0,0,0.22)]"
-              >
-                <span aria-hidden className="text-[18px] leading-none">
-                  🇵🇹
-                </span>
-                <span>{badgeLabel}</span>
-                <span aria-hidden className="text-[var(--color-gold)]">
-                  →
-                </span>
-              </Link>
-            ) : (
-              <span className="inline-flex max-w-[min(100%,28rem)] items-center gap-2.5 rounded-full bg-white px-4 py-2.5 text-[13px] font-semibold text-[#0a088f] shadow-[0_12px_32px_rgba(0,0,0,0.22)]">
-                <span aria-hidden className="text-[18px] leading-none">
-                  🇵🇹
-                </span>
-                {badgeLabel}
+            <Link
+              href={badgeHref || primaryHref}
+              className="inline-flex max-w-[min(100%,22rem)] items-center gap-3 rounded-full bg-white py-2.5 pe-2.5 ps-3.5 text-[#142438] no-underline shadow-[0_12px_32px_rgba(0,0,0,0.22)]"
+            >
+              <svg viewBox="0 0 24 16" className="h-4 w-6 shrink-0 rounded-[2px]" aria-hidden>
+                <rect width="24" height="16" fill="#006600" />
+                <rect x="9" width="15" height="16" fill="#FF0000" />
+                <circle cx="9" cy="8" r="2.6" fill="#FFCC00" />
+              </svg>
+              <span className="min-w-0">
+                <span className="block text-[13px] font-semibold leading-tight">{badgeLabel}</span>
+                {badgeSubtext ? <span className="mt-0.5 block text-[11px] font-medium text-ink-2">{badgeSubtext}</span> : null}
               </span>
-            )}
+              <span
+                aria-hidden
+                className="grid size-8 shrink-0 place-items-center rounded-full bg-[#b28a49] text-[13px] font-semibold text-[#142438]"
+              >
+                →
+              </span>
+            </Link>
           </div>
         ) : null}
 

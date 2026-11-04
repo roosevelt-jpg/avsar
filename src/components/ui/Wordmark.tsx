@@ -15,8 +15,8 @@ export async function Wordmark({
   suffix,
   tone = 'light',
   accent: _accent = 'candidate',
-  /** 28 in a page header, 22 where the header is compact. */
-  size = 28,
+  /** Same mark size in the marketing header and footer. */
+  size = 40,
 }: {
   href?: string;
   suffix?: string;

@@ -56,6 +56,8 @@ export type Job = {
   featured: boolean;
   publishedAt: string | null;
   closesAt: string | null;
+  /** Optional start month/day shown in the Key Facts strip. */
+  expectedStartOn: string | null;
   seoTitle: string | null;
   seoDescription: string | null;
   createdAt: string;
@@ -155,6 +157,7 @@ export function jobFromRow(row: Record<string, unknown>): Job {
     featured: Boolean(row.featured),
     publishedAt: (row.published_at as string | null) ?? null,
     closesAt: (row.closes_at as string | null) ?? null,
+    expectedStartOn: (row.expected_start_on as string | null) ?? null,
     seoTitle: (row.seo_title as string | null) ?? null,
     seoDescription: (row.seo_description as string | null) ?? null,
     createdAt: String(row.created_at ?? new Date(0).toISOString()),
@@ -196,6 +199,7 @@ export function jobToRow(job: JobInput): Record<string, unknown> {
     hero_image_url: job.heroImageUrl || null,
     featured: job.featured,
     closes_at: job.closesAt || null,
+    expected_start_on: job.expectedStartOn || null,
     seo_title: job.seoTitle || null,
     seo_description: job.seoDescription || null,
   };
