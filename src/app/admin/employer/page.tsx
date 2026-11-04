@@ -15,6 +15,7 @@ import {
   listEmployerVacancies,
   requireEmployerPortal,
 } from '@/lib/employer/portal';
+import { getServerSupabase } from '@/lib/supabase/server';
 
 export const metadata = { title: 'Employer · Dashboard' };
 
@@ -30,13 +31,20 @@ export default async function EmployerHomePage({
   const portal = await requireEmployerPortal('/admin/employer', '/admin');
   const query = await searchParams;
   const parsed = parseTalentSearchParams(query);
+  const supabase = await getServerSupabase();
 
-  const [vacancies, applicants, assessed] = await Promise.all([
+  const [vacancies, applicants, assessed, employerRow] = await Promise.all([
     listEmployerVacancies(portal),
     listEmployerApplicants(),
     assessedCount(),
+    supabase
+      ?.from('employers')
+      .select('vetted_at')
+      .eq('id', portal.employerId)
+      .maybeSingle() ?? Promise.resolve({ data: null }),
   ]);
   const stats = buildEmployerDashStats(vacancies, applicants);
+  const verified = Boolean((employerRow.data as { vetted_at?: string | null } | null)?.vetted_at);
 
   return (
     <TalentPoolScreen
@@ -45,7 +53,7 @@ export default async function EmployerHomePage({
       {...parsed}
       intro={
         <div className="mb-10 flex flex-col gap-5">
-          <EmployerDashHero companyName={portal.name} />
+          <EmployerDashHero companyName={portal.name} verified={verified} />
           <EmployerStatStrip stats={stats} />
           <div className="grid gap-4 lg:grid-cols-[1.15fr_0.95fr_0.85fr]">
             <RecentApplicationsPanel applicants={applicants} />

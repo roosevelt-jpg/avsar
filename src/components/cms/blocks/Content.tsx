@@ -28,12 +28,12 @@ export function TrustBarBlock({ data }: Props) {
     /* Mockup strip: icon + label in a row, hairline dividers between cells. */
     return (
       <section className="border-b border-line bg-white px-[clamp(20px,4cqi,56px)] py-[clamp(22px,3.2cqi,32px)]">
-        <ul className={`mx-auto m-0 grid w-full max-w-[1200px] list-none grid-cols-1 gap-0 p-0 sm:grid-cols-2 ${cols}`}>
+        <ul className={`mx-auto m-0 grid w-full max-w-[1200px] list-none grid-cols-1 gap-0 p-0 md:grid-cols-2 ${cols}`}>
           {list.map((item, index) => (
             <li
               key={index}
-              className={`flex flex-col items-center justify-center gap-2.5 px-3 py-4 text-center sm:px-5 ${
-                index > 0 ? 'sm:border-s sm:border-line' : ''
+              className={`flex flex-col items-center justify-center gap-2.5 border-b border-line px-3 py-4 text-center last:border-b-0 md:border-b-0 md:px-5 ${
+                index > 0 ? 'lg:border-s lg:border-line' : ''
               }`}
             >
               <span className="grid size-10 place-items-center text-[var(--color-gold)]">
@@ -51,13 +51,13 @@ export function TrustBarBlock({ data }: Props) {
   return (
     <section className="border-b border-line bg-white px-[clamp(20px,4cqi,56px)] py-[clamp(22px,3cqi,36px)]">
       <ul
-        className={`mx-auto m-0 grid w-full max-w-[1200px] list-none grid-cols-1 gap-0 p-0 sm:grid-cols-2 ${cols}`}
+        className={`mx-auto m-0 grid w-full max-w-[1200px] list-none grid-cols-1 gap-0 p-0 md:grid-cols-2 ${cols}`}
       >
         {list.map((item, index) => (
           <li
             key={index}
-            className={`flex items-start gap-3 px-0 py-4 sm:px-6 sm:py-2 ${
-              index > 0 ? 'sm:border-s sm:border-line' : ''
+            className={`flex items-start gap-3 border-b border-line px-0 py-4 last:border-b-0 md:border-b-0 md:px-6 md:py-2 ${
+              index > 0 ? 'lg:border-s lg:border-line' : ''
             }`}
           >
             <span className="mt-0.5 grid size-10 shrink-0 place-items-center rounded-full border border-[var(--color-gold)]/45 text-[var(--color-gold)]">
@@ -691,12 +691,12 @@ export function SplitBlock({ data, locale }: Props) {
       <Section className="!bg-[#f7f4ee] !py-[clamp(40px,6cqi,80px)]">
         <div className="grid grid-cols-1 items-center gap-[clamp(28px,4cqi,56px)] lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
           {stack.length > 0 ? (
-            <div className="relative mx-auto w-full max-w-[420px] lg:mx-0">
+            <div className="relative mx-auto w-full max-w-[420px] pb-[8%] lg:mx-0">
               <div className="relative aspect-[4/5] w-[78%] overflow-hidden rounded-[14px] border-[6px] border-white bg-[#142438] shadow-[0_18px_40px_-20px_rgba(20,36,56,0.45)]">
                 <CmsImage src={stack[0]!.src} alt={stack[0]!.alt} sizes="(max-width: 1024px) 70vw, 320px" />
               </div>
               {stack[1] ? (
-                <div className="absolute bottom-[-8%] end-0 aspect-[5/4] w-[72%] overflow-hidden rounded-[14px] border-[6px] border-white bg-[#142438] shadow-[0_18px_40px_-20px_rgba(20,36,56,0.45)]">
+                <div className="absolute bottom-0 end-0 aspect-[5/4] w-[72%] overflow-hidden rounded-[14px] border-[6px] border-white bg-[#142438] shadow-[0_18px_40px_-20px_rgba(20,36,56,0.45)]">
                   <CmsImage src={stack[1].src} alt={stack[1].alt} sizes="(max-width: 1024px) 60vw, 280px" />
                 </div>
               ) : null}

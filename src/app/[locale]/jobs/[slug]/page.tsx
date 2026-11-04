@@ -338,7 +338,7 @@ export default async function JobPage({ params }: Params) {
               </article>
             </div>
 
-            <aside id="apply" className="flex flex-col gap-4 lg:sticky lg:top-24 lg:self-start">
+            <aside id="apply" className="shop-sticky flex flex-col gap-4 lg:sticky lg:self-start">
               <ApplyPanel
                 locale={locale}
                 job={{ id: job.id, slug: job.slug, title: job.title, questions: job.screeningQuestions, open }}

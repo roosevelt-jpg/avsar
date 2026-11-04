@@ -40,13 +40,6 @@ export function StaffDashShell({
   children: React.ReactNode;
 }) {
   const support = whatsapp ? whatsappHref(whatsapp) : '';
-  const initials = (displayName || email)
-    .replace(/@.*/, '')
-    .split(/[\s._-]+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((p) => p[0]?.toUpperCase() ?? '')
-    .join('') || '?';
 
   const navList = (
     <nav aria-label="Console" className="flex flex-1 flex-col gap-1 px-3 py-2">
@@ -107,31 +100,6 @@ export function StaffDashShell({
     </nav>
   );
 
-  const profileBlock = (
-    <div className="flex items-center gap-3 px-5 py-4">
-      <span
-        aria-hidden
-        className="flex size-12 items-center justify-center overflow-hidden rounded-full bg-[#b28a49]/20 text-[14px] font-semibold text-[#e8c56a]"
-      >
-        {avatarUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element -- staff avatar from storage
-          <img src={avatarUrl} alt="" className="size-full object-cover" />
-        ) : (
-          initials
-        )}
-      </span>
-      <div className="min-w-0">
-        <p className="m-0 truncate text-[15px] font-medium text-white">{displayName || 'Staff'}</p>
-        <p className="m-0 mt-0.5 flex flex-wrap items-center gap-2 text-[12px] text-white/55">
-          Platform Administrator
-          <span className="inline-flex items-center rounded-full bg-[#b28a49]/25 px-2 py-0.5 text-[11px] font-medium text-[#e8c56a]">
-            {roleLabel}
-          </span>
-        </p>
-      </div>
-    </div>
-  );
-
   return (
     <div className="staff-dash min-h-screen bg-[#f4f2ee] text-ink">
       <details className="group border-b border-[#1e334d] bg-[#142438] lg:hidden">
@@ -142,8 +110,7 @@ export function StaffDashShell({
           </span>
         </summary>
         <div className="border-t border-white/10 pb-4">
-          {profileBlock}
-          <div className="px-3 pb-3">
+          <div className="px-3 pb-3 pt-3">
             <ConsoleSearch pages={searchPages} targets={searchTargets} live />
           </div>
           {navList}
@@ -155,7 +122,6 @@ export function StaffDashShell({
         <div className="border-b border-white/10 px-5 py-5">
           <Wordmark href="/admin/dashboard" size={26} tone="dark" accent="employer" />
         </div>
-        <div className="border-b border-white/10">{profileBlock}</div>
         {navList}
         {support ? (
           <div className="mt-auto border-t border-white/10 p-4">

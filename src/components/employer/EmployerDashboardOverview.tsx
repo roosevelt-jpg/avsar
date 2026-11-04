@@ -42,7 +42,13 @@ export function buildEmployerDashStats(
   };
 }
 
-export function EmployerDashHero({ companyName }: { companyName: string }) {
+export function EmployerDashHero({
+  companyName,
+  verified = false,
+}: {
+  companyName: string;
+  verified?: boolean;
+}) {
   return (
     <section className="relative overflow-hidden rounded-[18px] bg-[#142438] text-white">
       <Image
@@ -55,6 +61,16 @@ export function EmployerDashHero({ companyName }: { companyName: string }) {
       />
       <div className="absolute inset-0 bg-gradient-to-r from-[#142438]/95 via-[#142438]/75 to-[#142438]/35" />
       <div className="relative z-[1] px-5 py-7 sm:px-8 sm:py-9 lg:max-w-[62%]">
+        <div className="mb-2 flex flex-wrap items-center gap-2.5">
+          <p className="m-0 text-[12px] font-medium uppercase tracking-[0.14em] text-[#e8c56a]">Employer portal</p>
+          <span
+            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium ${
+              verified ? 'bg-[#2f7d4a]/25 text-[#7dcea0]' : 'bg-[#b28a49]/25 text-[#e8c56a]'
+            }`}
+          >
+            {verified ? 'Verified Employer' : 'Employer'}
+          </span>
+        </div>
         <h1
           className="m-0 text-[clamp(26px,3.4cqi,40px)] font-semibold leading-[1.1] tracking-[-0.02em] text-[#e8c56a]"
           style={{ fontFamily: 'var(--font-display)' }}

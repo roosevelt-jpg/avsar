@@ -21,6 +21,7 @@ import { getAnalytics, parseRange, RANGES } from '@/lib/console/analytics';
 import { getPlatformSnapshot } from '@/lib/console/platform-snapshot';
 import { workQueue } from '@/lib/console/due';
 import { getSiteSettings } from '@/lib/cms/data';
+import { roleName } from '@/lib/rbac/permissions';
 import { can, requirePermission } from '@/lib/rbac/server';
 
 export const metadata = { title: 'Console' };
@@ -110,6 +111,7 @@ export default async function ConsoleDashboard({ searchParams }: { searchParams:
           canPostJob={can(access, 'jobs.edit')}
           canAddEmployer={can(access, 'employers.manage')}
           canEditCms={can(access, 'cms.edit')}
+          roleLabel={roleName(access.role)}
         />
         <StaffPlatformStatStrip snapshot={snapshot} growthPct={growthPct} />
       </div>

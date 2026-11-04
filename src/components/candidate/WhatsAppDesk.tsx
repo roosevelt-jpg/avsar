@@ -187,7 +187,7 @@ export function WhatsAppDesk({ phone, hours, copy }: { phone: string; hours: str
         type="button"
         aria-label="Chat"
         title="Chat"
-        className="btn-gradient fixed bottom-4 end-4 z-50 inline-flex size-11 items-center justify-center rounded-[10px] p-0 shadow-[0_10px_24px_-12px_rgba(20,36,56,0.55)]"
+        className="btn-gradient fixed bottom-[max(1rem,env(safe-area-inset-bottom))] end-[max(1rem,env(safe-area-inset-right))] z-50 inline-flex size-11 items-center justify-center rounded-[10px] p-0 shadow-[0_10px_24px_-12px_rgba(20,36,56,0.55)]"
         onClick={() => dialog.current?.showModal()}
       >
         <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>

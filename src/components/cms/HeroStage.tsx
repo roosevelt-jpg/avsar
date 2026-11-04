@@ -65,7 +65,7 @@ export function HeroStage({
       <section
         aria-roledescription={count > 1 ? 'carousel' : undefined}
         aria-label="Introduction"
-        className="relative isolate min-h-[min(88vh,760px)] overflow-hidden bg-[#142438] text-white"
+        className="relative isolate min-h-[min(72dvh,760px)] overflow-hidden bg-[#142438] text-white sm:min-h-[min(88vh,760px)]"
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
       >
@@ -95,7 +95,7 @@ export function HeroStage({
             <div className="absolute inset-0 bg-gradient-to-r from-[#142438]/92 via-[#142438]/72 to-[#142438]/28" />
           </>
         ) : null}
-        <div className="relative mx-auto flex min-h-[min(88vh,760px)] w-full max-w-[1200px] flex-col justify-center px-[clamp(20px,4cqi,56px)] py-[clamp(56px,9cqi,112px)]">
+        <div className="relative mx-auto flex min-h-[min(72dvh,760px)] w-full max-w-[1200px] flex-col justify-center px-[clamp(16px,4cqi,56px)] py-[clamp(40px,9cqi,112px)] sm:min-h-[min(88vh,760px)]">
           <div className="max-w-[640px]">
             {lead ? <div className="mb-4">{lead}</div> : null}
             {children}
@@ -209,16 +209,16 @@ export function HeroStage({
               </div>
 
               {badge?.label ? (
-                <div className="absolute end-3 top-3 z-10 sm:end-5 sm:top-5">
+                <div className="absolute end-3 top-3 z-10 max-w-[min(100%-1.5rem,22rem)] sm:end-5 sm:top-5">
                   {badge.href ? (
                     <Link
                       href={badge.href}
-                      className="inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-2 text-[13px] font-semibold text-[#142438] no-underline shadow-[0_8px_24px_rgba(0,0,0,0.18)]"
+                      className="inline-flex max-w-full items-center gap-2 rounded-full bg-white px-3.5 py-2 text-[13px] font-semibold text-[#142438] no-underline shadow-[0_8px_24px_rgba(0,0,0,0.18)]"
                     >
                       <span aria-hidden className="text-[16px] leading-none">
                         🇵🇹
                       </span>
-                      <span>
+                      <span className="min-w-0 leading-[1.25] [overflow-wrap:anywhere]">
                         {badge.label.includes('Portugal') ? (
                           <>
                             {badge.label.replace(/Portugal/i, '').trim()}{' '}
@@ -235,8 +235,8 @@ export function HeroStage({
                       </span>
                     </Link>
                   ) : (
-                    <span className="inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-2 text-[13px] font-semibold text-[#142438] shadow-[0_8px_24px_rgba(0,0,0,0.18)]">
-                      <span aria-hidden className="text-[16px] leading-none">
+                    <span className="inline-flex max-w-full items-center gap-2 rounded-full bg-white px-3.5 py-2 text-[13px] font-semibold leading-[1.25] text-[#142438] shadow-[0_8px_24px_rgba(0,0,0,0.18)] [overflow-wrap:anywhere]">
+                      <span aria-hidden className="shrink-0 text-[16px] leading-none">
                         🇵🇹
                       </span>
                       {badge.label}

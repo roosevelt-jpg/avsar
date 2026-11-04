@@ -99,7 +99,11 @@ export function RoleShowcase({
 
   return (
     <div>
-      <div role="tablist" aria-label={label} className="flex gap-x-8 gap-y-2 overflow-x-auto border-b border-[#142438]/15">
+      <div
+        role="tablist"
+        aria-label={label}
+        className="-mx-1 flex gap-x-6 gap-y-2 overflow-x-auto border-b border-[#142438]/15 px-1 pe-8 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden sm:gap-x-8"
+      >
         {areas.map((item, index) => {
           const selected = index === current.areaIndex;
           return (
@@ -108,7 +112,7 @@ export function RoleShowcase({
               type="button"
               role="tab"
               aria-selected={selected}
-              className={`-mb-px shrink-0 cursor-pointer border-b-[3px] bg-transparent pb-3 text-[16px] font-semibold whitespace-nowrap ${
+              className={`-mb-px shrink-0 cursor-pointer border-b-[3px] bg-transparent pb-3 text-[15px] font-semibold whitespace-nowrap sm:text-[16px] ${
                 selected ? 'border-[#b28a49] text-[#142438]' : 'border-transparent text-[#3d5168] hover:text-[#142438]'
               }`}
               onClick={() => chooseArea(index)}

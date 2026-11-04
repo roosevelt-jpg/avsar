@@ -81,9 +81,11 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
 
   return (
     <footer className="relative overflow-hidden bg-[#142438] text-white">
-      <div className="relative mx-auto grid w-full max-w-[1200px] gap-10 px-[clamp(20px,4cqi,56px)] pt-[clamp(48px,7cqi,80px)] pb-10 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.75fr)_minmax(0,0.75fr)_minmax(0,1fr)]">
-        <div>
-          <Wordmark href={page('/')} tone="dark" size={40} />
+      <div className="relative mx-auto grid w-full max-w-[1200px] gap-10 px-[clamp(16px,4cqi,56px)] pt-[clamp(40px,7cqi,80px)] pb-10 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.75fr)_minmax(0,0.75fr)_minmax(0,1fr)]">
+        <div className="sm:col-span-2 lg:col-span-1">
+          <span className="inline-block max-w-[min(208px,70vw)]">
+            <Wordmark href={page('/')} tone="dark" size={36} />
+          </span>
           {footer.blurb ? (
             <p className="m-0 mt-5 max-w-[38ch] text-[14px] leading-[1.6] text-white/88">{t(footer.blurb)}</p>
           ) : null}
@@ -92,7 +94,7 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
               {footer.trustBadges.map((badge) => (
                 <li
                   key={badge.label}
-                  className="inline-flex items-center gap-2 rounded-[6px] border border-[var(--color-gold)]/55 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.06em] text-white/95"
+                  className="inline-flex max-w-full items-center gap-2 rounded-[6px] border border-[var(--color-gold)]/55 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.04em] text-white/95 [overflow-wrap:anywhere]"
                 >
                   <Icon name={asIcon(badge.icon)} className="size-3.5 text-[var(--color-gold)]" />
                   {t(badge.label)}

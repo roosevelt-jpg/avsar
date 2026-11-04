@@ -71,10 +71,10 @@ export function SignupMarketingShell({
             <div className="absolute inset-0 bg-[#142438]/55" />
             <div className="absolute inset-0 bg-gradient-to-r from-[#142438]/92 via-[#142438]/72 to-[#142438]/25" />
           </div>
-          <div className="relative mx-auto flex w-full max-w-[1200px] flex-col justify-center px-[clamp(20px,4cqi,56px)] pb-[clamp(88px,12cqi,140px)] pt-[clamp(40px,6cqi,72px)]">
+          <div className="relative mx-auto flex w-full max-w-[1200px] flex-col justify-center px-[clamp(16px,4cqi,56px)] pb-[clamp(72px,12cqi,140px)] pt-[clamp(32px,6cqi,72px)]">
             <div className="max-w-[640px]">
               <p className="eyebrow-gold m-0">{t('Candidate Registration')}</p>
-              <h1 className="display-serif m-0 mt-4 text-balance text-[clamp(34px,5cqi,56px)] font-normal leading-[1.08]">
+              <h1 className="display-serif m-0 mt-4 text-balance text-[clamp(28px,5cqi,56px)] font-normal leading-[1.08]">
                 {t('Create Your Candidate Profile')}
               </h1>
               <p className="m-0 mt-5 max-w-[48ch] text-[clamp(15px,1.6cqi,18px)] leading-[1.55] text-white/88">

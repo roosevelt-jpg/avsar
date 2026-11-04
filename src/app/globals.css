@@ -446,7 +446,23 @@ textarea {
   margin: 0;
 }
 
+/* Sticky job filters / section chips sit below announce + header. */
+:root {
+  --shop-announce-height: 0px;
+  --shop-header-height: 64px;
+  --shop-sticky-offset: calc(var(--shop-announce-height) + var(--shop-header-height));
+}
+:root:has(.announce-bar) {
+  --shop-announce-height: 40px;
+}
+@media (min-width: 640px) {
+  :root {
+    --shop-header-height: 72px;
+  }
+}
+
 .shop-header {
+  position: relative;
   background: #142438;
   color: #f4f8fb;
 }
@@ -496,24 +512,15 @@ textarea {
 .hero-mesh {
   background: transparent;
 }
-/* The four choices sit on one line. The text column is too narrow for them,
-   so on a wide screen the row runs into the space beside it. */
+/* Intent chips wrap inside the hero text column on every breakpoint. */
 .intent-row {
   flex-wrap: wrap;
+  width: 100%;
+  max-width: 100%;
   overflow: visible;
 }
 .intent-row a {
   white-space: normal;
-}
-@media (min-width: 1024px) {
-  .intent-row {
-    flex-wrap: nowrap;
-    width: calc(100% * 2 / 1.05 + clamp(28px, 4cqi, 64px));
-    overflow: visible;
-  }
-  .intent-row a {
-    white-space: nowrap;
-  }
 }
 .hero-progress-track {
   position: relative;
@@ -578,11 +585,11 @@ textarea {
    The middle scrolls; the title and the hours stay put. */
 dialog.wa-panel[open] {
   position: fixed;
-  inset-inline: auto 14px;
-  inset-block: auto 64px;
-  width: min(300px, calc(100vw - 28px));
+  inset-inline: auto max(14px, env(safe-area-inset-right));
+  inset-block: auto max(64px, calc(52px + env(safe-area-inset-bottom)));
+  width: min(300px, calc(100vw - 28px - env(safe-area-inset-left) - env(safe-area-inset-right)));
   height: fit-content;
-  max-height: min(340px, calc(100dvh - 96px));
+  max-height: min(70dvh, calc(100dvh - 96px - env(safe-area-inset-bottom)));
   margin: 0;
   display: flex;
   flex-direction: column;
@@ -743,13 +750,13 @@ dialog.wa-panel[open] {
   color: #142438;
 }
 
-/* Malayalam and Tamil words are long and their glyphs wide: at the 36px
-   minimum the hero heading breaks mid-word on a 360px phone. Below 480px
-   their page headings step down instead. The :lang() selector outranks the
-   utility class, which is the point. */
+/* Long Indic scripts (and dense English heroes) need a lower floor on phones
+   so the first viewport does not overflow. Utility clamp mins lose to this. */
 @media (max-width: 480px) {
-  :is(:lang(ml), :lang(ta)) h1 {
-    font-size: 28px;
+  .market h1,
+  .market .display-serif,
+  :is(:lang(ml), :lang(ta), :lang(hi), :lang(bn), :lang(te), :lang(kn), :lang(gu), :lang(mr), :lang(pa)) h1 {
+    font-size: clamp(26px, 7.2vw, 32px);
   }
 }
 
@@ -1074,9 +1081,17 @@ svg {
     gap: 8px;
   }
   dialog.wa-panel[open] {
-    inset-inline: 12px;
+    inset-inline: max(12px, env(safe-area-inset-left)) max(12px, env(safe-area-inset-right));
     width: auto;
   }
+}
+
+/* Sticky page chips / filter asides clear the marketing header. */
+.shop-sticky {
+  top: var(--shop-sticky-offset);
+}
+html {
+  scroll-padding-top: calc(var(--shop-sticky-offset) + 12px);
 }
 
 /* Visually hidden, still announced by screen readers. */

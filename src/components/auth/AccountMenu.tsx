@@ -61,25 +61,33 @@ export async function AccountMenu({
   }
 
   return (
-    /* nowrap: in the site header this sits beside the main menu, and a wrapped
-       "Sign out" would push the menu links under the language button. */
-    <span className="flex items-center gap-3 whitespace-nowrap">
+    /* On phones keep one control; full labels appear from md so the header
+       never overflows beside the language menu. */
+    <span className="flex items-center gap-1.5 sm:gap-3">
       <Mono className="hidden text-muted 2xl:inline">{who}</Mono>
       {links.map((link) => (
         <Link
           key={link.href}
           href={link.href}
-          className={`text-[15px] no-underline text-ink-2 t-colors ${hover}`}
+          title={link.label}
+          className={`t-colors text-[15px] no-underline text-ink-2 ${hover}`}
         >
-          {link.label}
+          <svg viewBox="0 0 24 24" className="size-5 md:hidden" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
+            <path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-9.5z" strokeLinejoin="round" />
+          </svg>
+          <span className="sr-only md:not-sr-only">{link.label}</span>
         </Link>
       ))}
       <form action="/auth/signout" method="post">
         <button
           type="submit"
+          title={t.auth.signOut}
           className={`t-colors cursor-pointer border-0 bg-transparent px-1 py-2 text-[15px] text-ink-2 ${hover}`}
         >
-          {t.auth.signOut}
+          <span className="sr-only md:not-sr-only">{t.auth.signOut}</span>
+          <svg viewBox="0 0 24 24" className="size-5 md:hidden" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
+            <path d="M10 7V5a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-8a1 1 0 0 1-1-1v-2M14 12H4m0 0 3-3M4 12l3 3" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
         </button>
       </form>
     </span>

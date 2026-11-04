@@ -82,7 +82,7 @@ export function EmployerHero({
     <section
       aria-roledescription="carousel"
       aria-label="Employer introduction"
-      className="relative min-h-[min(88vh,760px)] overflow-hidden bg-[#142438] text-white"
+      className="relative min-h-[min(72dvh,760px)] overflow-hidden bg-[#142438] text-white sm:min-h-[min(88vh,760px)]"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
@@ -108,7 +108,7 @@ export function EmployerHero({
         className="absolute inset-0 bg-[linear-gradient(105deg,rgba(20,36,56,0.90)_0%,rgba(20,36,56,0.74)_40%,rgba(20,36,56,0.38)_68%,rgba(20,36,56,0.22)_100%)]"
       />
 
-      <div className="relative z-10 mx-auto flex min-h-[min(88vh,760px)] w-full max-w-[1200px] flex-col justify-center px-[clamp(20px,4cqi,56px)] py-[clamp(56px,8cqi,96px)]">
+      <div className="relative z-10 mx-auto flex min-h-[min(72dvh,760px)] w-full max-w-[1200px] flex-col justify-center px-[clamp(16px,4cqi,56px)] py-[clamp(40px,8cqi,96px)] sm:min-h-[min(88vh,760px)]">
         <div className="max-w-[36rem]">
           {eyebrow ? (
             <p className="m-0 inline-flex items-center gap-2.5 text-[12px] font-semibold uppercase tracking-[0.18em] text-[var(--color-gold)]">
@@ -116,7 +116,7 @@ export function EmployerHero({
               {eyebrow}
             </p>
           ) : null}
-          <h1 className="display-serif m-0 mt-4 text-balance text-[clamp(36px,5.4cqi,64px)] font-normal leading-[1.08] tracking-[-0.02em]">
+          <h1 className="display-serif m-0 mt-4 text-balance text-[clamp(28px,5.4cqi,64px)] font-normal leading-[1.08] tracking-[-0.02em]">
             {accentTitle(headline, accentWord)}
           </h1>
           {intro ? <p className="m-0 mt-5 max-w-[42ch] text-[clamp(16px,1.7cqi,19px)] leading-[1.55] text-white/88">{intro}</p> : null}

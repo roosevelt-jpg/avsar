@@ -141,8 +141,8 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
       <Heading
         className={`m-0 text-balance break-words leading-[1.08] tracking-[-0.02em] ${
           onDark
-            ? 'display-serif text-[clamp(36px,5.2cqi,64px)] font-normal text-white'
-            : 'text-[clamp(34px,4.6cqi,56px)] font-semibold'
+            ? 'display-serif text-[clamp(28px,5.2cqi,64px)] font-normal text-white'
+            : 'text-[clamp(28px,4.6cqi,56px)] font-semibold'
         }`}
       >
         {accentTitle(str(data, 'title'), accentWord)}
@@ -258,10 +258,10 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
       )}
 
       {stats.length > 0 && !brand && !overlay && (
-        <dl className="m-0 mt-10 grid max-w-[560px] grid-cols-3 gap-6 border-t border-line pt-6">
+        <dl className="m-0 mt-10 grid max-w-[560px] grid-cols-1 gap-5 border-t border-line pt-6 sm:grid-cols-3 sm:gap-6">
           {stats.map((stat, index) => (
             <div key={index} className="min-w-0">
-              <dd className="m-0 text-[26px] font-semibold tracking-[-0.03em] text-ink">{str(stat, 'value')}</dd>
+              <dd className="m-0 text-[22px] font-semibold tracking-[-0.03em] text-ink sm:text-[26px]">{str(stat, 'value')}</dd>
               <dt className="m-0 mt-1 text-[13px] leading-[1.4] text-ink-2 [overflow-wrap:anywhere]">{str(stat, 'label')}</dt>
             </div>
           ))}

@@ -91,7 +91,8 @@ export function EmployerStrip({
 
   return (
     <div className="relative">
-      <div ref={frame} dir="ltr" className="employer-strip overflow-hidden">
+      {/* Side inset keeps logos clear of the arrow controls on phones. */}
+      <div ref={frame} dir="ltr" className="employer-strip overflow-hidden px-12 sm:px-14">
         <ul ref={track} className="m-0 flex w-max list-none p-0">
           {Array.from({ length: repeat * 2 }, (_, group) => cards(group))}
         </ul>
@@ -99,7 +100,7 @@ export function EmployerStrip({
       <button
         type="button"
         aria-label={previousLabel}
-        className="absolute start-0 top-1/2 grid size-10 -translate-y-1/2 cursor-pointer place-items-center rounded-full border border-[#b28a49] bg-white text-[#142438] shadow-[0_1px_2px_rgba(20,36,56,0.08)] hover:bg-[#142438] hover:text-white"
+        className="absolute start-0 top-1/2 z-10 grid size-10 -translate-y-1/2 cursor-pointer place-items-center rounded-full border border-[#b28a49] bg-white text-[#142438] shadow-[0_1px_2px_rgba(20,36,56,0.08)] hover:bg-[#142438] hover:text-white"
         onClick={() => place(offset.current - STRIDE)}
       >
         <svg viewBox="0 0 24 24" className="size-5 rtl:-scale-x-100" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden>
@@ -109,7 +110,7 @@ export function EmployerStrip({
       <button
         type="button"
         aria-label={nextLabel}
-        className="absolute end-0 top-1/2 grid size-10 -translate-y-1/2 cursor-pointer place-items-center rounded-full border border-[#b28a49] bg-white text-[#142438] shadow-[0_1px_2px_rgba(20,36,56,0.08)] hover:bg-[#142438] hover:text-white"
+        className="absolute end-0 top-1/2 z-10 grid size-10 -translate-y-1/2 cursor-pointer place-items-center rounded-full border border-[#b28a49] bg-white text-[#142438] shadow-[0_1px_2px_rgba(20,36,56,0.08)] hover:bg-[#142438] hover:text-white"
         onClick={() => place(offset.current + STRIDE)}
       >
         <svg viewBox="0 0 24 24" className="size-5 rtl:-scale-x-100" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden>

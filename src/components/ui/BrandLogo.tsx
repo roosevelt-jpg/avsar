@@ -26,7 +26,9 @@ export function BrandLogo({
       height={height}
       viewBox="0 0 280 54"
       aria-hidden
-      className={`shrink-0 ${className}`}
+      /* max-w keeps the wide mark from shoving header controls off a phone. */
+      className={`h-auto max-w-full shrink ${className}`}
+      style={{ width: `min(100%, ${width}px)` }}
     >
       <text
         x="0"

@@ -86,7 +86,7 @@ export function EmployerRegisterHero({
               {eyebrow}
             </p>
           ) : null}
-          <h1 className="display-serif m-0 mt-4 text-balance text-[clamp(34px,5.2cqi,56px)] font-normal leading-[1.08]">
+          <h1 className="display-serif m-0 mt-4 text-balance text-[clamp(28px,5.2cqi,56px)] font-normal leading-[1.08]">
             {headline}
           </h1>
           {intro ? (

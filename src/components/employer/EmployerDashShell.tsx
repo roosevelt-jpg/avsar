@@ -25,7 +25,7 @@ export async function EmployerDashShell({
   current,
   companyName,
   verified,
-  initials,
+  initials: _initials,
   avatarUrl,
   email,
   applicantBadge = 0,
@@ -42,6 +42,7 @@ export async function EmployerDashShell({
   whatsapp?: string;
   children: React.ReactNode;
 }) {
+  void _initials;
   const support = whatsapp ? whatsappHref(whatsapp) : '';
 
   const items: { key: EmployerNavKey; href: string; label: string; match: string[]; badge?: number }[] = [
@@ -101,33 +102,6 @@ export async function EmployerDashShell({
     </nav>
   );
 
-  const companyBlock = (
-    <div className="flex items-center gap-3 px-5 py-4">
-      <span
-        aria-hidden
-        className="flex size-12 items-center justify-center overflow-hidden rounded-full bg-[#b28a49]/20 text-[14px] font-semibold text-[#e8c56a]"
-      >
-        {avatarUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element -- employer logo path from storage; size unknown
-          <img src={avatarUrl} alt="" className="size-full object-cover" />
-        ) : (
-          initials || '?'
-        )}
-      </span>
-      <div className="min-w-0">
-        <p className="m-0 truncate text-[15px] font-medium text-white">{companyName}</p>
-        <p className="m-0 mt-0.5 flex flex-wrap items-center gap-2 text-[12px] text-white/55">
-          Employer
-          {verified ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-[#2f7d4a]/25 px-2 py-0.5 text-[11px] font-medium text-[#7dcea0]">
-              ✓ Verified Employer
-            </span>
-          ) : null}
-        </p>
-      </div>
-    </div>
-  );
-
   return (
     <div className="employer-dash min-h-screen bg-[#f4f2ee] text-ink">
       <details className="group border-b border-[#1e334d] bg-[#142438] lg:hidden">
@@ -137,8 +111,7 @@ export async function EmployerDashShell({
             Menu
           </span>
         </summary>
-        <div className="border-t border-white/10 pb-4">
-          {companyBlock}
+        <div className="border-t border-white/10 pb-4 pt-2">
           {navList}
           {support ? <SupportCard href={support} /> : null}
         </div>
@@ -148,7 +121,6 @@ export async function EmployerDashShell({
         <div className="border-b border-white/10 px-5 py-5">
           <Wordmark href="/admin/employer" size={26} tone="dark" accent="employer" />
         </div>
-        <div className="border-b border-white/10">{companyBlock}</div>
         {navList}
         {support ? (
           <div className="mt-auto border-t border-white/10 p-4">
@@ -176,7 +148,7 @@ export async function EmployerDashShell({
               <ProfileMenu
                 name={companyName}
                 email={email}
-                roleLabel="Employer"
+                roleLabel={verified ? 'Verified Employer' : 'Employer'}
                 avatarUrl={avatarUrl}
                 links={[{ href: '/admin/vacancies#company', label: 'Company profile' }]}
               />

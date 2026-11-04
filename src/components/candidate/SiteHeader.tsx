@@ -56,7 +56,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
   return (
     <>
       {announcement.enabled && announcement.text ? (
-        <div className="announce-bar">
+        <div className="announce-bar" data-announce="">
           <p className="announce-item">
             <span className="announce-dot" aria-hidden />
             <span>{announcement.text}</span>
@@ -69,18 +69,20 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
         </div>
       ) : null}
 
-      <header className="shop-header sticky top-0 z-40 px-[clamp(16px,4cqi,56px)] py-4">
-        {/* Mockup header: large wordmark, white nav, outline Sign in, gold CTA. */}
-        <div className="mx-auto flex w-full max-w-[1280px] items-center justify-between gap-4 whitespace-nowrap sm:gap-6">
-          <Wordmark href={localePath(locale, '/')} tone="dark" size={40} />
+      <header className="shop-header sticky top-0 z-40 px-[clamp(12px,4cqi,56px)] py-3 sm:py-4">
+        {/* Mockup header: wordmark scales down on phones so locale + account stay on one row. */}
+        <div className="mx-auto flex w-full min-w-0 max-w-[1280px] items-center justify-between gap-2 sm:gap-4 md:gap-6">
+          <span className="min-w-0 max-w-[min(168px,42vw)] shrink sm:max-w-none">
+            <Wordmark href={localePath(locale, '/')} tone="dark" size={32} />
+          </span>
 
           <MarketNav
             items={navigation.items.map((item) => ({ href: localHref(locale, item.href), label: navLabel(item, locale) }))}
             className={`hidden min-w-0 items-center gap-[clamp(14px,1.4vw,22px)] text-[15px] font-medium text-white ${wide}`}
-            linkClassName="t-colors text-white/95 hover:text-[var(--color-gold)]"
+            linkClassName="t-colors whitespace-nowrap text-white/95 hover:text-[var(--color-gold)]"
           />
 
-          <div className="flex shrink-0 items-center gap-3 [&>*]:shrink-0">
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
             <LocaleToggle locale={locale} />
             <AccountMenu locale={locale} />
             {showCta ? (
@@ -96,7 +98,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
             <details className={`group relative ${narrow}`}>
               <summary
                 aria-label="Menu"
-                className="grid size-10 cursor-pointer list-none place-items-center rounded-[8px] border border-white/55 bg-transparent text-white [&::-webkit-details-marker]:hidden"
+                className="grid size-9 cursor-pointer list-none place-items-center rounded-[8px] border border-white/55 bg-transparent text-white sm:size-10 [&::-webkit-details-marker]:hidden"
               >
                 <svg viewBox="0 0 24 24" className="size-5 group-open:hidden" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
                   <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />

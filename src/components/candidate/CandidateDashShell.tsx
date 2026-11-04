@@ -110,26 +110,7 @@ export async function CandidateDashShell({
             Menu
           </span>
         </summary>
-        <div className="border-t border-white/10 pb-4">
-          <div className="flex items-center gap-3 px-4 py-4">
-            <span
-              aria-hidden
-              className="flex size-11 items-center justify-center rounded-full bg-[#b28a49]/20 text-[14px] font-semibold text-[#e8c56a]"
-            >
-              {initials || '?'}
-            </span>
-            <div className="min-w-0">
-              <p className="m-0 truncate text-[15px] font-medium text-white">{candidate.fullName}</p>
-              <p className="m-0 mt-0.5 flex flex-wrap items-center gap-2 text-[12px] text-white/55">
-                Candidate
-                {candidate.emailConfirmed ? (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-[#b28a49]/25 px-2 py-0.5 text-[11px] font-medium text-[#e8c56a]">
-                    Verified
-                  </span>
-                ) : null}
-              </p>
-            </div>
-          </div>
+        <div className="border-t border-white/10 pb-4 pt-2">
           {navList}
           {support ? (
             <div className="mx-3 mt-2 rounded-[14px] border border-white/10 bg-[#1a2d45] p-3">
@@ -150,25 +131,6 @@ export async function CandidateDashShell({
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-[272px] flex-col bg-[#142438] text-white lg:flex">
         <div className="border-b border-white/10 px-5 py-5">
           <Wordmark href={localePath(locale, '/')} size={26} tone="dark" />
-        </div>
-        <div className="flex items-center gap-3 border-b border-white/10 px-5 py-4">
-          <span
-            aria-hidden
-            className="flex size-12 items-center justify-center rounded-full bg-[#b28a49]/20 text-[15px] font-semibold text-[#e8c56a]"
-          >
-            {initials || '?'}
-          </span>
-          <div className="min-w-0">
-            <p className="m-0 truncate text-[15px] font-medium">{candidate.fullName}</p>
-            <p className="m-0 mt-0.5 flex flex-wrap items-center gap-2 text-[12px] text-white/55">
-              Candidate
-              {candidate.emailConfirmed ? (
-                <span className="inline-flex items-center gap-1 rounded-full bg-[#b28a49]/25 px-2 py-0.5 text-[11px] font-medium text-[#e8c56a]">
-                  ✓ Verified
-                </span>
-              ) : null}
-            </p>
-          </div>
         </div>
         {navList}
         {support ? (

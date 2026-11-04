@@ -7,7 +7,8 @@ import type { ReactNode } from 'react';
  * Marketing palette on public shopfront pages. Dashboard, assessment and
  * account screens stay on the quiet console tokens.
  */
-const QUIET = /\/(dashboard|assessment|signin|signup|go|reset-password)(\/|$)/;
+/* Signup keeps the marketing palette so the registration hero matches the shop. */
+const QUIET = /\/(dashboard|assessment|signin|go|reset-password)(\/|$)/;
 
 export function MarketShell({ children }: { children: ReactNode }) {
   const path = usePathname() ?? '';

@@ -287,7 +287,12 @@ export default async function DashboardPage({
         ) : null}
 
         <div className="flex flex-col gap-5">
-          <DashboardHero locale={locale} firstName={firstName} assessmentComplete={status.assessmentComplete} />
+          <DashboardHero
+            locale={locale}
+            firstName={firstName}
+            assessmentComplete={status.assessmentComplete}
+            verified={candidate.emailConfirmed}
+          />
           <DashboardStatStrip
             matchedJobs={matchedJobs}
             inProgress={activeApplications.length}

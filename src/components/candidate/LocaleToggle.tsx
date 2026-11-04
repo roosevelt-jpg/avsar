@@ -18,18 +18,23 @@ export function LocaleToggle({ locale }: { locale: Locale }) {
     <details className="group relative">
       <summary
         aria-label="Language"
-        className="t-colors flex cursor-pointer list-none items-center gap-1.5 rounded-[8px] border border-white/55 bg-transparent px-2.5 py-2 text-[13px] font-medium text-white [&::-webkit-details-marker]:hidden"
+        className="t-colors flex cursor-pointer list-none items-center gap-1 rounded-[8px] border border-white/55 bg-transparent px-2 py-2 text-[13px] font-medium text-white sm:gap-1.5 sm:px-2.5 [&::-webkit-details-marker]:hidden"
       >
         <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth={1.7} aria-hidden>
           <circle cx="12" cy="12" r="9" />
           <path d="M3 12h18 M12 3c2.5 2.5 3.5 5.5 3.5 9s-1 6.5-3.5 9c-2.5-2.5-3.5-5.5-3.5-9s1-6.5 3.5-9z" />
         </svg>
-        <span lang={locale}>{localeLabels[locale]}</span>
-        <svg viewBox="0 0 24 24" className="size-3.5 text-white/80 group-open:rotate-180" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
+        <span lang={locale} className="hidden sm:inline">
+          {localeLabels[locale]}
+        </span>
+        <span lang={locale} className="font-mono text-[11px] uppercase sm:hidden">
+          {locale}
+        </span>
+        <svg viewBox="0 0 24 24" className="hidden size-3.5 text-white/80 group-open:rotate-180 sm:block" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
           <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </summary>
-      <ul className="absolute end-0 z-50 m-0 mt-2 max-h-[min(70vh,420px)] w-[220px] list-none overflow-auto rounded-[12px] border border-[#142438]/12 bg-white p-1.5 shadow-[0_24px_60px_-24px_rgba(20,36,56,0.45)]">
+      <ul className="absolute end-0 z-50 m-0 mt-2 max-h-[min(70vh,420px)] w-[min(220px,calc(100vw-24px))] list-none overflow-auto rounded-[12px] border border-[#142438]/12 bg-white p-1.5 shadow-[0_24px_60px_-24px_rgba(20,36,56,0.45)]">
         {locales.map((code) => {
           const active = code === locale;
           return (
