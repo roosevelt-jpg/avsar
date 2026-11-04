@@ -48,7 +48,7 @@ type Selection =
   | { kind: 'staff'; staff: StaffCard }
   | null;
 
-export function WhatsAppDesk({ phone, hours, copy }: { phone: string; hours: string; copy: WhatsAppDeskCopy }) {
+export function WhatsAppDesk({ phone, copy }: { phone: string; copy: WhatsAppDeskCopy }) {
   const digits = phone.replace(/[^\d]/g, '');
   const dialog = useRef<HTMLDialogElement>(null);
   const threadRef = useRef('');
@@ -214,13 +214,11 @@ export function WhatsAppDesk({ phone, hours, copy }: { phone: string; hours: str
                   : selection.staff.displayName
                 : copy.title}
             </p>
-            <p className="m-0 mt-0.5 line-clamp-2 text-[11px] leading-[1.35] text-ink-2">
-              {selection
-                ? selection.kind === 'agent'
-                  ? `${selection.agent.title} · AI · Online`
-                  : 'Live recruiter'
-                : copy.intro}
-            </p>
+            {selection ? (
+              <p className="m-0 mt-0.5 line-clamp-2 text-[11px] leading-[1.35] text-ink-2">
+                {selection.kind === 'agent' ? `${selection.agent.title} · AI · Online` : 'Live recruiter'}
+              </p>
+            ) : null}
           </div>
           <form method="dialog">
             <button
@@ -368,12 +366,6 @@ export function WhatsAppDesk({ phone, hours, copy }: { phone: string; hours: str
           </div>
         )}
 
-        <p className="m-0 shrink-0 border-t border-line px-3 py-2 text-[11px] leading-[1.35] text-muted">
-          {hours ? <span className="block line-clamp-2">{hours}</span> : null}
-          <span dir="ltr" className="mt-0.5 block font-mono text-[11px]">
-            {phone}
-          </span>
-        </p>
       </dialog>
     </>
   );
