@@ -581,6 +581,62 @@ textarea {
   animation-play-state: paused;
 }
 
+/* Press logos: one shared height, width from aspect ratio, full mark visible.
+   Two identical lists sit side by side so the -50% marquee loops cleanly. */
+.press-marquee {
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+}
+.press-marquee-track {
+  display: flex;
+  width: max-content;
+  align-items: center;
+  gap: 0;
+}
+.press-marquee-list {
+  display: flex;
+  align-items: center;
+  gap: clamp(2.5rem, 5cqi, 4.5rem);
+  margin: 0;
+  padding: 0.25rem clamp(1.5rem, 4cqi, 3rem);
+  list-style: none;
+}
+.press-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.5rem;
+  flex: none;
+}
+.press-logo-link {
+  display: inline-flex;
+  height: 100%;
+  align-items: center;
+  text-decoration: none;
+}
+.press-logo-img {
+  display: block;
+  height: 100%;
+  width: auto;
+  max-width: 11rem;
+  object-fit: contain;
+  object-position: center;
+  opacity: 0.72;
+  filter: grayscale(1);
+}
+.press-logo-fallback {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: rgba(20, 36, 56, 0.55);
+  white-space: nowrap;
+}
+.press-marquee:hover .press-marquee-track,
+.press-marquee:focus-within .press-marquee-track {
+  animation-play-state: paused;
+}
+
 /* Sit above the button, short enough that the title stays on screen.
    The middle scrolls; the title and the hours stay put. */
 dialog.wa-panel[open] {
@@ -634,7 +690,8 @@ dialog.wa-panel[open] {
   .anamorphic-mini,
   .hero-bleed,
   .announce-track,
-  .announce-dot {
+  .announce-dot,
+  .press-marquee-track {
     transform: none;
     animation: none;
   }
@@ -644,6 +701,23 @@ dialog.wa-panel[open] {
   }
   .announce-item[aria-hidden='true'] {
     display: none;
+  }
+  .press-marquee {
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+  .press-marquee-track {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .press-marquee-list[aria-hidden='true'] {
+    display: none;
+  }
+  .press-marquee-list {
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: 1rem;
   }
 }
 
@@ -853,6 +927,11 @@ body {
 }
 
 @media (prefers-reduced-motion: no-preference) {
+  .press-marquee-track {
+    animation: announce-marquee 42s linear infinite;
+    will-change: transform;
+  }
+
   .motion-float {
     animation: avsar-float 6s ease-in-out infinite;
     will-change: transform;

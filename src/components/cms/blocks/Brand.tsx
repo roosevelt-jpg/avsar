@@ -8,53 +8,65 @@ import { CmsButton, Icon, Section } from '../primitives';
 type Props = { data: BlockData; locale: Locale };
 
 /**
- * Publication logos / names for the home mockup press strip.
- * Logo images when present; otherwise the publication name as shell type.
+ * Publication logos for the home press strip.
+ *
+ * One shared height, width auto, object-contain — full marks, never stretched.
+ * The row is a CSS marquee (duplicated track); reduced-motion visitors get a
+ * static wrap instead.
  */
 export function PressBarBlock({ data }: Props) {
   const list = items(data, 'items').filter((item) => str(item, 'name'));
   if (!list.length) return null;
   const eyebrow = str(data, 'eyebrow');
+
+  function LogoRow({ hidden }: { hidden?: boolean }) {
+    return (
+      <ul className="press-marquee-list" aria-hidden={hidden ? true : undefined}>
+        {list.map((item, index) => {
+          const href = str(item, 'href');
+          const name = str(item, 'name');
+          const logoSrc = str(item, 'logo');
+          const mark = logoSrc ? (
+            // Native img keeps intrinsic aspect; next/image width/height forced a box.
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={logoSrc} alt={hidden ? '' : name} className="press-logo-img" />
+          ) : (
+            <span className="press-logo-fallback">{name}</span>
+          );
+          return (
+            <li key={`${hidden ? 'dup' : 'a'}-${index}`} className="press-logo">
+              {href ? (
+                <Link
+                  href={href}
+                  className="press-logo-link"
+                  tabIndex={hidden ? -1 : undefined}
+                  target={/^https?:/i.test(href) ? '_blank' : undefined}
+                  rel={/^https?:/i.test(href) ? 'noopener noreferrer' : undefined}
+                >
+                  {mark}
+                </Link>
+              ) : (
+                mark
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    );
+  }
+
   return (
-    <section className="border-y border-[#e6e0d6] bg-[#f3f1ec] px-[clamp(20px,4cqi,56px)] py-6">
-      <div className="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-4 sm:flex-row sm:gap-10">
-        {eyebrow ? (
-          <p className="m-0 shrink-0 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">{eyebrow}</p>
-        ) : null}
-        <ul className="m-0 flex list-none flex-wrap items-center justify-center gap-x-8 gap-y-4 p-0 sm:justify-start">
-          {list.map((item, index) => {
-            const href = str(item, 'href');
-            const name = str(item, 'name');
-            const logoSrc = str(item, 'logo');
-            const mark = logoSrc ? (
-              <Image
-                src={logoSrc}
-                alt={name}
-                width={120}
-                height={36}
-                className="h-7 w-auto max-w-[120px] object-contain opacity-70 grayscale"
-              />
-            ) : (
-              <span className="text-[13px] font-semibold tracking-[0.04em] text-[#142438]/55">{name}</span>
-            );
-            return (
-              <li key={index}>
-                {href ? (
-                  <Link
-                    href={href}
-                    className="inline-flex no-underline"
-                    target={/^https?:/i.test(href) ? '_blank' : undefined}
-                    rel={/^https?:/i.test(href) ? 'noopener noreferrer' : undefined}
-                  >
-                    {mark}
-                  </Link>
-                ) : (
-                  mark
-                )}
-              </li>
-            );
-          })}
-        </ul>
+    <section className="press-bar border-y border-[#e6e0d6] bg-[#f3f1ec] py-6">
+      {eyebrow ? (
+        <p className="m-0 mb-4 px-[clamp(20px,4cqi,56px)] text-center text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">
+          {eyebrow}
+        </p>
+      ) : null}
+      <div className="press-marquee" role="group" aria-label={eyebrow || 'As featured in'}>
+        <div className="press-marquee-track">
+          <LogoRow />
+          <LogoRow hidden />
+        </div>
       </div>
     </section>
   );
