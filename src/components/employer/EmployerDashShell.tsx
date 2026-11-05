@@ -103,7 +103,7 @@ export async function EmployerDashShell({
   );
 
   return (
-    <div className="employer-dash min-h-screen bg-[#f4f2ee] text-ink">
+    <div className="employer-dash min-h-screen bg-[#f4f5f7] text-ink">
       <details className="group border-b border-[#1e334d] bg-[#142438] lg:hidden">
         <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-white [&::-webkit-details-marker]:hidden">
           <Wordmark href="/admin/employer" size={22} tone="dark" accent="employer" />

@@ -76,7 +76,7 @@ function JobGridCard({ job, locale, priority, saved }: Omit<Props, 'variant' | '
         <p className="m-0 mt-3 line-clamp-2 text-[14px] leading-[1.55] text-muted">{job.summary}</p>
         <div className="mt-auto flex flex-wrap items-center gap-2 pt-4">
           {salary && (
-            <span className="rounded-[8px] bg-[#f3eee6] px-3 py-1 text-[13px] font-semibold text-[#142438]">{salary}</span>
+            <span className="rounded-[8px] bg-[#eef0f3] px-3 py-1 text-[13px] font-semibold text-[#142438]">{salary}</span>
           )}
           <span className="rounded-full border border-line px-3 py-1 text-[13px] text-ink-2">{siteText(locale, HOUSING_LABELS[job.housing])}</span>
           {job.openings > 1 && (
@@ -112,8 +112,8 @@ function JobListCard({
   const category = job.area ? siteText(locale, areaLabel(job.area)) : '';
 
   return (
-    <article className="relative grid grid-cols-1 overflow-hidden rounded-[12px] border border-[#e6e0d6] bg-white sm:grid-cols-[168px_minmax(0,1fr)]">
-      <div className="relative aspect-[4/3] bg-[#f3eee6] sm:aspect-auto sm:min-h-[176px]">
+    <article className="relative grid grid-cols-1 overflow-hidden rounded-[12px] border border-[#e2e5ea] bg-white sm:grid-cols-[168px_minmax(0,1fr)]">
+      <div className="relative aspect-[4/3] bg-[#eef0f3] sm:aspect-auto sm:min-h-[176px]">
         {image ? (
           <Image
             src={image}
@@ -189,7 +189,7 @@ function JobListCard({
         {job.summary ? <p className="m-0 line-clamp-2 text-[14px] leading-[1.5] text-ink-2">{job.summary}</p> : null}
 
         {salary ? (
-          <p className="m-0 rounded-[8px] bg-[#f3eee6] px-3 py-2 text-[13px] font-semibold text-[#142438] sm:hidden">{salary}</p>
+          <p className="m-0 rounded-[8px] bg-[#eef0f3] px-3 py-2 text-[13px] font-semibold text-[#142438] sm:hidden">{salary}</p>
         ) : null}
 
         <div className="mt-auto flex flex-wrap items-center justify-end gap-2 pt-1">

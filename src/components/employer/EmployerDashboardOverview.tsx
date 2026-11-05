@@ -267,7 +267,7 @@ export function HiringFunnelPanel({ applicants }: { applicants: EmployerApplican
               <span className="text-[#142438]">{stage.label}</span>
               <span className="font-semibold text-[#142438]">{stage.count}</span>
             </div>
-            <div className="h-2 overflow-hidden rounded-full bg-[#ece8e0]">
+            <div className="h-2 overflow-hidden rounded-full bg-[#e8eaed]">
               <div
                 className="h-full rounded-full bg-gradient-to-r from-[#b28a49] to-[#c9a35f]"
                 style={{ width: `${Math.round((stage.count / max) * 100)}%` }}

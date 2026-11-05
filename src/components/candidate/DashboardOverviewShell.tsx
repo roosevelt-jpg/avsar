@@ -117,7 +117,7 @@ export function DashboardStatStrip({
   ];
 
   return (
-    <ul className="m-0 grid list-none grid-cols-2 gap-x-6 gap-y-4 border-y border-[#e6e0d6] bg-transparent py-4 p-0 sm:grid-cols-3 xl:grid-cols-5">
+    <ul className="m-0 grid list-none grid-cols-2 gap-x-6 gap-y-4 border-y border-[#e2e5ea] bg-transparent py-4 p-0 sm:grid-cols-3 xl:grid-cols-5">
       {cards.map((card) => (
         <li key={card.label} className="flex min-w-0 items-start gap-3 overflow-hidden">
           <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center text-[#b28a49]">
@@ -129,7 +129,7 @@ export function DashboardStatStrip({
                 }}
                 aria-hidden
               >
-                <span className="absolute inset-[2.5px] rounded-full bg-[#f7f4ef]" />
+                <span className="absolute inset-[2.5px] rounded-full bg-[#f4f5f7]" />
               </span>
             ) : (
               <StatIcon name={card.icon} />
@@ -233,7 +233,7 @@ export function ApplicationProgressPanel({
                     {STATUS_META[application.status].label}
                   </span>
                 </div>
-                <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-[#ece8e0]">
+                <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-[#e8eaed]">
                   <div className="h-full rounded-full bg-[#b28a49]" style={{ width: `${pct}%` }} />
                 </div>
               </li>
@@ -359,7 +359,7 @@ export function RecommendedJobsPanel({ locale, jobs }: { locale: Locale; jobs: J
             <li key={job.id}>
               <Link
                 href={localePath(locale, `/jobs/${job.slug}`)}
-                className="t-colors block rounded-[12px] border border-[#142438]/08 bg-[#faf8f4] p-4 no-underline hover:border-[#b28a49]/50"
+                className="t-colors block rounded-[12px] border border-[#142438]/08 bg-[#f7f8fa] p-4 no-underline hover:border-[#b28a49]/50"
               >
                 <p className="m-0 text-[14px] font-semibold text-[#142438]">{job.title}</p>
                 <p className="m-0 mt-1 text-[12px] text-[#5c7084]">{job.city}</p>

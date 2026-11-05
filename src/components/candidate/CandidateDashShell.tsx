@@ -129,7 +129,7 @@ export async function CandidateDashShell({
       </aside>
 
       <div className="lg:pl-[260px]">
-        <header className="sticky top-0 z-20 border-b border-[#e6e0d6] bg-[#f7f4ef]/95 backdrop-blur-sm">
+        <header className="sticky top-0 z-20 border-b border-[#e2e5ea] bg-[#f4f5f7]/95 backdrop-blur-sm">
           <div className="flex flex-wrap items-center gap-3 px-4 py-2.5 sm:px-6 lg:px-8">
             <form action={jobsHref} method="get" className="relative min-w-0 flex-1">
               <label htmlFor="dash-job-search" className="sr-only">
@@ -146,7 +146,7 @@ export async function CandidateDashShell({
                 name="q"
                 type="search"
                 placeholder="Search jobs, employers or keywords..."
-                className="w-full rounded-[10px] border border-[#e6e0d6] bg-white py-2 pr-4 pl-10 text-[14px] text-[var(--dash-navy)] outline-none placeholder:text-[var(--dash-navy)]/40 focus:border-[var(--dash-navy)]/35"
+                className="w-full rounded-[10px] border border-[#e2e5ea] bg-white py-2 pr-4 pl-10 text-[14px] text-[var(--dash-navy)] outline-none placeholder:text-[var(--dash-navy)]/40 focus:border-[var(--dash-navy)]/35"
               />
             </form>
             <div className="flex items-center gap-2 sm:gap-3">

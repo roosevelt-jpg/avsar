@@ -82,7 +82,7 @@ export default async function RelocationPage({ params }: { params: Promise<{ loc
             </p>
           </div>
           <div
-            className="mt-4 h-2 overflow-hidden rounded-full bg-[#ece8e0]"
+            className="mt-4 h-2 overflow-hidden rounded-full bg-[#e8eaed]"
             role="progressbar"
             aria-valuenow={readiness.score}
             aria-valuemin={0}
@@ -133,7 +133,7 @@ export default async function RelocationPage({ params }: { params: Promise<{ loc
                             className={`rounded-full px-2.5 py-0.5 ${
                               readiness.verified.includes(kind)
                                 ? 'bg-success/15 text-[oklch(0.42_0.12_150)]'
-                                : 'bg-[#f4f2ee] text-muted'
+                                : 'bg-[#f4f5f7] text-muted'
                             }`}
                           >
                             {readiness.verified.includes(kind) ? '✓ ' : ''}

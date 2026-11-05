@@ -303,9 +303,9 @@ textarea {
   --color-gold: #b28a49;
   --color-gold-deep: #9a743c;
   --color-gold-soft: rgba(178, 138, 73, 0.16);
-  /* Soft ivory for section bands under navy heroes (mockup shopfront). */
-  --color-ivory: #f7f4ee;
-  --color-ivory-deep: #efe8dc;
+  /* Cool grey section bands under navy heroes (not warm cream). */
+  --color-ivory: #f4f5f7;
+  --color-ivory-deep: #eceef2;
   --font-display: var(--font-dm-serif), "Times New Roman", serif;
 }
 
@@ -742,11 +742,11 @@ dialog.wa-panel[open] {
   bg-ink / border-line / text-accent resolve through these variables.
 */
 .staff-dash {
-  --color-paper: #f4f2ee;
-  --color-canvas: #ece8e0;
+  --color-paper: #f4f5f7;
+  --color-canvas: #e8eaed;
   --color-surface: #ffffff;
-  --color-surface-subtle: #faf8f4;
-  --color-surface-hover: #f7f4ee;
+  --color-surface-subtle: #f7f8fa;
+  --color-surface-hover: #eef0f3;
   --color-ink: #142438;
   --color-ink-2: #3d4f63;
   --color-muted: #5c7084;
@@ -760,8 +760,8 @@ dialog.wa-panel[open] {
   --color-employer: #b28a49;
   --color-employer-deep: #8a6a34;
   --color-ink-hover: #1e334d;
-  --color-console: #f4f2ee;
-  --color-tint-sand: #f0ebe3;
+  --color-console: #f4f5f7;
+  --color-tint-sand: #eef0f3;
   --color-tint-clay: color-mix(in srgb, #b28a49 12%, #ffffff);
   --color-tint-sky: color-mix(in srgb, #142438 8%, #ffffff);
   --radius-card: 14px;
@@ -783,11 +783,11 @@ dialog.wa-panel[open] {
 
 /* Employer console shares the same navy/gold surface language. */
 .employer-dash {
-  --color-paper: #f4f2ee;
-  --color-canvas: #ece8e0;
+  --color-paper: #f4f5f7;
+  --color-canvas: #e8eaed;
   --color-surface: #ffffff;
-  --color-surface-subtle: #faf8f4;
-  --color-surface-hover: #f7f4ee;
+  --color-surface-subtle: #f7f8fa;
+  --color-surface-hover: #eef0f3;
   --color-ink: #142438;
   --color-ink-2: #3d4f63;
   --color-muted: #5c7084;
@@ -801,8 +801,8 @@ dialog.wa-panel[open] {
   --color-employer: #b28a49;
   --color-employer-deep: #8a6a34;
   --color-ink-hover: #1e334d;
-  --color-console: #f4f2ee;
-  --color-tint-sand: #f0ebe3;
+  --color-console: #f4f5f7;
+  --color-tint-sand: #eef0f3;
   --color-tint-clay: color-mix(in srgb, #b28a49 12%, #ffffff);
   --color-tint-sky: color-mix(in srgb, #142438 8%, #ffffff);
   --radius-card: 14px;
@@ -1113,7 +1113,7 @@ body {
 
 /* Candidate app shell tokens — same navy/gold craft as marketing, quieter chrome. */
 .candidate-dash {
-  --dash-canvas: #f4f2ee;
+  --dash-canvas: #f4f5f7;
   --dash-navy: #142438;
   --dash-navy-deep: #1a2d45;
   --dash-gold: #b28a49;

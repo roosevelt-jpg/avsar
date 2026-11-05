@@ -52,7 +52,7 @@ export default async function EmployersPage() {
   }));
 
   return (
-    <div className="avsar-root market bg-[#f7f4ef] text-ink">
+    <div className="avsar-root market bg-[#f4f5f7] text-ink">
       <header className="sticky top-0 z-40 border-b border-white/10 bg-[#142438] text-white">
         <div className="mx-auto flex w-full max-w-[1280px] items-center justify-between gap-3 px-[clamp(16px,4cqi,56px)] py-[14px]">
           <Wordmark href="/employers" tone="dark" size={20} />
@@ -134,7 +134,7 @@ export default async function EmployersPage() {
         />
 
         {stats.length > 0 ? (
-          <section className="border-y border-[#e4ddd2] bg-[#f3eee6] px-[clamp(20px,4cqi,56px)] py-9 sm:py-11">
+          <section className="border-y border-[#e2e5ea] bg-[#eef0f3] px-[clamp(20px,4cqi,56px)] py-9 sm:py-11">
             <ul
               className={`mx-auto m-0 grid max-w-[1200px] list-none grid-cols-1 gap-0 p-0 sm:grid-cols-2 ${
                 stats.length >= 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-3'
@@ -144,7 +144,7 @@ export default async function EmployersPage() {
                 <li
                   key={stat.label}
                   className={`flex items-start gap-3 px-0 py-4 sm:px-6 sm:py-0 ${
-                    index > 0 ? 'lg:border-s lg:border-[#d9d0c3]' : ''
+                    index > 0 ? 'lg:border-s lg:border-[#d5d9e0]' : ''
                   }`}
                 >
                   <span className="mt-0.5 grid size-10 shrink-0 place-items-center text-[var(--color-gold)]">
@@ -162,7 +162,7 @@ export default async function EmployersPage() {
           </section>
         ) : null}
 
-        <section id="why" className="bg-[#f7f4ef] px-[clamp(20px,4cqi,56px)] py-[clamp(48px,7cqi,88px)]">
+        <section id="why" className="bg-[#f4f5f7] px-[clamp(20px,4cqi,56px)] py-[clamp(48px,7cqi,88px)]">
           <div className="mx-auto w-full max-w-[1200px]">
             <h2 className="display-serif m-0 text-[clamp(28px,3.6cqi,42px)] font-normal leading-[1.15] text-[#142438]">
               {page.reasonsTitle}
@@ -183,7 +183,7 @@ export default async function EmployersPage() {
           </div>
         </section>
 
-        <section id="industries" className="bg-[#f7f4ef] px-[clamp(20px,4cqi,56px)] pb-[clamp(40px,6cqi,72px)]">
+        <section id="industries" className="bg-[#f4f5f7] px-[clamp(20px,4cqi,56px)] pb-[clamp(40px,6cqi,72px)]">
           <div className="mx-auto w-full max-w-[1200px] overflow-hidden rounded-[20px] bg-[#142438] text-white">
             <div className="grid grid-cols-1 items-stretch lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
               <div className="relative min-h-[240px] lg:min-h-[340px]">
@@ -214,8 +214,8 @@ export default async function EmployersPage() {
           </div>
         </section>
 
-        <section className="bg-[#f7f4ef] px-[clamp(20px,4cqi,56px)] pb-[clamp(40px,6cqi,72px)]">
-          <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-6 rounded-[20px] border border-[#e4ddd2] bg-[#f3eee6] px-[clamp(22px,4cqi,48px)] py-[clamp(28px,4cqi,44px)] lg:flex-row lg:items-center lg:justify-between lg:gap-10">
+        <section className="bg-[#f4f5f7] px-[clamp(20px,4cqi,56px)] pb-[clamp(40px,6cqi,72px)]">
+          <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-6 rounded-[20px] border border-[#e2e5ea] bg-[#eef0f3] px-[clamp(22px,4cqi,48px)] py-[clamp(28px,4cqi,44px)] lg:flex-row lg:items-center lg:justify-between lg:gap-10">
             <div className="max-w-[36rem]">
               <h2 className="display-serif m-0 text-[clamp(26px,3.2cqi,40px)] font-normal leading-[1.15] text-[#142438]">
                 {page.closingTitle}
@@ -257,7 +257,7 @@ export default async function EmployersPage() {
                 </p>
               ) : null}
             </div>
-            <div className="rounded-[16px] border border-line bg-[#f7f4ef] px-5 pt-1 pb-6 sm:px-7">
+            <div className="rounded-[16px] border border-line bg-[#f4f5f7] px-5 pt-1 pb-6 sm:px-7">
               <ContactForm variant="employer" />
             </div>
           </div>

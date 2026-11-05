@@ -77,7 +77,7 @@ const BUTTON = {
   dark: 'border border-white/55 bg-transparent text-white hover:bg-white/10',
   light: 'bg-white text-[#142438] border-[#142438]/20 hover:border-[#142438]',
   ghostDark: 'bg-transparent text-white border-white/55 hover:bg-white/10',
-  white: 'bg-white text-[#142438] border-transparent hover:bg-[#f7f4ee]',
+  white: 'bg-white text-[#142438] border-transparent hover:bg-[#f4f5f7]',
 } as const;
 
 export function CmsButton({

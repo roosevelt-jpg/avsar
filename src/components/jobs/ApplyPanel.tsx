@@ -210,7 +210,7 @@ export function ApplyPanel({
   const primaryBtn =
     'btn-gradient t-colors mt-5 flex w-full cursor-pointer items-center justify-center rounded-[8px] border-0 px-5 py-3.5 text-[16px] font-semibold no-underline disabled:cursor-wait disabled:opacity-60';
   const secondaryBtn =
-    'mt-3 flex w-full items-center justify-center rounded-[8px] border border-[#142438]/20 bg-white px-5 py-3 text-[15px] font-medium text-[#142438] no-underline hover:bg-[#f7f4ee]';
+    'mt-3 flex w-full items-center justify-center rounded-[8px] border border-[#142438]/20 bg-white px-5 py-3 text-[15px] font-medium text-[#142438] no-underline hover:bg-[#f4f5f7]';
 
   if (done || (viewer.kind === 'candidate' && viewer.existing)) {
     const reference = done?.reference ?? (viewer.kind === 'candidate' ? viewer.existing?.reference : '');

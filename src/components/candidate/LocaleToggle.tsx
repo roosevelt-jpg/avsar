@@ -46,7 +46,7 @@ export function LocaleToggle({ locale }: { locale: Locale }) {
                 aria-current={active ? 'true' : undefined}
                 onClick={() => rememberLocale(code)}
                 className={`t-colors flex items-center justify-between gap-3 rounded-[8px] px-3 py-2 text-[15px] no-underline ${
-                  active ? 'bg-[#142438] text-white' : 'text-[#142438] hover:bg-[#f7f4ee]'
+                  active ? 'bg-[#142438] text-white' : 'text-[#142438] hover:bg-[#f4f5f7]'
                 }`}
               >
                 <span>{localeNames[code]}</span>

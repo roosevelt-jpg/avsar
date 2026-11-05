@@ -56,7 +56,7 @@ export function JobSectionNav({ items }: { items: Item[] }) {
                 className={`inline-flex items-center gap-2 rounded-[8px] px-3.5 py-2.5 text-[13px] font-semibold no-underline transition-colors ${
                   on
                     ? 'bg-[var(--color-gold)] text-[#142438]'
-                    : 'text-ink-2 hover:bg-[#f7f4ef]'
+                    : 'text-ink-2 hover:bg-[#f4f5f7]'
                 }`}
               >
                 <Icon name={icon} className={`size-3.5 ${on ? 'text-[#142438]' : 'text-[var(--color-gold)]'}`} />

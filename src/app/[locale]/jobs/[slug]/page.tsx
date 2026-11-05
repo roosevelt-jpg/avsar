@@ -299,7 +299,7 @@ export default async function JobPage({ params }: Params) {
                     {offerItems.map((item) => (
                       <li
                         key={item.title}
-                        className="flex flex-col gap-3 rounded-[14px] border border-[#142438]/08 bg-[#f7f4ef] px-4 py-4"
+                        className="flex flex-col gap-3 rounded-[14px] border border-[#142438]/08 bg-[#f4f5f7] px-4 py-4"
                       >
                         <span className="grid size-10 place-items-center rounded-[10px] bg-white text-[var(--color-gold)] shadow-[0_8px_18px_-12px_rgba(20,36,56,0.35)]">
                           <Icon name={item.icon} className="size-5" />
@@ -325,7 +325,7 @@ export default async function JobPage({ params }: Params) {
                   </p>
                 </section>
 
-                <section className="mt-10 rounded-[16px] border border-line bg-[#f7f4ef] p-6">
+                <section className="mt-10 rounded-[16px] border border-line bg-[#f4f5f7] p-6">
                   <h2 className="m-0 text-[18px] font-semibold text-[#142438]">{t('Free to apply. No placement fee.')}</h2>
                   <p className="m-0 mt-2 text-[15px] leading-[1.6] text-ink-2">
                     {t('You never pay to be hired. If anyone asks you for money for this job outside this website, it is not us.')}{' '}
@@ -351,7 +351,7 @@ export default async function JobPage({ params }: Params) {
 
               <dl className="m-0 grid grid-cols-2 gap-3 rounded-[16px] border border-[#142438]/08 bg-white p-4 shadow-[0_18px_40px_-28px_rgba(20,36,56,0.35)]">
                 {keyFacts.map((fact) => (
-                  <div key={fact.label} className="rounded-[12px] bg-[#f7f4ef] px-3 py-3">
+                  <div key={fact.label} className="rounded-[12px] bg-[#f4f5f7] px-3 py-3">
                     <dt className="m-0 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.04em] text-ink-2">
                       <Icon name={fact.icon} className="size-3.5 text-[var(--color-gold)]" />
                       {fact.label}

@@ -119,7 +119,7 @@ export function LiveChatQueue({ initialThreadId }: { initialThreadId?: string })
                 type="button"
                 onClick={() => setActiveId(thread.id)}
                 className={`flex w-full flex-col gap-0.5 border-b border-line px-3 py-2.5 text-start ${
-                  activeId === thread.id ? 'bg-[#f7f4ee]' : 'bg-white'
+                  activeId === thread.id ? 'bg-[#f4f5f7]' : 'bg-white'
                 }`}
               >
                 <span className="text-[13px] font-semibold text-ink">

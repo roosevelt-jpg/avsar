@@ -63,7 +63,7 @@ export function PressBarBlock({ data }: Props) {
   const eyebrow = str(data, 'eyebrow');
 
   return (
-    <section className="press-bar border-y border-[#e6e0d6] bg-[#f3f1ec] py-6">
+    <section className="press-bar border-y border-[#e2e5ea] bg-[#eef0f3] py-6">
       {eyebrow ? (
         <p className="m-0 mb-4 px-[clamp(20px,4cqi,56px)] text-center text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">
           {eyebrow}
@@ -90,7 +90,7 @@ export function EmployerBandBlock({ data, locale }: Props) {
   /* Home mockup: copy | handshake photo | bullets + Hire Talent. */
   if (str(data, 'layout') === 'home') {
     return (
-      <Section className="!bg-[#f7f4ef] !py-[clamp(40px,6cqi,72px)]">
+      <Section className="!bg-[#f4f5f7] !py-[clamp(40px,6cqi,72px)]">
         <div className="overflow-hidden rounded-[22px] bg-[#142438] text-white shadow-[0_18px_40px_rgba(20,36,56,0.18)]">
           <div className="grid grid-cols-1 items-stretch lg:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)_minmax(0,0.95fr)]">
             <div className="flex flex-col justify-center gap-4 px-[clamp(22px,3cqi,40px)] py-[clamp(28px,4cqi,44px)]">

@@ -13,7 +13,7 @@ export function AuthShell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="market relative flex min-h-[100dvh] flex-col bg-[#f7f4ee] text-[#142438]">
+    <div className="market relative flex min-h-[100dvh] flex-col bg-[#f4f5f7] text-[#142438]">
       <header className="relative z-10 flex flex-wrap items-center justify-between gap-4 border-b border-[#142438]/10 bg-[#142438] px-[clamp(20px,4cqi,56px)] py-[18px] text-white">
         {header}
       </header>

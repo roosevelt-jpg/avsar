@@ -12,7 +12,7 @@ import Link from 'next/link';
 export default function GlobalError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   return (
     <html lang="en">
-      <body style={{ fontFamily: 'system-ui, sans-serif', margin: 0, padding: '48px 24px', color: '#1b1a17', background: '#faf8f4' }}>
+      <body style={{ fontFamily: 'system-ui, sans-serif', margin: 0, padding: '48px 24px', color: '#1b1a17', background: '#f7f8fa' }}>
         <main style={{ maxWidth: 480, margin: '0 auto' }}>
           <h1 style={{ fontSize: 24, margin: 0 }}>Something went wrong</h1>
           <p style={{ fontSize: 16, lineHeight: 1.6 }}>

@@ -146,7 +146,7 @@ export function StaffQuickActions({
           <li key={item.href}>
             <Link
               href={item.href}
-              className="t-colors flex h-full flex-col rounded-[10px] border border-[#142438]/1 bg-[#faf8f4] px-3 py-3 no-underline hover:border-[#b28a49]/5"
+              className="t-colors flex h-full flex-col rounded-[10px] border border-[#142438]/1 bg-[#f7f8fa] px-3 py-3 no-underline hover:border-[#b28a49]/5"
             >
               <span className="text-[13px] font-semibold text-[#142438]">{item.label}</span>
               <span className="mt-1 text-[11px] text-[#5c7084]">{item.note}</span>

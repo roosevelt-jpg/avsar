@@ -305,7 +305,7 @@ export function CmsQuickActions({
           <li key={item.href}>
             <Link
               href={item.href}
-              className="t-colors relative flex min-h-[64px] items-center justify-center rounded-[10px] border border-[#142438]/1 bg-[#faf8f4] px-2 py-3 text-center text-[12px] font-semibold text-[#142438] no-underline hover:border-[#b28a49]/5"
+              className="t-colors relative flex min-h-[64px] items-center justify-center rounded-[10px] border border-[#142438]/1 bg-[#f7f8fa] px-2 py-3 text-center text-[12px] font-semibold text-[#142438] no-underline hover:border-[#b28a49]/5"
             >
               {item.label}
               {item.badge != null && item.badge > 0 ? (
@@ -333,7 +333,7 @@ export function CmsMediaStrip({ items, canManage }: { items: MediaItem[]; canMan
       </div>
       <ul className="m-0 mt-4 flex list-none gap-3 overflow-x-auto p-0">
         {images.map((item) => (
-          <li key={item.id} className="relative size-20 shrink-0 overflow-hidden rounded-[10px] border border-[#142438]/08 bg-[#f4f2ee]">
+          <li key={item.id} className="relative size-20 shrink-0 overflow-hidden rounded-[10px] border border-[#142438]/08 bg-[#f4f5f7]">
             {/* eslint-disable-next-line @next/next/no-img-element -- mixed built-in and storage URLs */}
             <img src={item.url} alt={item.alt || item.fileName} className="size-full object-cover" />
           </li>
@@ -401,7 +401,7 @@ export function CmsLocalesPanel({ pages, canEdit }: { pages: PageListEntry[]; ca
       </p>
       <ul className="m-0 mt-4 grid list-none grid-cols-1 gap-3 p-0 lg:grid-cols-2">
         {pages.map((page) => (
-          <li key={page.slug} className="rounded-[12px] border border-[#142438]/08 bg-[#faf8f4] p-4">
+          <li key={page.slug} className="rounded-[12px] border border-[#142438]/08 bg-[#f7f8fa] p-4">
             <div className="flex items-start justify-between gap-2">
               <div>
                 <p className="m-0 text-[15px] font-semibold text-[#142438]">{page.title}</p>

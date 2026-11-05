@@ -96,9 +96,9 @@ export function SignupMarketingShell({
           </div>
         </section>
 
-        <section className="bg-[var(--color-ivory,#f7f4ee)] px-[clamp(20px,4cqi,56px)] pb-[clamp(48px,8cqi,96px)] pt-0">
+        <section className="bg-[var(--color-ivory,#f4f5f7)] px-[clamp(20px,4cqi,56px)] pb-[clamp(48px,8cqi,96px)] pt-0">
           <div className="signup-card relative mx-auto -mt-[clamp(48px,8cqi,88px)] grid w-full max-w-[1100px] overflow-hidden rounded-[16px] border border-[#142438]/08 bg-white lg:grid-cols-[minmax(240px,280px)_minmax(0,1fr)]">
-            <aside className="border-b border-line bg-[#f7f4ef] p-6 lg:border-b-0 lg:border-e lg:border-line">
+            <aside className="border-b border-line bg-[#f4f5f7] p-6 lg:border-b-0 lg:border-e lg:border-line">
               <h2 className="display-serif m-0 text-[22px] font-normal text-[#142438]">
                 {t('Your Journey to Portugal')}
               </h2>

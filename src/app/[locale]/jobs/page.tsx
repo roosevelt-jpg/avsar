@@ -149,7 +149,7 @@ export default async function JobsPage({
       method="get"
       action={localePath(locale, '/jobs')}
       id="jobs-search"
-      className="grid gap-0 divide-y divide-[#e6e0d6] rounded-[14px] border border-[#e6e0d6] bg-white shadow-[0_16px_36px_-28px_rgba(20,36,56,0.55)] md:grid-cols-2 md:divide-x md:divide-y-0 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,0.9fr)_minmax(0,1fr)_auto]"
+      className="grid gap-0 divide-y divide-[#e2e5ea] rounded-[14px] border border-[#e2e5ea] bg-white shadow-[0_16px_36px_-28px_rgba(20,36,56,0.55)] md:grid-cols-2 md:divide-x md:divide-y-0 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,0.9fr)_minmax(0,1fr)_auto]"
     >
       <label className="relative block">
         <span className="sr-only">{tx(board.searchKeywordPlaceholder)}</span>
@@ -209,7 +209,7 @@ export default async function JobsPage({
   const signedIn = viewer.role === 'candidate';
 
   const boardMain = (
-      <main className={signedIn ? '' : 'bg-[#f7f4ef]'}>
+      <main className={signedIn ? '' : 'bg-[#f4f5f7]'}>
         {signedIn ? null : (
         <JobsBoardHero
           eyebrow={board.heroEyebrow}
@@ -229,7 +229,7 @@ export default async function JobsPage({
         <section className={signedIn ? 'pb-4 pt-2' : 'px-[clamp(20px,4cqi,56px)] pb-[clamp(48px,7cqi,96px)] pt-12 sm:pt-14'}>
           <div className="mx-auto w-full max-w-[1200px]">
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)]">
-              <aside className="shop-sticky rounded-[12px] border border-[#e6e0d6] bg-[#f7f4ef] p-5 lg:sticky lg:self-start">
+              <aside className="shop-sticky rounded-[12px] border border-[#e2e5ea] bg-[#f4f5f7] p-5 lg:sticky lg:self-start">
                 <div className="mb-2 flex items-center justify-between gap-3">
                   <h2 className="m-0 text-[16px] font-semibold text-[#142438]">{tx(board.filterTitle)}</h2>
                   <Link
@@ -303,7 +303,7 @@ export default async function JobsPage({
                           step={50}
                           placeholder={String(facets.salaryMin)}
                           defaultValue={salaryMin ?? ''}
-                          className="mt-1 w-full rounded-[10px] border border-line bg-[#f7f4ef] px-3 py-2 text-[14px] text-ink"
+                          className="mt-1 w-full rounded-[10px] border border-line bg-[#f4f5f7] px-3 py-2 text-[14px] text-ink"
                         />
                       </label>
                       <label className="text-[12px] text-muted">
@@ -315,7 +315,7 @@ export default async function JobsPage({
                           step={50}
                           placeholder={String(facets.salaryMax)}
                           defaultValue={salaryMax ?? ''}
-                          className="mt-1 w-full rounded-[10px] border border-line bg-[#f7f4ef] px-3 py-2 text-[14px] text-ink"
+                          className="mt-1 w-full rounded-[10px] border border-line bg-[#f4f5f7] px-3 py-2 text-[14px] text-ink"
                         />
                       </label>
                     </div>
@@ -368,7 +368,7 @@ export default async function JobsPage({
                 </div>
 
                 {result.jobs.length === 0 ? (
-                  <div className="rounded-[16px] border border-dashed border-[#d9d0c3] bg-white px-6 py-14 text-center">
+                  <div className="rounded-[16px] border border-dashed border-[#d5d9e0] bg-white px-6 py-14 text-center">
                     <p className="m-0 text-[18px] font-semibold text-[#142438]">{tx(board.emptyTitle)}</p>
                     <p className="m-0 mt-2 text-[15px] text-ink-2">{tx(board.emptyBody)}</p>
                     <div className="mt-6 flex flex-wrap justify-center gap-3">
