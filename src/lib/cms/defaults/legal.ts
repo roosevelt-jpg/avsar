@@ -33,7 +33,7 @@ export const TERMS: DefaultPage = {
       'document',
       {
         title: 'Terms and conditions',
-        updated: '',
+        updated: '5 November 2026',
         body: `These terms govern your use of this website, the free recruitment database and the two optional reports sold on it. By registering you accept them.
 
 ## Who you are contracting with
@@ -119,7 +119,7 @@ export const PRIVACY: DefaultPage = {
       'document',
       {
         title: 'Privacy policy',
-        updated: '',
+        updated: '5 November 2026',
         body: `## Who holds your data
 
 ${ENTITY}
@@ -172,7 +172,7 @@ export const REFUND_POLICY: DefaultPage = {
       'document',
       {
         title: 'Refund policy',
-        updated: '',
+        updated: '5 November 2026',
         body: `## When you pay
 
 Only if you choose to. Registering, the rewritten CV, the assessment, your score, your place in the recruitment database and applying to jobs are free. The skills report ({{skills_fee}}) and the visa-requirements list ({{visa_fee}}) are optional. Both together are {{bundle_fee}}. Neither gives priority in selection.
@@ -219,7 +219,7 @@ export const SELECTION_RULES: DefaultPage = {
       'document',
       {
         title: 'Selection rules',
-        updated: '',
+        updated: '5 November 2026',
         body: `## What is free
 
 Registering, the rewritten CV, sitting the assessment, seeing your score and joining our recruitment database are free. Interviews are free. With your consent, your profile is considered for current and future vacancies within the Smith & Adams group and participating partner companies.
@@ -269,7 +269,7 @@ export const DELIVERY: DefaultPage = {
       'document',
       {
         title: 'Service delivery',
-        updated: '',
+        updated: '5 November 2026',
         body: `Everything sold here is delivered online. Nothing is shipped and there are no delivery charges.
 
 ## What arrives, and when
@@ -297,10 +297,10 @@ export const CONTACT: DefaultPage = {
   slug: 'contact',
   path: '/contact',
   title: 'Contact',
-  purpose: 'Contact mockup: overlay hero, trust bar, pathway cards beside the enquiry form, and a direct-contact strip from Settings.',
+  purpose: 'Contact page: enquiry form, pathway cards, and direct phone / WhatsApp / email.',
   seo: {
     title: 'Contact us',
-    description: 'Write to us about a job, an application or hiring. Phone, WhatsApp and email come from Settings. Report anyone who asks for money.',
+    description: 'Write to us about a job, an application or hiring. Report anyone who asks you for money outside this site.',
   },
   blocks: makeBlocks('contact', [
     [
@@ -417,7 +417,7 @@ export const COOKIE_POLICY: DefaultPage = {
       'document',
       {
         title: 'Cookie policy',
-        updated: '',
+        updated: '5 November 2026',
         body: `## Who this covers
 
 {{legal_name}}, trading as {{brand}}. This page explains cookies and similar storage on this recruitment website.
@@ -425,12 +425,12 @@ export const COOKIE_POLICY: DefaultPage = {
 ## What we use
 
 - **Essential cookies** keep you signed in, protect forms from abuse (for example Turnstile), and remember language where needed. The site does not work properly without them.
-- **Preference storage** may remember settings you choose on this device, such as theme.
+- **Preference storage** may remember choices you make on this device, such as language.
 - We do **not** sell cookie data. We do not use advertising trackers that follow you across unrelated sites.
 
 ## Analytics and errors
 
-If error reporting or rate-limiting tools are switched on in Settings › Integrations, they may set a technical cookie or use similar storage so the service can work. Those keys are never stored in public site settings.
+If we turn on error reporting or rate-limiting tools, they may set a technical cookie or use similar storage so the service can work. Those tools only support the site; they are not used for advertising.
 
 ## Your choices
 
@@ -438,7 +438,7 @@ Most browsers let you block or delete cookies. Blocking essential cookies may st
 
 ## Changes
 
-We update this page when the tools we use change. The date above is left blank until staff set it in the CMS.`,
+We update this page when the tools we use change. The “Last updated” date at the top of this page shows when it was last revised.`,
       },
     ],
   ]),

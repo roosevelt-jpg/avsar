@@ -238,7 +238,7 @@ export function PlacePicker({
       {error ? <p className="m-0 text-[13px] text-accent-deep">{error}</p> : null}
       {!available ? (
         <p className="m-0 text-[12px] text-muted">
-          Type your city and state. Live suggestions need a Google Places key in Settings › Integrations.
+          Type your city and state (for example: Pune, Maharashtra).
         </p>
       ) : null}
     </div>
