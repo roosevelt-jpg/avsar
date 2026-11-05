@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { DashboardNav } from '@/components/candidate/DashboardNav';
 import { SiteHeader } from '@/components/candidate/SiteHeader';
 import { Markdown } from '@/components/cms/Markdown';
 import { Icon } from '@/components/cms/primitives';
@@ -10,7 +11,7 @@ import { JobCard, jobImage } from '@/components/jobs/JobCard';
 import { JobSectionNav } from '@/components/jobs/JobSectionNav';
 import { SaveJobButton } from '@/components/jobs/SaveJobButton';
 import { BRAND_SLIDES } from '@/lib/cms/brand-media';
-import { savedJobIds } from '@/lib/jobs/saved';
+import { listSavedJobs, savedJobIds } from '@/lib/jobs/saved';
 import { getViewer, hasPaid } from '@/lib/auth';
 import { getSiteSettings } from '@/lib/cms/data';
 import { localizeJob, siteText } from '@/lib/cms/localize';
@@ -173,10 +174,9 @@ export default async function JobPage({ params }: Params) {
     directApply: true,
   };
 
-  return (
+  const body = (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
-      <SiteHeader locale={locale} />
       <main>
         <section className="relative isolate overflow-hidden bg-[#142438] text-white">
           <div className="absolute inset-0" aria-hidden>
@@ -421,6 +421,31 @@ export default async function JobPage({ params }: Params) {
           </section>
         ) : null}
       </main>
+    </>
+  );
+
+  if (viewer.role === 'candidate') {
+    const savedCount = (await listSavedJobs(viewer.candidate.id)).length;
+    return (
+      <DashboardNav
+        locale={locale}
+        current="jobs"
+        candidate={{
+          fullName: viewer.candidate.fullName,
+          emailConfirmed: viewer.candidate.emailConfirmed,
+        }}
+        savedCount={savedCount}
+        whatsapp={settings.general.whatsapp}
+      >
+        {body}
+      </DashboardNav>
+    );
+  }
+
+  return (
+    <>
+      <SiteHeader locale={locale} />
+      {body}
     </>
   );
 }

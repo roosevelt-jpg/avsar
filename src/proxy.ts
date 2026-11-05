@@ -14,6 +14,9 @@ import { updateSession } from '@/lib/supabase/middleware';
  * cookies and the access token would otherwise expire under a signed-in
  * candidate mid-assessment, and it stamps every request with an id for the logs.
  */
+/** Path the locale layout reads to decide whether the marketing footer shows. */
+export const PATHNAME_HEADER = 'x-pathname';
+
 export async function proxy(request: NextRequest) {
   /* Every request gets an id, set on the request so route handlers and the
      error reporter can log it, and on the response so the browser can show
@@ -21,6 +24,8 @@ export async function proxy(request: NextRequest) {
      they liked into the logs. */
   const id = newRequestId();
   request.headers.set(REQUEST_ID_HEADER, id);
+  /* Layouts cannot see the URL; stamp it so MarketingFooter can hide itself. */
+  request.headers.set(PATHNAME_HEADER, request.nextUrl.pathname);
   const response = await route(request);
   response.headers.set(REQUEST_ID_HEADER, id);
   return response;

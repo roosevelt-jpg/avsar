@@ -1,7 +1,8 @@
+import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
-import { LocaleFooter } from '@/components/candidate/LocaleFooter';
 import { MarketShell } from '@/components/candidate/MarketShell';
-import { SiteFooter } from '@/components/candidate/SiteFooter';
+import { MarketingFooter } from '@/components/candidate/MarketingFooter';
+import { PATHNAME_HEADER } from '@/proxy';
 import { isLocale, locales, localeDirection } from '@/lib/i18n';
 
 export function generateStaticParams() {
@@ -26,17 +27,16 @@ export default async function LocaleLayout({
    * one attribute flips text alignment, list markers, the order of flex and
    * grid children, and which side the scrollbar sits on.
    *
-   * SiteFooter is rendered here (server) and passed into LocaleFooter as
-   * children so the client wrapper can hide it on auth/funnel routes without
-   * importing an async server component.
+   * The marketing footer is a Server Component: signed-in candidates never
+   * see it, and auth/funnel routes stay quiet even for anonymous visitors.
    */
+  const pathname = (await headers()).get(PATHNAME_HEADER) ?? '';
+
   return (
     <div lang={locale} dir={localeDirection[locale]} className="avsar-root">
       <MarketShell>
         {children}
-        <LocaleFooter>
-          <SiteFooter locale={locale} />
-        </LocaleFooter>
+        <MarketingFooter locale={locale} pathname={pathname} />
       </MarketShell>
     </div>
   );

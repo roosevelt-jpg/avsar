@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { DashboardNav } from '@/components/candidate/DashboardNav';
 import { SiteHeader } from '@/components/candidate/SiteHeader';
 import { BlockRenderer } from '@/components/cms/BlockRenderer';
 import { cmsMetadata } from '@/components/cms/CmsPageView';
@@ -196,10 +197,11 @@ export default async function JobsPage({
     </form>
   );
 
-  return (
-    <>
-      <SiteHeader locale={locale} />
-      <main className="bg-[#f7f4ef]">
+  const signedIn = viewer.role === 'candidate';
+
+  const boardMain = (
+      <main className={signedIn ? '' : 'bg-[#f7f4ef]'}>
+        {signedIn ? null : (
         <JobsBoardHero
           eyebrow={board.heroEyebrow}
           headline={board.heroHeadline}
@@ -215,8 +217,11 @@ export default async function JobsPage({
           ]}
           search={searchForm}
         />
+        )}
 
-        <section className="px-[clamp(20px,4cqi,56px)] pb-[clamp(48px,7cqi,96px)] pt-14 sm:pt-16">
+        {signedIn ? <div className="mb-6">{searchForm}</div> : null}
+
+        <section className={signedIn ? 'pb-4 pt-2' : 'px-[clamp(20px,4cqi,56px)] pb-[clamp(48px,7cqi,96px)] pt-14 sm:pt-16'}>
           <div className="mx-auto w-full max-w-[1200px]">
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)]">
               <aside className="shop-sticky rounded-[16px] border border-[#e6e0d6] bg-white p-5 shadow-[0_10px_28px_-24px_rgba(20,36,56,0.28)] lg:sticky lg:self-start">
@@ -409,8 +414,31 @@ export default async function JobsPage({
           </div>
         </section>
 
-        <BlockRenderer blocks={after} locale={locale} settings={settings} />
+        {signedIn ? null : <BlockRenderer blocks={after} locale={locale} settings={settings} />}
       </main>
+  );
+
+  if (signedIn) {
+    return (
+      <DashboardNav
+        locale={locale}
+        current="jobs"
+        candidate={{
+          fullName: viewer.candidate.fullName,
+          emailConfirmed: viewer.candidate.emailConfirmed,
+        }}
+        savedCount={saved?.size ?? 0}
+        whatsapp={settings.general.whatsapp}
+      >
+        {boardMain}
+      </DashboardNav>
+    );
+  }
+
+  return (
+    <>
+      <SiteHeader locale={locale} />
+      {boardMain}
     </>
   );
 }
