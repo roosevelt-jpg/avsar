@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { listActiveAgents, listOnlineStaff } from '@/lib/assistant/agents';
+import { listActiveAgents, listOnlineStaff, listPersonalAssistants } from '@/lib/assistant/agents';
 import { answerQuestion } from '@/lib/assistant/reply';
 import { RATE_LIMITS, clientIp, rateLimit, rateLimitedResponse } from '@/lib/security/rate-limit';
 
@@ -12,12 +12,18 @@ const bodySchema = z.object({
   thread: z.string().trim().regex(/^[a-zA-Z0-9-]{8,80}$/),
   agent: z.string().trim().regex(/^[a-z][a-z0-9-]{1,40}$/).optional(),
   staff: z.string().uuid().optional(),
+  personal: z.string().uuid().optional(),
   locale: z.string().trim().max(8).optional(),
 });
 
-/** Agent picker + online staff for the floating desk. */
+/** Agent picker + personal assistants + online staff for the floating desk. */
 export async function GET() {
-  const [agents, staff] = await Promise.all([listActiveAgents(), listOnlineStaff()]);
+  const [agents, staff, personal] = await Promise.all([
+    listActiveAgents(),
+    listOnlineStaff(),
+    listPersonalAssistants(),
+  ]);
+  const personalIds = new Set(personal.map((person) => person.userId));
   return NextResponse.json({
     agents: agents.map((agent) => ({
       id: agent.id,
@@ -27,11 +33,21 @@ export async function GET() {
       department: agent.department,
       avatarPath: agent.avatarPath,
     })),
-    staff: staff.map((person) => ({
+    personal: personal.map((person) => ({
       userId: person.userId,
       displayName: person.displayName,
+      title: person.title,
+      whatsapp: person.whatsapp,
       avatarUrl: person.avatarUrl,
     })),
+    /* Online humans who are not already listed as personal assistants. */
+    staff: staff
+      .filter((person) => !personalIds.has(person.userId))
+      .map((person) => ({
+        userId: person.userId,
+        displayName: person.displayName,
+        avatarUrl: person.avatarUrl,
+      })),
   });
 }
 
@@ -54,6 +70,7 @@ export async function POST(request: Request) {
       channel: 'web',
       agentSlug: parsed.data.agent,
       staffUserId: parsed.data.staff,
+      personalUserId: parsed.data.personal,
       locale: parsed.data.locale,
     });
     return NextResponse.json(result);

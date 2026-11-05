@@ -72,7 +72,13 @@ export async function ensureThread(input: {
   channel: 'web' | 'whatsapp';
   agent?: ChatAgent | null;
   assigneeUserId?: string | null;
+  /** Live human now — park for staff immediately. */
   forceHuman?: boolean;
+  /**
+   * Personal AI for a teammate: keep AI mode, but assign the thread so
+   * escalation lands with that person.
+   */
+  personalAi?: boolean;
 }): Promise<ChatThread | null> {
   const admin = getAdminSupabase();
   if (!admin) return null;
@@ -89,8 +95,10 @@ export async function ensureThread(input: {
     if (input.agent && !thread.agentId) patch.agent_id = input.agent.id;
     if (input.assigneeUserId && !thread.assigneeUserId) {
       patch.assignee_user_id = input.assigneeUserId;
-      patch.mode = 'human';
-      patch.needs_human = true;
+      if (input.forceHuman || !input.personalAi) {
+        patch.mode = 'human';
+        patch.needs_human = true;
+      }
     }
     if (input.forceHuman && thread.mode !== 'human') {
       patch.mode = 'human';
@@ -106,7 +114,7 @@ export async function ensureThread(input: {
     return updated ? fromRow(updated as ThreadRow) : thread;
   }
 
-  const mode: ChatMode = input.forceHuman || input.assigneeUserId ? 'human' : 'ai';
+  const mode: ChatMode = input.forceHuman ? 'human' : 'ai';
   const { data: created, error } = await admin
     .from('chat_threads')
     .insert({
@@ -142,10 +150,11 @@ export async function escalateThread(
     .select('id, public_key, channel, agent_id, assignee_user_id, mode, visitor_label, intake, needs_human, last_message_at')
     .single();
 
+  const assignee = data ? fromRow(data as ThreadRow).assigneeUserId : thread.assigneeUserId;
   await notifyStaff({
     permission: 'leads.manage',
     kind: 'chat.escalate',
-    title: 'Live chat needs a recruiter',
+    title: assignee ? 'Your personal assistant handed off a chat' : 'Live chat needs a recruiter',
     body: reason.slice(0, 200),
     href: `/admin/chat?thread=${thread.id}`,
   });

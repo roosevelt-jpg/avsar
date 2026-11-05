@@ -17,7 +17,13 @@ import {
   replyMatchesLocale,
 } from './language';
 import { quoteMatch, supportingPassages, type Passage } from './match';
-import { getAgentById, getAgentBySlug, type ChatAgent } from './agents';
+import {
+  getAgentById,
+  getAgentBySlug,
+  getPersonalAssistant,
+  type ChatAgent,
+  type PersonalAssistant,
+} from './agents';
 import {
   ensureThread,
   escalateThread,
@@ -80,7 +86,10 @@ export async function answerQuestion(input: {
   externalId?: string | null;
   agentSlug?: string | null;
   agentId?: string | null;
+  /** Online human — go straight to human mode. */
   staffUserId?: string | null;
+  /** Personal AI for this teammate — AI answers in their name first. */
+  personalUserId?: string | null;
   /** Page locale from the website desk; WhatsApp omits this and we detect from the message. */
   locale?: string | null;
 }): Promise<AssistantResult> {
@@ -91,17 +100,23 @@ export async function answerQuestion(input: {
   }
   await refreshIntegrations();
 
+  const personal =
+    input.personalUserId && !input.staffUserId
+      ? await getPersonalAssistant(input.personalUserId)
+      : null;
+
   const agent =
     (input.agentId ? await getAgentById(input.agentId) : null) ||
     (input.agentSlug ? await getAgentBySlug(input.agentSlug) : null) ||
-    (await getAgentBySlug('general'));
+    (personal ? null : await getAgentBySlug('general'));
 
   let thread = await ensureThread({
     publicKey: input.threadKey,
     channel: input.channel,
     agent,
-    assigneeUserId: input.staffUserId,
+    assigneeUserId: input.staffUserId || personal?.userId || null,
     forceHuman: Boolean(input.staffUserId),
+    personalAi: Boolean(personal),
   });
 
   if (thread) thread = await mergeIntake(thread, question);
@@ -161,7 +176,17 @@ export async function answerQuestion(input: {
   const fromNotes = quoteFromNotes(question, passages);
 
   const admin = getAdminSupabase();
-  const guarded = await modelOrNotes(question, facts, passages, fromNotes, admin, input.threadKey, agent, locale);
+  const guarded = await modelOrNotes(
+    question,
+    facts,
+    passages,
+    fromNotes,
+    admin,
+    input.threadKey,
+    agent,
+    locale,
+    personal,
+  );
 
   const uncovered =
     guarded.reply === assistantFallback(locale) ||
@@ -225,13 +250,23 @@ async function modelOrNotes(
   threadKey: string,
   agent: ChatAgent | null,
   locale: Locale,
+  personal: PersonalAssistant | null,
 ): Promise<{ reply: string; sources: string[] }> {
   if (!isAiConfigured()) {
     /* Without Anthropic, English notes are the only honest source. */
     return fromNotes ?? { reply: assistantOff(locale), sources: [] };
   }
   try {
-    const modeled = await answerFromModel(question, facts, passages, admin, threadKey, agent, locale);
+    const modeled = await answerFromModel(
+      question,
+      facts,
+      passages,
+      admin,
+      threadKey,
+      agent,
+      locale,
+      personal,
+    );
     const localized = await ensureLocaleReply(modeled, locale, fromNotes);
     if (localized) return localized;
     return modeled;
@@ -314,13 +349,16 @@ async function answerFromModel(
   threadKey: string,
   agent: ChatAgent | null,
   locale: Locale,
+  personal: PersonalAssistant | null,
 ): Promise<{ reply: string; sources: string[] }> {
   const notes = supportingPassages(question, passages);
   const allowed = [{ title: facts.title, content: facts.text }, ...notes];
   const history = admin ? await recentTurns(admin, threadKey) : [];
-  const focus = agent?.systemFocus
-    ? `\n\nYou are ${agent.displayName}, ${agent.title} (${agent.department}). Stay inside this focus:\n${agent.systemFocus}`
-    : '';
+  const focus = personal
+    ? `\n\nYou are the personal AI assistant for ${personal.displayName} (${personal.title}) at this recruitment company. Speak in the first person as their desk assistant — short, helpful, and honest. You do not invent offers, visas, or fees. If the visitor needs a human decision, say you will connect them with ${personal.displayName}.`
+    : agent?.systemFocus
+      ? `\n\nYou are ${agent.displayName}, ${agent.title} (${agent.department}). Stay inside this focus:\n${agent.systemFocus}`
+      : '';
   const response = await anthropic().messages.parse({
     model: ASSISTANT_MODEL,
     max_tokens: 600,

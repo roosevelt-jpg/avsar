@@ -1,7 +1,16 @@
 import { getAdminSupabase } from '@/lib/supabase/admin';
 
 export type RoleRow = { key: string; name: string; description: string; isSystem: boolean; permissions: string[]; holders: number };
-export type StaffRow = { userId: string; email: string; fullName: string | null; role: string; active: boolean; createdAt: string };
+export type StaffRow = {
+  userId: string;
+  email: string;
+  fullName: string | null;
+  role: string;
+  active: boolean;
+  createdAt: string;
+  whatsapp: string;
+  personalAssistant: boolean;
+};
 
 export async function listRoles(): Promise<RoleRow[]> {
   const admin = getAdminSupabase();
@@ -23,7 +32,11 @@ export async function listRoles(): Promise<RoleRow[]> {
 
 export async function listStaff(): Promise<StaffRow[]> {
   const admin = getAdminSupabase();
-  const { data } = (await admin?.from('staff_users').select('auth_user_id, email, full_name, role, active, created_at').order('created_at')) ?? { data: null };
+  const { data } =
+    (await admin
+      ?.from('staff_users')
+      .select('auth_user_id, email, full_name, role, active, created_at, whatsapp, personal_assistant')
+      .order('created_at')) ?? { data: null };
   return (data ?? []).map((row) => ({
     userId: String(row.auth_user_id),
     email: String(row.email),
@@ -31,5 +44,7 @@ export async function listStaff(): Promise<StaffRow[]> {
     role: String(row.role),
     active: row.active !== false,
     createdAt: String(row.created_at),
+    whatsapp: String(row.whatsapp ?? ''),
+    personalAssistant: row.personal_assistant === true,
   }));
 }

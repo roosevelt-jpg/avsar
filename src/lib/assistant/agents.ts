@@ -20,6 +20,15 @@ export type StaffOnline = {
   lastSeenAt: string;
 };
 
+/** Staff marked as personal AI assistants (WhatsApp optional). */
+export type PersonalAssistant = {
+  userId: string;
+  displayName: string;
+  title: string;
+  whatsapp: string;
+  avatarUrl: string;
+};
+
 type AgentRow = {
   id: string;
   slug: string;
@@ -106,4 +115,59 @@ export async function listOnlineStaff(): Promise<StaffOnline[]> {
     avatarUrl: String(row.avatar_url || ''),
     lastSeenAt: String(row.last_seen_at),
   }));
+}
+
+/**
+ * Teammates admins turned on as personal AI assistants.
+ * Uses a security-definer RPC so anon chat can read names without staff RLS.
+ */
+export async function listPersonalAssistants(): Promise<PersonalAssistant[]> {
+  const supabase = await getServerSupabase();
+  if (!supabase) return [];
+  const { data, error } = await supabase.rpc('list_personal_assistants');
+  if (error) {
+    console.error('[chat] personal assistants list failed', error.message);
+    return [];
+  }
+  return ((data ?? []) as {
+    user_id: string;
+    display_name: string;
+    title: string;
+    whatsapp: string;
+    avatar_url: string;
+  }[]).map((row) => ({
+    userId: String(row.user_id),
+    displayName: String(row.display_name || 'Recruiter'),
+    title: String(row.title || 'Recruiter'),
+    whatsapp: String(row.whatsapp || ''),
+    avatarUrl: String(row.avatar_url || ''),
+  }));
+}
+
+/** One personal assistant by auth user id, or null if not enabled. */
+export async function getPersonalAssistant(userId: string): Promise<PersonalAssistant | null> {
+  const admin = getAdminSupabase();
+  if (!admin) return null;
+  const { data } = await admin
+    .from('staff_users')
+    .select('auth_user_id, full_name, email, whatsapp, personal_assistant, active, role')
+    .eq('auth_user_id', userId)
+    .eq('active', true)
+    .eq('personal_assistant', true)
+    .maybeSingle();
+  if (!data) return null;
+  const { data: role } = await admin.from('roles').select('name').eq('key', data.role).maybeSingle();
+  const { data: presence } = await admin
+    .from('staff_presence')
+    .select('avatar_url')
+    .eq('user_id', userId)
+    .maybeSingle();
+  const name = String(data.full_name || '').trim() || String(data.email).split('@')[0] || 'Recruiter';
+  return {
+    userId: String(data.auth_user_id),
+    displayName: name,
+    title: String(role?.name || 'Recruiter'),
+    whatsapp: String(data.whatsapp || ''),
+    avatarUrl: String(presence?.avatar_url || ''),
+  };
 }

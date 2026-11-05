@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { audit } from '@/lib/audit';
 import { sendPasswordResetLink } from '@/lib/email/password-reset';
+import { isE164 } from '@/lib/leads/phone';
 import { apiPermission, can } from '@/lib/rbac/server';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 
@@ -15,10 +16,22 @@ const inviteSchema = z.object({
   role: roleKey,
 });
 
+/** Staff WhatsApp for personal AI: empty clears; otherwise full international (+…). */
+function parseStaffWhatsapp(raw: string): string | null {
+  const trimmed = raw.trim();
+  if (!trimmed) return '';
+  const digits = trimmed.replace(/\D/g, '');
+  if (!digits) return null;
+  const candidate = trimmed.startsWith('+') || trimmed.startsWith('00') ? `+${digits.replace(/^00/, '')}` : `+${digits}`;
+  return isE164(candidate) ? candidate : null;
+}
+
 const updateSchema = z.object({
   userId: z.string().uuid(),
   role: roleKey.optional(),
   active: z.boolean().optional(),
+  whatsapp: z.string().trim().max(20).optional(),
+  personalAssistant: z.boolean().optional(),
 });
 
 async function roleExists(admin: NonNullable<ReturnType<typeof getAdminSupabase>>, key: string) {
@@ -93,15 +106,23 @@ export async function PATCH(request: Request) {
 
   const parsed = updateSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: 'invalid_payload' }, { status: 400 });
-  const { userId, role, active } = parsed.data;
-
-  if (userId === guard.userId) return NextResponse.json({ error: 'cannot_change_self' }, { status: 409 });
+  const { userId, role, active, whatsapp, personalAssistant } = parsed.data;
 
   const admin = getAdminSupabase();
   if (!admin) return NextResponse.json({ error: 'storage_unconfigured' }, { status: 503 });
 
-  const { data: target } = await admin.from('staff_users').select('role, active').eq('auth_user_id', userId).maybeSingle();
+  const { data: target } = await admin
+    .from('staff_users')
+    .select('role, active, whatsapp, personal_assistant')
+    .eq('auth_user_id', userId)
+    .maybeSingle();
   if (!target) return NextResponse.json({ error: 'not_found' }, { status: 404 });
+
+  /* Anyone may edit their own WhatsApp / personal-assistant flag; role/active still locked. */
+  const changingRoleOrActive = role !== undefined || active !== undefined;
+  if (changingRoleOrActive && userId === guard.userId) {
+    return NextResponse.json({ error: 'cannot_change_self' }, { status: 409 });
+  }
 
   const touchesSuper = target.role === 'super_admin' || role === 'super_admin';
   if (touchesSuper && !can(guard, 'roles.manage')) return NextResponse.json({ error: 'forbidden', need: 'roles.manage' }, { status: 403 });
@@ -115,6 +136,15 @@ export async function PATCH(request: Request) {
   const update: Record<string, unknown> = {};
   if (role) update.role = role;
   if (active !== undefined) update.active = active;
+  if (whatsapp !== undefined) {
+    const normalised = parseStaffWhatsapp(whatsapp);
+    if (normalised === null) return NextResponse.json({ error: 'invalid_whatsapp' }, { status: 422 });
+    update.whatsapp = normalised;
+  }
+  if (personalAssistant !== undefined) update.personal_assistant = personalAssistant;
+
+  if (Object.keys(update).length === 0) return NextResponse.json({ error: 'invalid_payload' }, { status: 400 });
+
   const { error } = await admin.from('staff_users').update(update).eq('auth_user_id', userId);
   if (error) return NextResponse.json({ error: 'storage_failed' }, { status: 500 });
 

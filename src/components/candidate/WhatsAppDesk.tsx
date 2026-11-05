@@ -34,6 +34,14 @@ type StaffCard = {
   avatarUrl: string;
 };
 
+type PersonalCard = {
+  userId: string;
+  displayName: string;
+  title: string;
+  whatsapp: string;
+  avatarUrl: string;
+};
+
 type Turn = {
   id?: number;
   role: 'user' | 'assistant' | 'staff';
@@ -45,16 +53,18 @@ type Turn = {
 
 type Selection =
   | { kind: 'agent'; agent: AgentCard }
+  | { kind: 'personal'; personal: PersonalCard }
   | { kind: 'staff'; staff: StaffCard }
   | null;
 
 export function WhatsAppDesk({ phone, copy, locale }: { phone: string; copy: WhatsAppDeskCopy; locale: string }) {
-  const digits = phone.replace(/[^\d]/g, '');
+  const companyDigits = phone.replace(/[^\d]/g, '');
   const dialog = useRef<HTMLDialogElement>(null);
   const threadRef = useRef('');
   const cursorRef = useRef(0);
   const [selection, setSelection] = useState<Selection>(null);
   const [agents, setAgents] = useState<AgentCard[]>([]);
+  const [personal, setPersonal] = useState<PersonalCard[]>([]);
   const [staff, setStaff] = useState<StaffCard[]>([]);
   const [question, setQuestion] = useState('');
   const [pending, setPending] = useState(false);
@@ -66,9 +76,10 @@ export function WhatsAppDesk({ phone, copy, locale }: { phone: string; copy: Wha
     let cancelled = false;
     void fetch('/api/assistant')
       .then((response) => response.json())
-      .then((data: { agents?: AgentCard[]; staff?: StaffCard[] }) => {
+      .then((data: { agents?: AgentCard[]; personal?: PersonalCard[]; staff?: StaffCard[] }) => {
         if (cancelled) return;
         setAgents(data.agents ?? []);
+        setPersonal(data.personal ?? []);
         setStaff(data.staff ?? []);
       })
       .catch(() => undefined);
@@ -123,8 +134,6 @@ export function WhatsAppDesk({ phone, copy, locale }: { phone: string; copy: Wha
     return () => window.clearInterval(timer);
   }, [mode, selection]);
 
-  if (!digits) return null;
-
   function threadKey() {
     if (threadRef.current) return threadRef.current;
     const stored = window.sessionStorage.getItem('assistant-thread');
@@ -144,6 +153,7 @@ export function WhatsAppDesk({ phone, copy, locale }: { phone: string; copy: Wha
     try {
       const body: Record<string, string> = { message, thread: threadKey(), locale };
       if (selection.kind === 'agent') body.agent = selection.agent.slug;
+      if (selection.kind === 'personal') body.personal = selection.personal.userId;
       if (selection.kind === 'staff') body.staff = selection.staff.userId;
       const response = await fetch('/api/assistant', {
         method: 'POST',
@@ -159,13 +169,19 @@ export function WhatsAppDesk({ phone, copy, locale }: { phone: string; copy: Wha
       const text = data?.reply || copy.intro;
       if (data?.mode) setMode(data.mode);
       if (data?.mode === 'human' || data?.escalated) setWaiting(true);
+      const senderName =
+        selection.kind === 'agent'
+          ? selection.agent.displayName
+          : selection.kind === 'personal'
+            ? `${selection.personal.displayName}'s assistant`
+            : 'Assistant';
       setTurns((current) => [
         ...current,
         {
           role: 'assistant',
           text,
           sources: data?.sources ?? [],
-          senderName: selection.kind === 'agent' ? selection.agent.displayName : 'Assistant',
+          senderName,
         },
       ]);
     } catch {
@@ -179,7 +195,13 @@ export function WhatsAppDesk({ phone, copy, locale }: { phone: string; copy: Wha
       ? copy.desks.find((desk) => desk.id === (selection.agent.slug === 'payments' ? 'pay' : selection.agent.slug))?.text ||
         copy.intro
       : copy.intro;
-  const waLink = `https://wa.me/${digits}?text=${encodeURIComponent(waText)}`;
+  const personalDigits =
+    selection?.kind === 'personal' ? selection.personal.whatsapp.replace(/[^\d]/g, '') : '';
+  const waDigits = personalDigits || companyDigits;
+  const waLink = waDigits ? `https://wa.me/${waDigits}?text=${encodeURIComponent(waText)}` : '';
+
+  /* Company WhatsApp or at least one personal assistant unlocks the floating desk. */
+  if (!companyDigits && personal.length === 0) return null;
 
   return (
     <>
@@ -211,12 +233,18 @@ export function WhatsAppDesk({ phone, copy, locale }: { phone: string; copy: Wha
               {selection
                 ? selection.kind === 'agent'
                   ? selection.agent.displayName
-                  : selection.staff.displayName
+                  : selection.kind === 'personal'
+                    ? selection.personal.displayName
+                    : selection.staff.displayName
                 : copy.title}
             </p>
             {selection ? (
               <p className="m-0 mt-0.5 line-clamp-2 text-[11px] leading-[1.35] text-ink-2">
-                {selection.kind === 'agent' ? `${selection.agent.title} · AI · Online` : 'Live recruiter'}
+                {selection.kind === 'agent'
+                  ? `${selection.agent.title} · AI · Online`
+                  : selection.kind === 'personal'
+                    ? `${selection.personal.title} · Personal AI`
+                    : 'Live recruiter'}
               </p>
             ) : null}
           </div>
@@ -288,13 +316,32 @@ export function WhatsAppDesk({ phone, copy, locale }: { phone: string; copy: Wha
               </button>
             </form>
 
-            <a href={waLink} target="_blank" rel="noreferrer" className="mt-2 text-center text-[11px] font-semibold text-[#142438] no-underline">
-              {copy.continue}
-            </a>
+            {waLink ? (
+              <a href={waLink} target="_blank" rel="noreferrer" className="mt-2 text-center text-[11px] font-semibold text-[#142438] no-underline">
+                {copy.continue}
+              </a>
+            ) : null}
           </div>
         ) : (
           <div className="wa-panel-body">
             <ul className="m-0 flex list-none flex-col gap-1.5 p-3">
+              {personal.map((person) => (
+                <li key={`personal-${person.userId}`}>
+                  <button
+                    type="button"
+                    className="flex w-full items-start gap-2.5 rounded-[10px] border border-line bg-white px-2.5 py-2 text-start hover:border-[#b28a49]"
+                    onClick={() => setSelection({ kind: 'personal', personal: person })}
+                  >
+                    <Avatar path={person.avatarUrl} name={person.displayName} />
+                    <span>
+                      <span className="block text-[13px] font-semibold text-ink">{person.displayName}</span>
+                      <span className="mt-0.5 block text-[11px] leading-[1.4] text-ink-2">
+                        {person.title} · Personal AI
+                      </span>
+                    </span>
+                  </button>
+                </li>
+              ))}
               {agents.map((agent) => (
                 <li key={agent.id}>
                   <button
@@ -331,7 +378,7 @@ export function WhatsAppDesk({ phone, copy, locale }: { phone: string; copy: Wha
                   </button>
                 </li>
               ))}
-              {agents.length === 0 && staff.length === 0
+              {agents.length === 0 && staff.length === 0 && personal.length === 0
                 ? copy.desks.map((item, index) => (
                     <li key={item.id}>
                       <button

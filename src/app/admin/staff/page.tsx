@@ -14,7 +14,7 @@ export default async function StaffPage() {
     <AdminShell current="/admin/staff" isStaff>
       <AdminHeading
         title="Staff"
-        lead="Everyone who can sign in to the console, and their role. Deactivating someone removes their access at once; their history in the audit log stays."
+        lead="Everyone who can sign in to the console, their role, and optional personal AI assistants (with WhatsApp). Deactivating someone removes their access at once; their history in the audit log stays."
         actions={can(access, 'roles.manage') ? <AdminButton href="/admin/roles" variant="light">Edit roles</AdminButton> : null}
       />
       <div className="mt-8">
