@@ -45,12 +45,11 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
   const { announcement, navigation, general } = settings;
   /* The sign-up button is for visitors. Anyone signed in already has an
      account, and their name and links take its place in the bar. */
-  /* English menu labels fit on one line from xl. Tamil, Malayalam and the
-     other scripts run two to three times longer and ran into the buttons on
-     the right, so they keep the menu button until 2xl. Literal class names,
-     so Tailwind sees them. */
-  const wide = locale === 'en' ? 'xl:flex' : '2xl:flex';
-  const narrow = locale === 'en' ? 'xl:hidden' : '2xl:hidden';
+  /* Inline links from lg (1024px) up — normal desktops and landscape tablets.
+     Phones and small tablets keep the details menu. Longer scripts use a
+     slightly smaller size and tighter gaps so the row still fits. */
+  const navSize = locale === 'en' ? 'text-[15px]' : 'text-[12px] xl:text-[14px]';
+  const navGap = locale === 'en' ? 'gap-[clamp(12px,1.2vw,22px)]' : 'gap-[clamp(8px,0.9vw,16px)]';
   const showCta = Boolean(navigation.headerCta.label && navigation.headerCta.href) && (await getViewer()).role === 'anonymous';
 
   return (
@@ -78,7 +77,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
 
           <MarketNav
             items={navigation.items.map((item) => ({ href: localHref(locale, item.href), label: navLabel(item, locale) }))}
-            className={`hidden min-w-0 items-center gap-[clamp(14px,1.4vw,22px)] text-[15px] font-medium text-white ${wide}`}
+            className={`hidden min-w-0 flex-1 items-center justify-center ${navGap} ${navSize} font-medium text-white lg:flex`}
             linkClassName="t-colors whitespace-nowrap text-white/95 hover:text-[var(--color-gold)]"
           />
 
@@ -88,14 +87,14 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
             {showCta ? (
               <Link
                 href={localHref(locale, navigation.headerCta.href)}
-                className="btn-gradient t-colors hidden items-center gap-1.5 rounded-[8px] px-4 py-2.5 text-[14px] font-semibold normal-case tracking-normal no-underline md:inline-flex"
+                className="btn-gradient t-colors hidden items-center gap-1.5 rounded-[8px] px-4 py-2.5 text-[14px] font-semibold normal-case tracking-normal no-underline lg:inline-flex"
               >
                 {ctaLabel(navigation.headerCta, locale)}
                 <span aria-hidden>→</span>
               </Link>
             ) : null}
 
-            <details className={`group relative ${narrow}`}>
+            <details className="group relative lg:hidden">
               <summary
                 aria-label="Menu"
                 className="grid size-9 cursor-pointer list-none place-items-center rounded-[8px] border border-white/55 bg-transparent text-white sm:size-10 [&::-webkit-details-marker]:hidden"

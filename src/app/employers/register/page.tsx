@@ -38,7 +38,7 @@ export default async function EmployerRegisterPage() {
       <header className="sticky top-0 z-40 border-b border-white/10 bg-[#142438] text-white">
         <div className="mx-auto flex w-full max-w-[1280px] items-center justify-between gap-3 px-[clamp(16px,4cqi,56px)] py-[14px]">
           <Wordmark href="/employers" tone="dark" size={20} />
-          <nav className="hidden min-w-0 items-center gap-[clamp(12px,1.2vw,22px)] text-[14px] font-medium xl:flex">
+          <nav className="hidden min-w-0 flex-1 items-center justify-center gap-[clamp(12px,1.2vw,22px)] text-[14px] font-medium lg:flex">
             {navItems.map((item) => {
               const active = item.href.includes('/employers');
               return (
@@ -59,12 +59,12 @@ export default async function EmployerRegisterPage() {
             <AccountMenu locale="en" tone="employer" />
             <Link
               href={page.headerCtaHref || '/employers/register'}
-              className="t-colors hidden items-center gap-1.5 rounded-[8px] bg-[#b28a49] px-4 py-2 text-[13px] font-semibold text-[#142438] no-underline hover:bg-[#c49a58] md:inline-flex"
+              className="t-colors hidden items-center gap-1.5 rounded-[8px] bg-[#b28a49] px-4 py-2 text-[13px] font-semibold text-[#142438] no-underline hover:bg-[#c49a58] lg:inline-flex"
             >
               {page.headerCtaLabel}
               <span aria-hidden>→</span>
             </Link>
-            <details className="group relative xl:hidden">
+            <details className="group relative lg:hidden">
               <summary
                 aria-label="Menu"
                 className="grid size-10 cursor-pointer list-none place-items-center rounded-[8px] border border-white/25 text-white [&::-webkit-details-marker]:hidden"
