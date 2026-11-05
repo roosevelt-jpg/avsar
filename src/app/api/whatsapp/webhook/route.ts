@@ -119,7 +119,10 @@ async function handleGreen(raw: string) {
 }
 
 function greenAuthorized(request: Request): boolean {
-  const expected = process.env.GREEN_WEBHOOK_TOKEN?.trim();
+  /* Prefer a dedicated webhook secret; otherwise reuse apiTokenInstance (GREEN_API_TOKEN).
+     Green has no Meta-style hub.verify_token — this is the inbound auth instead. */
+  const expected =
+    process.env.GREEN_WEBHOOK_TOKEN?.trim() || process.env.GREEN_API_TOKEN?.trim() || '';
   if (!expected) return false;
   const header = request.headers.get('authorization') ?? '';
   const bearer = header.toLowerCase().startsWith('bearer ') ? header.slice(7).trim() : '';
