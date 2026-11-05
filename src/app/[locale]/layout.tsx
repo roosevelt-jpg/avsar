@@ -27,8 +27,8 @@ export default async function LocaleLayout({
    * one attribute flips text alignment, list markers, the order of flex and
    * grid children, and which side the scrollbar sits on.
    *
-   * The marketing footer is a Server Component: signed-in candidates never
-   * see it, and auth/funnel routes stay quiet even for anonymous visitors.
+   * The marketing footer is a Server Component: any signed-in audience never
+   * sees it, and auth/funnel routes stay quiet even for anonymous visitors.
    */
   const pathname = (await headers()).get(PATHNAME_HEADER) ?? '';
 

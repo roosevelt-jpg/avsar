@@ -1,18 +1,21 @@
-import { getSessionCandidate } from '@/lib/auth';
+import { getViewer } from '@/lib/auth';
 import type { Locale } from '@/lib/i18n';
 import { SiteFooter } from '@/components/candidate/SiteFooter';
 
 /**
  * Marketing site footer for public shopfront pages only.
  *
- * Signed-in candidates live inside the dashboard shell — the shop footer must
- * never appear under their pages (profile, assessment, jobs from the sidebar,
- * etc.). Auth and the /go funnel stay quiet for anonymous visitors too.
+ * Any signed-in audience (candidate, staff, employer, or a bare registered
+ * account) lives in a dashboard shell — the shop footer must never appear
+ * under those sessions. Auth and the /go funnel stay quiet for anonymous
+ * visitors too.
  *
- * This is a Server Component on purpose: a client pathname check can still
- * ship the footer HTML on first paint, which is what candidates were seeing.
+ * Server Component on purpose: a client pathname check can still ship the
+ * footer HTML on first paint.
  */
 const QUIET_ANON = /\/(signin|signup|go|reset-password|applicant)(\/|$)/;
+const QUIET_APP =
+  /\/(dashboard|profile|assessment|admin)(\/|$)|\/jobs(\/|$)/i;
 
 export async function MarketingFooter({
   locale,
@@ -23,6 +26,10 @@ export async function MarketingFooter({
   pathname: string;
 }) {
   if (QUIET_ANON.test(pathname)) return null;
-  if (await getSessionCandidate()) return null;
+  if (QUIET_APP.test(pathname)) return null;
+
+  const viewer = await getViewer();
+  if (viewer.role !== 'anonymous') return null;
+
   return <SiteFooter locale={locale} />;
 }

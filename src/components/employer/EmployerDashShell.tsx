@@ -83,7 +83,7 @@ export async function EmployerDashShell({
             aria-current={active ? 'page' : undefined}
             className={`t-colors flex items-center justify-between gap-2 rounded-[10px] px-3 py-2.5 text-[14px] no-underline ${
               active
-                ? 'bg-gradient-to-r from-[#b28a49] to-[#c9a35f] font-semibold text-[#142438]'
+                ? 'bg-[#b28a49] font-semibold text-[#142438]'
                 : 'text-white/80 hover:bg-white/8 hover:text-white'
             }`}
           >

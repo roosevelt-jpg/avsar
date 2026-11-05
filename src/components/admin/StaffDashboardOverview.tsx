@@ -22,19 +22,19 @@ export function StaffDashHero({
   return (
     <section className="relative overflow-hidden rounded-[18px] bg-[#142438] text-white">
       <Image
-        src="/photos/brand/footer-lisbon.jpg"
+        src="/photos/brand/dash-banner.jpg"
         alt=""
         fill
         priority
         sizes="(max-width: 1280px) 100vw, 1200px"
-        className="object-cover opacity-45"
+        className="object-cover object-[center_35%] opacity-55"
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#142438]/95 via-[#142438]/75 to-[#142438]/35" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#142438]/92 via-[#142438]/62 to-[#142438]/20" />
       <div className="relative z-[1] px-5 py-7 sm:px-8 sm:py-9 lg:max-w-[70%]">
         <div className="flex flex-wrap items-center gap-2.5">
           <p className="m-0 text-[12px] font-medium uppercase tracking-[0.14em] text-[#e8c56a]">Platform Overview</p>
           {roleLabel ? (
-            <span className="inline-flex items-center rounded-full bg-[#b28a49]/25 px-2.5 py-0.5 text-[11px] font-medium text-[#e8c56a]">
+            <span className="inline-flex items-center rounded-[6px] bg-[#b28a49]/25 px-2.5 py-0.5 text-[11px] font-medium text-[#e8c56a]">
               {roleLabel}
             </span>
           ) : null}
@@ -101,7 +101,7 @@ export function StaffPlatformStatStrip({
         <li key={card.label} className="min-w-0">
           <Link
             href={card.href}
-            className="t-colors flex h-full min-w-0 flex-col overflow-hidden rounded-[14px] border border-[#142438]/08 bg-white p-4 no-underline shadow-[0_8px_24px_-18px_rgba(20,36,56,0.35)] hover:border-[#b28a49]/45"
+            className="t-colors flex h-full min-w-0 flex-col overflow-hidden rounded-[12px] border border-[#e2e5ea] bg-white p-4 no-underline hover:border-[#b28a49]/45"
           >
             <p className="m-0 text-[22px] font-semibold leading-none tracking-[-0.03em] text-[#142438]">
               {card.value.toLocaleString('en-GB')}
@@ -111,7 +111,7 @@ export function StaffPlatformStatStrip({
         </li>
       ))}
       {/* Same vertical rhythm as the count cards so the ring + labels stay inside a narrow grid cell. */}
-      <li className="min-w-0 overflow-hidden rounded-[14px] border border-[#142438]/08 bg-white p-4 shadow-[0_8px_24px_-18px_rgba(20,36,56,0.35)]">
+      <li className="min-w-0 overflow-hidden rounded-[12px] border border-[#e2e5ea] bg-white p-4">
         <div className="flex min-w-0 items-center gap-2.5">
           <span
             className="relative flex size-8 shrink-0 items-center justify-center rounded-full"

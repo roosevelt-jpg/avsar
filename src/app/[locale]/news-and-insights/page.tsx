@@ -1,12 +1,14 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { SiteHeader } from '@/components/candidate/SiteHeader';
+import { LoggedInShell } from '@/components/candidate/LoggedInShell';
 import { NewsFeed } from '@/components/candidate/NewsFeed';
 import { BlockRenderer } from '@/components/cms/BlockRenderer';
 import { cmsMetadata } from '@/components/cms/CmsPageView';
 import type { Block } from '@/lib/cms/blocks';
 import { getPublishedPage, getSiteSettings } from '@/lib/cms/data';
 import { defaultPage } from '@/lib/cms/defaults';
+import { getViewer } from '@/lib/auth';
 import { isLocale, localePath, type Locale } from '@/lib/i18n';
 import { listPublishedNewsletters } from '@/lib/newsletter/data';
 
@@ -20,10 +22,11 @@ export default async function NewsAndInsightsPage({ params }: { params: Promise<
   if (!isLocale(raw)) notFound();
   const locale = raw as Locale;
 
-  const [cms, settings, posts] = await Promise.all([
+  const [cms, settings, posts, viewer] = await Promise.all([
     getPublishedPage('news-and-insights', locale),
     getSiteSettings(),
     listPublishedNewsletters(),
+    getViewer(),
   ]);
 
   const fallback = defaultPage('news-and-insights');
@@ -33,16 +36,25 @@ export default async function NewsAndInsightsPage({ params }: { params: Promise<
   const heroIndex = blocks.findIndex((block) => block.type === 'hero');
   const before = heroIndex >= 0 ? blocks.slice(0, heroIndex + 1) : [];
   const after = heroIndex >= 0 ? blocks.slice(heroIndex + 1) : blocks;
+  const signedIn = viewer.role === 'candidate';
 
-  return (
+  const body = (
     <>
-      <SiteHeader locale={locale} />
+      {signedIn ? null : <SiteHeader locale={locale} />}
       <main>
         {before.length ? <BlockRenderer blocks={before} locale={locale} settings={settings} /> : null}
         <NewsFeed locale={locale} posts={posts} />
         {after.length ? <BlockRenderer blocks={after} locale={locale} settings={settings} /> : null}
       </main>
     </>
+  );
+
+  if (!signedIn) return body;
+
+  return (
+    <LoggedInShell locale={locale} current="overview">
+      {body}
+    </LoggedInShell>
   );
 }
 

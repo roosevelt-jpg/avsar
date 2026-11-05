@@ -52,19 +52,19 @@ export function EmployerDashHero({
   return (
     <section className="relative overflow-hidden rounded-[18px] bg-[#142438] text-white">
       <Image
-        src="/photos/brand/footer-lisbon.jpg"
+        src="/photos/brand/dash-banner.jpg"
         alt=""
         fill
         priority
         sizes="(max-width: 1024px) 100vw, 1000px"
-        className="object-cover opacity-45"
+        className="object-cover object-[center_35%] opacity-55"
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#142438]/95 via-[#142438]/75 to-[#142438]/35" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#142438]/92 via-[#142438]/62 to-[#142438]/20" />
       <div className="relative z-[1] px-5 py-7 sm:px-8 sm:py-9 lg:max-w-[62%]">
         <div className="mb-2 flex flex-wrap items-center gap-2.5">
           <p className="m-0 text-[12px] font-medium uppercase tracking-[0.14em] text-[#e8c56a]">Employer portal</p>
           <span
-            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium ${
+            className={`inline-flex items-center rounded-[6px] px-2.5 py-0.5 text-[11px] font-medium ${
               verified ? 'bg-[#2f7d4a]/25 text-[#7dcea0]' : 'bg-[#b28a49]/25 text-[#e8c56a]'
             }`}
           >
@@ -114,7 +114,7 @@ export function EmployerStatStrip({ stats }: { stats: EmployerDashStats }) {
       {cards.map((card) => (
         <li
           key={card.label}
-          className="flex min-w-0 items-start gap-3 overflow-hidden rounded-[14px] border border-[#142438]/08 bg-white p-4 shadow-[0_8px_24px_-18px_rgba(20,36,56,0.35)]"
+          className="flex min-w-0 items-start gap-3 overflow-hidden rounded-[12px] border border-[#e2e5ea] bg-white p-4"
         >
           <span className="flex size-10 shrink-0 items-center justify-center rounded-[10px] bg-[#142438]/06 text-[#b28a49]">
             {card.icon === 'ring' ? (

@@ -3,6 +3,7 @@ import { staticPageMetadata } from '@/lib/seo';
 import { notFound } from 'next/navigation';
 import { Mono } from '@/components/ui/Mono';
 import { SiteHeader } from '@/components/candidate/SiteHeader';
+import { LoggedInShell } from '@/components/candidate/LoggedInShell';
 import { FaqAccordion } from '@/components/candidate/FaqAccordion';
 import { PackagePaywallCopy } from '@/components/candidate/PackagePaywallCopy';
 import { CandidateStoriesBlock } from '@/components/cms/blocks/Media';
@@ -77,9 +78,9 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
     (item) => [tx(item.question), fill(tx(item.answer), { skills, visa, bundle, separate })] as const,
   );
 
-  return (
+  const body = (
     <>
-      <SiteHeader locale={locale} />
+      {candidate ? null : <SiteHeader locale={locale} />}
 
       <main className="px-[clamp(20px,4cqi,56px)] py-[clamp(48px,7cqi,96px)]">
         <h1 className="m-0 text-[clamp(32px,5cqi,60px)] font-semibold leading-[1.05] tracking-[-0.035em]">
@@ -167,5 +168,13 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
         </section>
       </main>
     </>
+  );
+
+  if (!candidate) return body;
+
+  return (
+    <LoggedInShell locale={locale} current="overview">
+      {body}
+    </LoggedInShell>
   );
 }

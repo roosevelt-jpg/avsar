@@ -49,19 +49,19 @@ export function DashboardHero({
   return (
     <section className="relative overflow-hidden rounded-[18px] bg-[#142438] text-white">
       <Image
-        src="/photos/brand/footer-lisbon.jpg"
+        src="/photos/brand/dash-banner.jpg"
         alt=""
         fill
         priority
         sizes="(max-width: 1024px) 100vw, 900px"
-        className="object-cover opacity-45"
+        className="object-cover object-[center_35%] opacity-55"
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#142438]/95 via-[#142438]/75 to-[#142438]/35" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#142438]/92 via-[#142438]/62 to-[#142438]/20" />
       <div className="relative z-[1] px-5 py-7 sm:px-8 sm:py-9 lg:max-w-[58%]">
         <div className="mb-2 flex flex-wrap items-center gap-2.5">
           <p className="m-0 text-[12px] font-medium uppercase tracking-[0.14em] text-[var(--dash-gold,#b28a49)]">Your dashboard</p>
           <span
-            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium ${
+            className={`inline-flex items-center rounded-[6px] px-2.5 py-0.5 text-[11px] font-medium ${
               verified ? 'bg-[#b28a49]/25 text-[#b28a49]' : 'bg-white/15 text-white/80'
             }`}
           >
