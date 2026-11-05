@@ -503,7 +503,7 @@ function FeatureVisaDesk({ data, list }: { data: BlockData; list: BlockData[] })
   const checklist = strList(data, 'checklist');
   const image = str(data, 'sideImage');
   return (
-    <Section className="!bg-[#f5f6f8] !py-[clamp(40px,6cqi,80px)]">
+    <Section className="!bg-[var(--color-ivory,#f7f4ee)] !py-[clamp(40px,6cqi,80px)]">
       <div className="grid grid-cols-1 items-start gap-[clamp(28px,4cqi,48px)] lg:grid-cols-2">
         <div>
           {str(data, 'checklistTitle') ? (
@@ -557,7 +557,7 @@ function FeatureVisaDesk({ data, list }: { data: BlockData; list: BlockData[] })
 function FeatureSupportGrid({ data, list }: { data: BlockData; list: BlockData[] }) {
   const image = str(data, 'sideImage');
   return (
-    <Section className="!bg-[#f5f6f8] !py-[clamp(40px,6cqi,80px)]">
+    <Section className="!bg-[var(--color-ivory,#f7f4ee)] !py-[clamp(40px,6cqi,80px)]">
       <div className={`grid grid-cols-1 items-start gap-[clamp(28px,4cqi,48px)] lg:items-stretch ${image ? 'lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]' : ''}`}>
         {image ? (
           <div className="relative aspect-[4/3] min-h-[220px] overflow-hidden rounded-[18px] bg-[#142438] lg:aspect-auto lg:min-h-0 lg:self-stretch">
@@ -622,7 +622,7 @@ function FeatureSectorCards({ data, list }: { data: BlockData; list: BlockData[]
 /** About mockup: four elevated white cards with gold icons. */
 function FeatureValueCards({ data, list, columns }: { data: BlockData; list: BlockData[]; columns: number }) {
   return (
-    <Section className="!bg-[#f5f6f8] !py-[clamp(40px,6cqi,80px)]">
+    <Section className="!bg-[var(--color-ivory,#f7f4ee)] !py-[clamp(40px,6cqi,80px)]">
       <div className="mb-[clamp(28px,4cqi,40px)] max-w-[640px]">
         {str(data, 'eyebrow') ? (
           <p className="m-0 mb-2 text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--color-gold)]">{str(data, 'eyebrow')}</p>
@@ -868,7 +868,7 @@ export function ContactFormBlock({ data, locale }: Props) {
   const desk = pathways.length > 0;
 
   return (
-    <section id="contact-form" className="scroll-mt-28 bg-[#f5f6f8] px-[clamp(20px,4cqi,56px)] py-[clamp(40px,6cqi,72px)]">
+    <section id="contact-form" className="scroll-mt-28 bg-[var(--color-ivory,#f7f4ee)] px-[clamp(20px,4cqi,56px)] py-[clamp(40px,6cqi,72px)]">
       <div className={`mx-auto w-full max-w-[1200px] ${desk ? 'grid gap-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:items-start' : 'max-w-[640px]'}`}>
         {desk ? (
           <ul className="m-0 flex list-none flex-col gap-4 p-0">

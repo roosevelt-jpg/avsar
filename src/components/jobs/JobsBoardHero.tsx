@@ -15,7 +15,7 @@ function accentTitle(title: string, accentWord: string): ReactNode {
   return (
     <>
       {before}
-      <em className="accent-italic not-italic" style={{ fontStyle: 'italic', color: '#b28a49' }}>
+      <em className="accent-italic" style={{ fontStyle: 'italic' }}>
         {match}
       </em>
       {after}
@@ -66,7 +66,7 @@ export function JobsBoardHero({
       </div>
 
       <div className="relative mx-auto w-full max-w-[1200px] px-[clamp(20px,4cqi,56px)] pb-0 pt-[clamp(48px,8cqi,88px)]">
-        <div className="max-w-[640px] pb-8">
+        <div className="max-w-[640px] pb-10">
           {eyebrow ? (
             <p className="m-0 inline-flex items-center gap-2.5 text-[12px] font-semibold uppercase tracking-[0.18em] text-[var(--color-gold)]">
               <span aria-hidden className="h-px w-7 bg-[var(--color-gold)]" />
@@ -83,9 +83,9 @@ export function JobsBoardHero({
           {stats.length > 0 ? (
             <ul className="m-0 mt-9 flex list-none flex-wrap gap-x-8 gap-y-4 p-0">
               {stats.map((item) => (
-                <li key={item.label} className="flex items-center gap-2.5 text-[13px] font-medium text-white/95">
-                  <span className="grid size-9 place-items-center text-[var(--color-gold)]">
-                    <Icon name={item.icon} className="size-5" />
+                <li key={item.label} className="inline-flex items-center gap-2.5 text-[13px] font-medium text-white/95">
+                  <span className="grid size-8 shrink-0 place-items-center rounded-full border border-[var(--color-gold)]/70 text-[var(--color-gold)]">
+                    <Icon name={item.icon} className="size-3.5" />
                   </span>
                   <span>
                     <span className="font-semibold">{item.value}</span> {item.label}
@@ -96,7 +96,8 @@ export function JobsBoardHero({
           ) : null}
         </div>
 
-        {search}
+        {/* Search floats over the ivory listing band — mockup Job Opportunities page. */}
+        <div className="relative z-10 -mb-8 sm:-mb-10">{search}</div>
       </div>
     </section>
   );

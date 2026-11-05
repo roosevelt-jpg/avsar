@@ -59,18 +59,17 @@ export function DashboardHero({
       <div className="absolute inset-0 bg-gradient-to-r from-[#142438]/95 via-[#142438]/75 to-[#142438]/35" />
       <div className="relative z-[1] px-5 py-7 sm:px-8 sm:py-9 lg:max-w-[58%]">
         <div className="mb-2 flex flex-wrap items-center gap-2.5">
-          <p className="m-0 text-[12px] font-medium uppercase tracking-[0.14em] text-[#e8c56a]">Your dashboard</p>
+          <p className="m-0 text-[12px] font-medium uppercase tracking-[0.14em] text-[var(--dash-gold,#b28a49)]">Your dashboard</p>
           <span
             className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium ${
-              verified ? 'bg-[#b28a49]/25 text-[#e8c56a]' : 'bg-white/15 text-white/80'
+              verified ? 'bg-[#b28a49]/25 text-[#b28a49]' : 'bg-white/15 text-white/80'
             }`}
           >
             {verified ? 'Verified candidate' : 'Candidate'}
           </span>
         </div>
         <h1
-          className="m-0 text-[clamp(26px,3.4cqi,40px)] font-semibold leading-[1.1] tracking-[-0.02em] text-[#e8c56a]"
-          style={{ fontFamily: 'var(--font-display)' }}
+          className="display-serif m-0 text-[clamp(26px,3.4cqi,40px)] font-normal leading-[1.1] tracking-[-0.02em] text-white"
         >
           Welcome Back, {firstName}!
         </h1>
@@ -304,7 +303,7 @@ export function NextStepsChecklist({
                 aria-hidden
                 className={`flex size-5 shrink-0 items-center justify-center rounded-full border text-[11px] ${
                   item.done
-                    ? 'border-[#2f7d4a] bg-[#2f7d4a] text-white'
+                    ? 'border-[#b28a49] bg-[#b28a49] text-[#142438]'
                     : 'border-[#cfc8bc] bg-white text-transparent'
                 }`}
               >

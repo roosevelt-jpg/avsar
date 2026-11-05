@@ -31,7 +31,7 @@ function accentTitle(title: string, accentWord: string): ReactNode {
   return (
     <>
       {before}
-      <em className="accent-italic not-italic" style={{ fontStyle: 'italic', color: '#b28a49' }}>
+      <em className="accent-italic" style={{ fontStyle: 'italic' }}>
         {match}
       </em>
       {after}
@@ -56,9 +56,9 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
   const accentWord = str(data, 'accentWord');
   const layout = str(data, 'layout');
   const Heading = first ? 'h1' : 'h2';
-  const overlay = layout === 'overlay';
-  /* A slideshow or a primary button marks the mockup-style brand hero. */
-  const brand = !overlay && (cmsSlides.length > 0 || Boolean(primary && badgeLabel));
+  /* Slides + badge = Careers mockup brand hero, even if an older CMS row still says overlay. */
+  const brand = cmsSlides.length > 0 || Boolean(primary && badgeLabel);
+  const overlay = layout === 'overlay' && !brand;
 
   const slides: HeroSlide[] = [];
   if (cmsSlides.length > 0) {
@@ -170,7 +170,7 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
               className={
                 onDark
                   ? 'btn-outline-light t-colors inline-flex items-center gap-2 px-5 py-3 text-[14px] font-semibold no-underline'
-                  : 't-colors inline-flex items-center rounded-[999px] border border-line-strong bg-white px-5 py-3 text-[14px] font-semibold text-ink no-underline hover:border-ink'
+                  : 't-colors inline-flex items-center rounded-[8px] border border-line-strong bg-white px-5 py-3 text-[14px] font-semibold text-ink no-underline hover:border-ink'
               }
             >
               {secondary.label}
@@ -214,33 +214,30 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
         </div>
       ) : null}
 
-      {highlights.length > 0 && overlay ? (
-        <ul className="m-0 mt-10 flex list-none flex-wrap gap-x-8 gap-y-4 p-0">
+      {/* Mockup: one horizontal trust row under CTAs — gold ring icons, not a feature grid. */}
+      {highlights.length > 0 && (brand || overlay) ? (
+        <ul className="m-0 mt-9 flex list-none flex-wrap items-center gap-x-7 gap-y-4 p-0">
           {highlights.map((item, index) => (
-            <li key={item} className="flex max-w-[11rem] flex-col items-start gap-2.5">
-              <span className="grid size-10 place-items-center text-[var(--color-gold)]">
-                <Icon name={highlightIcons[index] ?? 'check'} className="size-6" />
+            <li key={item} className="inline-flex items-center gap-2.5 text-[13px] font-medium leading-[1.3] text-white/95">
+              <span className="grid size-8 shrink-0 place-items-center rounded-full border border-[var(--color-gold)]/70 text-[var(--color-gold)]">
+                <Icon name={highlightIcons[index] ?? 'check'} className="size-3.5" />
               </span>
-              <span className="text-[13px] font-medium leading-[1.35] text-white/95">{item}</span>
+              {item}
             </li>
           ))}
         </ul>
       ) : null}
 
-      {highlights.length > 0 && !overlay && (
-        <ul
-          className={`m-0 mt-8 grid list-none grid-cols-1 gap-3 p-0 sm:grid-cols-2 ${
-            brand ? 'text-white/90 lg:grid-cols-4' : 'flex flex-wrap gap-x-5 gap-y-2 text-ink-2'
-          }`}
-        >
+      {highlights.length > 0 && !brand && !overlay ? (
+        <ul className="m-0 mt-8 flex list-none flex-wrap gap-x-5 gap-y-2 p-0 text-[14px] text-ink-2">
           {highlights.map((item) => (
-            <li key={item} className={`inline-flex items-start gap-2 text-[13px] leading-[1.35] ${brand ? '' : 'items-center text-[14px]'}`}>
-              <Icon name="check" className={`mt-0.5 size-4 shrink-0 ${brand ? 'text-[var(--color-gold)]' : 'text-success'}`} />
+            <li key={item} className="inline-flex items-center gap-2">
+              <Icon name="check" className="size-4 shrink-0 text-success" />
               <span>{item}</span>
             </li>
           ))}
         </ul>
-      )}
+      ) : null}
 
       {proof.length > 0 && !overlay && (
         <div className={`mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 border-t pt-6 ${brand ? 'border-white/20' : 'border-line'}`}>

@@ -44,7 +44,8 @@ export const HOME: DefaultPage = {
         bubbles: [],
         liveProof: false,
         routeMap: false,
-        layout: 'overlay',
+        /* Brand split hero (navy + photo), not full-bleed overlay — matches Careers mockup. */
+        layout: '',
         mediaType: 'image',
         mediaSrc: '/photos/brand/hero-workers.jpg',
         mediaPoster: '',

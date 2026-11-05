@@ -271,12 +271,12 @@ export function SignupFlow({
         {tx('Join professionals from India building their careers in Portugal.')}
       </p>
 
-      <ol className="m-0 mt-8 grid list-none grid-cols-2 gap-x-3 gap-y-4 p-0 sm:grid-cols-4">
+      <ol className="m-0 mt-8 flex list-none gap-2 overflow-x-auto p-0 sm:grid sm:grid-cols-4 sm:gap-x-3 sm:overflow-visible">
         {FORM_STEPS.map((label, index) => {
           const active = index === step;
           const done = index < step;
           return (
-            <li key={label} className="relative min-w-0 text-center">
+            <li key={label} className="relative min-w-[5.5rem] flex-1 text-center sm:min-w-0">
               {index < FORM_STEPS.length - 1 ? (
                 <span
                   aria-hidden
@@ -288,7 +288,7 @@ export function SignupFlow({
               <span
                 className={`relative z-[1] mx-auto grid size-8 place-items-center rounded-full text-[13px] font-bold ${
                   active || done
-                    ? 'bg-[var(--color-gold)] text-white'
+                    ? 'bg-[var(--color-gold)] text-[#142438]'
                     : 'border border-line-strong bg-white text-muted'
                 }`}
               >
@@ -552,7 +552,7 @@ export function SignupFlow({
                 aria-hidden
                 className={`mt-0.5 flex size-[20px] shrink-0 items-center justify-center rounded-[5px] border text-[12px] font-semibold ${
                   consent
-                    ? 'border-[var(--color-gold)] bg-[var(--color-gold)] text-white'
+                    ? 'border-[var(--color-gold)] bg-[var(--color-gold)] text-[#142438]'
                     : 'border-line-strong bg-white text-transparent'
                 }`}
               >
@@ -626,7 +626,7 @@ function RadioChip({ label, active, onClick }: { label: string; active: boolean;
       onClick={onClick}
       className={`t-colors cursor-pointer rounded-full border px-4 py-2.5 text-[14px] font-medium ${
         active
-          ? 'border-[var(--color-gold)] bg-[var(--color-gold)] text-white'
+          ? 'border-[var(--color-gold)] bg-[var(--color-gold)] text-[#142438]'
           : 'border-line-strong bg-white text-[#142438] hover:border-[#142438]'
       }`}
     >

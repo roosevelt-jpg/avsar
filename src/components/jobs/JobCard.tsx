@@ -75,7 +75,9 @@ function JobGridCard({ job, locale, priority, saved }: Omit<Props, 'variant' | '
         {job.employerDisplay ? <p className="m-0 mt-1 text-[14px] text-ink-2">{job.employerDisplay}</p> : null}
         <p className="m-0 mt-3 line-clamp-2 text-[14px] leading-[1.55] text-muted">{job.summary}</p>
         <div className="mt-auto flex flex-wrap items-center gap-2 pt-4">
-          {salary && <span className="chip-gradient rounded-full px-3 py-1 text-[13px] font-semibold">{salary}</span>}
+          {salary && (
+            <span className="rounded-[8px] bg-[#f3eee6] px-3 py-1 text-[13px] font-semibold text-[#142438]">{salary}</span>
+          )}
           <span className="rounded-full border border-line px-3 py-1 text-[13px] text-ink-2">{siteText(locale, HOUSING_LABELS[job.housing])}</span>
           {job.openings > 1 && (
             <span className="rounded-full border border-line px-3 py-1 text-[13px] text-ink-2">

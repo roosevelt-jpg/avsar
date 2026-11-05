@@ -21,9 +21,8 @@ type ShellCandidate = {
 };
 
 /**
- * Candidate dashboard chrome from the S&A mockup: navy sidebar, top search
- * bar, and a content column. Nav keys stay wired to real routes; nothing here
- * invents a messages product we do not have.
+ * Candidate dashboard chrome: navy sidebar, quiet top bar, content column.
+ * Crafted to match S&A marketing navy/gold — not a generic admin kit.
  */
 export async function CandidateDashShell({
   locale,
@@ -71,7 +70,7 @@ export async function CandidateDashShell({
   ];
 
   const navList = (
-    <nav aria-label="Dashboard" className="flex flex-1 flex-col gap-0.5 px-3 py-2">
+    <nav aria-label="Dashboard" className="flex flex-1 flex-col gap-0.5 px-2.5 py-3">
       {items.map((item) => {
         const active = item.key === current;
         return (
@@ -79,10 +78,10 @@ export async function CandidateDashShell({
             key={item.key}
             href={item.href}
             aria-current={active ? 'page' : undefined}
-            className={`t-colors flex items-center justify-between gap-2 rounded-[10px] px-3 py-2.5 text-[14px] no-underline ${
+            className={`t-colors flex items-center justify-between gap-2 rounded-[8px] px-3 py-2.5 text-[13.5px] no-underline ${
               active
-                ? 'bg-gradient-to-r from-[#b28a49] to-[#c9a35f] font-semibold text-[#142438]'
-                : 'text-white/80 hover:bg-white/8 hover:text-white'
+                ? 'bg-[var(--dash-gold)] font-semibold text-[var(--dash-navy)]'
+                : 'text-white/72 hover:bg-white/[0.06] hover:text-white'
             }`}
           >
             <span className="flex items-center gap-2.5">
@@ -90,7 +89,7 @@ export async function CandidateDashShell({
               {item.label}
             </span>
             {item.badge != null ? (
-              <span className="rounded-full bg-[#e8c56a] px-1.5 text-[11px] font-semibold text-[#142438]">
+              <span className="rounded-full bg-[var(--dash-gold)] px-1.5 text-[11px] font-semibold text-[var(--dash-navy)]">
                 {item.badge}
               </span>
             ) : null}
@@ -101,68 +100,42 @@ export async function CandidateDashShell({
   );
 
   return (
-    <div className="candidate-dash min-h-screen bg-[#f4f2ee] text-ink">
-      {/* Mobile: collapsible navy drawer via native details — no client JS. */}
-      <details className="group border-b border-[#1e334d] bg-[#142438] lg:hidden">
+    <div className="candidate-dash min-h-screen">
+      <details className="group border-b border-white/10 bg-[var(--dash-navy)] lg:hidden">
         <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-white [&::-webkit-details-marker]:hidden">
           <Wordmark href={localePath(locale, '/')} size={22} tone="dark" />
-          <span className="rounded-md border border-white/25 px-2.5 py-1 text-[12px] font-medium tracking-wide uppercase">
+          <span className="rounded-[6px] border border-white/25 px-2.5 py-1 text-[11px] font-medium tracking-[0.08em] uppercase">
             Menu
           </span>
         </summary>
-        <div className="border-t border-white/10 pb-4 pt-2">
+        <div className="border-t border-white/10 pb-4 pt-1">
           {navList}
-          {support ? (
-            <div className="mx-3 mt-2 rounded-[14px] border border-white/10 bg-[#1a2d45] p-3">
-              <p className="m-0 text-[13px] font-medium text-white">Need Help?</p>
-              <a
-                href={support}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-2 inline-flex w-full items-center justify-center rounded-[8px] bg-[#b28a49] px-3 py-2 text-[13px] font-semibold text-[#142438] no-underline"
-              >
-                Contact Support →
-              </a>
-            </div>
-          ) : null}
+          {support ? <SupportCard href={support} compact /> : null}
         </div>
       </details>
 
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-[272px] flex-col bg-[#142438] text-white lg:flex">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-[260px] flex-col bg-[var(--dash-navy)] text-white lg:flex">
         <div className="border-b border-white/10 px-5 py-5">
           <Wordmark href={localePath(locale, '/')} size={26} tone="dark" />
         </div>
         {navList}
         {support ? (
           <div className="mt-auto border-t border-white/10 p-4">
-            <div className="rounded-[14px] border border-white/10 bg-[#1a2d45] p-3.5">
-              <p className="m-0 text-[13px] font-medium text-white">Need Help?</p>
-              <p className="m-0 mt-1 text-[12px] leading-snug text-white/55">
-                WhatsApp our desk if something on your application looks wrong.
-              </p>
-              <a
-                href={support}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-3 inline-flex w-full items-center justify-center rounded-[8px] bg-[#b28a49] px-3 py-2.5 text-[13px] font-semibold text-[#142438] no-underline hover:bg-[#c9a35f]"
-              >
-                Contact Support →
-              </a>
-            </div>
+            <SupportCard href={support} />
           </div>
         ) : (
           <div className="mt-auto" />
         )}
       </aside>
 
-      <div className="lg:pl-[272px]">
-        <header className="sticky top-0 z-20 border-b border-[#142438]/10 bg-[#142438] text-white">
-          <div className="flex flex-wrap items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
+      <div className="lg:pl-[260px]">
+        <header className="sticky top-0 z-20 border-b border-[var(--dash-navy)]/10 bg-[var(--dash-navy)] text-white">
+          <div className="flex flex-wrap items-center gap-3 px-4 py-2.5 sm:px-6 lg:px-8">
             <form action={jobsHref} method="get" className="relative min-w-0 flex-1">
               <label htmlFor="dash-job-search" className="sr-only">
                 Search jobs
               </label>
-              <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-[#142438]/45" aria-hidden>
+              <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-[var(--dash-navy)]/40" aria-hidden>
                 <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2">
                   <circle cx="11" cy="11" r="7" />
                   <path d="M20 20l-3.5-3.5" strokeLinecap="round" />
@@ -173,14 +146,14 @@ export async function CandidateDashShell({
                 name="q"
                 type="search"
                 placeholder="Search jobs, employers or keywords..."
-                className="w-full rounded-full border-0 bg-white py-2.5 pr-4 pl-10 text-[14px] text-[#142438] outline-none placeholder:text-[#142438]/45"
+                className="w-full rounded-full border-0 bg-white py-2 pr-4 pl-10 text-[14px] text-[var(--dash-navy)] outline-none placeholder:text-[var(--dash-navy)]/40"
               />
             </form>
             <div className="flex items-center gap-2 sm:gap-3">
               <LocaleToggle locale={locale} />
               <span
                 title={firstName}
-                className="flex size-9 items-center justify-center rounded-full bg-[#b28a49] text-[12px] font-semibold text-[#142438]"
+                className="flex size-8 items-center justify-center rounded-full bg-[var(--dash-gold)] text-[11px] font-semibold text-[var(--dash-navy)]"
               >
                 {initials || '?'}
               </span>
@@ -195,14 +168,35 @@ export async function CandidateDashShell({
             </div>
           </div>
         </header>
-        <div className="px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-8">{children}</div>
+        <div className="px-4 py-5 sm:px-6 sm:py-6 lg:px-8 lg:py-7">{children}</div>
       </div>
     </div>
   );
 }
 
+function SupportCard({ href, compact }: { href: string; compact?: boolean }) {
+  return (
+    <div className={`rounded-[12px] border border-white/10 bg-[var(--dash-navy-deep)] ${compact ? 'mx-3 mt-2 p-3' : 'p-3.5'}`}>
+      <p className="m-0 text-[13px] font-medium text-white">Need Help?</p>
+      {!compact ? (
+        <p className="m-0 mt-1 text-[12px] leading-snug text-white/55">
+          WhatsApp our desk if something on your application looks wrong.
+        </p>
+      ) : null}
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-2.5 inline-flex w-full items-center justify-center rounded-[8px] bg-[var(--dash-gold)] px-3 py-2 text-[13px] font-semibold text-[var(--dash-navy)] no-underline hover:bg-[var(--dash-gold-soft)]"
+      >
+        Contact Support →
+      </a>
+    </div>
+  );
+}
+
 function NavIcon({ name }: { name: DashNavKey }) {
-  const common = 'size-[18px] shrink-0';
+  const common = 'size-[17px] shrink-0 opacity-90';
   switch (name) {
     case 'overview':
       return (

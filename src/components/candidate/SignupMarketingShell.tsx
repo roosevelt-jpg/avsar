@@ -10,9 +10,9 @@ const HERO = {
 } as const;
 
 const BENEFITS = [
-  'Apply for Verified Jobs',
-  'Get Matched to Employers',
-  'Relocation & Visa Support',
+  { label: 'Apply for Verified Jobs', icon: 'briefcase' as const },
+  { label: 'Get Matched to Employers', icon: 'users' as const },
+  { label: 'Relocation & Visa Support', icon: 'plane' as const },
 ] as const;
 
 const JOURNEY = [
@@ -84,11 +84,11 @@ export function SignupMarketingShell({
               </p>
               <ul className="m-0 mt-8 flex list-none flex-wrap gap-x-7 gap-y-3 p-0 text-[13px] font-medium text-white/95">
                 {BENEFITS.map((item) => (
-                  <li key={item} className="inline-flex items-center gap-2.5">
+                  <li key={item.label} className="inline-flex items-center gap-2.5">
                     <span className="grid size-7 place-items-center rounded-full border border-[var(--color-gold)]/60 text-[var(--color-gold)]">
-                      <Icon name="check" className="size-3.5" />
+                      <Icon name={item.icon} className="size-3.5" />
                     </span>
-                    {t(item)}
+                    {t(item.label)}
                   </li>
                 ))}
               </ul>
@@ -96,8 +96,8 @@ export function SignupMarketingShell({
           </div>
         </section>
 
-        <section className="bg-[#f5f6f8] px-[clamp(20px,4cqi,56px)] pb-[clamp(48px,8cqi,96px)] pt-0">
-          <div className="relative mx-auto -mt-[clamp(48px,8cqi,88px)] grid w-full max-w-[1100px] overflow-hidden rounded-[18px] border border-[#142438]/08 bg-white shadow-[0_28px_60px_-28px_rgba(20,36,56,0.45)] lg:grid-cols-[minmax(240px,280px)_minmax(0,1fr)]">
+        <section className="bg-[var(--color-ivory,#f7f4ee)] px-[clamp(20px,4cqi,56px)] pb-[clamp(48px,8cqi,96px)] pt-0">
+          <div className="signup-card relative mx-auto -mt-[clamp(48px,8cqi,88px)] grid w-full max-w-[1100px] overflow-hidden rounded-[16px] border border-[#142438]/08 bg-white lg:grid-cols-[minmax(240px,280px)_minmax(0,1fr)]">
             <aside className="border-b border-line bg-[#f7f4ef] p-6 lg:border-b-0 lg:border-e lg:border-line">
               <h2 className="display-serif m-0 text-[22px] font-normal text-[#142438]">
                 {t('Your Journey to Portugal')}
@@ -111,7 +111,7 @@ export function SignupMarketingShell({
                         className="absolute start-[15px] top-9 bottom-0 w-px border-s border-dashed border-[var(--color-gold)]/70"
                       />
                     ) : null}
-                    <span className="relative z-[1] grid size-8 shrink-0 place-items-center rounded-full bg-[var(--color-gold)] text-[12px] font-bold text-white">
+                    <span className="relative z-[1] grid size-8 shrink-0 place-items-center rounded-full bg-[var(--color-gold)] text-[12px] font-bold text-[#142438]">
                       {index + 1}
                     </span>
                     <div className="min-w-0 pt-0.5">

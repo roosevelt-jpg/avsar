@@ -78,7 +78,7 @@ export function ContactCardsBlock({ data, locale, settings }: { data: BlockData;
 
   if (direct) {
     return (
-      <section className="bg-[#f5f6f8] px-[clamp(20px,4cqi,56px)] pb-[clamp(48px,7cqi,80px)] pt-2">
+      <section className="bg-[var(--color-ivory,#f7f4ee)] px-[clamp(20px,4cqi,56px)] pb-[clamp(48px,7cqi,80px)] pt-2">
         <div className="mx-auto w-full max-w-[1200px] rounded-[18px] bg-[#142438] px-[clamp(20px,3cqi,40px)] py-[clamp(28px,4cqi,44px)] text-white">
           {str(data, 'title') ? (
             <h2 className="display-serif m-0 text-center text-[clamp(26px,3.2cqi,36px)] font-normal text-white">
