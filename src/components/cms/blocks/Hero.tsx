@@ -114,7 +114,6 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
 
   const stageVariant = overlay ? 'overlay' : brand ? 'brand' : 'default';
   const onDark = brand || overlay;
-  const highlightIcons = ['shield', 'document', 'plane', 'users'] as const;
 
   return (
     <HeroStage
@@ -214,14 +213,12 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
         </div>
       ) : null}
 
-      {/* Mockup: one horizontal trust row under CTAs — gold ring icons, not a feature grid. */}
+      {/* Quiet trust line — gold checks, not a four-icon marketing chip row. */}
       {highlights.length > 0 && (brand || overlay) ? (
-        <ul className="m-0 mt-9 flex list-none flex-wrap items-center gap-x-7 gap-y-4 p-0">
-          {highlights.map((item, index) => (
-            <li key={item} className="inline-flex items-center gap-2.5 text-[13px] font-medium leading-[1.3] text-white/95">
-              <span className="grid size-8 shrink-0 place-items-center rounded-full border border-[var(--color-gold)]/70 text-[var(--color-gold)]">
-                <Icon name={highlightIcons[index] ?? 'check'} className="size-3.5" />
-              </span>
+        <ul className="m-0 mt-9 flex list-none flex-wrap items-center gap-x-6 gap-y-3 p-0">
+          {highlights.map((item) => (
+            <li key={item} className="inline-flex items-center gap-2 text-[13px] font-medium leading-[1.3] text-white/92">
+              <Icon name="check" className="size-3.5 shrink-0 text-[var(--color-gold)]" />
               {item}
             </li>
           ))}

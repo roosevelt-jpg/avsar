@@ -22,19 +22,19 @@ export const HERO_LOOP = {
 } as const;
 
 export const BRAND_SLIDES = {
+  /* Documentary place/work stills — avoid posed AI portrait collages on heroes. */
   careers: [
-    { src: '/photos/brand/hero-workers.jpg', alt: 'Skilled professionals ready to work in Portugal' },
-    { src: '/photos/brand/hero-chef.jpg', alt: 'A chef in a Portuguese restaurant kitchen' },
-    { src: '/photos/brand/hero-construction.jpg', alt: 'A construction worker on a Portuguese building site' },
-    { src: '/photos/brand/hero-hospitality.jpg', alt: 'A hospitality professional with Lisbon rooftops behind them' },
+    { src: '/photos/brand/hero-lisbon-street.jpg', alt: 'A yellow tram on a steep Lisbon street' },
+    { src: '/photos/brand/hero-kitchen-work.jpg', alt: 'A chef plating a dish in a restaurant kitchen' },
+    { src: '/photos/brand/hero-jobsite.jpg', alt: 'Construction crew on a Portuguese building site' },
     { src: '/photos/brand/journey-tram.jpg', alt: 'A yellow Lisbon tram on a historic street' },
   ],
   jobs: [
-    { src: '/photos/brand/jobs-hero-1.jpg', alt: 'A chef and a construction worker smiling in Portugal' },
-    { src: '/photos/brand/hero-workers.jpg', alt: 'Skilled professionals ready to work in Portugal' },
-    { src: '/photos/brand/hero-chef.jpg', alt: 'A chef in a Portuguese restaurant kitchen' },
-    { src: '/photos/brand/hero-construction.jpg', alt: 'A construction worker on a Portuguese building site' },
-    { src: '/photos/brand/hero-hospitality.jpg', alt: 'A hospitality professional with Lisbon rooftops' },
+    { src: '/photos/brand/hero-kitchen-work.jpg', alt: 'Kitchen team at work in Portugal' },
+    { src: '/photos/brand/hero-jobsite.jpg', alt: 'Construction crew on site in Portugal' },
+    { src: '/photos/brand/hero-service-floor.jpg', alt: 'Restaurant service on the floor' },
+    { src: '/photos/brand/hero-lisbon-street.jpg', alt: 'Lisbon street where many roles are based' },
+    { src: '/photos/brand/journey-tram.jpg', alt: 'Everyday Lisbon — tram on a historic street' },
   ],
   journey: [
     { src: '/photos/steps/profile.jpg', alt: 'Creating a career profile on a phone' },
@@ -80,23 +80,22 @@ export const BRAND_SLIDES = {
     { src: '/photos/brand/journey-tram.jpg', alt: 'Lisbon tram — your journey ahead' },
   ],
   employers: [
-    { src: '/photos/brand/employer-handshake.jpg', alt: 'Employer and candidate shaking hands in Portugal' },
-    { src: '/photos/brand/hero-workers.jpg', alt: 'Skilled professionals ready to work in Portugal' },
-    { src: '/photos/brand/hero-chef.jpg', alt: 'A chef in a Portuguese restaurant kitchen' },
-    { src: '/photos/brand/hero-construction.jpg', alt: 'A construction worker on a Portuguese building site' },
-    { src: '/photos/brand/hero-hospitality.jpg', alt: 'A hospitality professional with Lisbon rooftops' },
+    { src: '/photos/brand/employer-meeting.jpg', alt: 'Hiring managers reviewing a placement together' },
+    { src: '/photos/brand/hero-kitchen-work.jpg', alt: 'Hospitality talent for Portuguese employers' },
+    { src: '/photos/brand/hero-jobsite.jpg', alt: 'Trade talent ready for Portuguese sites' },
+    { src: '/photos/brand/hero-lisbon-street.jpg', alt: 'Portugal — where placements are based' },
   ],
   employerRegister: [
+    { src: '/photos/brand/employer-meeting.jpg', alt: 'Employer team reviewing candidates' },
     { src: '/photos/brand/employer-register-hero.jpg', alt: 'Employer reviewing candidates on a laptop' },
-    { src: '/photos/brand/employer-handshake.jpg', alt: 'Employer and candidate shaking hands' },
-    { src: '/photos/brand/hero-workers.jpg', alt: 'Skilled professionals ready to work in Portugal' },
-    { src: '/photos/brand/hero-chef.jpg', alt: 'Hospitality talent for Portuguese employers' },
+    { src: '/photos/brand/hero-kitchen-work.jpg', alt: 'Hospitality talent for Portuguese employers' },
+    { src: '/photos/brand/hero-jobsite.jpg', alt: 'Trade talent for Portuguese sites' },
   ],
   jobDetailFallback: [
-    { src: '/photos/kitchen.jpg', alt: 'Restaurant service work in Portugal' },
-    { src: '/photos/brand/hero-hospitality.jpg', alt: 'Hospitality professional in Portugal' },
-    { src: '/photos/brand/hero-chef.jpg', alt: 'Kitchen team at work' },
-    { src: '/photos/lisbon.jpg', alt: 'Lisbon, where many roles are based' },
+    { src: '/photos/kitchen.jpg', alt: 'Restaurant kitchen work in Portugal' },
+    { src: '/photos/brand/hero-kitchen-work.jpg', alt: 'Chef plating in a restaurant kitchen' },
+    { src: '/photos/brand/hero-service-floor.jpg', alt: 'Restaurant service on the floor' },
+    { src: '/photos/brand/hero-lisbon-street.jpg', alt: 'Lisbon, where many roles are based' },
   ],
 } as const satisfies Record<string, BrandSlide[]>;
 

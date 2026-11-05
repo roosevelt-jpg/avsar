@@ -1,12 +1,12 @@
-import { BRAND_SLIDES, slidesWithCaptions } from '@/lib/cms/brand-media';
+import { slidesWithCaptions } from '@/lib/cms/brand-media';
 import { makeBlocks, type DefaultPage } from './make';
 
 /**
  * Home — Careers in Portugal mockup shell.
  *
- * Only the sections on the mockup live here. Hero photograph, press names,
- * Why Portugal, journey steps and the employer band are editable in the CMS;
- * listing and funnel blocks stay off this page so the shell matches the design.
+ * Photography is documentary (Lisbon streets, working kitchens, jobsites), not
+ * posed AI stock collages. Hero is one full-bleed place photo; Why Portugal
+ * uses real scene tiles; the journey and employer bands keep place/work stills.
  */
 export const HOME: DefaultPage = {
   slug: 'home',
@@ -44,46 +44,58 @@ export const HOME: DefaultPage = {
         bubbles: [],
         liveProof: false,
         routeMap: false,
-        /* Brand split hero (navy + photo), not full-bleed overlay — matches Careers mockup. */
-        layout: '',
+        /* Place-first full-bleed — one Lisbon street still, not a portrait carousel. */
+        layout: 'overlay',
         mediaType: 'image',
-        mediaSrc: '/photos/brand/hero-workers.jpg',
+        mediaSrc: '/photos/brand/hero-lisbon-street.jpg',
         mediaPoster: '',
-        mediaAlt: 'Skilled professionals ready to work in Portugal',
-        slides: slidesWithCaptions(BRAND_SLIDES.careers),
+        mediaAlt: 'A yellow tram on a steep Lisbon street',
+        slides: slidesWithCaptions([
+          {
+            src: '/photos/brand/hero-lisbon-street.jpg',
+            alt: 'A yellow tram on a steep Lisbon street',
+          },
+        ]),
         stats: [],
       },
     ],
-    /* Press strip only when real logo assets exist — never ship name-only "As Featured In". */
     [
       'features',
       {
         eyebrow: '',
         title: 'Why Portugal?',
-        intro: '',
+        intro: 'Real streets, real kitchens, real jobsites — the places candidates actually move to.',
         columns: '4',
-        style: 'icons',
+        style: 'tiles',
         typing: false,
         items: [
           {
             icon: 'briefcase',
             title: 'Stable Jobs',
-            body: 'Growing demand across key industries.',
+            body: 'Growing demand across hospitality, trades, care and logistics.',
+            image: '/photos/brand/hero-jobsite.jpg',
+            link: { label: '', href: '' },
           },
           {
             icon: 'euro',
             title: 'Better Earnings',
-            body: 'Competitive and fair salaries.',
+            body: 'Competitive monthly pay with a written contract.',
+            image: '/photos/brand/hero-kitchen-work.jpg',
+            link: { label: '', href: '' },
           },
           {
             icon: 'home',
             title: 'High Quality of Life',
-            body: 'Safe, modern and family-friendly.',
+            body: 'Safe cities, family-friendly neighbourhoods, EU healthcare.',
+            image: '/photos/brand/hero-lisbon-street.jpg',
+            link: { label: '', href: '' },
           },
           {
             icon: 'globe',
             title: 'EU Opportunities',
-            body: 'Work and travel across the Schengen area.',
+            body: 'Work and travel across the Schengen area after you settle.',
+            image: '/photos/brand/journey-tram.jpg',
+            link: { label: '', href: '' },
           },
         ],
       },
@@ -142,8 +154,8 @@ export const HOME: DefaultPage = {
           { icon: 'clock', text: 'Faster hiring process' },
           { icon: 'plane', text: 'Full relocation support' },
         ],
-        image: '/photos/brand/employer-handshake.jpg',
-        imageAlt: 'Employer and candidate shaking hands after a placement',
+        image: '/photos/brand/employer-meeting.jpg',
+        imageAlt: 'Hiring managers reviewing a placement together',
         cta: { label: 'Hire Talent', href: '/employers' },
       },
     ],

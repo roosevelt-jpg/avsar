@@ -334,33 +334,35 @@ function featureColumns(columns: number): string {
  */
 function FeatureTiles({ data, locale, list, columns }: Props & { list: BlockData[]; columns: number }) {
   return (
-    <Section className="!bg-white">
+    <Section className="!bg-[#f4f5f7] !py-[clamp(40px,6cqi,72px)]">
       <SectionHeading eyebrow={str(data, 'eyebrow')} title={str(data, 'title')} intro={str(data, 'intro')} />
-      <ul className={`m-0 grid list-none grid-cols-1 items-stretch gap-4 p-0 ${featureColumns(columns)}`}>
+      <ul className={`m-0 mt-8 grid list-none grid-cols-1 items-stretch gap-5 p-0 ${featureColumns(columns)}`}>
         {list.map((item, index) => {
           const cardLink = link(item, 'link');
           const rawImage = str(item, 'image');
           const image = rawImage ? scenePhoto(rawImage, index) : '';
           const body = str(item, 'body');
           return (
-            <li key={index} className="flex h-full flex-col overflow-hidden rounded-[12px] bg-[#142438]">
+            <li key={index} className="flex h-full flex-col overflow-hidden rounded-[14px] bg-white">
               {image ? (
-                <div className="relative aspect-[16/10] bg-[#1614a8]">
-                  <CmsImage src={image} alt="" sizes="(max-width: 768px) 100vw, 33vw" />
+                <div className="relative aspect-[5/4] bg-[#e8eaed]">
+                  <CmsImage src={image} alt={str(item, 'title')} sizes="(max-width: 768px) 100vw, 25vw" />
                 </div>
               ) : (
-                <div className="grid aspect-[16/10] place-items-center bg-[#1614a8]">
-                  <Icon name={str(item, 'icon')} className="size-8 text-white" />
+                <div className="grid aspect-[5/4] place-items-center bg-[#e8eaed] text-[var(--color-gold)]">
+                  <Icon name={str(item, 'icon')} className="size-8" />
                 </div>
               )}
-              <div className="flex flex-1 flex-col px-5 py-5 text-white">
-                <h3 className="m-0 text-[20px] font-semibold leading-[1.25] tracking-[-0.01em]">{str(item, 'title')}</h3>
+              <div className="flex flex-1 flex-col px-4 py-4 text-[#142438]">
+                <h3 className="display-serif m-0 text-[20px] font-normal leading-[1.25]">{str(item, 'title')}</h3>
                 {data.typing === true ? (
-                  <TypeOnView text={body} className="m-0 mt-2 text-[14px] leading-[1.55] text-white/85" />
+                  <TypeOnView text={body} className="m-0 mt-2 text-[14px] leading-[1.55] text-ink-2" />
                 ) : (
-                  <p className="m-0 mt-2 text-[14px] leading-[1.55] text-white/85">{body}</p>
+                  <p className="m-0 mt-2 text-[14px] leading-[1.55] text-ink-2">{body}</p>
                 )}
-                {cardLink ? <TileArrow href={cardLink.href} label={cardLink.label} locale={locale} /> : null}
+                {cardLink?.href && cardLink.label ? (
+                  <TileArrow href={cardLink.href} label={cardLink.label} locale={locale} />
+                ) : null}
               </div>
             </li>
           );
