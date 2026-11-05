@@ -10,6 +10,7 @@ import { JobCard } from '@/components/jobs/JobCard';
 import { JobsBoardHero } from '@/components/jobs/JobsBoardHero';
 import { BRAND_SLIDES } from '@/lib/cms/brand-media';
 import { getPublishedPage, getSiteSettings } from '@/lib/cms/data';
+import { getFunnelStats } from '@/lib/stats/funnel';
 
 const JOBS_HERO_SLIDES = BRAND_SLIDES.jobs.map((slide) => ({ src: slide.src, alt: slide.alt }));
 import { listPublishedJobs, openCities } from '@/lib/jobs/data';
@@ -79,7 +80,7 @@ export default async function JobsPage({
   const salaryMax = search.salaryMax ? Number(search.salaryMax) : undefined;
   const sort = search.sort === 'salary' ? 'salary' : 'newest';
 
-  const [cms, settings, result, cities, facets, viewer] = await Promise.all([
+  const [cms, settings, result, cities, facets, viewer, funnel] = await Promise.all([
     getPublishedPage('jobs', locale),
     getSiteSettings(),
     listPublishedJobs({
@@ -98,6 +99,7 @@ export default async function JobsPage({
     openCities(),
     jobBoardFacets(),
     getViewer(),
+    getFunnelStats(),
   ]);
 
   const board = settings.jobsBoard;
@@ -132,15 +134,22 @@ export default async function JobsPage({
   };
 
   const number = new Intl.NumberFormat(locale === 'en' ? 'en-IN' : locale);
+  /* Live vacancy count only — Settings mockup figures (150+, 1,200+) are never shown. */
+  const heroStats = [
+    { value: number.format(result.total), label: tx(board.statsVacancies || 'Open roles'), icon: 'briefcase' },
+    ...(funnel.hired > 0
+      ? [{ value: number.format(funnel.hired), label: tx(board.statsPlaced || 'Hired'), icon: 'users' }]
+      : []),
+  ];
   const field =
-    't-colors w-full rounded-[10px] border border-line bg-[#f7f4ef] py-3 pe-3 ps-10 text-[15px] text-ink outline-none focus:border-[#142438] focus:bg-white';
+    't-colors w-full border-0 bg-transparent py-3 pe-3 ps-10 text-[15px] text-ink outline-none';
 
   const searchForm = (
     <form
       method="get"
       action={localePath(locale, '/jobs')}
       id="jobs-search"
-      className="grid gap-3 rounded-[16px] border border-line bg-white p-3 shadow-[0_18px_40px_-24px_rgba(20,36,56,0.45)] md:grid-cols-2 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,0.9fr)_minmax(0,1fr)_auto] lg:p-3.5"
+      className="grid gap-0 divide-y divide-[#e6e0d6] rounded-[14px] border border-[#e6e0d6] bg-white shadow-[0_16px_36px_-28px_rgba(20,36,56,0.55)] md:grid-cols-2 md:divide-x md:divide-y-0 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,0.9fr)_minmax(0,1fr)_auto]"
     >
       <label className="relative block">
         <span className="sr-only">{tx(board.searchKeywordPlaceholder)}</span>
@@ -187,7 +196,7 @@ export default async function JobsPage({
       </label>
       <button
         type="submit"
-        className="t-colors cursor-pointer rounded-[10px] bg-[#b28a49] px-6 py-3 text-[15px] font-semibold text-[#142438] hover:bg-[#c49a58]"
+        className="t-colors m-2 cursor-pointer rounded-[10px] bg-[#b28a49] px-6 py-3 text-[15px] font-semibold text-[#142438] hover:bg-[#c49a58] md:m-2.5"
       >
         {tx(board.searchButton)}
         <span aria-hidden className="ms-1">
@@ -210,11 +219,7 @@ export default async function JobsPage({
           imageSrc={board.heroImage}
           imageAlt={board.heroImageAlt}
           slides={JOBS_HERO_SLIDES}
-          stats={[
-            { value: board.statsVacanciesValue, label: tx(board.statsVacancies), icon: 'briefcase' },
-            { value: board.statsEmployersValue, label: tx(board.statsEmployers), icon: 'building' },
-            { value: board.statsPlacedValue, label: tx(board.statsPlaced), icon: 'users' },
-          ]}
+          stats={heroStats}
           search={searchForm}
         />
         )}
@@ -224,7 +229,7 @@ export default async function JobsPage({
         <section className={signedIn ? 'pb-4 pt-2' : 'px-[clamp(20px,4cqi,56px)] pb-[clamp(48px,7cqi,96px)] pt-12 sm:pt-14'}>
           <div className="mx-auto w-full max-w-[1200px]">
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)]">
-              <aside className="shop-sticky rounded-[16px] border border-[#e6e0d6] bg-white p-5 shadow-[0_10px_28px_-24px_rgba(20,36,56,0.28)] lg:sticky lg:self-start">
+              <aside className="shop-sticky rounded-[12px] border border-[#e6e0d6] bg-[#f7f4ef] p-5 lg:sticky lg:self-start">
                 <div className="mb-2 flex items-center justify-between gap-3">
                   <h2 className="m-0 text-[16px] font-semibold text-[#142438]">{tx(board.filterTitle)}</h2>
                   <Link
@@ -331,7 +336,9 @@ export default async function JobsPage({
               <div>
                 <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
                   <h2 className="display-serif m-0 text-[clamp(22px,2.6cqi,30px)] font-normal tracking-[-0.02em] text-[#142438]">
-                    {fill(tx(board.resultsHeading), { count: number.format(result.total) })}
+                    {fill(tx(board.resultsHeading.replace('{count}+', '{count}')), {
+                      count: number.format(result.total),
+                    })}
                   </h2>
                   <form method="get" action={localePath(locale, '/jobs')} className="flex flex-wrap items-center gap-2 text-[14px]">
                     {search.q ? <input type="hidden" name="q" value={search.q} /> : null}

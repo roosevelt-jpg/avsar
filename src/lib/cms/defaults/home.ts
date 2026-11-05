@@ -54,19 +54,7 @@ export const HOME: DefaultPage = {
         stats: [],
       },
     ],
-    [
-      'press_bar',
-      {
-        eyebrow: 'As Featured In',
-        items: [
-          { name: 'Forbes', logo: '', href: '' },
-          { name: 'Reuters', logo: '', href: '' },
-          { name: 'Bloomberg', logo: '', href: '' },
-          { name: 'EURACTIV', logo: '', href: '' },
-          { name: 'The Economic Times', logo: '', href: '' },
-        ],
-      },
-    ],
+    /* Press strip only when real logo assets exist — never ship name-only "As Featured In". */
     [
       'features',
       {

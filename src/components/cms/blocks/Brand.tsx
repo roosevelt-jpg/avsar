@@ -57,7 +57,8 @@ function PressLogoRow({
  * static wrap instead.
  */
 export function PressBarBlock({ data }: Props) {
-  const list = items(data, 'items').filter((item) => str(item, 'name'));
+  /* Names without logos look like a fake marquee; only show real marks. */
+  const list = items(data, 'items').filter((item) => str(item, 'name') && str(item, 'logo'));
   if (!list.length) return null;
   const eyebrow = str(data, 'eyebrow');
 

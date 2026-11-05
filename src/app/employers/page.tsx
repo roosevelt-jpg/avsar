@@ -31,12 +31,20 @@ export default async function EmployersPage() {
   const { company, pricing } = settings;
   const fee = formatMoney(pricing.employerPlacementFeeMinor, 'EUR');
 
+  /* Empty or mockup leftovers (1,200+ / 98% / 150+) never render. */
+  const fakeStat = /^(?:\d[\d,]*)\+?%?$|98%|30[–-]45/i;
   const stats = [
     { value: page.statsCandidatesValue, label: page.statsCandidates, icon: 'users' as const },
     { value: page.statsIndustriesValue, label: page.statsIndustries, icon: 'building' as const },
     { value: page.statsPlacedValue, label: page.statsPlaced, icon: 'shield' as const },
     { value: page.hiringTimeValue, label: page.hiringTimeLabel, icon: 'clock' as const },
-  ];
+  ].filter((item) => {
+    const value = item.value.trim();
+    if (!value) return false;
+    if (/1,?200|150\+|60\+|98%|20\+/i.test(value)) return false;
+    if (fakeStat.test(value) && /\+|%/.test(value)) return false;
+    return true;
+  });
 
   const navItems = page.headerLinks.map((item) => ({
     href: localHref('en', item.href),
@@ -125,28 +133,34 @@ export default async function EmployersPage() {
           slides={page.slides}
         />
 
-        <section className="border-y border-[#e4ddd2] bg-[#f3eee6] px-[clamp(20px,4cqi,56px)] py-9 sm:py-11">
-          <ul className="mx-auto m-0 grid max-w-[1200px] list-none grid-cols-1 gap-0 p-0 sm:grid-cols-2 lg:grid-cols-4">
-            {stats.map((stat, index) => (
-              <li
-                key={stat.label}
-                className={`flex items-start gap-3 px-0 py-4 sm:px-6 sm:py-0 ${
-                  index > 0 ? 'lg:border-s lg:border-[#d9d0c3]' : ''
-                }`}
-              >
-                <span className="mt-0.5 grid size-10 shrink-0 place-items-center text-[var(--color-gold)]">
-                  <Icon name={stat.icon} className="size-6" />
-                </span>
-                <div>
-                  <p className="m-0 text-[clamp(26px,3cqi,34px)] font-semibold leading-none tracking-[-0.03em] text-[#142438]">
-                    {stat.value}
-                  </p>
-                  <p className="m-0 mt-1.5 text-[13px] font-medium leading-[1.35] text-ink-2">{stat.label}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </section>
+        {stats.length > 0 ? (
+          <section className="border-y border-[#e4ddd2] bg-[#f3eee6] px-[clamp(20px,4cqi,56px)] py-9 sm:py-11">
+            <ul
+              className={`mx-auto m-0 grid max-w-[1200px] list-none grid-cols-1 gap-0 p-0 sm:grid-cols-2 ${
+                stats.length >= 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-3'
+              }`}
+            >
+              {stats.map((stat, index) => (
+                <li
+                  key={stat.label}
+                  className={`flex items-start gap-3 px-0 py-4 sm:px-6 sm:py-0 ${
+                    index > 0 ? 'lg:border-s lg:border-[#d9d0c3]' : ''
+                  }`}
+                >
+                  <span className="mt-0.5 grid size-10 shrink-0 place-items-center text-[var(--color-gold)]">
+                    <Icon name={stat.icon} className="size-6" />
+                  </span>
+                  <div>
+                    <p className="m-0 text-[clamp(26px,3cqi,34px)] font-semibold leading-none tracking-[-0.03em] text-[#142438]">
+                      {stat.value}
+                    </p>
+                    <p className="m-0 mt-1.5 text-[13px] font-medium leading-[1.35] text-ink-2">{stat.label}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
 
         <section id="why" className="bg-[#f7f4ef] px-[clamp(20px,4cqi,56px)] py-[clamp(48px,7cqi,88px)]">
           <div className="mx-auto w-full max-w-[1200px]">
@@ -155,9 +169,9 @@ export default async function EmployersPage() {
             </h2>
             <span aria-hidden className="mt-3 block h-1 w-14 rounded-full bg-[var(--color-gold)]" />
 
-            <ul className="m-0 mt-10 grid list-none grid-cols-1 gap-5 p-0 sm:grid-cols-2 lg:grid-cols-4">
+            <ul className="m-0 mt-10 grid list-none grid-cols-1 gap-8 p-0 sm:grid-cols-2 lg:grid-cols-4">
               {page.reasons.map((reason) => (
-                <li key={reason.title} className="rounded-[14px] border border-[#e8e1d6] bg-[#fbf8f3] p-5">
+                <li key={reason.title} className="min-w-0">
                   <span className="grid size-11 place-items-center rounded-full border border-[var(--color-gold)]/40 text-[var(--color-gold)]">
                     <Icon name={reason.icon} className="size-5" />
                   </span>

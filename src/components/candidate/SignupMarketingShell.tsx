@@ -5,7 +5,7 @@ import { siteText } from '@/lib/cms/localize';
 import type { Locale } from '@/lib/i18n';
 
 const HERO = {
-  src: '/photos/brand/hero-hospitality.jpg',
+  src: '/photos/brand/hero-workers.jpg',
   alt: 'A professional ready for a career in Portugal',
 } as const;
 
@@ -103,7 +103,9 @@ export function SignupMarketingShell({
                 {t('Your Journey to Portugal')}
               </h2>
               <ol className="relative m-0 mt-7 flex list-none flex-col gap-0 p-0">
-                {JOURNEY.map((step, index) => (
+                {JOURNEY.map((step, index) => {
+                  const current = index === 0;
+                  return (
                   <li key={step.title} className="relative flex gap-3.5 pb-7 last:pb-0">
                     {index < JOURNEY.length - 1 ? (
                       <span
@@ -111,18 +113,29 @@ export function SignupMarketingShell({
                         className="absolute start-[15px] top-9 bottom-0 w-px border-s border-dashed border-[var(--color-gold)]/70"
                       />
                     ) : null}
-                    <span className="relative z-[1] grid size-8 shrink-0 place-items-center rounded-full bg-[var(--color-gold)] text-[12px] font-bold text-[#142438]">
+                    <span
+                      className={`relative z-[1] grid size-8 shrink-0 place-items-center rounded-full text-[12px] font-bold ${
+                        current
+                          ? 'bg-[var(--color-gold)] text-[#142438]'
+                          : 'border border-[var(--color-gold)] bg-transparent text-[var(--color-gold)]'
+                      }`}
+                    >
                       {index + 1}
                     </span>
                     <div className="min-w-0 pt-0.5">
-                      <p className="m-0 flex items-center gap-2 text-[14px] font-semibold text-[#142438]">
+                      <p
+                        className={`m-0 flex items-center gap-2 text-[14px] font-semibold ${
+                          current ? 'text-[#142438]' : 'text-[#142438]/70'
+                        }`}
+                      >
                         <Icon name={step.icon} className="size-4 text-[var(--color-gold)]" />
                         {t(step.title)}
                       </p>
                       <p className="m-0 mt-1 text-[13px] leading-[1.45] text-ink-2">{t(step.body)}</p>
                     </div>
                   </li>
-                ))}
+                  );
+                })}
               </ol>
               <div className="relative mt-4 hidden aspect-[5/4] overflow-hidden rounded-[14px] bg-[#142438] lg:block">
                 <Image

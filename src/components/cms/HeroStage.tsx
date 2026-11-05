@@ -209,44 +209,43 @@ export function HeroStage({
               </div>
 
               {badge?.label ? (
-                <div className="absolute end-3 top-3 z-10 max-w-[min(100%-1.5rem,22rem)] sm:end-5 sm:top-5">
+                <div className="absolute end-4 bottom-4 z-10 max-w-[min(100%-1.5rem,22rem)] sm:end-5 sm:bottom-5">
                   {badge.href ? (
                     <Link
                       href={badge.href}
-                      className="inline-flex max-w-full items-center gap-2 rounded-full bg-white px-3.5 py-2 text-[13px] font-semibold text-[#142438] no-underline shadow-[0_8px_24px_rgba(0,0,0,0.18)]"
+                      className="inline-flex max-w-full items-center gap-3 rounded-full bg-white py-2.5 pe-2.5 ps-3.5 text-[#142438] no-underline shadow-[0_12px_28px_rgba(0,0,0,0.2)]"
                     >
-                      <span aria-hidden className="text-[16px] leading-none">
-                        🇵🇹
+                      <svg viewBox="0 0 24 16" className="h-4 w-6 shrink-0 rounded-[2px]" aria-hidden>
+                        <rect width="24" height="16" fill="#006600" />
+                        <rect x="9" width="15" height="16" fill="#FF0000" />
+                        <circle cx="9" cy="8" r="2.6" fill="#FFCC00" />
+                      </svg>
+                      <span className="min-w-0 text-[13px] font-semibold leading-[1.25] [overflow-wrap:anywhere]">
+                        {badge.label}
                       </span>
-                      <span className="min-w-0 leading-[1.25] [overflow-wrap:anywhere]">
-                        {badge.label.includes('Portugal') ? (
-                          <>
-                            {badge.label.replace(/Portugal/i, '').trim()}{' '}
-                            <em className="accent-italic not-italic" style={{ fontStyle: 'italic', color: '#b28a49' }}>
-                              Portugal
-                            </em>
-                          </>
-                        ) : (
-                          badge.label
-                        )}
-                      </span>
-                      <span aria-hidden className="text-[var(--color-gold)]">
+                      <span
+                        aria-hidden
+                        className="grid size-8 shrink-0 place-items-center rounded-full bg-[#b28a49] text-[13px] font-semibold text-[#142438]"
+                      >
                         →
                       </span>
                     </Link>
                   ) : (
-                    <span className="inline-flex max-w-full items-center gap-2 rounded-full bg-white px-3.5 py-2 text-[13px] font-semibold leading-[1.25] text-[#142438] shadow-[0_8px_24px_rgba(0,0,0,0.18)] [overflow-wrap:anywhere]">
-                      <span aria-hidden className="shrink-0 text-[16px] leading-none">
-                        🇵🇹
-                      </span>
+                    <span className="inline-flex max-w-full items-center gap-3 rounded-full bg-white py-2.5 pe-2.5 ps-3.5 text-[13px] font-semibold leading-[1.25] text-[#142438] shadow-[0_12px_28px_rgba(0,0,0,0.2)] [overflow-wrap:anywhere]">
+                      <svg viewBox="0 0 24 16" className="h-4 w-6 shrink-0 rounded-[2px]" aria-hidden>
+                        <rect width="24" height="16" fill="#006600" />
+                        <rect x="9" width="15" height="16" fill="#FF0000" />
+                        <circle cx="9" cy="8" r="2.6" fill="#FFCC00" />
+                      </svg>
                       {badge.label}
                     </span>
                   )}
                 </div>
               ) : null}
 
-              {count > 1 ? (
-                <div className={`mt-5 flex flex-wrap items-center gap-3 ${brand ? 'text-white/80' : ''}`}>
+              {/* Brand mockups are a still composition; crossfade quietly without carousel chrome. */}
+              {count > 1 && !brand ? (
+                <div className="mt-5 flex flex-wrap items-center gap-3">
                   <button type="button" className="stage-nav" aria-label="Previous slide" onClick={() => go(index - 1)}>
                     ‹
                   </button>
@@ -260,12 +259,8 @@ export function HeroStage({
                         aria-label={slide.caption || `Slide ${slideIndex + 1}`}
                         className={`h-1.5 rounded-full transition-all duration-300 ${
                           slideIndex === index
-                            ? brand
-                              ? 'w-8 bg-[var(--color-gold)]'
-                              : 'w-8 bg-[linear-gradient(90deg,#142438,#3c8fd4,#7eb6e8)]'
-                            : brand
-                              ? 'w-2.5 bg-white/35'
-                              : 'w-2.5 bg-line-strong'
+                            ? 'w-8 bg-[linear-gradient(90deg,#142438,#3c8fd4,#7eb6e8)]'
+                            : 'w-2.5 bg-line-strong'
                         }`}
                         onClick={() => setIndex(slideIndex)}
                       />

@@ -117,29 +117,26 @@ export function DashboardStatStrip({
   ];
 
   return (
-    <ul className="m-0 grid list-none grid-cols-2 gap-3 p-0 sm:grid-cols-3 xl:grid-cols-5">
+    <ul className="m-0 grid list-none grid-cols-2 gap-x-6 gap-y-4 border-y border-[#e6e0d6] bg-transparent py-4 p-0 sm:grid-cols-3 xl:grid-cols-5">
       {cards.map((card) => (
-        <li
-          key={card.label}
-          className="flex min-w-0 items-start gap-3 overflow-hidden rounded-[14px] border border-[#142438]/08 bg-white p-4 shadow-[0_8px_24px_-18px_rgba(20,36,56,0.35)]"
-        >
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-[10px] bg-[#142438]/06 text-[#b28a49]">
+        <li key={card.label} className="flex min-w-0 items-start gap-3 overflow-hidden">
+          <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center text-[#b28a49]">
             {card.icon === 'ring' ? (
               <span
-                className="relative flex size-8 items-center justify-center rounded-full"
+                className="relative flex size-7 items-center justify-center rounded-full"
                 style={{
                   background: `conic-gradient(#b28a49 ${card.pct ?? 0}%, #e8e4dc 0)`,
                 }}
                 aria-hidden
               >
-                <span className="absolute inset-[3px] rounded-full bg-white" />
+                <span className="absolute inset-[2.5px] rounded-full bg-[#f7f4ef]" />
               </span>
             ) : (
               <StatIcon name={card.icon} />
             )}
           </span>
           <div className="min-w-0">
-            <p className="m-0 text-[22px] font-semibold leading-none tracking-[-0.03em] text-[#142438]">{card.value}</p>
+            <p className="m-0 text-[20px] font-semibold leading-none tracking-[-0.03em] text-[#142438]">{card.value}</p>
             <p className="m-0 mt-1.5 text-[12px] leading-snug break-words text-[#5c7084]">{card.label}</p>
           </div>
         </li>

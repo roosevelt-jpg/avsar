@@ -56,9 +56,9 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
   const accentWord = str(data, 'accentWord');
   const layout = str(data, 'layout');
   const Heading = first ? 'h1' : 'h2';
-  /* Slides + badge = Careers mockup brand hero, even if an older CMS row still says overlay. */
-  const brand = cmsSlides.length > 0 || Boolean(primary && badgeLabel);
-  const overlay = layout === 'overlay' && !brand;
+  /* Overlay wins when the page asks for it (visa / why Portugal / contact). Brand split is home. */
+  const overlay = layout === 'overlay';
+  const brand = !overlay && (cmsSlides.length > 0 || Boolean(primary && badgeLabel));
 
   const slides: HeroSlide[] = [];
   if (cmsSlides.length > 0) {

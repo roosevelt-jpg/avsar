@@ -388,39 +388,32 @@ export const DEFAULT_SETTINGS: SiteSettings = {
         href: '/visa-and-relocation',
       },
       {
-        label: 'FAQ',
-        labelHi: 'सवाल-जवाब',
-        labelAr: 'الأسئلة الشائعة',
-        labels: { bn: 'প্রশ্নোত্তর', mr: 'प्रश्न', te: 'ప్రశ్నలు', ta: 'கேள்விகள்', ur: 'سوالات', gu: 'પ્રશ્નો', kn: 'ಪ್ರಶ್ನೆಗಳು', or: 'ପ୍ରଶ୍ନ', ml: 'ചോദ്യങ്ങൾ', pa: 'ਸਵਾਲ', as: 'প্ৰশ্ন' },
-        href: '/faq',
-      },
-      {
-        label: 'Employers',
-        labelHi: 'नियोक्ता',
-        labelAr: 'أصحاب العمل',
-        labels: { bn: 'নিয়োগকর্তা', mr: 'नियोक्ते', te: 'యజమానులు', ta: 'முதலாளிகள்', ur: 'آجر', gu: 'નોકરીદાતાઓ', kn: 'ಉದ್ಯೋಗದಾತರು', or: 'ନିଯୁକ୍ତିଦାତା', ml: 'തൊഴിലുടമകൾ', pa: 'ਮਾਲਕ', as: 'নিয়োগকর্তা' },
+        label: 'For Employers',
+        labelHi: 'नियोक्ताओं के लिए',
+        labelAr: 'لأصحاب العمل',
+        labels: { bn: 'নিয়োগকর্তাদের জন্য', mr: 'नियोक्त्यांसाठी', te: 'యజమానుల కోసం', ta: 'முதலாளிகளுக்கு', ur: 'آجروں کے لیے', gu: 'નોકરીદાતાઓ માટે', kn: 'ಉದ್ಯೋಗದಾತರಿಗಾಗಿ', or: 'ନିଯୁକ୍ତିଦାତାଙ୍କ ପାଇଁ', ml: 'തൊഴിലുടമകൾക്ക്', pa: 'ਮਾਲਕਾਂ ਲਈ', as: 'নিয়োগকৰ্তাসকলৰ বাবে' },
         href: '/employers',
       },
     ],
     headerCta: {
       /* The same action as the hero's button, so the header and the page
          never ask for two different first steps. */
-      label: 'Create my free profile',
+      label: 'Create Free Profile',
       href: '/signup',
       labels: {
-        hi: 'मेरी मुफ़्त प्रोफ़ाइल बनाएँ',
-        bn: 'আমার বিনামূল্যে প্রোফাইল তৈরি করুন',
-        mr: 'माझी मोफत प्रोफाइल तयार करा',
-        te: 'నా ఉచిత ప్రొఫైల్ సృష్టించండి',
-        ta: 'என் இலவச சுயவிவரத்தை உருவாக்கு',
-        ur: 'میری مفت پروفائل بنائیں',
-        gu: 'મારી મફત પ્રોફાઇલ બનાવો',
-        kn: 'ನನ್ನ ಉಚಿತ ಪ್ರೊಫೈಲ್ ರಚಿಸಿ',
-        or: 'ମୋର ମାଗଣା ପ୍ରୋଫାଇଲ୍ ତିଆରି କରନ୍ତୁ',
-        ml: 'എന്റെ സൗജന്യ പ്രൊഫൈൽ ഉണ്ടാക്കുക',
-        pa: 'ਮੇਰੀ ਮੁਫ਼ਤ ਪ੍ਰੋਫਾਈਲ ਬਣਾਓ',
-        as: 'মোৰ বিনামূলীয়া প্ৰফাইল তৈয়াৰ কৰক',
-        ar: 'أنشئ ملفي المجاني',
+        hi: 'मुफ़्त प्रोफ़ाइल बनाएँ',
+        bn: 'বিনামূল্যে প্রোফাইল তৈরি করুন',
+        mr: 'मोफत प्रोफाइल तयार करा',
+        te: 'ఉచిత ప్రొఫైల్ సృష్టించండి',
+        ta: 'இலவச சுயவிவரம் உருவாக்கு',
+        ur: 'مفت پروفائل بنائیں',
+        gu: 'મફત પ્રોફાઇલ બનાવો',
+        kn: 'ಉಚಿತ ಪ್ರೊಫೈಲ್ ರಚಿಸಿ',
+        or: 'ମାଗଣା ପ୍ରୋଫାଇଲ୍ ତିଆରି କରନ୍ତୁ',
+        ml: 'സൗജന്യ പ്രൊഫൈൽ ഉണ്ടാക്കുക',
+        pa: 'ਮੁਫ਼ਤ ਪ੍ਰੋਫਾਈਲ ਬਣਾਓ',
+        as: 'বিনামূলীয়া প্ৰফাইল তৈয়াৰ কৰক',
+        ar: 'أنشئ ملفاً مجانياً',
       },
     },
   },
@@ -661,19 +654,16 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     badgeHref: '/employers/register',
     slides: [
       { src: '/photos/brand/employer-handshake.jpg', alt: 'Employer and candidate shaking hands in Portugal' },
-      { src: '/photos/brand/hero-workers.jpg', alt: 'Skilled professionals ready to work in Portugal' },
-      { src: '/photos/brand/hero-chef.jpg', alt: 'A chef in a Portuguese restaurant kitchen' },
-      { src: '/photos/brand/hero-construction.jpg', alt: 'A construction worker on a Portuguese building site' },
-      { src: '/photos/brand/hero-hospitality.jpg', alt: 'A hospitality professional with Lisbon rooftops' },
     ],
-    statsCandidatesValue: '1,200+',
-    statsCandidates: 'Pre-screened Candidates',
-    statsIndustriesValue: '20+',
-    statsIndustries: 'Key Industries',
-    statsPlacedValue: '98%',
-    statsPlaced: 'Placement Success',
-    hiringTimeValue: '30–45 Days',
-    hiringTimeLabel: 'Average Hiring Time',
+    /* Values stay empty unless real — the page hides empty stats. No mockup 1,200+ / 98%. */
+    statsCandidatesValue: '',
+    statsCandidates: 'Pre-screened candidates',
+    statsIndustriesValue: '',
+    statsIndustries: 'Key industries',
+    statsPlacedValue: '',
+    statsPlaced: 'Placement success',
+    hiringTimeValue: '',
+    hiringTimeLabel: 'Typical hiring window',
     reasonsTitle: 'Why Partner With Us?',
     reasons: [
       { icon: 'users', title: 'Pre-Screened Talent', body: 'Skills, experience and documentation verified.' },
@@ -728,19 +718,20 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     experienceEntry: 'Entry Level',
     experienceMid: 'Mid Level',
     experienceSenior: 'Senior Level',
-    resultsHeading: '{count}+ Job Opportunities',
+    resultsHeading: '{count} Job Opportunities',
     sortLabel: 'Sort by',
     sortNewest: 'Newest',
     sortSalary: 'Salary',
     verifiedBadge: 'Verified',
     viewDetails: 'View Details',
     applyNow: 'Apply Now',
-    statsVacanciesValue: '150+',
-    statsVacancies: 'Active Vacancies',
-    statsEmployersValue: '60+',
-    statsEmployers: 'Verified Employers',
-    statsPlacedValue: '1,200+',
-    statsPlaced: 'Candidates Placed',
+    /* Board page fills vacancies from the live published count; other values stay empty unless real. */
+    statsVacanciesValue: '',
+    statsVacancies: 'Open roles',
+    statsEmployersValue: '',
+    statsEmployers: 'Verified employers',
+    statsPlacedValue: '',
+    statsPlaced: 'Hired',
     emptyTitle: 'No jobs match this search right now.',
     emptyBody: 'Try another filter, or create your profile and we will tell you when one opens.',
   },
@@ -965,6 +956,33 @@ export function mergeSettings(rows: { key: string; value: unknown }[]): SiteSett
       tiktok: String((storedGeneral.socials as { tiktok?: string }).tiktok ?? out.general.socials.tiktok ?? ''),
     };
   }
+
+  /* Strip mockup leftovers (150+, 1,200+, 98%) from older Settings rows. */
+  const scrubMock = (value: string) =>
+    /1,?200|150\+|60\+|98%|20\+|30[–-]45/i.test(value.trim()) ? '' : value;
+  out.jobsBoard.statsVacanciesValue = scrubMock(out.jobsBoard.statsVacanciesValue);
+  out.jobsBoard.statsEmployersValue = scrubMock(out.jobsBoard.statsEmployersValue);
+  out.jobsBoard.statsPlacedValue = scrubMock(out.jobsBoard.statsPlacedValue);
+  out.jobsBoard.resultsHeading = out.jobsBoard.resultsHeading.replace('{count}+', '{count}');
+  out.employerLanding.statsCandidatesValue = scrubMock(out.employerLanding.statsCandidatesValue);
+  out.employerLanding.statsIndustriesValue = scrubMock(out.employerLanding.statsIndustriesValue);
+  out.employerLanding.statsPlacedValue = scrubMock(out.employerLanding.statsPlacedValue);
+  out.employerLanding.hiringTimeValue = scrubMock(out.employerLanding.hiringTimeValue);
+  if (/^create my free profile$/i.test(out.navigation.headerCta.label.trim())) {
+    out.navigation.headerCta = {
+      ...out.navigation.headerCta,
+      label: DEFAULT_SETTINGS.navigation.headerCta.label,
+      labels: DEFAULT_SETTINGS.navigation.headerCta.labels,
+    };
+  }
+  out.navigation.items = out.navigation.items
+    .filter((item) => !/^\/faq\/?$/i.test(item.href))
+    .map((item) =>
+      item.href === '/employers' && /^employers$/i.test(item.label.trim())
+        ? { ...item, label: 'For Employers', labelHi: 'नियोक्ताओं के लिए', labelAr: 'لأصحاب العمل' }
+        : item,
+    );
+
   return out;
 }
 

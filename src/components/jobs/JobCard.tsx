@@ -112,14 +112,14 @@ function JobListCard({
   const category = job.area ? siteText(locale, areaLabel(job.area)) : '';
 
   return (
-    <article className="relative grid grid-cols-1 overflow-hidden rounded-[14px] border border-[#e6e0d6] bg-white shadow-[0_10px_28px_-22px_rgba(20,36,56,0.28)] sm:grid-cols-[132px_minmax(0,1fr)]">
-      <div className="relative aspect-[4/3] bg-[#f3eee6] sm:aspect-auto sm:min-h-[168px]">
+    <article className="relative grid grid-cols-1 overflow-hidden rounded-[12px] border border-[#e6e0d6] bg-white sm:grid-cols-[168px_minmax(0,1fr)]">
+      <div className="relative aspect-[4/3] bg-[#f3eee6] sm:aspect-auto sm:min-h-[176px]">
         {image ? (
           <Image
             src={image}
             alt=""
             fill
-            sizes="(max-width: 640px) 100vw, 132px"
+            sizes="(max-width: 640px) 100vw, 168px"
             unoptimized={!image.startsWith('/')}
             priority={priority}
             className="object-cover"
@@ -132,19 +132,22 @@ function JobListCard({
       <div className="relative flex min-w-0 flex-col gap-3 p-4 sm:p-5">
         <div className="flex items-start justify-between gap-3">
           <div className="flex min-w-0 flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1 rounded-[6px] bg-[#b28a49] px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-[#142438]">
-              <span aria-hidden>✓</span>
+            <span className="inline-flex items-center gap-1.5 rounded-[6px] bg-[#b28a49] px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#142438]">
+              <svg viewBox="0 0 24 24" className="size-3" fill="none" stroke="currentColor" strokeWidth={2.2} aria-hidden>
+                <path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6l7-3z" />
+                <path d="M9 12l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
               {verified}
             </span>
             {job.featured ? (
-              <span className="rounded-[6px] bg-[#142438] px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-white">
+              <span className="rounded-[6px] bg-[#142438] px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-white">
                 {siteText(locale, 'Featured')}
               </span>
             ) : null}
           </div>
           <div className="flex shrink-0 items-start gap-2">
             {salary ? (
-              <p className="m-0 hidden max-w-[11rem] rounded-[8px] bg-[#f3eee6] px-3 py-2 text-end text-[13px] font-semibold leading-[1.35] text-[#142438] sm:block">
+              <p className="m-0 hidden max-w-[12rem] rounded-[8px] bg-[color-mix(in_srgb,var(--color-gold)_28%,white)] px-3 py-2 text-end text-[13px] font-semibold leading-[1.35] text-[#142438] sm:block">
                 {salary}
               </p>
             ) : null}

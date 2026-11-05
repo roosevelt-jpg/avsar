@@ -308,7 +308,7 @@ export function SignupFlow({
 
       <div className="mt-9">
         {step === 0 ? (
-          <div className="flex flex-col gap-5">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <Field label={tx('Full Name')} requiredMark error={errors.fullName}>
               <InputShell icon="users" error={!!errors.fullName}>
                 <input
@@ -335,6 +335,7 @@ export function SignupFlow({
               </InputShell>
             </Field>
 
+            <div className="sm:col-span-2">
             <Field label={tx('Phone Number')} requiredMark error={errors.mobile}>
               <div
                 className={`flex items-stretch overflow-hidden rounded-[10px] border bg-white focus-within:border-[#142438] ${
@@ -367,6 +368,7 @@ export function SignupFlow({
                 />
               </div>
             </Field>
+            </div>
 
             <Field label={tx('Create a password')} requiredMark hint={tx('At least 8 characters')} error={errors.password}>
               <InputShell icon="shield" error={!!errors.password}>
@@ -424,7 +426,7 @@ export function SignupFlow({
               </InputShell>
             </Field>
 
-            <div>
+            <div className="sm:col-span-2">
               <PlacePicker
                 value={cityState}
                 onChange={setCityState}
@@ -438,7 +440,7 @@ export function SignupFlow({
               />
             </div>
 
-            <fieldset className="m-0 border-0 p-0">
+            <fieldset className="m-0 border-0 p-0 sm:col-span-2">
               <legend className="mb-2.5 p-0 text-[14px] font-medium text-[#142438]">
                 {tx('Willing to Relocate to Portugal?')} <span className="text-accent-deep">*</span>
               </legend>
@@ -449,7 +451,11 @@ export function SignupFlow({
               {errors.relocate ? <p className="m-0 mt-1.5 text-[13px] text-accent-deep">{errors.relocate}</p> : null}
             </fieldset>
 
-            {!registered && <Turnstile key={challengeKey} onToken={setChallenge} />}
+            {!registered ? (
+              <div className="sm:col-span-2">
+                <Turnstile key={challengeKey} onToken={setChallenge} />
+              </div>
+            ) : null}
           </div>
         ) : null}
 

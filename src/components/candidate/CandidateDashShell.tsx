@@ -129,13 +129,13 @@ export async function CandidateDashShell({
       </aside>
 
       <div className="lg:pl-[260px]">
-        <header className="sticky top-0 z-20 border-b border-[var(--dash-navy)]/10 bg-[var(--dash-navy)] text-white">
+        <header className="sticky top-0 z-20 border-b border-[#e6e0d6] bg-[#f7f4ef]/95 backdrop-blur-sm">
           <div className="flex flex-wrap items-center gap-3 px-4 py-2.5 sm:px-6 lg:px-8">
             <form action={jobsHref} method="get" className="relative min-w-0 flex-1">
               <label htmlFor="dash-job-search" className="sr-only">
                 Search jobs
               </label>
-              <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-[var(--dash-navy)]/40" aria-hidden>
+              <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-[var(--dash-navy)]/35" aria-hidden>
                 <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2">
                   <circle cx="11" cy="11" r="7" />
                   <path d="M20 20l-3.5-3.5" strokeLinecap="round" />
@@ -146,7 +146,7 @@ export async function CandidateDashShell({
                 name="q"
                 type="search"
                 placeholder="Search jobs, employers or keywords..."
-                className="w-full rounded-full border-0 bg-white py-2 pr-4 pl-10 text-[14px] text-[var(--dash-navy)] outline-none placeholder:text-[var(--dash-navy)]/40"
+                className="w-full rounded-[10px] border border-[#e6e0d6] bg-white py-2 pr-4 pl-10 text-[14px] text-[var(--dash-navy)] outline-none placeholder:text-[var(--dash-navy)]/40 focus:border-[var(--dash-navy)]/35"
               />
             </form>
             <div className="flex items-center gap-2 sm:gap-3">
@@ -160,7 +160,7 @@ export async function CandidateDashShell({
               <form action="/auth/signout" method="post">
                 <button
                   type="submit"
-                  className="t-colors cursor-pointer rounded-full border border-white/25 bg-transparent px-3 py-1.5 text-[12px] font-medium text-white/85 hover:bg-white/10"
+                  className="t-colors cursor-pointer rounded-[8px] border border-[#142438]/20 bg-transparent px-3 py-1.5 text-[12px] font-medium text-[var(--dash-navy)] hover:bg-white"
                 >
                   Sign out
                 </button>
@@ -176,8 +176,8 @@ export async function CandidateDashShell({
 
 function SupportCard({ href, compact }: { href: string; compact?: boolean }) {
   return (
-    <div className={`rounded-[12px] border border-white/10 bg-[var(--dash-navy-deep)] ${compact ? 'mx-3 mt-2 p-3' : 'p-3.5'}`}>
-      <p className="m-0 text-[13px] font-medium text-white">Need Help?</p>
+    <div className={compact ? 'mx-3 mt-2 px-1 py-2' : 'px-1 py-1'}>
+      <p className="m-0 text-[12px] font-medium uppercase tracking-[0.08em] text-white/45">Need help?</p>
       {!compact ? (
         <p className="m-0 mt-1 text-[12px] leading-snug text-white/55">
           WhatsApp our desk if something on your application looks wrong.
@@ -187,9 +187,9 @@ function SupportCard({ href, compact }: { href: string; compact?: boolean }) {
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-2.5 inline-flex w-full items-center justify-center rounded-[8px] bg-[var(--dash-gold)] px-3 py-2 text-[13px] font-semibold text-[var(--dash-navy)] no-underline hover:bg-[var(--dash-gold-soft)]"
+        className="mt-2 inline-flex text-[13px] font-semibold text-[var(--dash-gold)] no-underline hover:underline"
       >
-        Contact Support →
+        Contact support →
       </a>
     </div>
   );
