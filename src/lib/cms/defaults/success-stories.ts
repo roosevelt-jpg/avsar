@@ -31,7 +31,7 @@ export const SUCCESS_STORIES: DefaultPage = {
         filmLabel: INTRO_FILM.label,
         highlights: ['Approved by our team', 'No invented testimonials', 'Linked from the site footer'],
         mediaType: 'image',
-        mediaSrc: '/photos/brand/hero-workers.jpg',
+        mediaSrc: '/photos/brand/journey-tram.jpg',
         mediaPoster: INTRO_FILM.poster,
         mediaAlt: 'Professionals who moved to Portugal for work',
         slides: slidesWithCaptions(BRAND_SLIDES.about),

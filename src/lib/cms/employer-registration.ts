@@ -95,8 +95,8 @@ export const DEFAULT_EMPLOYER_REGISTRATION: EmployerRegistrationSettings = {
       src: '/photos/brand/employer-register-hero.jpg',
       alt: 'Employer and colleague reviewing candidates on a laptop',
     },
-    { src: '/photos/brand/employer-handshake.jpg', alt: 'Employer and candidate shaking hands' },
-    { src: '/photos/brand/hero-workers.jpg', alt: 'Skilled professionals ready to work in Portugal' },
+    { src: '/photos/brand/employer-meeting.jpg', alt: 'Hiring managers reviewing candidates' },
+    { src: '/photos/brand/hero-jobsite.jpg', alt: 'Trade talent on a Portuguese site' },
     { src: '/photos/brand/hero-chef.jpg', alt: 'Hospitality talent for Portuguese employers' },
   ],
   highlights: [

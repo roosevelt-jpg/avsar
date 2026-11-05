@@ -34,7 +34,7 @@ export const HOW_IT_WORKS: DefaultPage = {
         highlights: [],
         layout: 'overlay',
         mediaType: 'image',
-        mediaSrc: '/photos/brand/hero-workers.jpg',
+        mediaSrc: '/photos/brand/hero-lisbon-street.jpg',
         mediaPoster: INTRO_FILM.poster,
         mediaAlt: 'A candidate ready for a career move to Portugal',
         slides: slidesWithCaptions(BRAND_SLIDES.journey),

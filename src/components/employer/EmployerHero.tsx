@@ -60,7 +60,7 @@ export function EmployerHero({
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [reduce, setReduce] = useState(false);
-  const list = slides.length > 0 ? slides : [{ src: '/photos/brand/employer-handshake.jpg', alt: headline }];
+  const list = slides.length > 0 ? slides : [{ src: '/photos/brand/employer-meeting.jpg', alt: headline }];
 
   useEffect(() => {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)');

@@ -653,7 +653,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     badgeSubtext: 'Skilled • Verified • Compliant',
     badgeHref: '/employers/register',
     slides: [
-      { src: '/photos/brand/employer-handshake.jpg', alt: 'Employer and candidate shaking hands in Portugal' },
+      { src: '/photos/brand/employer-meeting.jpg', alt: 'Hiring managers reviewing candidates together' },
     ],
     /* Values stay empty unless real — the page hides empty stats. No mockup 1,200+ / 98%. */
     statsCandidatesValue: '',

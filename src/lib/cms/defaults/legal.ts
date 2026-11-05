@@ -362,7 +362,7 @@ export const CONTACT: DefaultPage = {
             body: 'Questions about jobs, the free test, visas or your application.',
             ctaLabel: 'Get Candidate Support',
             href: '#contact-form',
-            image: '/photos/brand/hero-workers.jpg',
+            image: '/photos/brand/hero-lisbon-street.jpg',
           },
           {
             icon: 'briefcase',
@@ -370,7 +370,7 @@ export const CONTACT: DefaultPage = {
             body: 'Tell us the roles you need in Portugal. We shortlist assessed candidates.',
             ctaLabel: 'Hire Talent Today',
             href: '/employers',
-            image: '/photos/brand/employer-handshake.jpg',
+            image: '/photos/brand/employer-meeting.jpg',
           },
           {
             icon: 'clock',

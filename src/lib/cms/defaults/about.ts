@@ -64,7 +64,7 @@ export const ABOUT: DefaultPage = {
         intro: '',
         columns: '2',
         style: 'mission',
-        sideImage: '/photos/brand/employer-handshake.jpg',
+        sideImage: '/photos/brand/employer-meeting.jpg',
         sideImageAlt: 'S&A recruiters with a candidate preparing for Portugal',
         typing: false,
         items: [

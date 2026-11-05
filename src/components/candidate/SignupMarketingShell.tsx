@@ -5,7 +5,7 @@ import { siteText } from '@/lib/cms/localize';
 import type { Locale } from '@/lib/i18n';
 
 const HERO = {
-  src: '/photos/brand/hero-workers.jpg',
+  src: '/photos/brand/hero-lisbon-street.jpg',
   alt: 'A professional ready for a career in Portugal',
 } as const;
 
