@@ -48,7 +48,7 @@ type Selection =
   | { kind: 'staff'; staff: StaffCard }
   | null;
 
-export function WhatsAppDesk({ phone, copy }: { phone: string; copy: WhatsAppDeskCopy }) {
+export function WhatsAppDesk({ phone, copy, locale }: { phone: string; copy: WhatsAppDeskCopy; locale: string }) {
   const digits = phone.replace(/[^\d]/g, '');
   const dialog = useRef<HTMLDialogElement>(null);
   const threadRef = useRef('');
@@ -142,7 +142,7 @@ export function WhatsAppDesk({ phone, copy }: { phone: string; copy: WhatsAppDes
     setPending(true);
     setTurns((current) => [...current, { role: 'user', text: message, sources: [] }]);
     try {
-      const body: Record<string, string> = { message, thread: threadKey() };
+      const body: Record<string, string> = { message, thread: threadKey(), locale };
       if (selection.kind === 'agent') body.agent = selection.agent.slug;
       if (selection.kind === 'staff') body.staff = selection.staff.userId;
       const response = await fetch('/api/assistant', {

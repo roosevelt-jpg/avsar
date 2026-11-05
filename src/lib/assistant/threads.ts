@@ -1,6 +1,8 @@
+import type { Locale } from '@/lib/i18n';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { notifyStaff } from '@/lib/notifications/staff';
 import type { ChatAgent } from './agents';
+import { askedForHuman, assistantHandoff } from './language';
 
 export type ChatMode = 'ai' | 'human' | 'closed';
 
@@ -27,15 +29,6 @@ export type ThreadMessage = {
   senderAvatar: string;
   createdAt: string;
 };
-
-const HANDOFF_REPLY =
-  'A recruiter will reply here shortly. Stay in this window — you do not need to start again.';
-
-const WHATSAPP_HANDOFF =
-  'A recruiter will continue with you on the website chat or call you back during office hours. Stay on this number if we already have your WhatsApp.';
-
-const HUMAN_ASK =
-  /\b(speak to (a |an )?(human|person|someone|agent|recruiter|staff)|talk to (a |an )?(human|person|someone|agent|recruiter)|real person|live (chat|agent|person)|call me|human please)\b/i;
 
 type ThreadRow = {
   id: string;
@@ -66,11 +59,11 @@ function fromRow(row: ThreadRow): ChatThread {
 }
 
 export function visitorAskedForHuman(question: string): boolean {
-  return HUMAN_ASK.test(question);
+  return askedForHuman(question);
 }
 
-export function handoffCopy(channel: 'web' | 'whatsapp'): string {
-  return channel === 'whatsapp' ? WHATSAPP_HANDOFF : HANDOFF_REPLY;
+export function handoffCopy(channel: 'web' | 'whatsapp', locale: Locale = 'en'): string {
+  return assistantHandoff(channel, locale);
 }
 
 /** Find or create the conversation keyed by the visitor session / WhatsApp id. */

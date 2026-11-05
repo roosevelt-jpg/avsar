@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { chunkNote } from '@/lib/assistant/chunks';
 import { ASSISTANT_FALLBACK, guardReply } from '@/lib/assistant/guard';
+import {
+  assistantFallback,
+  detectAssistantLocale,
+  replyMatchesLocale,
+} from '@/lib/assistant/language';
 import { quoteMatch } from '@/lib/assistant/match';
 
 const facts = 'The optional career package costs ₹2,400. Payment is only on this website.';
@@ -61,6 +66,7 @@ describe('assistant answers stay inside the notes', () => {
       usedTitles: ['Site settings'],
       allowedTitles: ['Site settings', 'Refunds'],
       facts,
+      locale: 'en',
     });
     expect(result.reply).toContain('₹2,400');
     expect(result.sources).toEqual(['Site settings']);
@@ -73,6 +79,7 @@ describe('assistant answers stay inside the notes', () => {
       usedTitles: [],
       allowedTitles: ['Site settings'],
       facts,
+      locale: 'en',
     });
     expect(result.reply).toBe(ASSISTANT_FALLBACK);
   });
@@ -84,6 +91,7 @@ describe('assistant answers stay inside the notes', () => {
       usedTitles: ['Invented policy'],
       allowedTitles: ['Site settings'],
       facts,
+      locale: 'en',
     });
     expect(result.reply).toBe(ASSISTANT_FALLBACK);
   });
@@ -95,6 +103,7 @@ describe('assistant answers stay inside the notes', () => {
       usedTitles: ['Site settings'],
       allowedTitles: ['Site settings'],
       facts,
+      locale: 'en',
     });
     expect(result.reply).toBe(ASSISTANT_FALLBACK);
   });
@@ -106,6 +115,7 @@ describe('assistant answers stay inside the notes', () => {
       usedTitles: ['Refunds'],
       allowedTitles: ['Refunds'],
       facts,
+      locale: 'en',
       question: 'What is the refund window?',
       sourceText: 'A full refund of the package is available within 14 days.',
     });
@@ -119,7 +129,39 @@ describe('assistant answers stay inside the notes', () => {
       usedTitles: ['Site settings'],
       allowedTitles: ['Site settings'],
       facts,
+      locale: 'en',
     });
     expect(result.reply).toBe(ASSISTANT_FALLBACK);
+  });
+
+  it('refuses in the visitor locale, not English', () => {
+    const result = guardReply({
+      reply: '',
+      covered: false,
+      usedTitles: [],
+      allowedTitles: ['Site settings'],
+      facts,
+      locale: 'hi',
+    });
+    expect(result.reply).toBe(assistantFallback('hi'));
+    expect(result.reply).not.toBe(ASSISTANT_FALLBACK);
+  });
+});
+
+describe('assistant locale detection and script check', () => {
+  it('prefers the page locale over script detection', () => {
+    expect(detectAssistantLocale('What is the refund?', 'ta')).toBe('ta');
+  });
+
+  it('detects Indic scripts on WhatsApp without a page locale', () => {
+    expect(detectAssistantLocale('रिफंड क्या है?')).toBe('hi');
+    expect(detectAssistantLocale('রিফান্ড কী?')).toBe('bn');
+    expect(detectAssistantLocale('பணம் திரும்ப')).toBe('ta');
+  });
+
+  it('flags an English reply when the locale needs another script', () => {
+    expect(replyMatchesLocale('The package costs ₹2,400.', 'hi')).toBe(false);
+    expect(replyMatchesLocale('पैकेज की कीमत ₹2,400 है।', 'hi')).toBe(true);
+    expect(replyMatchesLocale('The package costs ₹2,400.', 'en')).toBe(true);
   });
 });

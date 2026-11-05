@@ -132,7 +132,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
           </div>
         </div>
       </header>
-      <WhatsAppDesk phone={general.whatsapp} copy={whatsappCopy(locale, general.siteName)} />
+      <WhatsAppDesk phone={general.whatsapp} locale={locale} copy={whatsappCopy(locale, general.siteName)} />
     </>
   );
 }

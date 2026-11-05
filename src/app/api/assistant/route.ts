@@ -12,6 +12,7 @@ const bodySchema = z.object({
   thread: z.string().trim().regex(/^[a-zA-Z0-9-]{8,80}$/),
   agent: z.string().trim().regex(/^[a-z][a-z0-9-]{1,40}$/).optional(),
   staff: z.string().uuid().optional(),
+  locale: z.string().trim().max(8).optional(),
 });
 
 /** Agent picker + online staff for the floating desk. */
@@ -53,6 +54,7 @@ export async function POST(request: Request) {
       channel: 'web',
       agentSlug: parsed.data.agent,
       staffUserId: parsed.data.staff,
+      locale: parsed.data.locale,
     });
     return NextResponse.json(result);
   } catch (error) {

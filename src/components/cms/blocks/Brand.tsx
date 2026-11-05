@@ -7,6 +7,48 @@ import { CmsButton, Icon, Section } from '../primitives';
 
 type Props = { data: BlockData; locale: Locale };
 
+function PressLogoRow({
+  list,
+  hidden,
+}: {
+  list: ReturnType<typeof items>;
+  hidden?: boolean;
+}) {
+  return (
+    <ul className="press-marquee-list" aria-hidden={hidden ? true : undefined}>
+      {list.map((item, index) => {
+        const href = str(item, 'href');
+        const name = str(item, 'name');
+        const logoSrc = str(item, 'logo');
+        const mark = logoSrc ? (
+          // Native img keeps intrinsic aspect; next/image width/height forced a box.
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={logoSrc} alt={hidden ? '' : name} className="press-logo-img" />
+        ) : (
+          <span className="press-logo-fallback">{name}</span>
+        );
+        return (
+          <li key={`${hidden ? 'dup' : 'a'}-${index}`} className="press-logo">
+            {href ? (
+              <Link
+                href={href}
+                className="press-logo-link"
+                tabIndex={hidden ? -1 : undefined}
+                target={/^https?:/i.test(href) ? '_blank' : undefined}
+                rel={/^https?:/i.test(href) ? 'noopener noreferrer' : undefined}
+              >
+                {mark}
+              </Link>
+            ) : (
+              mark
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
 /**
  * Publication logos for the home press strip.
  *
@@ -19,42 +61,6 @@ export function PressBarBlock({ data }: Props) {
   if (!list.length) return null;
   const eyebrow = str(data, 'eyebrow');
 
-  function LogoRow({ hidden }: { hidden?: boolean }) {
-    return (
-      <ul className="press-marquee-list" aria-hidden={hidden ? true : undefined}>
-        {list.map((item, index) => {
-          const href = str(item, 'href');
-          const name = str(item, 'name');
-          const logoSrc = str(item, 'logo');
-          const mark = logoSrc ? (
-            // Native img keeps intrinsic aspect; next/image width/height forced a box.
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={logoSrc} alt={hidden ? '' : name} className="press-logo-img" />
-          ) : (
-            <span className="press-logo-fallback">{name}</span>
-          );
-          return (
-            <li key={`${hidden ? 'dup' : 'a'}-${index}`} className="press-logo">
-              {href ? (
-                <Link
-                  href={href}
-                  className="press-logo-link"
-                  tabIndex={hidden ? -1 : undefined}
-                  target={/^https?:/i.test(href) ? '_blank' : undefined}
-                  rel={/^https?:/i.test(href) ? 'noopener noreferrer' : undefined}
-                >
-                  {mark}
-                </Link>
-              ) : (
-                mark
-              )}
-            </li>
-          );
-        })}
-      </ul>
-    );
-  }
-
   return (
     <section className="press-bar border-y border-[#e6e0d6] bg-[#f3f1ec] py-6">
       {eyebrow ? (
@@ -64,8 +70,8 @@ export function PressBarBlock({ data }: Props) {
       ) : null}
       <div className="press-marquee" role="group" aria-label={eyebrow || 'As featured in'}>
         <div className="press-marquee-track">
-          <LogoRow />
-          <LogoRow hidden />
+          <PressLogoRow list={list} />
+          <PressLogoRow list={list} hidden />
         </div>
       </div>
     </section>
