@@ -27,7 +27,7 @@ export function FieldInput({ field, value, onChange }: { field: Field; value: un
       return (
         <label className="flex flex-col gap-1.5">
           <Label field={field} />
-          <input className={INPUT} value={typeof value === 'string' ? value : ''} maxLength={field.kind === 'text' ? field.max : 1000} placeholder={field.kind === 'text' ? field.placeholder : 'https://... or /path'} onChange={(e) => onChange(e.target.value)} />
+          <input className={INPUT} value={typeof value === 'string' ? value : ''} maxLength={field.kind === 'text' ? field.max : 1000} placeholder={field.kind === 'text' ? field.placeholder : 'https://…'} onChange={(e) => onChange(e.target.value)} />
         </label>
       );
     case 'textarea':
@@ -76,7 +76,7 @@ export function FieldInput({ field, value, onChange }: { field: Field; value: un
           <legend className="mb-1.5 p-0"><Label field={field} /></legend>
           <div className="grid gap-2 sm:grid-cols-2">
             <input className={INPUT} placeholder="Button text" value={link.label ?? ''} onChange={(e) => onChange({ ...link, label: e.target.value })} />
-            <input className={INPUT} placeholder="/jobs or https://..." value={link.href ?? ''} onChange={(e) => onChange({ ...link, href: e.target.value })} />
+            <input className={INPUT} placeholder="Page link or https://…" value={link.href ?? ''} onChange={(e) => onChange({ ...link, href: e.target.value })} />
           </div>
         </fieldset>
       );

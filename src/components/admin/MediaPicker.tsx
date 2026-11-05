@@ -7,10 +7,18 @@ type Item = { id: string; kind: 'image' | 'video' | 'document'; url: string; fil
 
 const INPUT = 'w-full rounded-[10px] border border-line bg-surface px-3 py-2 text-[14px] outline-none focus:border-ink';
 
+/** Short file name from a media URL — never show the full path as the main label. */
+function mediaLabel(value: string): string {
+  if (!value) return 'No photograph chosen';
+  if (/youtu(\.be|be\.com)/i.test(value)) return 'YouTube video';
+  const path = value.split('?')[0] ?? value;
+  const name = path.split('/').filter(Boolean).pop();
+  return name || 'Photograph chosen';
+}
+
 /**
- * A field that holds a media URL: a preview, the URL itself (so an editor can
- * paste a YouTube link or an external image), and a library browser with
- * upload.
+ * A field that holds a media URL: preview + library picker.
+ * The raw path stays behind “Edit link” so staff are not staring at /photos/….
  */
 export function MediaField({
   value,
@@ -38,24 +46,50 @@ export function MediaField({
           ) : value ? (
             <span className="font-mono text-[10px] text-muted">{isYouTube ? 'YouTube' : 'VIDEO'}</span>
           ) : (
-            <span className="font-mono text-[10px] text-muted">NONE</span>
+            <span className="text-[10px] uppercase tracking-[0.06em] text-muted">None</span>
           )}
         </div>
         <div className="flex min-w-0 flex-1 flex-col gap-2">
-          <input className={INPUT} value={value} onChange={(e) => onChange(e.target.value)} placeholder={accept === 'video' ? '/video/intro.mp4 or a YouTube link' : '/images/... or https://...'} />
-          <div className="flex gap-2">
-            <button type="button" onClick={() => setOpen(true)} className="cursor-pointer rounded-full border border-line-strong bg-surface px-3 py-1.5 text-[13px] hover:border-ink">
+          <p className="m-0 truncate text-[14px] text-ink">{mediaLabel(value)}</p>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => setOpen(true)}
+              className="cursor-pointer rounded-full border border-line-strong bg-surface px-3 py-1.5 text-[13px] hover:border-ink"
+            >
               Choose from library
             </button>
-            {value && (
-              <button type="button" onClick={() => onChange('')} className="cursor-pointer rounded-full border-0 bg-transparent px-2 py-1.5 text-[13px] text-muted hover:text-ink">
+            {value ? (
+              <button
+                type="button"
+                onClick={() => onChange('')}
+                className="cursor-pointer rounded-full border-0 bg-transparent px-2 py-1.5 text-[13px] text-muted hover:text-ink"
+              >
                 Remove
               </button>
-            )}
+            ) : null}
           </div>
+          <details className="text-[12px] text-muted">
+            <summary className="cursor-pointer select-none">Edit link (advanced)</summary>
+            <input
+              className={`${INPUT} mt-2`}
+              value={value}
+              onChange={(e) => onChange(e.target.value)}
+              placeholder={accept === 'video' ? 'Video link or YouTube URL' : 'Photograph link'}
+            />
+          </details>
         </div>
       </div>
-      {open && <MediaDialog accept={accept} onClose={() => setOpen(false)} onPick={(url) => { onChange(url); setOpen(false); }} />}
+      {open ? (
+        <MediaDialog
+          accept={accept}
+          onClose={() => setOpen(false)}
+          onPick={(url) => {
+            onChange(url);
+            setOpen(false);
+          }}
+        />
+      ) : null}
     </div>
   );
 }
@@ -100,7 +134,8 @@ export function MediaDialog({
   }
 
   const filtered = (items ?? []).filter((item) => !query || item.fileName.toLowerCase().includes(query.toLowerCase()));
-  const acceptAttr = accept === 'image' ? 'image/*' : accept === 'video' ? 'video/mp4,video/webm' : 'image/*,video/mp4,video/webm,application/pdf';
+  const acceptAttr =
+    accept === 'image' ? 'image/*' : accept === 'video' ? 'video/mp4,video/webm' : 'image/*,video/mp4,video/webm,application/pdf';
 
   return (
     <dialog
@@ -110,17 +145,26 @@ export function MediaDialog({
     >
       <div className="flex items-center justify-between gap-3 border-b border-line px-5 py-4">
         <h2 className="m-0 text-[18px] font-semibold">Media library</h2>
-        <button type="button" onClick={() => dialog.current?.close()} className="cursor-pointer rounded-full border border-line bg-surface px-3 py-1 text-[13px]">
+        <button
+          type="button"
+          onClick={() => dialog.current?.close()}
+          className="cursor-pointer rounded-full border border-line bg-surface px-3 py-1 text-[13px]"
+        >
           Close
         </button>
       </div>
       <div className="flex flex-wrap items-center gap-3 px-5 py-4">
-        <input className={`${INPUT} max-w-[280px]`} placeholder="Search by file name" value={query} onChange={(e) => setQuery(e.target.value)} />
+        <input
+          className={`${INPUT} max-w-[280px]`}
+          placeholder="Search by file name"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
         <label className="cursor-pointer rounded-full bg-ink px-4 py-2 text-[13px] text-paper">
           {busy ? 'Uploading…' : 'Upload new'}
           <input type="file" accept={acceptAttr} className="sr-only" onChange={onFile} disabled={busy} />
         </label>
-        {error && <span className="text-[13px] text-accent-deep">{error}</span>}
+        {error ? <span className="text-[13px] text-accent-deep">{error}</span> : null}
       </div>
       <div className="max-h-[60vh] overflow-y-auto px-5 pb-5">
         {items === null ? (
@@ -141,7 +185,7 @@ export function MediaDialog({
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={item.url} alt={item.alt} loading="lazy" className="size-full object-cover" />
                     ) : (
-                      <span className="grid size-full place-items-center font-mono text-[11px] uppercase text-muted">{item.kind}</span>
+                      <span className="grid size-full place-items-center text-[11px] uppercase text-muted">{item.kind}</span>
                     )}
                   </span>
                   <span className="block truncate px-2 py-1.5 text-[12px] text-ink-2">{item.fileName}</span>

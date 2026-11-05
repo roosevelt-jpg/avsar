@@ -2,7 +2,43 @@
 
 import { useState } from 'react';
 import type { NavItem, SiteSettings } from '@/lib/cms/settings';
+import { MediaField } from './MediaPicker';
 import { Field, INPUT, SaveBar, Section, useSettingsSaver } from './settings/ui';
+
+/** Plain labels for icon keys used in Settings chips and badges. */
+const SETTING_ICONS: { value: string; label: string }[] = [
+  { value: 'users', label: 'People' },
+  { value: 'shield', label: 'Shield' },
+  { value: 'bolt', label: 'Bolt' },
+  { value: 'document', label: 'Document' },
+  { value: 'calendar', label: 'Calendar' },
+  { value: 'plane', label: 'Plane' },
+  { value: 'check', label: 'Check' },
+  { value: 'globe', label: 'Globe' },
+  { value: 'briefcase', label: 'Briefcase' },
+  { value: 'star', label: 'Star' },
+  { value: 'home', label: 'Home' },
+  { value: 'phone', label: 'Phone' },
+];
+
+function IconSelect({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const known = SETTING_ICONS.some((icon) => icon.value === value);
+  return (
+    <select className={INPUT} value={known ? value : 'check'} onChange={(e) => onChange(e.target.value)}>
+      {SETTING_ICONS.map((icon) => (
+        <option key={icon.value} value={icon.value}>
+          {icon.label}
+        </option>
+      ))}
+    </select>
+  );
+}
 
 /** Settings › General: contact details, the announcement bar and the footer. */
 export function GeneralSettings({ initial }: { initial: Pick<SiteSettings, 'general' | 'announcement' | 'footer'> }) {
@@ -62,14 +98,15 @@ export function GeneralSettings({ initial }: { initial: Pick<SiteSettings, 'gene
           <Field label="Blurb under the logo">
             <textarea className={INPUT} rows={3} value={footer.blurb} onChange={(e) => setFooter({ ...footer, blurb: e.target.value })} />
           </Field>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <Field label="Background photograph" help="Wide image behind the footer. Leave empty for solid navy.">
-              <input className={INPUT} value={footer.backgroundImage} onChange={(e) => setFooter({ ...footer, backgroundImage: e.target.value })} />
-            </Field>
-            <Field label="Background description">
-              <input className={INPUT} value={footer.backgroundImageAlt} onChange={(e) => setFooter({ ...footer, backgroundImageAlt: e.target.value })} />
-            </Field>
-          </div>
+          <MediaField
+            label="Background photograph"
+            accept="image"
+            value={footer.backgroundImage}
+            onChange={(backgroundImage) => setFooter({ ...footer, backgroundImage })}
+          />
+          <Field label="Background description">
+            <input className={INPUT} value={footer.backgroundImageAlt} onChange={(e) => setFooter({ ...footer, backgroundImageAlt: e.target.value })} />
+          </Field>
           <Field label="Copyright line" help="Use {{year}} and {{brand}}.">
             <input className={INPUT} value={footer.copyright} onChange={(e) => setFooter({ ...footer, copyright: e.target.value })} />
           </Field>
@@ -113,14 +150,12 @@ export function GeneralSettings({ initial }: { initial: Pick<SiteSettings, 'gene
                   })
                 }
               />
-              <input
-                className={INPUT}
-                placeholder="Icon (shield, globe, document…)"
+              <IconSelect
                 value={badge.icon}
-                onChange={(e) =>
+                onChange={(icon) =>
                   setFooter({
                     ...footer,
-                    trustBadges: footer.trustBadges.map((item, i) => (i === index ? { ...item, icon: e.target.value } : item)),
+                    trustBadges: footer.trustBadges.map((item, i) => (i === index ? { ...item, icon } : item)),
                   })
                 }
               />
@@ -199,7 +234,7 @@ function FooterLinkEditor({
             />
             <input
               className={INPUT}
-              placeholder="/path"
+              placeholder="Page link (Jobs, About…)"
               value={item.href}
               onChange={(e) => onLinks(links.map((link, i) => (i === index ? { ...link, href: e.target.value } : link)))}
             />
@@ -237,7 +272,7 @@ export function NavigationSettings({ initial }: { initial: SiteSettings['navigat
             <input className={INPUT} placeholder="Label" value={item.label} onChange={(e) => setNav(index, { label: e.target.value })} />
             <input className={INPUT} placeholder="Hindi label" value={item.labelHi ?? ''} onChange={(e) => setNav(index, { labelHi: e.target.value })} />
             <input className={INPUT} placeholder="Arabic label" value={item.labelAr ?? ''} onChange={(e) => setNav(index, { labelAr: e.target.value })} />
-            <input className={INPUT} placeholder="/path" value={item.href} onChange={(e) => setNav(index, { href: e.target.value })} />
+            <input className={INPUT} placeholder="Page link (Jobs, About…)" value={item.href} onChange={(e) => setNav(index, { href: e.target.value })} />
             <div className="flex gap-1">
               <button type="button" aria-label="Move up" disabled={index === 0} onClick={() => move(index, -1)} className="cursor-pointer rounded-[8px] border border-line bg-surface px-2 text-[12px] disabled:opacity-30">↑</button>
               <button type="button" aria-label="Move down" disabled={index === navigation.items.length - 1} onClick={() => move(index, 1)} className="cursor-pointer rounded-[8px] border border-line bg-surface px-2 text-[12px] disabled:opacity-30">↓</button>
@@ -522,20 +557,19 @@ export function EmployerLandingForm({ initial }: { initial: SiteSettings['employ
         <p className="m-0 mt-2 text-[13px] font-medium text-ink-2">Slideshow photographs</p>
         <ul className="m-0 flex list-none flex-col gap-3 p-0">
           {page.slides.map((slide, index) => (
-            <li key={index} className="grid gap-2 rounded-[12px] bg-paper p-3 sm:grid-cols-2">
-              <Field label="Image path">
-                <input
-                  className={INPUT}
-                  value={slide.src}
-                  onChange={(e) =>
-                    set(
-                      'slides',
-                      page.slides.map((row, i) => (i === index ? { ...row, src: e.target.value } : row)),
-                    )
-                  }
-                />
-              </Field>
-              <Field label="Alt text">
+            <li key={index} className="grid gap-3 rounded-[12px] bg-paper p-3 sm:grid-cols-2">
+              <MediaField
+                label={`Photograph ${index + 1}`}
+                accept="image"
+                value={slide.src}
+                onChange={(src) =>
+                  set(
+                    'slides',
+                    page.slides.map((row, i) => (i === index ? { ...row, src } : row)),
+                  )
+                }
+              />
+              <Field label="Description">
                 <input
                   className={INPUT}
                   value={slide.alt}
@@ -632,7 +666,12 @@ export function EmployerLandingForm({ initial }: { initial: SiteSettings['employ
       <Section title="Industries band" lead="Navy band with the tram photograph and industry chips.">
         <Field label="Title"><input className={INPUT} value={page.industriesTitle} onChange={(e) => set('industriesTitle', e.target.value)} /></Field>
         <div className="grid gap-3 sm:grid-cols-2">
-          <Field label="Image path"><input className={INPUT} value={page.industriesImage} onChange={(e) => set('industriesImage', e.target.value)} /></Field>
+          <MediaField
+            label="Photograph"
+            accept="image"
+            value={page.industriesImage}
+            onChange={(industriesImage) => set('industriesImage', industriesImage)}
+          />
           <Field label="Image alt"><input className={INPUT} value={page.industriesImageAlt} onChange={(e) => set('industriesImageAlt', e.target.value)} /></Field>
         </div>
         <ul className="m-0 flex list-none flex-col gap-3 p-0">
@@ -693,7 +732,7 @@ export function EmployerRegistrationForm({ initial }: { initial: SiteSettings['e
 
   return (
     <div className="flex flex-col gap-5">
-      <Section title="Hero" lead="Slideshow photographs and the three highlight chips. Paths under /photos/brand/…">
+      <Section title="Hero" lead="Slideshow photographs and the three highlight chips.">
         <Field label="Eyebrow"><input className={INPUT} value={page.eyebrow} onChange={(e) => set('eyebrow', e.target.value)} /></Field>
         <Field label="Headline"><input className={INPUT} value={page.headline} onChange={(e) => set('headline', e.target.value)} /></Field>
         <Field label="Introduction"><textarea className={INPUT} rows={3} value={page.intro} onChange={(e) => set('intro', e.target.value)} /></Field>
@@ -701,64 +740,174 @@ export function EmployerRegistrationForm({ initial }: { initial: SiteSettings['e
           <Field label="Header CTA"><input className={INPUT} value={page.headerCtaLabel} onChange={(e) => set('headerCtaLabel', e.target.value)} /></Field>
           <Field label="Header CTA link"><input className={INPUT} value={page.headerCtaHref} onChange={(e) => set('headerCtaHref', e.target.value)} /></Field>
         </div>
-        <p className="m-0 text-[13px] font-medium text-ink-2">Slides (one path per line: src|alt)</p>
-        <textarea
-          className={INPUT}
-          rows={4}
-          value={page.slides.map((slide) => `${slide.src}|${slide.alt}`).join('\n')}
-          onChange={(e) =>
-            set(
-              'slides',
-              lines(e.target.value).map((line) => {
-                const [src = '', ...rest] = line.split('|');
-                return { src: src.trim(), alt: rest.join('|').trim() };
-              }),
-            )
-          }
-        />
-        <p className="m-0 text-[13px] font-medium text-ink-2">Highlights (icon|label per line)</p>
-        <textarea
-          className={INPUT}
-          rows={3}
-          value={page.highlights.map((item) => `${item.icon}|${item.label}`).join('\n')}
-          onChange={(e) =>
-            set(
-              'highlights',
-              lines(e.target.value).map((line) => {
-                const [icon = 'check', ...rest] = line.split('|');
-                return { icon: icon.trim(), label: rest.join('|').trim() };
-              }),
-            )
-          }
-        />
+        <p className="m-0 text-[13px] font-medium text-ink-2">Slideshow photographs</p>
+        <ul className="m-0 flex list-none flex-col gap-3 p-0">
+          {page.slides.map((slide, index) => (
+            <li key={index} className="grid gap-3 rounded-[12px] bg-paper p-3 sm:grid-cols-2">
+              <MediaField
+                label={`Photograph ${index + 1}`}
+                accept="image"
+                value={slide.src}
+                onChange={(src) =>
+                  set(
+                    'slides',
+                    page.slides.map((row, i) => (i === index ? { ...row, src } : row)),
+                  )
+                }
+              />
+              <Field label="Description">
+                <input
+                  className={INPUT}
+                  value={slide.alt}
+                  onChange={(e) =>
+                    set(
+                      'slides',
+                      page.slides.map((row, i) => (i === index ? { ...row, alt: e.target.value } : row)),
+                    )
+                  }
+                />
+              </Field>
+            </li>
+          ))}
+        </ul>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            className="text-[13px] text-accent"
+            disabled={page.slides.length >= 8}
+            onClick={() => set('slides', [...page.slides, { src: '', alt: '' }])}
+          >
+            Add photograph
+          </button>
+          {page.slides.length > 1 ? (
+            <button type="button" className="text-[13px] text-muted" onClick={() => set('slides', page.slides.slice(0, -1))}>
+              Remove last
+            </button>
+          ) : null}
+        </div>
+
+        <p className="m-0 mt-4 text-[13px] font-medium text-ink-2">Highlight chips</p>
+        <ul className="m-0 flex list-none flex-col gap-3 p-0">
+          {page.highlights.map((item, index) => (
+            <li key={index} className="grid gap-2 rounded-[12px] bg-paper p-3 sm:grid-cols-[160px_1fr_auto]">
+              <Field label="Icon">
+                <IconSelect
+                  value={item.icon}
+                  onChange={(icon) =>
+                    set(
+                      'highlights',
+                      page.highlights.map((row, i) => (i === index ? { ...row, icon } : row)),
+                    )
+                  }
+                />
+              </Field>
+              <Field label="Label">
+                <input
+                  className={INPUT}
+                  value={item.label}
+                  onChange={(e) =>
+                    set(
+                      'highlights',
+                      page.highlights.map((row, i) => (i === index ? { ...row, label: e.target.value } : row)),
+                    )
+                  }
+                />
+              </Field>
+              <button
+                type="button"
+                className="self-end rounded-[8px] border border-line bg-surface px-2 py-2 text-[12px] text-accent-deep"
+                onClick={() => set('highlights', page.highlights.filter((_, i) => i !== index))}
+              >
+                Remove
+              </button>
+            </li>
+          ))}
+        </ul>
+        <button
+          type="button"
+          className="mt-2 cursor-pointer rounded-full border border-dashed border-line-strong bg-transparent px-3 py-1.5 text-[13px]"
+          disabled={page.highlights.length >= 6}
+          onClick={() => set('highlights', [...page.highlights, { icon: 'check', label: '' }])}
+        >
+          + Add highlight
+        </button>
       </Section>
 
-      <Section title="How it works" lead="Four numbered steps beside the form.">
+      <Section title="How it works" lead="Numbered steps beside the form.">
         <Field label="Title"><input className={INPUT} value={page.howTitle} onChange={(e) => set('howTitle', e.target.value)} /></Field>
-        <p className="m-0 text-[13px] font-medium text-ink-2">Steps (icon|title|body per line)</p>
-        <textarea
-          className={INPUT}
-          rows={5}
-          value={page.howSteps.map((step) => `${step.icon}|${step.title}|${step.body}`).join('\n')}
-          onChange={(e) =>
-            set(
-              'howSteps',
-              lines(e.target.value).map((line) => {
-                const [icon = 'check', title = '', ...rest] = line.split('|');
-                return { icon: icon.trim(), title: title.trim(), body: rest.join('|').trim() };
-              }),
-            )
-          }
-        />
+        <ul className="m-0 flex list-none flex-col gap-3 p-0">
+          {page.howSteps.map((step, index) => (
+            <li key={index} className="grid gap-2 rounded-[12px] bg-paper p-3">
+              <div className="grid gap-2 sm:grid-cols-[160px_1fr_auto]">
+                <Field label="Icon">
+                  <IconSelect
+                    value={step.icon}
+                    onChange={(icon) =>
+                      set(
+                        'howSteps',
+                        page.howSteps.map((row, i) => (i === index ? { ...row, icon } : row)),
+                      )
+                    }
+                  />
+                </Field>
+                <Field label="Title">
+                  <input
+                    className={INPUT}
+                    value={step.title}
+                    onChange={(e) =>
+                      set(
+                        'howSteps',
+                        page.howSteps.map((row, i) => (i === index ? { ...row, title: e.target.value } : row)),
+                      )
+                    }
+                  />
+                </Field>
+                <button
+                  type="button"
+                  className="self-end rounded-[8px] border border-line bg-surface px-2 py-2 text-[12px] text-accent-deep"
+                  onClick={() => set('howSteps', page.howSteps.filter((_, i) => i !== index))}
+                >
+                  Remove
+                </button>
+              </div>
+              <Field label="Description">
+                <textarea
+                  className={INPUT}
+                  rows={2}
+                  value={step.body}
+                  onChange={(e) =>
+                    set(
+                      'howSteps',
+                      page.howSteps.map((row, i) => (i === index ? { ...row, body: e.target.value } : row)),
+                    )
+                  }
+                />
+              </Field>
+            </li>
+          ))}
+        </ul>
+        <button
+          type="button"
+          className="mt-2 cursor-pointer rounded-full border border-dashed border-line-strong bg-transparent px-3 py-1.5 text-[13px]"
+          disabled={page.howSteps.length >= 8}
+          onClick={() => set('howSteps', [...page.howSteps, { icon: 'check', title: '', body: '' }])}
+        >
+          + Add step
+        </button>
       </Section>
 
-      <Section title="Quote card" lead="Shell quote under How it works. Empty quote hides the card.">
+      <Section title="Quote card" lead="Quote under How it works. Empty quote hides the card.">
         <Field label="Quote"><textarea className={INPUT} rows={2} value={page.quote} onChange={(e) => set('quote', e.target.value)} /></Field>
         <Field label="Attribution"><input className={INPUT} value={page.quoteAttribution} onChange={(e) => set('quoteAttribution', e.target.value)} /></Field>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <Field label="Image path"><input className={INPUT} value={page.quoteImage} onChange={(e) => set('quoteImage', e.target.value)} /></Field>
-          <Field label="Image alt"><input className={INPUT} value={page.quoteImageAlt} onChange={(e) => set('quoteImageAlt', e.target.value)} /></Field>
-        </div>
+        <MediaField
+          label="Photograph"
+          accept="image"
+          value={page.quoteImage}
+          onChange={(quoteImage) => set('quoteImage', quoteImage)}
+        />
+        <Field label="Photograph description">
+          <input className={INPUT} value={page.quoteImageAlt} onChange={(e) => set('quoteImageAlt', e.target.value)} />
+        </Field>
       </Section>
 
       <Section title="Form copy" lead="Labels and CTAs on the multi-step enquiry card.">
@@ -825,10 +974,15 @@ export function JobsBoardForm({ initial }: { initial: SiteSettings['jobsBoard'] 
         </div>
         <Field label="Headline"><input className={INPUT} value={board.heroHeadline} onChange={(e) => set('heroHeadline', e.target.value)} /></Field>
         <Field label="Introduction"><textarea className={INPUT} rows={3} value={board.heroIntro} onChange={(e) => set('heroIntro', e.target.value)} /></Field>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <Field label="Image path"><input className={INPUT} value={board.heroImage} onChange={(e) => set('heroImage', e.target.value)} /></Field>
-          <Field label="Image alt"><input className={INPUT} value={board.heroImageAlt} onChange={(e) => set('heroImageAlt', e.target.value)} /></Field>
-        </div>
+        <MediaField
+          label="Photograph"
+          accept="image"
+          value={board.heroImage}
+          onChange={(heroImage) => set('heroImage', heroImage)}
+        />
+        <Field label="Photograph description">
+          <input className={INPUT} value={board.heroImageAlt} onChange={(e) => set('heroImageAlt', e.target.value)} />
+        </Field>
       </Section>
       <Section title="Search bar" lead="Placeholders and the search button on /jobs.">
         <div className="grid gap-3 sm:grid-cols-2">
@@ -919,28 +1073,19 @@ export function VslSettingsForm({ initial }: { initial: SiteSettings['vsl'] }) {
         </div>
       </Section>
 
-      <Section
-        title="Video"
-        lead="YouTube or an uploaded MP4. Leave blank to use the Applications film, then /video/intro.mp4."
-      >
-        <div className="grid gap-3 sm:grid-cols-2">
-          <Field label="Video URL">
-            <input
-              className={INPUT}
-              value={vsl.videoUrl}
-              placeholder="https://www.youtube.com/watch?v=... or /video/intro.mp4"
-              onChange={(e) => setVsl({ ...vsl, videoUrl: e.target.value })}
-            />
-          </Field>
-          <Field label="Poster image">
-            <input
-              className={INPUT}
-              value={vsl.videoPoster}
-              placeholder="/video/hero-poster.jpg"
-              onChange={(e) => setVsl({ ...vsl, videoPoster: e.target.value })}
-            />
-          </Field>
-        </div>
+      <Section title="Video" lead="YouTube or an uploaded film. Leave blank to use the Applications film.">
+        <MediaField
+          label="Film"
+          accept="video"
+          value={vsl.videoUrl}
+          onChange={(videoUrl) => setVsl({ ...vsl, videoUrl })}
+        />
+        <MediaField
+          label="Poster photograph"
+          accept="image"
+          value={vsl.videoPoster}
+          onChange={(videoPoster) => setVsl({ ...vsl, videoPoster })}
+        />
         <Field label="Video title (accessibility)">
           <input className={INPUT} value={vsl.videoTitle} onChange={(e) => setVsl({ ...vsl, videoTitle: e.target.value })} />
         </Field>
@@ -988,14 +1133,12 @@ export function ApplicationSettings({ initial }: { initial: SiteSettings['applic
         </label>
       </div>
       <div className="mt-6 grid gap-3 sm:grid-cols-2">
-        <Field label="Film beside the apply form and on sign-up">
-          <input
-            className={INPUT}
-            value={applications.filmUrl}
-            placeholder="https://www.youtube.com/watch?v=... or /video/intro.mp4"
-            onChange={(e) => setApplications({ ...applications, filmUrl: e.target.value })}
-          />
-        </Field>
+        <MediaField
+          label="Film beside the apply form and on sign-up"
+          accept="video"
+          value={applications.filmUrl}
+          onChange={(filmUrl) => setApplications({ ...applications, filmUrl })}
+        />
         <Field label="Film button text">
           <input className={INPUT} value={applications.filmLabel} maxLength={80} onChange={(e) => setApplications({ ...applications, filmLabel: e.target.value })} />
         </Field>
