@@ -45,11 +45,13 @@ export const SELECTED_FRAMES = [
 ] as const;
 
 /** Paths that look like Portugal but are the wrong city or staged stock. */
-const BLOCKED_PHOTOS = ['/photos/lisbon.jpg', '/photos/brand/employer-meeting.jpg'];
+export const BLOCKED_PHOTOS = ['/photos/lisbon.jpg', '/photos/brand/employer-meeting.jpg'] as const;
+
+const BLOCKED_PHOTO_SET: ReadonlySet<string> = new Set(BLOCKED_PHOTOS);
 
 function isUsablePhoto(src: string): boolean {
   if (!src) return false;
-  if (BLOCKED_PHOTOS.includes(src)) return false;
+  if (BLOCKED_PHOTO_SET.has(src)) return false;
   if (src.includes('/illustrations/')) return false;
   if (src.startsWith('/walkthrough/')) return false;
   if (src.startsWith('/video/')) return false;

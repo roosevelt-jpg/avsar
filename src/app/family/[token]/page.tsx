@@ -18,7 +18,7 @@ export default async function FamilyPage({ params }: { params: Promise<{ token: 
   const view = await familyView(token);
 
   return (
-    <div className="avsar-root min-h-dvh">
+    <div className="avsar-root market min-h-dvh bg-paper text-ink">
       <header className="border-b border-line px-[clamp(20px,4cqi,56px)] py-[18px]">
         <Wordmark href="/" />
       </header>

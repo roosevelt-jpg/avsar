@@ -1,9 +1,15 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { BLOCKED_PHOTOS } from '@/lib/cms/scenes';
 import { uploadMedia } from './upload';
 
 type Item = { id: string; kind: 'image' | 'video' | 'document'; url: string; fileName: string; alt: string };
+
+function isBlockedPhoto(url: string): boolean {
+  const path = (url.split('?')[0] ?? url).trim();
+  return (BLOCKED_PHOTOS as readonly string[]).includes(path);
+}
 
 const INPUT = 'w-full rounded-[10px] border border-line bg-surface px-3 py-2 text-[14px] outline-none focus:border-ink';
 
@@ -114,7 +120,9 @@ export function MediaDialog({
     const kind = accept === 'any' ? '' : `?kind=${accept}`;
     fetch(`/api/admin/cms/media${kind}`)
       .then((response) => response.json())
-      .then((data: { items?: Item[] }) => setItems(data.items ?? []))
+      .then((data: { items?: Item[] }) =>
+        setItems((data.items ?? []).filter((item) => !isBlockedPhoto(item.url))),
+      )
       .catch(() => setItems([]));
   }, [accept]);
 
@@ -177,7 +185,10 @@ export function MediaDialog({
               <li key={item.id}>
                 <button
                   type="button"
-                  onClick={() => onPick(item.url)}
+                  onClick={() => {
+                    if (isBlockedPhoto(item.url)) return;
+                    onPick(item.url);
+                  }}
                   className="group block w-full cursor-pointer overflow-hidden rounded-[12px] border border-line bg-surface p-0 text-start hover:border-ink"
                 >
                   <span className="relative block aspect-[4/3] bg-canvas">
