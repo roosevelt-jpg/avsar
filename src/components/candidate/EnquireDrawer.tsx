@@ -1,10 +1,15 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 import { ContactForm } from '@/components/contact/ContactForm';
 import { localHref } from '@/lib/cms/settings';
 import type { Locale } from '@/lib/i18n';
+
+function subscribeScroll(onStoreChange: () => void) {
+  window.addEventListener('scroll', onStoreChange, { passive: true });
+  return () => window.removeEventListener('scroll', onStoreChange);
+}
 
 /**
  * Right-edge enquire tab after scroll; opens a side drawer with the shared
@@ -12,14 +17,11 @@ import type { Locale } from '@/lib/i18n';
  */
 export function EnquireDrawer({ locale }: { locale: Locale }) {
   const [open, setOpen] = useState(false);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setVisible(window.scrollY > 280);
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  const visible = useSyncExternalStore(
+    subscribeScroll,
+    () => window.scrollY > 280,
+    () => false,
+  );
 
   useEffect(() => {
     if (!open) return;
@@ -50,47 +52,46 @@ export function EnquireDrawer({ locale }: { locale: Locale }) {
       </button>
 
       {open ? (
-        <button
-          type="button"
-          aria-label="Close enquire panel"
-          className="fixed inset-0 z-50 cursor-pointer border-0 bg-[#142438]/45"
-          onClick={() => setOpen(false)}
-        />
-      ) : null}
-
-      <aside
-        id="enquire-drawer"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Send an enquiry"
-        className={`fixed inset-y-0 end-0 z-50 flex w-full max-w-[420px] flex-col bg-white text-[#142438] shadow-[-12px_0_40px_rgba(20,36,56,0.2)] transition-transform duration-300 ${
-          open ? 'translate-x-0' : 'translate-x-full'
-        }`}
-      >
-        <div className="flex items-center justify-between border-b border-[#142438]/12 px-5 py-4">
-          <div>
-            <p className="m-0 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#b28a49]">Quick enquire</p>
-            <h2 className="m-0 mt-1 text-[20px] font-semibold tracking-[-0.02em]">Talk to our team</h2>
-          </div>
+        <>
           <button
             type="button"
+            aria-label="Close enquire panel"
+            className="fixed inset-0 z-50 cursor-pointer border-0 bg-[#142438]/45"
             onClick={() => setOpen(false)}
-            className="grid size-9 cursor-pointer place-items-center rounded-[8px] border border-[#142438]/15 bg-transparent text-[18px] text-[#142438]"
-            aria-label="Close"
+          />
+          <aside
+            id="enquire-drawer"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Send an enquiry"
+            className="fixed inset-y-0 end-0 z-50 flex w-full max-w-[420px] translate-x-0 flex-col bg-white text-[#142438] shadow-[-12px_0_40px_rgba(20,36,56,0.2)]"
           >
-            ×
-          </button>
-        </div>
-        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
-          {open ? <ContactForm locale={locale} /> : null}
-          <p className="m-0 mt-4 text-[13px] text-[#5c7084]">
-            Prefer the full page?{' '}
-            <Link href={localHref(locale, '/contact')} className="font-semibold text-[#142438] underline-offset-2 hover:underline">
-              Open contact
-            </Link>
-          </p>
-        </div>
-      </aside>
+            <div className="flex items-center justify-between border-b border-[#142438]/12 px-5 py-4">
+              <div>
+                <p className="m-0 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#b28a49]">Quick enquire</p>
+                <h2 className="m-0 mt-1 text-[20px] font-semibold tracking-[-0.02em]">Talk to our team</h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className="grid size-9 cursor-pointer place-items-center rounded-[8px] border border-[#142438]/15 bg-transparent text-[18px] text-[#142438]"
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </div>
+            <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
+              <ContactForm locale={locale} />
+              <p className="m-0 mt-4 text-[13px] text-[#5c7084]">
+                Prefer the full page?{' '}
+                <Link href={localHref(locale, '/contact')} className="font-semibold text-[#142438] underline-offset-2 hover:underline">
+                  Open contact
+                </Link>
+              </p>
+            </div>
+          </aside>
+        </>
+      ) : null}
     </>
   );
 }

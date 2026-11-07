@@ -1,17 +1,19 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
+
+function subscribeScroll(onStoreChange: () => void) {
+  window.addEventListener('scroll', onStoreChange, { passive: true });
+  return () => window.removeEventListener('scroll', onStoreChange);
+}
 
 /** Small scroll-to-top control near the bottom-right WhatsApp desk. */
 export function ScrollTop() {
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setVisible(window.scrollY > 320);
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  const visible = useSyncExternalStore(
+    subscribeScroll,
+    () => window.scrollY > 320,
+    () => false,
+  );
 
   return (
     <button

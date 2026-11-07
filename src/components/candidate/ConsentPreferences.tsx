@@ -28,42 +28,49 @@ function consentSnapshot(): ConsentPrefs {
   return readConsentPrefs();
 }
 
+function subscribeNothing() {
+  return () => undefined;
+}
+
 /**
  * First-visit consent panel + revisit FAB. Essential always on; marketing
- * embeds are optional and stored in localStorage.
+ * embeds are optional and stored in localStorage. Client-only after mount so
+ * localStorage never fights the server HTML.
  */
 export function ConsentPreferences({ locale }: { locale: Locale }) {
+  const mounted = useSyncExternalStore(subscribeNothing, () => true, () => false);
   const prefs = useSyncExternalStore(subscribeConsent, consentSnapshot, () => DEFAULT_CONSENT);
-  const [panel, setPanel] = useState<'hidden' | 'banner' | 'prefs' | null>(null);
+  const [override, setOverride] = useState<'banner' | 'prefs' | 'hidden' | null>(null);
   const [draftMarketing, setDraftMarketing] = useState(false);
-
-  /* First paint after hydration: show banner only when undecided. */
-  const visiblePanel = panel ?? (prefs.decided ? 'hidden' : 'banner');
 
   useEffect(() => {
     const openPrefs = () => {
       setDraftMarketing(readConsentPrefs().marketing);
-      setPanel('prefs');
+      setOverride('prefs');
     };
     window.addEventListener('sa:consent-open', openPrefs);
     return () => window.removeEventListener('sa:consent-open', openPrefs);
   }, []);
 
+  if (!mounted) return null;
+
+  const panel = override ?? (prefs.decided ? 'hidden' : 'banner');
+
   function save(next: ConsentPrefs) {
     writeConsentPrefs(next);
     setDraftMarketing(next.marketing);
-    setPanel('hidden');
+    setOverride('hidden');
   }
 
   return (
     <>
-      {visiblePanel === 'banner' || visiblePanel === 'prefs' ? (
+      {panel === 'banner' || panel === 'prefs' ? (
         <div
           role="dialog"
           aria-label="Cookie preferences"
           className="fixed bottom-4 start-4 z-50 w-[min(100%-2rem,360px)] rounded-[12px] border border-[#142438]/15 bg-white p-4 text-[#142438] shadow-[0_16px_40px_rgba(20,36,56,0.22)]"
         >
-          {visiblePanel === 'banner' ? (
+          {panel === 'banner' ? (
             <>
               <p className="m-0 text-[15px] font-semibold">Cookies on this site</p>
               <p className="m-0 mt-2 text-[13px] leading-[1.45] text-[#3d5168]">
@@ -89,7 +96,7 @@ export function ConsentPreferences({ locale }: { locale: Locale }) {
                   className="cursor-pointer rounded-[8px] border-0 bg-transparent px-2 py-2 text-[13px] font-semibold text-[#142438] underline-offset-2 hover:underline"
                   onClick={() => {
                     setDraftMarketing(prefs.marketing);
-                    setPanel('prefs');
+                    setOverride('prefs');
                   }}
                 >
                   Preferences
@@ -130,7 +137,7 @@ export function ConsentPreferences({ locale }: { locale: Locale }) {
                 <button
                   type="button"
                   className="cursor-pointer rounded-[8px] border border-[#142438]/2 bg-transparent px-3.5 py-2 text-[13px] font-semibold"
-                  onClick={() => setPanel(prefs.decided ? 'hidden' : 'banner')}
+                  onClick={() => setOverride(prefs.decided ? 'hidden' : 'banner')}
                 >
                   Cancel
                 </button>
@@ -147,14 +154,14 @@ export function ConsentPreferences({ locale }: { locale: Locale }) {
         </div>
       ) : null}
 
-      {prefs.decided && visiblePanel === 'hidden' ? (
+      {prefs.decided && panel === 'hidden' ? (
         <button
           type="button"
           aria-label="Cookie preferences"
           title="Cookie preferences"
           onClick={() => {
             setDraftMarketing(prefs.marketing);
-            setPanel('prefs');
+            setOverride('prefs');
           }}
           className="fixed bottom-4 start-4 z-40 grid size-11 cursor-pointer place-items-center rounded-full border border-[#142438]/15 bg-white text-[#142438] shadow-[0_10px_28px_rgba(20,36,56,0.18)] hover:border-[#b28a49]"
         >
