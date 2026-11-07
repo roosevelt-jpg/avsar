@@ -20,7 +20,14 @@ export const CHARGE_CURRENCIES: readonly ChargeCurrency[] = ['INR', 'EUR', 'AED'
 export const INDICATIVE_CURRENCIES = ['INR', 'PHP', 'NPR', 'BDT', 'PKR', 'LKR', 'AED', 'EGP', 'KES', 'NGN', 'USD', 'GBP'] as const;
 export type IndicativeCurrency = (typeof INDICATIVE_CURRENCIES)[number];
 
-export type Office = { city: string; address: string };
+export type Office = {
+  city: string;
+  address: string;
+  /** Country name for the presence map and contact cards. */
+  country?: string;
+  /** Short role line, e.g. "Portugal operations". */
+  role?: string;
+};
 
 export type CompanySettings = {
   /** The registered entity that takes payment. Must match the merchant account exactly. */
@@ -146,8 +153,18 @@ export const DEFAULT_COMPANY: CompanySettings = {
   employerEmail: 'candidates@smithandadams.com',
   reportEmail: 'candidates@smithandadams.com',
   offices: [
-    { city: 'Lisbon', address: 'Avenida da Liberdade 69, 4.º A, 1250-140 Lisboa, Portugal' },
-    { city: 'Dubai', address: 'Office 102-08, Bin Dasmal Building, Al Goze Industrial First, Dubai, United Arab Emirates' },
+    {
+      city: 'Lisbon',
+      address: 'Avenida da Liberdade 69, 4.º A, 1250-140 Lisboa, Portugal',
+      country: 'Portugal',
+      role: 'Portugal operations',
+    },
+    {
+      city: 'Dubai',
+      address: 'Office 102-08, Bin Dasmal Building, Al Goze Industrial First, Dubai, United Arab Emirates',
+      country: 'United Arab Emirates',
+      role: 'Group headquarters',
+    },
   ],
   partner: {
     legalName: 'BENEFIT DISCOVERY, LDA',

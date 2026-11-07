@@ -1,7 +1,20 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { youtubeEmbedUrl, youtubeId, youtubeThumbnail } from '@/lib/cms/video';
+import { CONSENT_STORAGE_KEY, marketingAllowed, readConsentPrefs } from '@/lib/privacy/consent-prefs';
+
+function subscribeConsent(onStoreChange: () => void) {
+  const onStorage = (event: StorageEvent) => {
+    if (event.key === CONSENT_STORAGE_KEY) onStoreChange();
+  };
+  window.addEventListener('storage', onStorage);
+  window.addEventListener('sa:consent', onStoreChange);
+  return () => {
+    window.removeEventListener('storage', onStorage);
+    window.removeEventListener('sa:consent', onStoreChange);
+  };
+}
 
 /**
  * A film that costs nothing until somebody wants it.
@@ -10,11 +23,13 @@ import { youtubeEmbedUrl, youtubeId, youtubeThumbnail } from '@/lib/cms/video';
  * page, which on Indian mobile data delays the button we actually want
  * pressed. So this shows a still and a play button, and swaps in the player
  * only when pressed. Uploaded films use the browser's own player, which
- * loads only metadata until played.
+ * loads only metadata until played. YouTube also waits for marketing consent.
  */
 export function VideoPlayer({ src, poster, title, autoplay = false }: { src: string; poster?: string; title: string; autoplay?: boolean }) {
   const id = youtubeId(src);
-  const [playing, setPlaying] = useState(autoplay);
+  const marketing = useSyncExternalStore(subscribeConsent, marketingAllowed, () => false);
+  const [userPlay, setUserPlay] = useState(false);
+  const playing = Boolean(id ? marketing && (userPlay || autoplay) : autoplay);
 
   if (!id) {
     return (
@@ -46,12 +61,16 @@ export function VideoPlayer({ src, poster, title, autoplay = false }: { src: str
   return (
     <button
       type="button"
-      onClick={() => setPlaying(true)}
-      aria-label={`Play: ${title}`}
+      onClick={() => {
+        if (!marketing) {
+          window.dispatchEvent(new CustomEvent('sa:consent-open', { detail: readConsentPrefs() }));
+          return;
+        }
+        setUserPlay(true);
+      }}
+      aria-label={marketing ? `Play: ${title}` : `Allow marketing embeds to play: ${title}`}
       className="group absolute inset-0 size-full cursor-pointer border-0 bg-night p-0"
     >
-      {/* A plain img: the still comes from YouTube or the media library at
-          the right size already, and the optimiser would add a round trip. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={poster || youtubeThumbnail(id)} alt="" loading="lazy" decoding="async" className="absolute inset-0 size-full object-cover opacity-90 transition-opacity group-hover:opacity-100" />
       <span aria-hidden className="absolute inset-0 grid place-items-center">
@@ -59,6 +78,11 @@ export function VideoPlayer({ src, poster, title, autoplay = false }: { src: str
           <PlayIcon className="ms-1 size-8" />
         </span>
       </span>
+      {!marketing ? (
+        <span className="absolute inset-x-4 bottom-4 rounded-[8px] bg-black/70 px-3 py-2 text-center text-[13px] text-white">
+          Marketing embeds are off. Open cookie preferences to allow YouTube.
+        </span>
+      ) : null}
     </button>
   );
 }

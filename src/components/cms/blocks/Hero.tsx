@@ -8,6 +8,7 @@ import { getFunnelStats } from '@/lib/stats/funnel';
 import { CmsTextLink, Icon } from '../primitives';
 import { FilmButton } from '../VideoPlayer';
 import { HeroStage, type HeroSlide } from '../HeroStage';
+import { CountUpValue } from '../CountUpValue';
 import type { ReactNode } from 'react';
 
 /* Below this many finished tests the counts are too small to be worth
@@ -114,11 +115,28 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
 
   const stageVariant = overlay ? 'overlay' : brand ? 'brand' : 'default';
   const onDark = brand || overlay;
+  const overlayStats =
+    stats.length > 0 ? (
+      <dl className="mx-auto m-0 grid w-full max-w-[1200px] grid-cols-2 gap-0 overflow-hidden rounded-[14px] border border-[#142438]/10 bg-white text-[#142438] shadow-[0_18px_40px_rgba(20,36,56,0.18)] sm:grid-cols-4">
+        {stats.map((stat, index) => (
+          <div
+            key={index}
+            className={`min-w-0 px-4 py-5 text-center sm:px-5 sm:py-6 ${index > 0 ? 'border-s border-[#142438]/10' : ''} ${index > 1 ? 'border-t sm:border-t-0' : ''} ${index === 1 ? 'border-t-0' : ''} ${index === 2 ? 'sm:border-s' : ''}`}
+          >
+            <dd className="m-0 text-[clamp(26px,3.2cqi,36px)] font-semibold tracking-[-0.03em] tabular-nums">
+              <CountUpValue value={str(stat, 'value')} />
+            </dd>
+            <dt className="m-0 mt-1.5 text-[12px] leading-[1.35] text-[#3d5168] sm:text-[13px]">{str(stat, 'label')}</dt>
+          </div>
+        ))}
+      </dl>
+    ) : null;
 
   return (
     <HeroStage
       slides={slides}
       variant={stageVariant}
+      footer={overlay ? overlayStats : null}
       badge={
         badgeLabel
           ? { label: badgeLabel, href: badgeHref ? localHref(locale, badgeHref) : undefined }
@@ -255,7 +273,9 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
         <dl className="m-0 mt-10 grid max-w-[560px] grid-cols-1 gap-5 border-t border-line pt-6 sm:grid-cols-3 sm:gap-6">
           {stats.map((stat, index) => (
             <div key={index} className="min-w-0">
-              <dd className="m-0 text-[22px] font-semibold tracking-[-0.03em] text-ink sm:text-[26px]">{str(stat, 'value')}</dd>
+              <dd className="m-0 text-[22px] font-semibold tracking-[-0.03em] text-ink sm:text-[26px]">
+                <CountUpValue value={str(stat, 'value')} />
+              </dd>
               <dt className="m-0 mt-1 text-[13px] leading-[1.4] text-ink-2 [overflow-wrap:anywhere]">{str(stat, 'label')}</dt>
             </div>
           ))}

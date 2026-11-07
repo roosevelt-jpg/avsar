@@ -5,8 +5,9 @@ import { makeBlocks, type DefaultPage } from './make';
  * Home — Careers in Portugal mockup shell.
  *
  * Photography is documentary (Lisbon streets, working kitchens, jobsites), not
- * posed AI stock collages. Hero is one full-bleed place photo; Why Portugal
- * uses real scene tiles; the journey and employer bands keep place/work stills.
+ * posed AI stock collages. Hero is a full-bleed place slideshow with an
+ * overlapping stats strip; Why Portugal uses real scene tiles; presence map,
+ * journey and employer bands keep place/work stills.
  */
 export const HOME: DefaultPage = {
   slug: 'home',
@@ -44,19 +45,47 @@ export const HOME: DefaultPage = {
         bubbles: [],
         liveProof: false,
         routeMap: false,
-        /* Place-first full-bleed — one Lisbon street still, not a portrait carousel. */
+        /* Full-bleed documentary slideshow; stats sit as a white strip on the lower edge. */
         layout: 'overlay',
         mediaType: 'image',
-        mediaSrc: '/photos/brand/hero-lisbon-street.jpg',
+        mediaSrc: '/lisbon-rooftops-1200.jpg',
         mediaPoster: '',
-        mediaAlt: 'A yellow tram on a steep Lisbon street',
+        mediaAlt: 'Lisbon rooftops looking toward the Tagus and the 25 de Abril Bridge',
         slides: slidesWithCaptions([
           {
-            src: '/photos/brand/hero-lisbon-street.jpg',
-            alt: 'A yellow tram on a steep Lisbon street',
+            src: '/lisbon-rooftops-1200.jpg',
+            alt: 'Lisbon rooftops looking toward the Tagus and the 25 de Abril Bridge',
+          },
+          {
+            src: '/kitchen-work-1400.jpg',
+            alt: 'Kitchen team preparing food in a working restaurant kitchen',
+          },
+          {
+            src: '/photos/brand/hero-construction.jpg',
+            alt: 'Construction crew on a reinforced concrete site in Portugal',
+          },
+          {
+            src: '/photos/brand/journey-tram-real.jpg',
+            alt: 'Yellow Lisbon tram on a cobbled street',
           },
         ]),
-        stats: [],
+        stats: [
+          { value: '3', label: 'Countries in our corridor' },
+          { value: '2', label: 'Offices — Lisbon & Dubai' },
+          { value: '0', label: 'Placement fees for candidates' },
+          { value: '1', label: 'Free profile to get started' },
+        ],
+      },
+    ],
+    [
+      'presence_map',
+      {
+        eyebrow: 'Our footprint',
+        title: 'India to Portugal, with UAE roots',
+        intro:
+          'We recruit in India, place people with employers in Portugal, and operate from offices in Lisbon and Dubai. Outcomes and visa decisions depend on the authorities.',
+        hubLabel: 'India — talent source',
+        hubNote: 'Candidates apply from India. We do not invent branch offices that are not listed in Settings.',
       },
     ],
     [
@@ -134,28 +163,28 @@ export const HOME: DefaultPage = {
             icon: 'briefcase',
             title: 'Stable Jobs',
             body: 'Growing demand across hospitality, trades, care and logistics.',
-            image: '/photos/brand/hero-jobsite.jpg',
+            image: '/photos/brand/hero-construction.jpg',
             link: { label: '', href: '' },
           },
           {
             icon: 'euro',
             title: 'Better Earnings',
             body: 'Competitive monthly pay with a written contract.',
-            image: '/photos/brand/hero-kitchen-work.jpg',
+            image: '/kitchen-work-1400.jpg',
             link: { label: '', href: '' },
           },
           {
             icon: 'home',
             title: 'High Quality of Life',
             body: 'Safe cities, family-friendly neighbourhoods, EU healthcare.',
-            image: '/photos/brand/hero-lisbon-street.jpg',
+            image: '/lisbon-rooftops-1200.jpg',
             link: { label: '', href: '' },
           },
           {
             icon: 'globe',
             title: 'EU Opportunities',
             body: 'Work and travel across the Schengen area after you settle.',
-            image: '/photos/brand/journey-tram.jpg',
+            image: '/photos/brand/journey-tram-real.jpg',
             link: { label: '', href: '' },
           },
         ],
@@ -169,8 +198,8 @@ export const HOME: DefaultPage = {
         intro:
           'We support you at every step — from finding the right opportunity to settling and starting your new life in Portugal.',
         layout: 'journey',
-        sideImage: '/photos/brand/journey-tram.jpg',
-        sideImageAlt: 'A yellow Lisbon tram on a historic street',
+        sideImage: '/photos/brand/journey-tram-real.jpg',
+        sideImageAlt: 'Yellow Lisbon tram on a cobbled street',
         items: [
           {
             icon: 'users',
@@ -215,8 +244,8 @@ export const HOME: DefaultPage = {
           { icon: 'clock', text: 'Faster hiring process' },
           { icon: 'plane', text: 'Full relocation support' },
         ],
-        image: '/photos/brand/employer-meeting.jpg',
-        imageAlt: 'Hiring managers reviewing a placement together',
+        image: '/photos/brand/employer-handshake.jpg',
+        imageAlt: 'Handshake after agreeing a hiring brief',
         cta: { label: 'Hire Talent', href: '/employers' },
       },
     ],

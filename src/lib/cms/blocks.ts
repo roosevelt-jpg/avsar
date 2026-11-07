@@ -845,6 +845,38 @@ export const BLOCKS = {
       pathways: [],
     },
   },
+  presence_map: {
+    label: 'Presence map',
+    description:
+      'Stylised India–Portugal–UAE corridor with offices from Company settings. Not a world map clone — only real places we list.',
+    fields: [
+      eyebrow,
+      title,
+      intro,
+      {
+        kind: 'text',
+        name: 'hubLabel',
+        label: 'Talent-source label',
+        help: 'Pin for India on the corridor map, e.g. “India — talent source”.',
+        max: 80,
+      },
+      {
+        kind: 'textarea',
+        name: 'hubNote',
+        label: 'Talent-source note',
+        help: 'Shown when the India pin is selected. Keep it honest — no invented branch.',
+        rows: 3,
+        max: 400,
+      },
+    ],
+    empty: {
+      eyebrow: 'Our footprint',
+      title: 'Where we work',
+      intro: '',
+      hubLabel: 'India — talent source',
+      hubNote: '',
+    },
+  },
 } satisfies Record<string, Definition>;
 
 export type BlockType = keyof typeof BLOCKS;

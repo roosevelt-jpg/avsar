@@ -107,7 +107,16 @@ const schemas = {
     supportEmail: email,
     employerEmail: email,
     reportEmail: email,
-    offices: z.array(z.object({ city: text(60).min(1), address: text(300) })).max(10),
+    offices: z
+      .array(
+        z.object({
+          city: text(60).min(1),
+          address: text(300),
+          country: text(80),
+          role: text(120),
+        }),
+      )
+      .max(10),
     partner: z.object({
       legalName: text(160),
       registrationLabel: text(60),

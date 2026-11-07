@@ -2,16 +2,28 @@
 
 import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
+import type { Locale } from '@/lib/i18n';
+import { EnquireDrawer } from '@/components/candidate/EnquireDrawer';
+import { ConsentPreferences } from '@/components/candidate/ConsentPreferences';
+import { ScrollTop } from '@/components/candidate/ScrollTop';
 
 /**
  * Marketing palette on public shopfront pages. Dashboard, assessment and
- * account screens stay on the quiet console tokens.
+ * account screens stay on the quiet console tokens. Site chrome (enquire
+ * drawer, consent FAB, scroll-top) mounts only on marketing routes.
  */
 /* Signup keeps the marketing palette so the registration hero matches the shop. */
 const QUIET = /\/(dashboard|assessment|profile|signin|go|reset-password|applicant)(\/|$)/;
 
-export function MarketShell({ children }: { children: ReactNode }) {
+export function MarketShell({ children, locale }: { children: ReactNode; locale: Locale }) {
   const path = usePathname() ?? '';
   if (QUIET.test(path)) return children;
-  return <div className="market relative bg-white text-[#142438]">{children}</div>;
+  return (
+    <div className="market relative bg-white text-[#142438]">
+      {children}
+      <EnquireDrawer locale={locale} />
+      <ConsentPreferences locale={locale} />
+      <ScrollTop />
+    </div>
+  );
 }

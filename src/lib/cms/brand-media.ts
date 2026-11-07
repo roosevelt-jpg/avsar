@@ -24,10 +24,10 @@ export const HERO_LOOP = {
 export const BRAND_SLIDES = {
   /* Documentary place/work stills — avoid posed AI portrait collages on heroes. */
   careers: [
-    { src: '/photos/brand/hero-lisbon-street.jpg', alt: 'A yellow tram on a steep Lisbon street' },
-    { src: '/photos/brand/hero-kitchen-work.jpg', alt: 'A chef plating a dish in a restaurant kitchen' },
-    { src: '/photos/brand/hero-jobsite.jpg', alt: 'Construction crew on a Portuguese building site' },
-    { src: '/photos/brand/journey-tram.jpg', alt: 'A yellow Lisbon tram on a historic street' },
+    { src: '/lisbon-rooftops-1200.jpg', alt: 'Lisbon rooftops looking toward the Tagus and the 25 de Abril Bridge' },
+    { src: '/kitchen-work-1400.jpg', alt: 'Kitchen team preparing food in a working restaurant kitchen' },
+    { src: '/photos/brand/hero-construction.jpg', alt: 'Construction crew on a reinforced concrete site in Portugal' },
+    { src: '/photos/brand/journey-tram-real.jpg', alt: 'Yellow Lisbon tram on a cobbled street' },
   ],
   jobs: [
     { src: '/photos/brand/hero-kitchen-work.jpg', alt: 'Kitchen team at work in Portugal' },

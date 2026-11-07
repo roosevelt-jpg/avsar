@@ -26,12 +26,15 @@ export function HeroStage({
   children,
   variant = 'default',
   badge,
+  footer,
 }: {
   slides: HeroSlide[];
   lead?: ReactNode;
   children: ReactNode;
   variant?: 'default' | 'brand' | 'overlay';
   badge?: { label: string; href?: string } | null;
+  /** Overlapping strip under an overlay hero (stats). */
+  footer?: ReactNode;
 }) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -65,71 +68,95 @@ export function HeroStage({
       <section
         aria-roledescription={count > 1 ? 'carousel' : undefined}
         aria-label="Introduction"
-        className="relative isolate min-h-[min(72dvh,760px)] overflow-hidden bg-[#142438] text-white sm:min-h-[min(88vh,760px)]"
+        className={`relative isolate overflow-hidden bg-[#142438] text-white ${footer ? 'pb-0' : ''}`}
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
       >
-        {slides.map((slide, slideIndex) => {
-          const active = slideIndex === index;
-          const imageSrc = slide.kind === 'image' ? slide.src : slide.poster || slide.src;
-          return (
-            <div
-              key={`${slide.src}-${slideIndex}`}
-              className={`absolute inset-0 transition-opacity duration-1000 ${active ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
-              aria-hidden={!active}
-            >
-              <Image
-                src={imageSrc}
-                alt={active ? slide.alt : ''}
-                fill
-                priority={slideIndex === 0}
-                sizes="100vw"
-                className="object-cover object-[center_30%]"
-              />
-            </div>
-          );
-        })}
-        {slides.length > 0 ? (
-          <>
-            {/* Lighter wash so documentary place photos stay readable, not navy sludge. */}
-            <div className="absolute inset-0 bg-[#142438]/28" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#142438]/88 via-[#142438]/55 to-[#142438]/12" />
-          </>
-        ) : null}
-        <div className="relative mx-auto flex min-h-[min(72dvh,760px)] w-full max-w-[1200px] flex-col justify-center px-[clamp(16px,4cqi,56px)] py-[clamp(40px,9cqi,112px)] sm:min-h-[min(88vh,760px)]">
-          <div className="max-w-[640px]">
-            {lead ? <div className="mb-4">{lead}</div> : null}
-            {children}
-          </div>
-
-          {badge?.label ? (
-            <div className="mt-10 self-start lg:absolute lg:bottom-10 lg:end-[clamp(20px,4cqi,56px)] lg:mt-0 lg:self-auto">
-              {badge.href ? (
-                <Link
-                  href={badge.href}
-                  className="inline-flex max-w-[min(100%,22rem)] items-center gap-3 rounded-full bg-white py-2.5 pe-2.5 ps-3.5 text-[#142438] no-underline shadow-[0_12px_32px_rgba(0,0,0,0.22)]"
-                >
-                  <svg viewBox="0 0 24 16" className="h-4 w-6 shrink-0 rounded-[2px]" aria-hidden>
-                    <rect width="24" height="16" fill="#006600" />
-                    <rect x="9" width="15" height="16" fill="#FF0000" />
-                    <circle cx="9" cy="8" r="2.6" fill="#FFCC00" />
-                  </svg>
-                  <span className="text-[13px] font-semibold leading-tight">{badge.label}</span>
-                  <span
-                    aria-hidden
-                    className="grid size-8 shrink-0 place-items-center rounded-full bg-[#b28a49] text-[13px] font-semibold text-[#142438]"
-                  >
-                    →
-                  </span>
-                </Link>
-              ) : (
-                <span className="inline-flex max-w-[min(100%,22rem)] items-center gap-3 rounded-full bg-white py-2.5 pe-2.5 ps-3.5 text-[13px] font-semibold text-[#142438] shadow-[0_12px_32px_rgba(0,0,0,0.22)]">
-                  {badge.label}
-                </span>
-              )}
-            </div>
+        <div className="relative min-h-[min(72dvh,760px)] sm:min-h-[min(88vh,760px)]">
+          {slides.map((slide, slideIndex) => {
+            const active = slideIndex === index;
+            const imageSrc = slide.kind === 'image' ? slide.src : slide.poster || slide.src;
+            return (
+              <div
+                key={`${slide.src}-${slideIndex}`}
+                className={`absolute inset-0 transition-opacity duration-1000 ${active ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
+                aria-hidden={!active}
+              >
+                <Image
+                  src={imageSrc}
+                  alt={active ? slide.alt : ''}
+                  fill
+                  priority={slideIndex === 0}
+                  sizes="100vw"
+                  className="object-cover object-[center_30%]"
+                />
+              </div>
+            );
+          })}
+          {slides.length > 0 ? (
+            <>
+              {/* Lighter wash so documentary place photos stay readable, not navy sludge. */}
+              <div className="absolute inset-0 bg-[#142438]/28" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#142438]/88 via-[#142438]/55 to-[#142438]/12" />
+            </>
           ) : null}
+          <div className="relative mx-auto flex min-h-[min(72dvh,760px)] w-full max-w-[1200px] flex-col justify-center px-[clamp(16px,4cqi,56px)] py-[clamp(40px,9cqi,112px)] sm:min-h-[min(88vh,760px)]">
+            <div className="max-w-[640px]">
+              {lead ? <div className="mb-4">{lead}</div> : null}
+              {children}
+            </div>
+
+            {badge?.label ? (
+              <div className={`mt-10 self-start lg:absolute lg:end-[clamp(20px,4cqi,56px)] lg:mt-0 lg:self-auto ${footer ? 'lg:bottom-28' : 'lg:bottom-10'}`}>
+                {badge.href ? (
+                  <Link
+                    href={badge.href}
+                    className="inline-flex max-w-[min(100%,22rem)] items-center gap-3 rounded-full bg-white py-2.5 pe-2.5 ps-3.5 text-[#142438] no-underline shadow-[0_12px_32px_rgba(0,0,0,0.22)]"
+                  >
+                    <svg viewBox="0 0 24 16" className="h-4 w-6 shrink-0 rounded-[2px]" aria-hidden>
+                      <rect width="24" height="16" fill="#006600" />
+                      <rect x="9" width="15" height="16" fill="#FF0000" />
+                      <circle cx="9" cy="8" r="2.6" fill="#FFCC00" />
+                    </svg>
+                    <span className="text-[13px] font-semibold leading-tight">{badge.label}</span>
+                    <span
+                      aria-hidden
+                      className="grid size-8 shrink-0 place-items-center rounded-full bg-[#b28a49] text-[13px] font-semibold text-[#142438]"
+                    >
+                      →
+                    </span>
+                  </Link>
+                ) : (
+                  <span className="inline-flex max-w-[min(100%,22rem)] items-center gap-3 rounded-full bg-white py-2.5 pe-2.5 ps-3.5 text-[13px] font-semibold text-[#142438] shadow-[0_12px_32px_rgba(0,0,0,0.22)]">
+                    {badge.label}
+                  </span>
+                )}
+              </div>
+            ) : null}
+
+            {count > 1 ? (
+              <div className="absolute bottom-6 end-[clamp(16px,4cqi,56px)] z-10 flex items-center gap-2">
+                <button
+                  type="button"
+                  className="grid size-10 place-items-center rounded-[8px] border border-white/35 bg-[#142438]/35 text-[20px] text-white backdrop-blur-sm hover:border-white hover:bg-[#142438]/55"
+                  aria-label="Previous slide"
+                  onClick={() => go(index - 1)}
+                >
+                  ‹
+                </button>
+                <button
+                  type="button"
+                  className="grid size-10 place-items-center rounded-[8px] border border-white/35 bg-[#142438]/35 text-[20px] text-white backdrop-blur-sm hover:border-white hover:bg-[#142438]/55"
+                  aria-label="Next slide"
+                  onClick={() => go(index + 1)}
+                >
+                  ›
+                </button>
+              </div>
+            ) : null}
+          </div>
         </div>
+        {footer ? <div className="relative z-10 -mt-10 px-[clamp(16px,4cqi,56px)] pb-6 sm:-mt-12">{footer}</div> : null}
       </section>
     );
   }

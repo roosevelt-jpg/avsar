@@ -34,7 +34,7 @@ export default async function LocaleLayout({
 
   return (
     <div lang={locale} dir={localeDirection[locale]} className="avsar-root">
-      <MarketShell>
+      <MarketShell locale={locale}>
         {children}
         <MarketingFooter locale={locale} pathname={pathname} />
       </MarketShell>

@@ -105,19 +105,21 @@ export function CompanyForm(props: Props) {
         <SaveBar onSave={() => c.save(company)} state={c.state} busy={c.busy} />
       </Section>
 
-      <Section title="Offices" lead="Shown in the footer and on the contact page. List only offices that exist.">
+      <Section title="Offices" lead="Shown on the presence map and contact page. List only offices that exist.">
         <ul className="m-0 flex list-none flex-col gap-2 p-0">
           {company.offices.map((office, index) => (
-            <li key={index} className="grid gap-2 rounded-[12px] bg-paper p-3 sm:grid-cols-[140px_1fr_auto]">
+            <li key={index} className="grid gap-2 rounded-[12px] bg-paper p-3 sm:grid-cols-2">
               <input className={INPUT} placeholder="City" value={office.city} onChange={(e) => setCompany({ ...company, offices: company.offices.map((o, i) => (i === index ? { ...o, city: e.target.value } : o)) })} />
-              <input className={INPUT} placeholder="Address" value={office.address} onChange={(e) => setCompany({ ...company, offices: company.offices.map((o, i) => (i === index ? { ...o, address: e.target.value } : o)) })} />
+              <input className={INPUT} placeholder="Country" value={office.country ?? ''} onChange={(e) => setCompany({ ...company, offices: company.offices.map((o, i) => (i === index ? { ...o, country: e.target.value } : o)) })} />
+              <input className={`${INPUT} sm:col-span-2`} placeholder="Address" value={office.address} onChange={(e) => setCompany({ ...company, offices: company.offices.map((o, i) => (i === index ? { ...o, address: e.target.value } : o)) })} />
+              <input className={INPUT} placeholder="Role (e.g. Portugal operations)" value={office.role ?? ''} onChange={(e) => setCompany({ ...company, offices: company.offices.map((o, i) => (i === index ? { ...o, role: e.target.value } : o)) })} />
               <button type="button" onClick={() => setCompany({ ...company, offices: company.offices.filter((_, i) => i !== index) })} className="cursor-pointer rounded-[8px] border border-line bg-surface px-2 text-[12px] text-accent-deep">
                 Remove
               </button>
             </li>
           ))}
         </ul>
-        <button type="button" onClick={() => setCompany({ ...company, offices: [...company.offices, { city: '', address: '' }] })} className="mt-2 cursor-pointer rounded-full border border-dashed border-line-strong bg-transparent px-3 py-1.5 text-[13px]">
+        <button type="button" onClick={() => setCompany({ ...company, offices: [...company.offices, { city: '', address: '', country: '', role: '' }] })} className="mt-2 cursor-pointer rounded-full border border-dashed border-line-strong bg-transparent px-3 py-1.5 text-[13px]">
           + Add office
         </button>
 
