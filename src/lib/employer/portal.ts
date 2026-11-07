@@ -244,3 +244,57 @@ export function applicantMetrics(applicants: EmployerApplicant[]): { shortlisted
     travelReady: applicants.filter((a) => scoreKinds(a.verifiedDocuments).ready).length,
   };
 }
+
+/** Applicants with a next interview time, for the HTML-44 Interviews workspace. */
+export function listScheduledApplicantInterviews(applicants: EmployerApplicant[]): EmployerApplicant[] {
+  return applicants
+    .filter((a) => Boolean(a.nextInterviewAt))
+    .sort((a, b) => String(a.nextInterviewAt).localeCompare(String(b.nextInterviewAt)));
+}
+
+export type EmployerFeeLine = {
+  id: string;
+  amountMinor: number;
+  currency: string;
+  status: string;
+  invoiceRef: string;
+  note: string;
+  createdAt: string;
+  reference: string;
+  jobTitle: string;
+  candidateName: string;
+};
+
+/** Read-only fee lines for the signed-in employer (Billing & Plans page). */
+export async function listOwnEmployerFees(portal: EmployerPortal): Promise<EmployerFeeLine[]> {
+  const supabase = await getServerSupabase();
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from('employer_fees')
+    .select(
+      'id, amount_minor, currency, status, invoice_ref, note, created_at, applications (reference, candidates (full_name), job_postings (title))',
+    )
+    .eq('employer_id', portal.employerId)
+    .order('created_at', { ascending: false })
+    .limit(200);
+  if (error) {
+    console.error('[employer] fees failed', error);
+    return [];
+  }
+  const one = (value: unknown) => (Array.isArray(value) ? value[0] : value) as Record<string, unknown> | undefined;
+  return ((data ?? []) as Record<string, unknown>[]).map((row) => {
+    const app = one(row.applications);
+    return {
+      id: String(row.id),
+      amountMinor: Number(row.amount_minor ?? 0),
+      currency: String(row.currency ?? 'EUR'),
+      status: String(row.status ?? ''),
+      invoiceRef: String(row.invoice_ref ?? ''),
+      note: String(row.note ?? ''),
+      createdAt: String(row.created_at ?? ''),
+      reference: String(app?.reference ?? ''),
+      jobTitle: String(one(app?.job_postings)?.title ?? ''),
+      candidateName: String(one(app?.candidates)?.full_name ?? ''),
+    };
+  });
+}

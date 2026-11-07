@@ -5,6 +5,7 @@ import {
   JetBrains_Mono,
   DM_Sans,
   DM_Serif_Display,
+  Manrope,
   Noto_Serif_Devanagari,
   Noto_Sans_Arabic,
   Noto_Sans_Bengali,
@@ -86,7 +87,16 @@ const bSerif = DM_Serif_Display({
 
 const bSans = DM_Sans({
   subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
   variable: '--font-dm-sans',
+  display: 'swap',
+});
+
+/* HTML-44 pack display face for market + dash shells (navy/gold remap). */
+const manrope = Manrope({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-manrope',
   display: 'swap',
 });
 
@@ -156,7 +166,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
       <body
-        className={`${sans.variable} ${devanagari.variable} ${arabic.variable} ${indic} ${mono.variable} ${bSerif.variable} ${bSans.variable} ${bDevanagari.variable}`}
+        className={`${sans.variable} ${devanagari.variable} ${arabic.variable} ${indic} ${mono.variable} ${bSerif.variable} ${bSans.variable} ${manrope.variable} ${bDevanagari.variable}`}
       >
         {/* The scroll reveals start hidden and are uncovered by an observer,
             so without scripting they would never arrive. Crawlers run the

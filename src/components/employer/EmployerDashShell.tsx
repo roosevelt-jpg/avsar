@@ -6,20 +6,19 @@ import { whatsappHref } from '@/lib/cms/settings';
 
 export type EmployerNavKey =
   | 'dashboard'
-  | 'post'
   | 'jobs'
-  | 'candidates'
   | 'applications'
   | 'interviews'
+  | 'company'
+  | 'billing'
+  | 'post'
+  | 'candidates'
   | 'hires'
   | 'relocation'
-  | 'shortlists'
-  | 'company';
+  | 'shortlists';
 
 /**
- * Employer portal chrome from the Lusitana Hotels mockup: navy sidebar, gold
- * active state, top search. Links only to routes employers already have;
- * Billing is omitted because there is no employer self-serve billing page.
+ * Employer portal chrome aligned to the HTML-44 pack hiring workspace.
  */
 export async function EmployerDashShell({
   current,
@@ -47,21 +46,17 @@ export async function EmployerDashShell({
 
   const items: { key: EmployerNavKey; href: string; label: string; match: string[]; badge?: number }[] = [
     { key: 'dashboard', href: '/admin/employer', label: 'Dashboard', match: ['/admin/employer'] },
-    { key: 'post', href: '/admin/vacancies#request', label: 'Post a Job', match: [] },
-    { key: 'jobs', href: '/admin/vacancies', label: 'Manage Jobs', match: ['/admin/vacancies'] },
-    { key: 'candidates', href: '/admin/employer#talent-search', label: 'Candidates', match: [] },
+    { key: 'jobs', href: '/admin/vacancies', label: 'Post & Manage Jobs', match: ['/admin/vacancies'] },
     {
       key: 'applications',
       href: '/admin/applicants',
-      label: 'Applications',
+      label: 'Applicants',
       match: ['/admin/applicants'],
       badge: applicantBadge > 0 ? applicantBadge : undefined,
     },
-    { key: 'interviews', href: '/admin/applicants#interviews', label: 'Interviews', match: [] },
-    { key: 'hires', href: '/admin/placements', label: 'Hires & Onboarding', match: ['/admin/placements'] },
-    { key: 'relocation', href: '/admin/bench', label: 'Relocation Support', match: ['/admin/bench'] },
-    { key: 'shortlists', href: '/admin/shortlists', label: 'Shortlists', match: ['/admin/shortlists'] },
+    { key: 'interviews', href: '/admin/interviews', label: 'Interviews', match: ['/admin/interviews'] },
     { key: 'company', href: '/admin/vacancies#company', label: 'Company Profile', match: [] },
+    { key: 'billing', href: '/admin/billing', label: 'Billing & Plans', match: ['/admin/billing'] },
   ];
 
   const searchPages: SearchPage[] = items
@@ -81,10 +76,10 @@ export async function EmployerDashShell({
             key={item.key}
             href={item.href}
             aria-current={active ? 'page' : undefined}
-            className={`t-colors flex items-center justify-between gap-2 rounded-[10px] px-3 py-2.5 text-[14px] no-underline ${
+            className={`t-colors flex items-center justify-between gap-2 rounded-[7px] px-3 py-2.5 text-[13px] font-semibold no-underline ${
               active
-                ? 'bg-[#b28a49] font-semibold text-[#142438]'
-                : 'text-white/80 hover:bg-white/8 hover:text-white'
+                ? 'bg-white text-[#142438]'
+                : 'text-[#d7e2ed] hover:bg-white/10 hover:text-white'
             }`}
           >
             <span className="flex items-center gap-2.5">
@@ -117,10 +112,11 @@ export async function EmployerDashShell({
         </div>
       </details>
 
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-[272px] flex-col bg-[#142438] text-white lg:flex">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-[250px] flex-col bg-[#142438] text-white lg:flex">
         <div className="border-b border-white/10 px-5 py-5">
           <Wordmark href="/admin/employer" size={26} tone="dark" accent="employer" />
         </div>
+        <p className="m-0 px-5 pb-1 text-[10px] font-semibold tracking-[0.14em] text-[#a8bcd0] uppercase">Hiring workspace</p>
         {navList}
         {support ? (
           <div className="mt-auto border-t border-white/10 p-4">
@@ -131,31 +127,27 @@ export async function EmployerDashShell({
         )}
       </aside>
 
-      <div className="lg:pl-[272px]">
-        <header className="sticky top-0 z-20 border-b border-[#142438]/10 bg-[#142438] text-white">
-          <div className="flex flex-wrap items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
-            <div className="min-w-0 flex-1 [&_input]:rounded-full [&_input]:border-0 [&_input]:bg-white [&_input]:text-[#142438] [&_input]:placeholder:text-[#142438]/45">
+      <div className="lg:pl-[250px]">
+        <header className="sticky top-0 z-20 border-b border-[#dfe6ee] bg-white text-[#142438]">
+          <div className="flex flex-wrap items-center gap-3 px-4 py-3 sm:px-6 lg:px-[27px]">
+            <div className="min-w-0 flex-1">
               <ConsoleSearch pages={searchPages} targets={searchTargets} live={false} />
             </div>
             <div className="flex items-center gap-2 sm:gap-3">
-              <span className="hidden items-center gap-1.5 rounded-[8px] border border-white/55 px-2.5 py-2 text-[13px] font-medium text-white sm:inline-flex">
-                <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth={1.7} aria-hidden>
-                  <circle cx="12" cy="12" r="9" />
-                  <path d="M3 12h18 M12 3c2.5 2.5 3.5 5.5 3.5 9s-1 6.5-3.5 9c-2.5-2.5-3.5-5.5-3.5-9s1-6.5 3.5-9z" />
-                </svg>
-                EN
-              </span>
               <ProfileMenu
                 name={companyName}
                 email={email}
                 roleLabel={verified ? 'Verified Employer' : 'Employer'}
                 avatarUrl={avatarUrl}
-                links={[{ href: '/admin/vacancies#company', label: 'Company profile' }]}
+                links={[
+                  { href: '/admin/vacancies#company', label: 'Company profile' },
+                  { href: '/admin/billing', label: 'Billing & Plans' },
+                ]}
               />
             </div>
           </div>
         </header>
-        <div className="px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-8">{children}</div>
+        <div className="px-4 py-5 sm:px-6 sm:py-7 lg:px-[30px] lg:py-8">{children}</div>
       </div>
     </div>
   );
@@ -252,6 +244,13 @@ function EmpIcon({ name }: { name: EmployerNavKey }) {
         <svg {...props}>
           <circle cx="12" cy="8" r="3.5" />
           <path d="M5 20c1.2-3.5 4-5.5 7-5.5s5.8 2 7 5.5" strokeLinecap="round" />
+        </svg>
+      );
+    case 'billing':
+      return (
+        <svg {...props}>
+          <rect x="3" y="6" width="18" height="12" rx="2" />
+          <path d="M3 10h18M7 14h4" strokeLinecap="round" />
         </svg>
       );
     default:

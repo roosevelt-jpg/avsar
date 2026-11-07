@@ -297,8 +297,8 @@ textarea {
   --color-tint-sage: rgba(20, 36, 56, 0.08);
 }
 
-/* Display serif is reserved for marketing accents (hero “Portugal”,
-   section titles that opt in). Body and most headings stay Schibsted. */
+/* HTML-44 pack typography on the shopfront: Manrope display + DM Sans body.
+   Palette stays navy/gold (#142438 / #b28a49). */
 .market {
   --color-gold: #b28a49;
   --color-gold-deep: #9a743c;
@@ -306,7 +306,19 @@ textarea {
   /* Cool grey section bands under navy heroes (not warm cream). */
   --color-ivory: #f4f5f7;
   --color-ivory-deep: #eceef2;
-  --font-display: var(--font-dm-serif), "Times New Roman", serif;
+  --font-display: var(--font-manrope), var(--font-dm-sans), system-ui, sans-serif;
+  --font-sans: var(--font-dm-sans), var(--font-schibsted), system-ui, sans-serif;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.55;
+}
+.market :is(h1, h2, h3, h4) {
+  font-family: var(--font-manrope), var(--font-dm-sans), system-ui, sans-serif;
+  letter-spacing: -0.04em;
+  line-height: 1.18;
+}
+.market h1 {
+  font-weight: 800;
 }
 
 .market .bg-ivory {
@@ -334,19 +346,14 @@ textarea {
   height: 1px;
   background: var(--color-gold);
 }
-.market :is(h1, h2) {
-  font-family: var(--font-sans);
+.market footer h2 {
   font-weight: 600;
   letter-spacing: -0.02em;
 }
-.market footer h2 {
-  font-weight: 500;
-  letter-spacing: 0;
-}
 .market .display-serif {
-  font-family: var(--font-display);
-  font-weight: 400;
-  letter-spacing: -0.01em;
+  font-family: var(--font-manrope), var(--font-dm-sans), system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.04em;
 }
 .market .text-gold {
   color: var(--color-gold);
@@ -461,31 +468,41 @@ textarea {
   }
 }
 
+/* HTML-44 public header: white sticky bar, navy type, gold CTA (palette locked). */
 .shop-header {
   position: relative;
-  background: #142438;
-  color: #f4f8fb;
+  background: #ffffff;
+  color: #142438;
+  border-bottom: 1px solid #dfe6ee;
+  box-shadow: 0 3px 18px rgba(20, 36, 56, 0.06);
 }
 .shop-header .text-ink {
-  color: #f4f8fb;
+  color: #142438;
 }
 .shop-header .text-ink-2,
 .shop-header .text-muted {
-  color: rgba(244, 248, 251, 0.78);
+  color: #5c7084;
 }
 .shop-header button:not(.btn-gradient) {
   background-color: transparent;
-  border-color: rgba(255, 255, 255, 0.55);
-  color: #f4f8fb;
+  border-color: #8098af;
+  color: #142438;
 }
 
-.shop-header::after {
-  content: '';
-  position: absolute;
-  inset-inline: 0;
-  bottom: 0;
-  height: 1px;
-  background: rgba(178, 138, 73, 0.45);
+.shop-topline {
+  background: #142438;
+  color: #e6eff7;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 8px 0;
+}
+.shop-topline a {
+  color: #e6eff7;
+  text-decoration: none;
+}
+.shop-topline a:hover {
+  color: #ffffff;
 }
 
 .stage-nav {
@@ -1118,8 +1135,87 @@ body {
   --dash-navy-deep: #1a2d45;
   --dash-gold: #b28a49;
   --dash-gold-soft: #c9a35f;
+  --font-sans: var(--font-dm-sans), var(--font-schibsted), system-ui, sans-serif;
   background: var(--dash-canvas);
   color: var(--dash-navy);
+  font-family: var(--font-sans);
+}
+.candidate-dash :is(h1, h2, h3, h4),
+.staff-dash :is(h1, h2, h3, h4),
+.employer-dash :is(h1, h2, h3, h4) {
+  font-family: var(--font-manrope), var(--font-dm-sans), system-ui, sans-serif;
+  letter-spacing: -0.04em;
+}
+.staff-dash,
+.employer-dash {
+  --font-sans: var(--font-dm-sans), var(--font-schibsted), system-ui, sans-serif;
+  font-family: var(--font-sans);
+}
+
+/* HTML-44 workspace primitives (navy/gold remap). */
+.sa-banner {
+  padding: 44px;
+  background: #142438;
+  border-radius: 15px;
+  color: #ffffff;
+}
+.sa-banner p {
+  color: #c6d5e4;
+}
+.sa-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin: 22px 0;
+}
+.sa-kpi {
+  background: #ffffff;
+  border: 1px solid #dfe6ee;
+  border-radius: 12px;
+  padding: 18px 20px;
+}
+.sa-kpi strong {
+  display: block;
+  font-size: 30px;
+  color: #142438;
+  font-family: var(--font-manrope), system-ui, sans-serif;
+}
+.sa-kpi span {
+  font-size: 13px;
+  color: #5c7084;
+}
+.sa-tablewrap {
+  overflow: auto;
+  background: #ffffff;
+  border: 1px solid #dfe6ee;
+  border-radius: 12px;
+}
+.sa-workheading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 24px;
+}
+.sa-workheading h1 {
+  font-size: 29px;
+  margin: 0;
+}
+@media (max-width: 1100px) {
+  .sa-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 480px) {
+  .sa-kpis {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .sa-banner {
+    padding: 28px 22px;
+  }
+  .sa-workheading {
+    display: block;
+  }
 }
 
 /* Phones. A column that demands 260px or more cannot sit beside another

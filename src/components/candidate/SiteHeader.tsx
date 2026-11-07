@@ -33,27 +33,31 @@ function whatsappCopy(locale: Locale, company: string): WhatsAppDeskCopy {
 }
 
 /**
- * The header on every candidate page.
- *
- * Navigation, the announcement bar and the header button come from Site
- * settings in the console, so marketing can change them without a deploy.
- * The mobile menu is a native <details>, so it works before any JavaScript
- * has arrived on a slow connection.
+ * Public header aligned to the HTML-44 pack: navy topline, white sticky nav,
+ * gold primary CTA. Navigation and announcement still come from Site settings.
  */
 export async function SiteHeader({ locale }: { locale: Locale }) {
   const settings = await getSiteSettings();
   const { announcement, navigation, general } = settings;
-  /* The sign-up button is for visitors. Anyone signed in already has an
-     account, and their name and links take its place in the bar. */
-  /* Inline links from lg (1024px) up — normal desktops and landscape tablets.
-     Phones and small tablets keep the details menu. Longer scripts use a
-     slightly smaller size and tighter gaps so the row still fits. */
-  const navSize = locale === 'en' ? 'text-[15px]' : 'text-[12px] xl:text-[14px]';
-  const navGap = locale === 'en' ? 'gap-[clamp(12px,1.2vw,22px)]' : 'gap-[clamp(8px,0.9vw,16px)]';
-  const showCta = Boolean(navigation.headerCta.label && navigation.headerCta.href) && (await getViewer()).role === 'anonymous';
+  const navSize = locale === 'en' ? 'text-[13px]' : 'text-[12px] xl:text-[13px]';
+  const navGap = locale === 'en' ? 'gap-[clamp(12px,1.1vw,18px)]' : 'gap-[clamp(8px,0.9vw,14px)]';
+  const viewer = await getViewer();
+  const showCta = Boolean(navigation.headerCta.label && navigation.headerCta.href) && viewer.role === 'anonymous';
+  const showLogin = viewer.role === 'anonymous';
 
   return (
     <>
+      <div className="shop-topline">
+        <div className="mx-auto flex w-full max-w-[1240px] items-center justify-between gap-3 px-[clamp(12px,4cqi,26px)]">
+          <span>INDIA │ PORTUGAL</span>
+          <span className="flex flex-wrap items-center justify-end gap-x-3 gap-y-1">
+            <Link href={localePath(locale, '/signup')}>For Candidates</Link>
+            <span aria-hidden>│</span>
+            <Link href="/employers">For Employers</Link>
+          </span>
+        </div>
+      </div>
+
       {announcement.enabled && announcement.text ? (
         <div className="announce-bar" data-announce="">
           <p className="announce-item">
@@ -68,36 +72,42 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
         </div>
       ) : null}
 
-      <header className="shop-header sticky top-0 z-40 px-[clamp(12px,4cqi,56px)] py-3 sm:py-4">
-        {/* Mockup header: wordmark scales down on phones so locale + account stay on one row. */}
-        <div className="mx-auto flex w-full min-w-0 max-w-[1280px] items-center justify-between gap-2 sm:gap-4 md:gap-6">
+      <header className="shop-header sticky top-0 z-40 px-[clamp(12px,4cqi,26px)] py-3 sm:py-3.5">
+        <div className="mx-auto flex w-full min-w-0 max-w-[1240px] items-center justify-between gap-2 sm:gap-4 md:gap-6">
           <span className="min-w-0 max-w-[min(168px,42vw)] shrink sm:max-w-none">
-            <Wordmark href={localePath(locale, '/')} tone="dark" size={32} />
+            <Wordmark href={localePath(locale, '/')} tone="light" size={32} />
           </span>
 
           <MarketNav
             items={navigation.items.map((item) => ({ href: localHref(locale, item.href), label: navLabel(item, locale) }))}
-            className={`hidden min-w-0 flex-1 items-center justify-center ${navGap} ${navSize} font-medium text-white lg:flex`}
-            linkClassName="t-colors whitespace-nowrap text-white/95 hover:text-[var(--color-gold)]"
+            className={`hidden min-w-0 flex-1 items-center justify-center ${navGap} ${navSize} font-bold text-[#142438] lg:flex`}
+            linkClassName="t-colors whitespace-nowrap border-b-2 border-transparent pb-0.5 text-[#142438] hover:border-[#b28a49] hover:text-[#142438]"
           />
 
-          <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2.5">
             <LocaleToggle locale={locale} />
             <AccountMenu locale={locale} />
+            {showLogin ? (
+              <Link
+                href={localePath(locale, '/signin')}
+                className="t-colors hidden items-center rounded-[5px] border border-[#8098af] bg-white px-3 py-2 text-[12px] font-bold text-[#142438] no-underline hover:bg-[#f4f5f7] lg:inline-flex"
+              >
+                Log in
+              </Link>
+            ) : null}
             {showCta ? (
               <Link
                 href={localHref(locale, navigation.headerCta.href)}
-                className="btn-gradient t-colors hidden items-center gap-1.5 rounded-[8px] px-4 py-2.5 text-[14px] font-semibold normal-case tracking-normal no-underline lg:inline-flex"
+                className="btn-gradient t-colors hidden items-center gap-1.5 rounded-[5px] px-3.5 py-2 text-[12px] font-bold normal-case tracking-normal no-underline lg:inline-flex"
               >
                 {ctaLabel(navigation.headerCta, locale)}
-                <span aria-hidden>→</span>
               </Link>
             ) : null}
 
             <details className="group relative lg:hidden">
               <summary
                 aria-label="Menu"
-                className="grid size-9 cursor-pointer list-none place-items-center rounded-[8px] border border-white/55 bg-transparent text-white sm:size-10 [&::-webkit-details-marker]:hidden"
+                className="grid size-9 cursor-pointer list-none place-items-center rounded-[5px] border border-[#8098af] bg-transparent text-[#142438] sm:size-10 [&::-webkit-details-marker]:hidden"
               >
                 <svg viewBox="0 0 24 24" className="size-5 group-open:hidden" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
                   <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
@@ -106,25 +116,32 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
                   <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
                 </svg>
               </summary>
-              <div className="absolute end-0 top-12 w-[min(86vw,320px)] rounded-[12px] border border-white/20 bg-[#142438] p-3 text-white shadow-[0_24px_60px_-24px_rgba(8,20,36,0.7)]">
+              <div className="absolute end-0 top-12 w-[min(86vw,320px)] rounded-[12px] border border-[#dfe6ee] bg-white p-3 text-[#142438] shadow-[0_24px_60px_-24px_rgba(8,20,36,0.35)]">
                 <nav aria-label="Mobile" className="flex flex-col">
                   {navigation.items.map((item) => (
                     <Link
                       key={item.href}
                       href={localHref(locale, item.href)}
-                      className="t-colors rounded-[8px] px-3 py-3 text-[16px] text-white no-underline hover:bg-white/10"
+                      className="t-colors rounded-[8px] px-3 py-3 text-[16px] text-[#142438] no-underline hover:bg-[#f4f5f7]"
                     >
                       {navLabel(item, locale)}
                     </Link>
                   ))}
                 </nav>
+                {showLogin ? (
+                  <Link
+                    href={localePath(locale, '/signin')}
+                    className="mt-2 flex items-center justify-center rounded-[5px] border border-[#8098af] px-4 py-3 text-[14px] font-semibold text-[#142438] no-underline"
+                  >
+                    Log in
+                  </Link>
+                ) : null}
                 {showCta ? (
                   <Link
                     href={localHref(locale, navigation.headerCta.href)}
-                    className="btn-gradient mt-3 flex items-center justify-center gap-1.5 rounded-[8px] px-4 py-3 text-[14px] font-semibold normal-case tracking-normal no-underline"
+                    className="btn-gradient mt-2 flex items-center justify-center gap-1.5 rounded-[5px] px-4 py-3 text-[14px] font-semibold normal-case tracking-normal no-underline"
                   >
                     {ctaLabel(navigation.headerCta, locale)}
-                    <span aria-hidden>→</span>
                   </Link>
                 ) : null}
               </div>

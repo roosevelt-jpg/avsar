@@ -73,10 +73,10 @@ export function StaffDashShell({
                     <Link
                       href={item.href}
                       aria-current={active ? 'page' : undefined}
-                      className={`t-colors flex items-center justify-between gap-2 rounded-[8px] px-3 py-2 text-[14px] no-underline ${
+                      className={`t-colors flex items-center justify-between gap-2 rounded-[7px] px-3 py-2 text-[13px] font-semibold no-underline ${
                         active
-                          ? 'bg-[#b28a49] font-semibold text-[#142438]'
-                          : 'text-white/80 hover:bg-white/8 hover:text-white'
+                          ? 'bg-white text-[#142438]'
+                          : 'text-[#d7e2ed] hover:bg-white/10 hover:text-white'
                       }`}
                     >
                       <span>{item.label}</span>
@@ -118,7 +118,7 @@ export function StaffDashShell({
         </div>
       </details>
 
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-[280px] flex-col overflow-y-auto bg-[#142438] text-white lg:flex">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-[250px] flex-col overflow-y-auto bg-[#142438] text-white lg:flex">
         <div className="border-b border-white/10 px-5 py-5">
           <Wordmark href="/admin/dashboard" size={26} tone="dark" accent="employer" />
         </div>
@@ -132,17 +132,17 @@ export function StaffDashShell({
         )}
       </aside>
 
-      <div className="lg:pl-[280px]">
-        <header className="sticky top-0 z-20 border-b border-[#142438]/10 bg-[#142438] text-white">
-          <div className="flex flex-wrap items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
-            <div className="min-w-0 flex-1 [&_input]:rounded-full [&_input]:border-0 [&_input]:bg-white [&_input]:text-[#142438] [&_input]:placeholder:text-[#142438]/45">
+      <div className="lg:pl-[250px]">
+        <header className="sticky top-0 z-20 border-b border-[#dfe6ee] bg-white text-[#142438]">
+          <div className="flex flex-wrap items-center gap-3 px-4 py-3 sm:px-6 lg:px-[27px]">
+            <div className="min-w-0 flex-1">
               <ConsoleSearch pages={searchPages} targets={searchTargets} live />
             </div>
             <div className="flex items-center gap-2 sm:gap-3">
               <Link
                 href="/admin/notifications"
                 aria-label={unseen > 0 ? `Notifications, ${unseen} new` : 'Notifications'}
-                className="t-colors relative grid size-10 place-items-center rounded-full border border-white/25 text-white hover:bg-white/10"
+                className="t-colors relative grid size-10 place-items-center rounded-[7px] border border-[#dfe6ee] text-[#142438] hover:bg-[#f4f5f7]"
               >
                 <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
                   <path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15L6 16Z" strokeLinejoin="round" />
@@ -157,26 +157,19 @@ export function StaffDashShell({
               <Link
                 href="/admin/inbox"
                 aria-label="CRM inbox"
-                className="t-colors grid size-10 place-items-center rounded-full border border-white/25 text-white hover:bg-white/10"
+                className="t-colors grid size-10 place-items-center rounded-[7px] border border-[#dfe6ee] text-[#142438] hover:bg-[#f4f5f7]"
               >
                 <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
                   <path d="M4 6h16v12H4z" />
                   <path d="M4 7l8 6 8-6" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </Link>
-              <span className="hidden items-center gap-1.5 rounded-[8px] border border-white/55 px-2.5 py-2 text-[13px] font-medium text-white sm:inline-flex">
-                <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth={1.7} aria-hidden>
-                  <circle cx="12" cy="12" r="9" />
-                  <path d="M3 12h18 M12 3c2.5 2.5 3.5 5.5 3.5 9s-1 6.5-3.5 9c-2.5-2.5-3.5-5.5-3.5-9s1-6.5 3.5-9z" />
-                </svg>
-                EN
-              </span>
               <ProfileMenu name={displayName} email={email} roleLabel={roleLabel} avatarUrl={avatarUrl} links={menuLinks} />
             </div>
           </div>
         </header>
-        <div className="px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-8">
-          <div className="mx-auto w-full max-w-[1280px]">{children}</div>
+        <div className="px-4 py-5 sm:px-6 sm:py-7 lg:px-[30px] lg:py-8">
+          <div className="mx-auto w-full max-w-[1550px]">{children}</div>
         </div>
       </div>
     </div>

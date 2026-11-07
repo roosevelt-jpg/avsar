@@ -11,6 +11,7 @@ import { JOBS_INTRO } from './jobs';
 import { SUCCESS_STORIES } from './success-stories';
 import { NEWS_AND_INSIGHTS } from './news';
 import { LEGAL_PAGES } from './legal';
+import { INDUSTRIES } from './industries';
 
 /**
  * Every CMS page, with the content it ships with.
@@ -35,6 +36,7 @@ export const DEFAULT_PAGES: DefaultPage[] = [
   STAY_SAFE,
   FOR_YOUR_FAMILY,
   ABOUT,
+  INDUSTRIES,
   SUCCESS_STORIES,
   NEWS_AND_INSIGHTS,
   ...LEGAL_PAGES,

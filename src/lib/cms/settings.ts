@@ -358,6 +358,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     href: '/stay-safe',
   },
   navigation: {
+    /* Order mirrors the HTML-44 public header: Jobs → Industries → How it works → … */
     items: [
       {
         label: 'Jobs',
@@ -367,6 +368,13 @@ export const DEFAULT_SETTINGS: SiteSettings = {
         href: '/jobs',
       },
       {
+        label: 'Industries',
+        labelHi: 'उद्योग',
+        labelAr: 'القطاعات',
+        labels: {},
+        href: '/industries',
+      },
+      {
         label: 'How it works',
         labelHi: 'यह कैसे काम करता है',
         labelAr: 'كيف يعمل',
@@ -374,32 +382,52 @@ export const DEFAULT_SETTINGS: SiteSettings = {
         href: '/how-it-works',
       },
       {
-        label: 'Why Portugal',
-        labelHi: 'पुर्तगाल क्यों',
-        labelAr: 'لماذا البرتغال',
-        labels: { bn: 'পর্তুগাল কেন', mr: 'पोर्तुगाल का', te: 'పోర్చుగల్ ఎందుకు', ta: 'ஏன் போர்ச்சுகல்', ur: 'پرتگال کیوں', gu: 'પોર્ટુગલ શા માટે', kn: 'ಪೋರ್ಚುಗಲ್ ಏಕೆ', or: 'ପର୍ତ୍ତୁଗାଲ କାହିଁକି', ml: 'എന്തുകൊണ്ട് പോർച്ചുഗൽ', pa: 'ਪੁਰਤਗਾਲ ਕਿਉਂ', as: 'পৰ্তুগাল কিয়' },
-        href: '/why-portugal',
+        label: 'Assessments',
+        labelHi: 'मूल्यांकन',
+        labelAr: 'التقييمات',
+        labels: {},
+        href: '/assessment',
       },
       {
-        label: 'Visa & relocation',
-        labelHi: 'वीज़ा और स्थानांतरण',
-        labelAr: 'التأشيرة والانتقال',
+        label: 'Relocation',
+        labelHi: 'स्थानांतरण',
+        labelAr: 'الانتقال',
         labels: { bn: 'ভিসা ও স্থানান্তর', mr: 'व्हिसा आणि स्थलांतर', te: 'వీసా మరియు తరలింపు', ta: 'விசா மற்றும் இடமாற்றம்', ur: 'ویزا اور منتقلی', gu: 'વિઝા અને સ્થળાંતર', kn: 'ವೀಸಾ ಮತ್ತು ಸ್ಥಳಾಂತರ', or: 'ଭିସା ଏବଂ ସ୍ଥାନାନ୍ତର', ml: 'വിസയും മാറ്റിപ്പാർപ്പും', pa: 'ਵੀਜ਼ਾ ਅਤੇ ਤਬਾਦਲਾ', as: 'ভিছা আৰু স্থানান্তৰ' },
         href: '/visa-and-relocation',
       },
       {
-        label: 'For Employers',
-        labelHi: 'नियोक्ताओं के लिए',
-        labelAr: 'لأصحاب العمل',
+        label: 'About',
+        labelHi: 'हमारे बारे में',
+        labelAr: 'من نحن',
+        labels: {},
+        href: '/about',
+      },
+      {
+        label: 'Contact',
+        labelHi: 'संपर्क',
+        labelAr: 'اتصل بنا',
+        labels: {},
+        href: '/contact',
+      },
+      {
+        label: 'FAQs',
+        labelHi: 'प्रश्न',
+        labelAr: 'الأسئلة',
+        labels: {},
+        href: '/faq',
+      },
+      {
+        label: 'Employers',
+        labelHi: 'नियोक्ता',
+        labelAr: 'أصحاب العمل',
         labels: { bn: 'নিয়োগকর্তাদের জন্য', mr: 'नियोक्त्यांसाठी', te: 'యజమానుల కోసం', ta: 'முதலாளிகளுக்கு', ur: 'آجروں کے لیے', gu: 'નોકરીદાતાઓ માટે', kn: 'ಉದ್ಯೋಗದಾತರಿಗಾಗಿ', or: 'ନିଯୁକ୍ତିଦାତାଙ୍କ ପାଇଁ', ml: 'തൊഴിലുടമകൾക്ക്', pa: 'ਮਾਲਕਾਂ ਲਈ', as: 'নিয়োগকৰ্তাসকলৰ বাবে' },
         href: '/employers',
       },
     ],
     headerCta: {
-      /* The same action as the hero's button, so the header and the page
-         never ask for two different first steps. */
-      label: 'Create Free Profile',
-      href: '/signup',
+      /* Matches HTML-44 “Post a Vacancy” primary action for anonymous visitors. */
+      label: 'Post a Vacancy',
+      href: '/employers/register',
       labels: {
         hi: 'मुफ़्त प्रोफ़ाइल बनाएँ',
         bn: 'বিনামূল্যে প্রোফাইল তৈরি করুন',

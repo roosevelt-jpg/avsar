@@ -45,65 +45,44 @@ const ICONS = {
   admin: 'M12 3 4.5 6v5.5c0 4.6 3.2 8.4 7.5 9.5 4.3-1.1 7.5-4.9 7.5-9.5V6L12 3Zm-3 9 2 2 4-4',
 } as const;
 
+/* Group labels and order mirror the HTML-44 admin sidebar; permissions unchanged. */
 const STAFF_NAV: Group[] = [
   {
-    label: 'Dashboard',
+    label: 'Overview',
     icon: 'overview',
     pinned: true,
     items: [
-      { href: '/admin/dashboard', label: 'Overview', permission: 'dashboard.view' },
+      { href: '/admin/dashboard', label: 'Dashboard', permission: 'dashboard.view' },
       { href: '/admin/analysis', label: 'Reports & Analytics', permission: 'dashboard.view' },
       { href: '/admin/notifications', label: 'Notifications' },
     ],
   },
   {
-    label: 'Jobs & Hiring',
+    label: 'Recruitment',
     icon: 'hiring',
     items: [
-      { href: '/admin/jobs', label: 'Jobs', permission: 'jobs.view' },
+      { href: '/admin/jobs', label: 'Jobs & Hiring', permission: 'jobs.view' },
+      { href: '/admin', label: 'Candidates', permission: 'candidates.view' },
+      { href: '/admin/employers', label: 'Employers', permission: 'employers.manage' },
       { href: '/admin/applications', label: 'Applications', permission: 'applications.view' },
+      { href: '/admin/items', label: 'Assessments', permission: 'cv.review' },
+      { href: '/admin/relocation', label: 'Relocation & Legal', permission: 'relocation.manage' },
+      { href: '/admin/legal-reviews', label: 'Legal reviews', permission: 'relocation.manage' },
       { href: '/admin/placements', label: 'Placements', permission: 'placements.manage' },
-      { href: '/admin/cohorts', label: 'Cohorts', permission: 'candidates.view' },
-    ],
-  },
-  {
-    label: 'Candidates',
-    icon: 'candidates',
-    items: [
-      { href: '/admin', label: 'Talent search', permission: 'candidates.view' },
       { href: '/admin/shortlists', label: 'Shortlists', permission: 'candidates.view' },
       { href: '/admin/cv-queue', label: 'CV queue', permission: 'cv.review' },
-      { href: '/admin/items', label: 'Assessments', permission: 'cv.review' },
-    ],
-  },
-  {
-    label: 'Employers',
-    icon: 'employers',
-    items: [{ href: '/admin/employers', label: 'Employer accounts', permission: 'employers.manage' }],
-  },
-  {
-    label: 'Relocation & Visa',
-    icon: 'relocation',
-    items: [
-      { href: '/admin/legal-reviews', label: 'Legal reviews', permission: 'relocation.manage' },
-      { href: '/admin/relocation', label: 'Relocation', permission: 'relocation.manage' },
+      { href: '/admin/cohorts', label: 'Cohorts', permission: 'candidates.view' },
       { href: '/admin/unlocks', label: 'Profile requests', permission: 'relocation.manage' },
     ],
   },
   {
-    label: 'CRM',
+    label: 'Operations',
     icon: 'crm',
     items: [
-      { href: '/admin/inbox', label: 'Leads & messages', permission: 'leads.manage' },
+      { href: '/admin/inbox', label: 'CRM', permission: 'leads.manage' },
       { href: '/admin/chat', label: 'Live chat', permission: 'leads.manage' },
       { href: '/admin/subscribers', label: 'Subscribers & newsletters', permission: 'leads.manage' },
-    ],
-  },
-  {
-    label: 'Payments & Finance',
-    icon: 'finance',
-    items: [
-      { href: '/admin/payments', label: 'Payments', permission: 'payments.view' },
+      { href: '/admin/payments', label: 'Finance', permission: 'payments.view' },
       { href: '/admin/fees', label: 'Employer fees', permission: 'payments.view' },
     ],
   },
@@ -112,21 +91,22 @@ const STAFF_NAV: Group[] = [
     icon: 'website',
     items: [
       { href: '/admin/cms', label: 'Pages & Content', permission: 'cms.view' },
-      { href: '/admin/settings/navigation', label: 'Navigation Menus', permission: 'settings.manage' },
+      { href: '/admin/cms', label: 'Visual Page Editor', permission: 'cms.edit' },
       { href: '/admin/cms/media', label: 'Media Library', permission: 'media.manage' },
+      { href: '/admin/inbox', label: 'Form Submissions', permission: 'leads.manage' },
+      { href: '/admin/settings/navigation', label: 'Navigation Menus', permission: 'settings.manage' },
       { href: '/admin/settings/vsl', label: 'Banners & Sliders', permission: 'settings.manage' },
-      { href: '/admin/inbox', label: 'Forms & Submissions', permission: 'leads.manage' },
       { href: '/admin/settings/seo', label: 'SEO & Analytics', permission: 'settings.manage' },
       { href: '/admin/assistant', label: 'Assistant brain', permission: 'cms.edit' },
     ],
   },
-  { label: 'Settings', icon: 'settings', items: SETTINGS_TABS },
   {
-    label: 'Administration',
+    label: 'System',
     icon: 'admin',
     items: [
-      { href: '/admin/staff', label: 'Staff', permission: 'staff.manage' },
+      { href: '/admin/staff', label: 'Users & Roles', permission: 'staff.manage' },
       { href: '/admin/roles', label: 'Roles & permissions', permission: 'roles.manage' },
+      ...SETTINGS_TABS,
       { href: '/admin/audit', label: 'Audit log', permission: 'audit.view' },
       { href: '/admin/privacy', label: 'Privacy requests', permission: 'privacy.manage' },
       { href: '/admin/security', label: 'Sign-in security' },

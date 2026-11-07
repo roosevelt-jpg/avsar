@@ -1,0 +1,1 @@
+No AI-generated photographs are included. Real stock photographs are loaded by URL. For offline use and production, license/download approved originals into this folder and change image paths accordingly.

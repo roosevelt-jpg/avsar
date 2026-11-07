@@ -9,11 +9,13 @@ export type DashNavKey =
   | 'overview'
   | 'jobs'
   | 'applications'
-  | 'assessment'
-  | 'profile'
-  | 'relocation'
   | 'saved'
-  | 'settings';
+  | 'assessment'
+  | 'documents'
+  | 'relocation'
+  | 'messages'
+  | 'settings'
+  | 'profile';
 
 type ShellCandidate = {
   fullName: string;
@@ -21,8 +23,8 @@ type ShellCandidate = {
 };
 
 /**
- * Candidate dashboard chrome: navy sidebar, quiet top bar, content column.
- * Crafted to match S&A marketing navy/gold — not a generic admin kit.
+ * Candidate dashboard chrome aligned to the HTML-44 pack: navy sidebar,
+ * white active pill, top search. Labels and order match the prototype IA.
  */
 export async function CandidateDashShell({
   locale,
@@ -55,33 +57,35 @@ export async function CandidateDashShell({
     badge?: number;
   }[] = [
     { key: 'overview', href: localePath(locale, '/dashboard'), label: 'Dashboard' },
-    { key: 'jobs', href: jobsHref, label: 'Job Opportunities' },
+    { key: 'jobs', href: jobsHref, label: 'Find Jobs' },
     { key: 'applications', href: localePath(locale, '/dashboard/applications'), label: 'My Applications' },
-    { key: 'assessment', href: localePath(locale, '/assessment'), label: 'Skills Assessments' },
-    { key: 'profile', href: localePath(locale, '/profile'), label: 'My CV & Documents' },
-    { key: 'relocation', href: localePath(locale, '/dashboard/relocation'), label: 'Visa & Relocation' },
     {
       key: 'saved',
-      href: `${localePath(locale, '/dashboard')}#saved`,
+      href: localePath(locale, '/dashboard/saved'),
       label: 'Saved Jobs',
       badge: savedCount > 0 ? savedCount : undefined,
     },
+    { key: 'assessment', href: localePath(locale, '/assessment'), label: 'Skills Assessments' },
+    { key: 'documents', href: localePath(locale, '/dashboard/documents'), label: 'CV & Documents' },
+    { key: 'relocation', href: localePath(locale, '/dashboard/relocation'), label: 'Visa & Relocation' },
+    { key: 'messages', href: localePath(locale, '/dashboard/messages'), label: 'Messages' },
     { key: 'settings', href: localePath(locale, '/profile'), label: 'Profile Settings' },
   ];
 
   const navList = (
     <nav aria-label="Dashboard" className="flex flex-1 flex-col gap-0.5 px-2.5 py-3">
+      <p className="m-0 px-3 pb-2 text-[10px] font-semibold tracking-[0.14em] text-white/45 uppercase">My workspace</p>
       {items.map((item) => {
-        const active = item.key === current;
+        const active = item.key === current || (current === 'profile' && item.key === 'settings');
         return (
           <Link
             key={item.key}
             href={item.href}
             aria-current={active ? 'page' : undefined}
-            className={`t-colors flex items-center justify-between gap-2 rounded-[8px] px-3 py-2.5 text-[13.5px] no-underline ${
+            className={`t-colors flex items-center justify-between gap-2 rounded-[7px] px-3 py-2.5 text-[13px] font-semibold no-underline ${
               active
-                ? 'bg-[var(--dash-gold)] font-semibold text-[var(--dash-navy)]'
-                : 'text-white/72 hover:bg-white/[0.06] hover:text-white'
+                ? 'bg-white text-[var(--dash-navy)]'
+                : 'text-[#d7e2ed] hover:bg-white/10 hover:text-white'
             }`}
           >
             <span className="flex items-center gap-2.5">
@@ -114,7 +118,7 @@ export async function CandidateDashShell({
         </div>
       </details>
 
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-[260px] flex-col bg-[var(--dash-navy)] text-white lg:flex">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-[250px] flex-col bg-[var(--dash-navy)] text-white lg:flex">
         <div className="border-b border-white/10 px-5 py-5">
           <Wordmark href={localePath(locale, '/')} size={26} tone="dark" />
         </div>
@@ -128,25 +132,19 @@ export async function CandidateDashShell({
         )}
       </aside>
 
-      <div className="lg:pl-[260px]">
-        <header className="sticky top-0 z-20 border-b border-[#e2e5ea] bg-[#f4f5f7]/95 backdrop-blur-sm">
-          <div className="flex flex-wrap items-center gap-3 px-4 py-2.5 sm:px-6 lg:px-8">
+      <div className="lg:pl-[250px]">
+        <header className="sticky top-0 z-20 border-b border-[#dfe6ee] bg-white">
+          <div className="flex flex-wrap items-center gap-3 px-4 py-3 sm:px-6 lg:px-[27px]">
             <form action={jobsHref} method="get" className="relative min-w-0 flex-1">
               <label htmlFor="dash-job-search" className="sr-only">
                 Search jobs
               </label>
-              <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-[var(--dash-navy)]/35" aria-hidden>
-                <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="11" cy="11" r="7" />
-                  <path d="M20 20l-3.5-3.5" strokeLinecap="round" />
-                </svg>
-              </span>
               <input
                 id="dash-job-search"
                 name="q"
                 type="search"
-                placeholder="Search jobs, employers or keywords..."
-                className="w-full rounded-[10px] border border-[#e2e5ea] bg-white py-2 pr-4 pl-10 text-[14px] text-[var(--dash-navy)] outline-none placeholder:text-[var(--dash-navy)]/40 focus:border-[var(--dash-navy)]/35"
+                placeholder="Search jobs, candidates, employers…"
+                className="w-full max-w-[430px] rounded-[7px] border border-[#ccd7e2] bg-white px-3 py-2.5 text-[14px] text-[var(--dash-navy)] outline-none placeholder:text-[var(--dash-navy)]/40 focus:border-[#b28a49] focus:outline-2 focus:outline-[#b28a49]/35"
               />
             </form>
             <div className="flex items-center gap-2 sm:gap-3">
@@ -160,7 +158,7 @@ export async function CandidateDashShell({
               <form action="/auth/signout" method="post">
                 <button
                   type="submit"
-                  className="t-colors cursor-pointer rounded-[8px] border border-[#142438]/20 bg-transparent px-3 py-1.5 text-[12px] font-medium text-[var(--dash-navy)] hover:bg-white"
+                  className="t-colors cursor-pointer rounded-[5px] border border-[#8098af] bg-transparent px-3 py-1.5 text-[12px] font-medium text-[var(--dash-navy)] hover:bg-[#f4f5f7]"
                 >
                   Sign out
                 </button>
@@ -168,7 +166,7 @@ export async function CandidateDashShell({
             </div>
           </div>
         </header>
-        <div className="px-4 py-5 sm:px-6 sm:py-6 lg:px-8 lg:py-7">{children}</div>
+        <div className="workmain px-4 py-5 sm:px-6 sm:py-6 lg:px-[30px] lg:py-7">{children}</div>
       </div>
     </div>
   );
@@ -227,6 +225,7 @@ function NavIcon({ name }: { name: DashNavKey }) {
           <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" strokeLinecap="round" />
         </svg>
       );
+    case 'documents':
     case 'profile':
       return (
         <svg viewBox="0 0 24 24" className={common} fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden>
@@ -245,6 +244,12 @@ function NavIcon({ name }: { name: DashNavKey }) {
       return (
         <svg viewBox="0 0 24 24" className={common} fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden>
           <path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" strokeLinejoin="round" />
+        </svg>
+      );
+    case 'messages':
+      return (
+        <svg viewBox="0 0 24 24" className={common} fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden>
+          <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z" strokeLinejoin="round" />
         </svg>
       );
     case 'settings':
