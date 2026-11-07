@@ -90,10 +90,30 @@ function JobGridCard({ job, locale, priority, saved }: Omit<Props, 'variant' | '
   );
 }
 
+function experienceLabel(years: number, locale: Locale): string {
+  if (years <= 0) return siteText(locale, 'Entry level');
+  if (years === 1) return siteText(locale, '1+ year');
+  return `${years}+ ${siteText(locale, 'years')}`;
+}
+
+function postedLabel(publishedAt: string | null, locale: Locale): string | null {
+  if (!publishedAt) return null;
+  const date = new Date(publishedAt);
+  if (Number.isNaN(date.getTime())) return null;
+  return new Intl.DateTimeFormat(locale === 'en' ? 'en-GB' : locale, {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  }).format(date);
+}
+
+/**
+ * DSS-style board row: title first, meta chips, type/category/contract line,
+ * salary bar and actions. No photo tile — the listing stays dense and scannable.
+ */
 function JobListCard({
   job,
   locale,
-  priority,
   saved,
   board,
 }: {
@@ -104,110 +124,131 @@ function JobListCard({
   board?: JobsBoardSettings;
 }) {
   const salary = formatSalary(job);
-  const image = jobImage(job);
   const href = localePath(locale, `/jobs/${job.slug}`);
-  const verified = board ? siteText(locale, board.verifiedBadge) : siteText(locale, 'Verified');
   const viewDetails = board ? siteText(locale, board.viewDetails) : siteText(locale, 'View details');
   const applyNow = board ? siteText(locale, board.applyNow) : siteText(locale, 'Apply now');
   const category = job.area ? siteText(locale, areaLabel(job.area)) : '';
+  const posted = postedLabel(job.publishedAt, locale);
+  const contract =
+    job.contractMonths != null && job.contractMonths > 0
+      ? `${job.contractMonths} ${siteText(locale, job.contractMonths === 1 ? 'month' : 'months')}`
+      : siteText(locale, EMPLOYMENT_LABELS[job.employmentType]);
+
+  const facts = [
+    { label: siteText(locale, 'Type'), value: siteText(locale, EMPLOYMENT_LABELS[job.employmentType]) },
+    category ? { label: siteText(locale, 'Category'), value: category } : null,
+    { label: siteText(locale, 'Contract'), value: contract },
+    { label: siteText(locale, 'Vacancy'), value: String(job.openings) },
+  ].filter(Boolean) as { label: string; value: string }[];
 
   return (
-    <article className="relative grid grid-cols-1 overflow-hidden rounded-[12px] border border-[#e2e5ea] bg-white sm:grid-cols-[168px_minmax(0,1fr)]">
-      <div className="relative aspect-[4/3] bg-[#eef0f3] sm:aspect-auto sm:min-h-[176px]">
-        {image ? (
-          <Image
-            src={image}
-            alt=""
-            fill
-            sizes="(max-width: 640px) 100vw, 168px"
-            unoptimized={!image.startsWith('/')}
-            priority={priority}
-            className="object-cover"
-          />
-        ) : (
-          <div className="placeholder-stripes size-full" />
-        )}
-      </div>
-
-      <div className="relative flex min-w-0 flex-col gap-3 p-4 sm:p-5">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex min-w-0 flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-[6px] bg-[#b28a49] px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#142438]">
-              <svg viewBox="0 0 24 24" className="size-3" fill="none" stroke="currentColor" strokeWidth={2.2} aria-hidden>
-                <path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6l7-3z" />
-                <path d="M9 12l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              {verified}
-            </span>
-            {job.featured ? (
-              <span className="rounded-[6px] bg-[#142438] px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-white">
-                {siteText(locale, 'Featured')}
-              </span>
-            ) : null}
-          </div>
-          <div className="flex shrink-0 items-start gap-2">
-            {salary ? (
-              <p className="m-0 hidden max-w-[12rem] rounded-[8px] bg-[color-mix(in_srgb,var(--color-gold)_28%,white)] px-3 py-2 text-end text-[13px] font-semibold leading-[1.35] text-[#142438] sm:block">
-                {salary}
-              </p>
-            ) : null}
-            {saved !== undefined ? <SaveJobButton jobId={job.id} initialSaved={saved} /> : null}
-          </div>
-        </div>
-
-        <div>
-          <h3 className="display-serif m-0 text-[clamp(20px,2.2cqi,24px)] font-normal leading-[1.2] text-[#142438]">
-            <Link href={href} className="text-inherit no-underline hover:underline">
-              {job.title}
-            </Link>
-          </h3>
-          <ul className="m-0 mt-2.5 flex list-none flex-wrap gap-x-4 gap-y-1.5 p-0 text-[13px] text-ink-2">
-            <li className="inline-flex items-center gap-1.5">
-              <svg viewBox="0 0 24 24" className="size-3.5 text-[var(--color-gold)]" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
-                <path d="M12 21s-6-6-6-11a6 6 0 0112 0c0 5-6 11-6 11z" />
-                <circle cx="12" cy="10" r="2" />
-              </svg>
-              {jobLocation(job)}
-            </li>
-            {category ? (
+    <article className="relative overflow-hidden rounded-[12px] border border-[#e2e5ea] bg-white shadow-[0_8px_24px_-20px_rgba(20,36,56,0.45)]">
+      <div className="flex flex-col gap-3 p-5 sm:p-6">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <div className="mb-2 flex flex-wrap items-center gap-2">
+              {job.featured ? (
+                <span className="rounded-[6px] bg-[#142438] px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-white">
+                  {siteText(locale, 'Featured')}
+                </span>
+              ) : null}
+              {job.visaSponsored ? (
+                <span className="rounded-[6px] bg-[color-mix(in_srgb,var(--color-gold)_22%,white)] px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#142438]">
+                  {siteText(locale, 'Visa support')}
+                </span>
+              ) : null}
+            </div>
+            <h3 className="m-0 text-[clamp(20px,2.4cqi,26px)] font-semibold leading-[1.2] tracking-[-0.02em] text-[#142438]">
+              <Link href={href} className="text-inherit no-underline hover:text-[#b28a49]">
+                {job.title}
+              </Link>
+            </h3>
+            <ul className="m-0 mt-3 flex list-none flex-wrap gap-x-5 gap-y-2 p-0 text-[13px] text-ink-2">
               <li className="inline-flex items-center gap-1.5">
-                <svg viewBox="0 0 24 24" className="size-3.5 text-[var(--color-gold)]" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
-                  <path d="M4 7h16M4 12h16M4 17h10" strokeLinecap="round" />
-                </svg>
-                {category}
+                <MetaIcon kind="experience" />
+                {experienceLabel(job.minExperienceYears, locale)}
               </li>
-            ) : null}
-            <li className="inline-flex items-center gap-1.5">
-              <svg viewBox="0 0 24 24" className="size-3.5 text-[var(--color-gold)]" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
-                <path d="M4 8h16v11H4z M9 8V5h6v3" />
-              </svg>
-              {siteText(locale, EMPLOYMENT_LABELS[job.employmentType])}
-            </li>
-          </ul>
+              <li className="inline-flex items-center gap-1.5">
+                <MetaIcon kind="location" />
+                {jobLocation(job)}
+              </li>
+              {posted ? (
+                <li className="inline-flex items-center gap-1.5">
+                  <MetaIcon kind="date" />
+                  {posted}
+                </li>
+              ) : null}
+            </ul>
+          </div>
+          {saved !== undefined ? <SaveJobButton jobId={job.id} initialSaved={saved} /> : null}
         </div>
+
+        <p className="m-0 flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] leading-[1.5] text-ink-2">
+          {facts.map((fact, index) => (
+            <span key={fact.label} className="inline-flex items-center gap-3">
+              {index > 0 ? <span className="text-[#d5d9e0]" aria-hidden>|</span> : null}
+              <span>
+                <span className="font-medium text-[#142438]">{fact.label}:</span> {fact.value}
+              </span>
+            </span>
+          ))}
+        </p>
 
         {job.summary ? <p className="m-0 line-clamp-2 text-[14px] leading-[1.5] text-ink-2">{job.summary}</p> : null}
 
-        {salary ? (
-          <p className="m-0 rounded-[8px] bg-[#eef0f3] px-3 py-2 text-[13px] font-semibold text-[#142438] sm:hidden">{salary}</p>
-        ) : null}
-
-        <div className="mt-auto flex flex-wrap items-center justify-end gap-2 pt-1">
-          <Link
-            href={href}
-            className="t-colors inline-flex items-center rounded-[8px] border border-[#142438]/25 bg-white px-4 py-2 text-[13px] font-semibold text-[#142438] no-underline hover:border-[#142438]"
-          >
-            {viewDetails}
-          </Link>
-          <Link
-            href={href}
-            className="t-colors inline-flex items-center gap-1.5 rounded-[8px] bg-[#b28a49] px-4 py-2 text-[13px] font-semibold text-[#142438] no-underline hover:bg-[#c49a58]"
-          >
-            {applyNow}
-            <span aria-hidden>→</span>
-          </Link>
+        <div className="mt-1 flex flex-col gap-3 border-t border-[#eef0f3] pt-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="m-0 text-[14px] font-semibold text-[#142438]">
+            {salary ? (
+              <>
+                <span className="font-medium text-ink-2">{siteText(locale, 'Basic salary')}:</span> {salary}
+              </>
+            ) : (
+              siteText(locale, 'Salary on request')
+            )}
+          </p>
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              href={href}
+              className="t-colors inline-flex items-center rounded-[8px] bg-[#b28a49] px-4 py-2.5 text-[13px] font-semibold text-[#142438] no-underline hover:bg-[#c49a58]"
+            >
+              {viewDetails}
+            </Link>
+            <Link
+              href={href}
+              className="t-colors inline-flex items-center gap-1.5 rounded-[8px] border border-[#142438]/25 bg-white px-4 py-2.5 text-[13px] font-semibold text-[#142438] no-underline hover:border-[#142438]"
+            >
+              {applyNow}
+              <span aria-hidden>→</span>
+            </Link>
+          </div>
         </div>
       </div>
     </article>
+  );
+}
+
+function MetaIcon({ kind }: { kind: 'experience' | 'location' | 'date' }) {
+  const className = 'size-3.5 shrink-0 text-[#b28a49]';
+  if (kind === 'location') {
+    return (
+      <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
+        <path d="M12 21s-6-6-6-11a6 6 0 0112 0c0 5-6 11-6 11z" />
+        <circle cx="12" cy="10" r="2" />
+      </svg>
+    );
+  }
+  if (kind === 'date') {
+    return (
+      <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
+        <rect x="4" y="5" width="16" height="15" rx="2" />
+        <path d="M8 3v4M16 3v4M4 10h16" strokeLinecap="round" />
+      </svg>
+    );
+  }
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
+      <circle cx="12" cy="8" r="3.5" />
+      <path d="M5 20c1.5-3.5 4-5 7-5s5.5 1.5 7 5" strokeLinecap="round" />
+    </svg>
   );
 }

@@ -143,13 +143,14 @@ export default async function JobsPage({
   ];
   const field =
     't-colors w-full border-0 bg-transparent py-3 pe-3 ps-10 text-[15px] text-ink outline-none';
+  const vacanciesOnPage = result.jobs.reduce((sum, job) => sum + Math.max(1, job.openings), 0);
 
   const searchForm = (
     <form
       method="get"
       action={localePath(locale, '/jobs')}
       id="jobs-search"
-      className="grid gap-0 divide-y divide-[#e2e5ea] rounded-[14px] border border-[#e2e5ea] bg-white shadow-[0_16px_36px_-28px_rgba(20,36,56,0.55)] md:grid-cols-2 md:divide-x md:divide-y-0 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,0.9fr)_minmax(0,1fr)_auto]"
+      className="grid gap-0 divide-y divide-[#e2e5ea] rounded-[14px] border-2 border-[#142438] bg-white shadow-[0_16px_36px_-28px_rgba(20,36,56,0.55)] md:grid-cols-2 md:divide-x md:divide-y-0 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,0.85fr)_minmax(0,0.85fr)_minmax(0,0.9fr)_auto]"
     >
       <label className="relative block">
         <span className="sr-only">{tx(board.searchKeywordPlaceholder)}</span>
@@ -176,6 +177,21 @@ export default async function JobsPage({
               {city}
             </option>
           ))}
+        </select>
+      </label>
+      <label className="relative block">
+        <span className="sr-only">{tx(board.experienceHeading)}</span>
+        <span className="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-[#b28a49]" aria-hidden>
+          <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth={1.8}>
+            <circle cx="12" cy="8" r="3.5" />
+            <path d="M5 20c1.5-3.5 4-5 7-5s5.5 1.5 7 5" strokeLinecap="round" />
+          </svg>
+        </span>
+        <select id="exp-top" name="exp" defaultValue={experience[0] ?? ''} className={`${field} appearance-none`}>
+          <option value="">{tx(board.experienceHeading)}</option>
+          <option value="entry">{tx(board.experienceEntry)}</option>
+          <option value="mid">{tx(board.experienceMid)}</option>
+          <option value="senior">{tx(board.experienceSenior)}</option>
         </select>
       </label>
       <label className="relative block">
@@ -228,13 +244,13 @@ export default async function JobsPage({
 
         <section className={signedIn ? 'pb-4 pt-2' : 'px-[clamp(20px,4cqi,56px)] pb-[clamp(48px,7cqi,96px)] pt-12 sm:pt-14'}>
           <div className="mx-auto w-full max-w-[1200px]">
-            <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)]">
-              <aside className="shop-sticky rounded-[12px] border border-[#e2e5ea] bg-[#f4f5f7] p-5 lg:sticky lg:self-start">
-                <div className="mb-2 flex items-center justify-between gap-3">
-                  <h2 className="m-0 text-[16px] font-semibold text-[#142438]">{tx(board.filterTitle)}</h2>
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,280px)_minmax(0,1fr)]">
+              <aside className="shop-sticky rounded-[14px] bg-[#142438] p-5 text-white shadow-[0_18px_40px_-28px_rgba(20,36,56,0.65)] lg:sticky lg:self-start">
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <h2 className="m-0 text-[16px] font-semibold tracking-wide">{tx(board.filterTitle)}</h2>
                   <Link
                     href={localePath(locale, '/jobs')}
-                    className={`text-[13px] font-medium text-[var(--color-gold-deep)] no-underline hover:underline ${filtered ? '' : 'opacity-50'}`}
+                    className={`rounded-full bg-white/10 px-3 py-1 text-[12px] font-medium text-white no-underline hover:bg-white/16 ${filtered ? '' : 'opacity-50'}`}
                   >
                     {tx(board.clearAll)}
                   </Link>
@@ -242,59 +258,83 @@ export default async function JobsPage({
 
                 <form method="get" action={localePath(locale, '/jobs')} className="flex flex-col gap-1">
                   {search.q ? <input type="hidden" name="q" value={search.q} /> : null}
-                  {search.city ? <input type="hidden" name="city" value={search.city} /> : null}
                   {search.position ? <input type="hidden" name="position" value={search.position} /> : null}
                   {sort !== 'newest' ? <input type="hidden" name="sort" value={sort} /> : null}
 
-                  <FilterGroup title={tx(board.categoryHeading)} open>
-                    {facets.areas.map((area) => (
-                      <label key={area.slug} className="flex cursor-pointer items-center justify-between gap-3 text-[14px] text-ink-2">
+                  {cities.length > 0 ? (
+                    <FilterGroup title={tx(board.searchLocationLabel)} open dark>
+                      <label className="flex cursor-pointer items-center justify-between gap-3 text-[14px] text-white/88">
                         <span className="inline-flex items-center gap-2">
-                          <input type="checkbox" name="area" value={area.slug} defaultChecked={areas.includes(area.slug)} className="size-4 accent-[#142438]" />
+                          <input type="radio" name="city" value="" defaultChecked={!search.city} className="size-4 accent-[#b28a49]" />
+                          {tx('All locations')}
+                        </span>
+                      </label>
+                      {cities.map((city) => (
+                        <label key={city} className="flex cursor-pointer items-center justify-between gap-3 text-[14px] text-white/88">
+                          <span className="inline-flex items-center gap-2">
+                            <input
+                              type="radio"
+                              name="city"
+                              value={city}
+                              defaultChecked={search.city === city}
+                              className="size-4 accent-[#b28a49]"
+                            />
+                            {city}
+                          </span>
+                        </label>
+                      ))}
+                    </FilterGroup>
+                  ) : null}
+
+                  <FilterGroup title={tx(board.categoryHeading)} open dark>
+                    {facets.areas.map((area) => (
+                      <label key={area.slug} className="flex cursor-pointer items-center justify-between gap-3 text-[14px] text-white/88">
+                        <span className="inline-flex items-center gap-2">
+                          <input type="checkbox" name="area" value={area.slug} defaultChecked={areas.includes(area.slug)} className="size-4 accent-[#b28a49]" />
                           {tx(area.label)}
                         </span>
-                        <span className="text-[12px] text-muted">{area.count}</span>
+                        <span className="text-[12px] text-white/55">({area.count})</span>
                       </label>
                     ))}
                   </FilterGroup>
 
-                  <FilterGroup title={tx(board.experienceHeading)}>
+                  <FilterGroup title={tx(board.experienceHeading)} dark>
                     {facets.experience.map((item) => {
                       const label =
                         item.band === 'entry' ? board.experienceEntry : item.band === 'mid' ? board.experienceMid : board.experienceSenior;
                       return (
-                        <label key={item.band} className="flex cursor-pointer items-center justify-between gap-3 text-[14px] text-ink-2">
+                        <label key={item.band} className="flex cursor-pointer items-center justify-between gap-3 text-[14px] text-white/88">
                           <span className="inline-flex items-center gap-2">
-                            <input type="checkbox" name="exp" value={item.band} defaultChecked={experience.includes(item.band)} className="size-4 accent-[#142438]" />
+                            <input type="checkbox" name="exp" value={item.band} defaultChecked={experience.includes(item.band)} className="size-4 accent-[#b28a49]" />
                             {tx(label)}
                           </span>
-                          <span className="text-[12px] text-muted">{item.count}</span>
+                          <span className="text-[12px] text-white/55">({item.count})</span>
                         </label>
                       );
                     })}
                   </FilterGroup>
 
-                  <FilterGroup title={tx(board.employmentHeading)}>
+                  <FilterGroup title={tx(board.employmentHeading)} dark>
                     {facets.employment.map((item) => (
-                      <label key={item.type} className="flex cursor-pointer items-center justify-between gap-3 text-[14px] text-ink-2">
+                      <label key={item.type} className="flex cursor-pointer items-center justify-between gap-3 text-[14px] text-white/88">
                         <span className="inline-flex items-center gap-2">
                           <input
                             type="checkbox"
                             name="type"
                             value={item.type}
                             defaultChecked={employmentTypes.includes(item.type)}
-                            className="size-4 accent-[#142438]"
+                            className="size-4 accent-[#b28a49]"
                           />
                           {tx(EMPLOYMENT_LABELS[item.type])}
                         </span>
-                        <span className="text-[12px] text-muted">{item.count}</span>
+                        <span className="text-[12px] text-white/55">({item.count})</span>
                       </label>
                     ))}
                   </FilterGroup>
 
-                  <FilterGroup title={tx(board.salaryHeading)}>
+                  <FilterGroup title={tx(board.salaryHeading)} dark>
                     <div className="grid grid-cols-2 gap-2">
-                      <label className="text-[12px] text-muted">
+                      <label className="text-[12px] text-white/65">
                         {tx(board.salaryMinLabel)}
                         <input
                           type="number"
@@ -303,10 +343,10 @@ export default async function JobsPage({
                           step={50}
                           placeholder={String(facets.salaryMin)}
                           defaultValue={salaryMin ?? ''}
-                          className="mt-1 w-full rounded-[10px] border border-line bg-[#f4f5f7] px-3 py-2 text-[14px] text-ink"
+                          className="mt-1 w-full rounded-[10px] border border-white/15 bg-white/8 px-3 py-2 text-[14px] text-white placeholder:text-white/40"
                         />
                       </label>
-                      <label className="text-[12px] text-muted">
+                      <label className="text-[12px] text-white/65">
                         {tx(board.salaryMaxLabel)}
                         <input
                           type="number"
@@ -315,11 +355,11 @@ export default async function JobsPage({
                           step={50}
                           placeholder={String(facets.salaryMax)}
                           defaultValue={salaryMax ?? ''}
-                          className="mt-1 w-full rounded-[10px] border border-line bg-[#f4f5f7] px-3 py-2 text-[14px] text-ink"
+                          className="mt-1 w-full rounded-[10px] border border-white/15 bg-white/8 px-3 py-2 text-[14px] text-white placeholder:text-white/40"
                         />
                       </label>
                     </div>
-                    <p className="m-0 mt-2 text-[12px] text-muted">
+                    <p className="m-0 mt-2 text-[12px] text-white/55">
                       €{facets.salaryMin.toLocaleString('en-US')} – €{facets.salaryMax.toLocaleString('en-US')}
                     </p>
                   </FilterGroup>
@@ -334,12 +374,26 @@ export default async function JobsPage({
               </aside>
 
               <div>
-                <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-                  <h2 className="display-serif m-0 text-[clamp(22px,2.6cqi,30px)] font-normal tracking-[-0.02em] text-[#142438]">
-                    {fill(tx(board.resultsHeading.replace('{count}+', '{count}')), {
-                      count: number.format(result.total),
-                    })}
-                  </h2>
+                <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+                  <div>
+                    <p className="m-0 text-[15px] text-ink-2">
+                      {tx('Showing')}{' '}
+                      <span className="font-semibold text-[#b28a49]">{number.format(result.total)}</span>{' '}
+                      {tx(result.total === 1 ? 'job' : 'jobs')}
+                      {vacanciesOnPage > result.jobs.length ? (
+                        <>
+                          {' '}
+                          · <span className="font-semibold text-[#b28a49]">{number.format(vacanciesOnPage)}</span>{' '}
+                          {tx('openings on this page')}
+                        </>
+                      ) : null}
+                    </p>
+                    <h2 className="m-0 mt-1 text-[clamp(22px,2.6cqi,30px)] font-semibold tracking-[-0.02em] text-[#142438]">
+                      {fill(tx(board.resultsHeading.replace('{count}+', '{count}')), {
+                        count: number.format(result.total),
+                      })}
+                    </h2>
+                  </div>
                   <form method="get" action={localePath(locale, '/jobs')} className="flex flex-wrap items-center gap-2 text-[14px]">
                     {search.q ? <input type="hidden" name="q" value={search.q} /> : null}
                     {search.city ? <input type="hidden" name="city" value={search.city} /> : null}
@@ -362,7 +416,7 @@ export default async function JobsPage({
                       </select>
                     </label>
                     <button type="submit" className="rounded-[8px] border border-line bg-white px-3 py-2 text-[13px] font-medium text-[#142438]">
-                      {tx(board.searchButton)}
+                      {tx('Apply')}
                     </button>
                   </form>
                 </div>
@@ -450,12 +504,33 @@ export default async function JobsPage({
   );
 }
 
-function FilterGroup({ title, children, open = false }: { title: string; children: ReactNode; open?: boolean }) {
+function FilterGroup({
+  title,
+  children,
+  open = false,
+  dark = false,
+}: {
+  title: string;
+  children: ReactNode;
+  open?: boolean;
+  dark?: boolean;
+}) {
   return (
-    <details open={open} className="group border-b border-[#eee7dc] py-3">
-      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-[13px] font-semibold text-[#142438] [&::-webkit-details-marker]:hidden">
+    <details open={open} className={`group border-b py-3 ${dark ? 'border-white/12' : 'border-[#eee7dc]'}`}>
+      <summary
+        className={`flex cursor-pointer list-none items-center justify-between gap-3 text-[13px] font-semibold [&::-webkit-details-marker]:hidden ${
+          dark ? 'text-white' : 'text-[#142438]'
+        }`}
+      >
         {title}
-        <svg viewBox="0 0 24 24" className="size-4 text-[#b28a49] transition group-open:rotate-180" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
+        <svg
+          viewBox="0 0 24 24"
+          className={`size-4 transition group-open:rotate-180 ${dark ? 'text-[#b28a49]' : 'text-[#b28a49]'}`}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={1.8}
+          aria-hidden
+        >
           <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </summary>
