@@ -24,10 +24,6 @@ function subscribeConsent(onStoreChange: () => void) {
   };
 }
 
-function consentSnapshot(): ConsentPrefs {
-  return readConsentPrefs();
-}
-
 function subscribeNothing() {
   return () => undefined;
 }
@@ -35,11 +31,12 @@ function subscribeNothing() {
 /**
  * First-visit consent panel + revisit FAB. Essential always on; marketing
  * embeds are optional and stored in localStorage. Client-only after mount so
- * localStorage never fights the server HTML.
+ * localStorage never fights the server HTML. Prefs come from a cached
+ * snapshot — a new object every getSnapshot call would crash the page.
  */
 export function ConsentPreferences({ locale }: { locale: Locale }) {
   const mounted = useSyncExternalStore(subscribeNothing, () => true, () => false);
-  const prefs = useSyncExternalStore(subscribeConsent, consentSnapshot, () => DEFAULT_CONSENT);
+  const prefs = useSyncExternalStore(subscribeConsent, readConsentPrefs, () => DEFAULT_CONSENT);
   const [override, setOverride] = useState<'banner' | 'prefs' | 'hidden' | null>(null);
   const [draftMarketing, setDraftMarketing] = useState(false);
 

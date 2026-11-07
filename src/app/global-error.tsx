@@ -10,6 +10,9 @@ import Link from 'next/link';
  * `onRequestError`; the digest lets support match a screenshot to the log.
  */
 export default function GlobalError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
+  // Log so a flash-then-crash can be matched to digest in the browser console.
+  console.error('global error', error.digest ?? error.message, error);
+
   return (
     <html lang="en">
       <body style={{ fontFamily: 'system-ui, sans-serif', margin: 0, padding: '48px 24px', color: '#1b1a17', background: '#f7f8fa' }}>
