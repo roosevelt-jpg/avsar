@@ -207,13 +207,13 @@ export function WhatsAppDesk({ phone, copy, locale }: { phone: string; copy: Wha
     <>
       <button
         type="button"
-        aria-label="Chat"
-        title="Chat"
-        className="btn-gradient fixed bottom-[max(1rem,env(safe-area-inset-bottom))] end-[max(1rem,env(safe-area-inset-right))] z-50 inline-flex size-11 items-center justify-center rounded-[10px] p-0 shadow-[0_10px_24px_-12px_rgba(20,36,56,0.55)]"
+        aria-label="WhatsApp chat"
+        title="WhatsApp"
+        className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-[max(1rem,env(safe-area-inset-right))] z-50 inline-flex size-14 items-center justify-center rounded-full border-0 bg-[#25D366] p-0 text-white shadow-[0_12px_28px_-8px_rgba(18,140,70,0.65)] hover:bg-[#1ebe57]"
         onClick={() => dialog.current?.showModal()}
       >
-        <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
-          <path d="M5 6.5A2.5 2.5 0 017.5 4h9A2.5 2.5 0 0119 6.5V13a2.5 2.5 0 01-2.5 2.5H10l-4.2 3.2c-.5.4-1.3 0-1.3-.6V6.5z" strokeLinejoin="round" />
+        <svg viewBox="0 0 24 24" className="size-7" fill="currentColor" aria-hidden>
+          <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0012.04 2zm0 1.82c4.46 0 8.09 3.63 8.09 8.09 0 4.46-3.63 8.09-8.09 8.09-1.42 0-2.8-.37-4.01-1.07l-.29-.17-3.12.82.83-3.04-.19-.31a8.03 8.03 0 01-1.22-4.32c0-4.46 3.63-8.09 8.09-8.09zm4.63 10.41c-.25-.13-1.48-.73-1.71-.81-.23-.09-.4-.13-.56.12-.17.25-.64.81-.79.98-.14.16-.29.19-.54.06-.25-.12-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.39-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.17-.25.25-.41.09-.17.04-.31-.02-.43-.06-.12-.56-1.35-.77-1.85-.2-.48-.41-.42-.56-.42h-.48c-.17 0-.43.06-.66.31-.23.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74 2.49 1.08 2.49.72 2.94.67.45-.04 1.45-.59 1.65-1.16.21-.57.21-1.06.14-1.16-.06-.11-.23-.17-.48-.29z" />
         </svg>
       </button>
 

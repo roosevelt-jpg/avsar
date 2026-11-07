@@ -92,7 +92,7 @@ export const HOME: DefaultPage = {
       'features',
       {
         eyebrow: 'Sectors we recruit for',
-        title: 'Our Verticals',
+        title: 'Our Categories',
         intro: 'Skilled roles with Portuguese employers — hospitality, care, trades, logistics and more.',
         columns: '4',
         style: 'verticals',

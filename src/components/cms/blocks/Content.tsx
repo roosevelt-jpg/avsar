@@ -626,7 +626,7 @@ function FeatureSectorCards({ data, list }: { data: BlockData; list: BlockData[]
 }
 
 /**
- * DSS-inspired verticals: centered heading, soft wash, icon columns separated
+ * Category grid (DSS-style columns): centered heading, soft wash, icon columns separated
  * by dotted rules. Palette stays S&A navy/gold; copy is ours.
  */
 function FeatureVerticals({

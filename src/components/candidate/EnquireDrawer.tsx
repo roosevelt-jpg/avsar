@@ -44,7 +44,7 @@ export function EnquireDrawer({ locale }: { locale: Locale }) {
         aria-expanded={open}
         aria-controls="enquire-drawer"
         onClick={() => setOpen(true)}
-        className={`fixed end-0 top-1/2 z-40 origin-bottom-right -translate-y-1/2 cursor-pointer rounded-s-[8px] border-0 bg-[#b28a49] px-2.5 py-4 text-[13px] font-semibold tracking-[0.08em] text-[#142438] shadow-[0_8px_24px_rgba(20,36,56,0.25)] transition-[opacity,transform] duration-300 [writing-mode:vertical-rl] rotate-180 hover:bg-[#9a743c] ${
+        className={`fixed top-1/2 right-0 z-40 -translate-y-1/2 cursor-pointer rounded-l-[8px] border-0 bg-[#b28a49] px-2.5 py-4 text-[13px] font-semibold tracking-[0.08em] text-[#142438] shadow-[0_8px_24px_rgba(20,36,56,0.25)] transition-opacity duration-300 [writing-mode:vertical-rl] [text-orientation:mixed] hover:bg-[#9a743c] ${
           visible && !open ? 'opacity-100' : 'pointer-events-none opacity-0'
         }`}
       >
@@ -64,7 +64,7 @@ export function EnquireDrawer({ locale }: { locale: Locale }) {
             role="dialog"
             aria-modal="true"
             aria-label="Send an enquiry"
-            className="fixed inset-y-0 end-0 z-50 flex w-full max-w-[420px] translate-x-0 flex-col bg-white text-[#142438] shadow-[-12px_0_40px_rgba(20,36,56,0.2)]"
+            className="fixed inset-y-0 right-0 z-50 flex w-full max-w-[420px] flex-col bg-white text-[#142438] shadow-[-12px_0_40px_rgba(20,36,56,0.2)]"
           >
             <div className="flex items-center justify-between border-b border-[#142438]/12 px-5 py-4">
               <div>

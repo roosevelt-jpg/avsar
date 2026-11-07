@@ -7,30 +7,48 @@ import { rememberLocale } from '@/lib/i18n/locale-cookie';
 import { barePath, localePath } from '@/lib/i18n/path';
 
 /**
- * Language menu matched to the mockup header: outline control with a globe,
- * native disclosure so it works before JavaScript arrives.
+ * Language menu. On the navy shop topline it uses a light outline so the main
+ * white header can stay free for nav and CTAs.
  */
-export function LocaleToggle({ locale }: { locale: Locale }) {
+export function LocaleToggle({
+  locale,
+  tone = 'header',
+}: {
+  locale: Locale;
+  tone?: 'header' | 'topline';
+}) {
   const pathname = usePathname();
   const bare = barePath(pathname);
+  const topline = tone === 'topline';
 
   return (
     <details className="group relative">
       <summary
         aria-label="Language"
-        className="t-colors flex cursor-pointer list-none items-center gap-1 rounded-[5px] border border-[#8098af] bg-transparent px-2 py-2 text-[13px] font-medium text-[#142438] sm:gap-1.5 sm:px-2.5 [&::-webkit-details-marker]:hidden"
+        className={
+          topline
+            ? 't-colors flex cursor-pointer list-none items-center gap-1 rounded-[4px] border border-white/30 bg-transparent px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.04em] text-[#e6eff7] hover:border-white hover:text-white sm:gap-1.5 sm:px-2.5 [&::-webkit-details-marker]:hidden'
+            : 't-colors flex cursor-pointer list-none items-center gap-1 rounded-[5px] border border-[#8098af] bg-transparent px-2 py-2 text-[13px] font-medium text-[#142438] sm:gap-1.5 sm:px-2.5 [&::-webkit-details-marker]:hidden'
+        }
       >
-        <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth={1.7} aria-hidden>
+        <svg viewBox="0 0 24 24" className={topline ? 'size-3.5' : 'size-4'} fill="none" stroke="currentColor" strokeWidth={1.7} aria-hidden>
           <circle cx="12" cy="12" r="9" />
           <path d="M3 12h18 M12 3c2.5 2.5 3.5 5.5 3.5 9s-1 6.5-3.5 9c-2.5-2.5-3.5-5.5-3.5-9s1-6.5 3.5-9z" />
         </svg>
         <span lang={locale} className="hidden sm:inline">
           {localeLabels[locale]}
         </span>
-        <span lang={locale} className="font-mono text-[11px] uppercase sm:hidden">
+        <span lang={locale} className={`font-mono uppercase ${topline ? 'text-[10px] sm:hidden' : 'text-[11px] sm:hidden'}`}>
           {locale}
         </span>
-        <svg viewBox="0 0 24 24" className="hidden size-3.5 text-[#142438]/70 group-open:rotate-180 sm:block" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
+        <svg
+          viewBox="0 0 24 24"
+          className={`hidden group-open:rotate-180 sm:block ${topline ? 'size-3 text-white/70' : 'size-3.5 text-[#142438]/70'}`}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          aria-hidden
+        >
           <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </summary>
