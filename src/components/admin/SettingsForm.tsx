@@ -98,13 +98,16 @@ export function GeneralSettings({ initial }: { initial: Pick<SiteSettings, 'gene
           <Field label="Blurb under the logo">
             <textarea className={INPUT} rows={3} value={footer.blurb} onChange={(e) => setFooter({ ...footer, blurb: e.target.value })} />
           </Field>
+          <Field label="Disclaimer under the blurb" help="Visa and outcomes wording. Leave blank to hide.">
+            <textarea className={INPUT} rows={2} value={footer.disclaimer} onChange={(e) => setFooter({ ...footer, disclaimer: e.target.value })} />
+          </Field>
           <MediaField
-            label="Background photograph"
+            label="Optional background photograph"
             accept="image"
             value={footer.backgroundImage}
             onChange={(backgroundImage) => setFooter({ ...footer, backgroundImage })}
           />
-          <Field label="Background description">
+          <Field label="Background description" help="Unused when the photograph is empty (solid navy footer).">
             <input className={INPUT} value={footer.backgroundImageAlt} onChange={(e) => setFooter({ ...footer, backgroundImageAlt: e.target.value })} />
           </Field>
           <Field label="Copyright line" help="Use {{year}} and {{brand}}.">
@@ -113,7 +116,7 @@ export function GeneralSettings({ initial }: { initial: Pick<SiteSettings, 'gene
         </div>
 
         <FooterLinkEditor
-          title="Quick links column"
+          title="Explore column"
           titleValue={footer.quickLinksTitle}
           onTitle={(quickLinksTitle) => setFooter({ ...footer, quickLinksTitle })}
           links={footer.quickLinks}
@@ -136,6 +139,7 @@ export function GeneralSettings({ initial }: { initial: Pick<SiteSettings, 'gene
         />
 
         <h3 className="m-0 mt-6 text-[15px] font-semibold">Trust badges</h3>
+        <p className="m-0 mt-1 text-[12px] text-ink-2">Optional. The HTML-44 footer ships with none.</p>
         <ul className="m-0 mt-2 flex list-none flex-col gap-2 p-0">
           {footer.trustBadges.map((badge, index) => (
             <li key={index} className="grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
@@ -177,7 +181,7 @@ export function GeneralSettings({ initial }: { initial: Pick<SiteSettings, 'gene
           + Add badge
         </button>
 
-        <h3 className="m-0 mt-6 text-[15px] font-semibold">Stay connected</h3>
+        <h3 className="m-0 mt-6 text-[15px] font-semibold">Stay informed</h3>
         <div className="mt-2 grid gap-3">
           <Field label="Subscribe heading">
             <input className={INPUT} value={footer.subscribeTitle} onChange={(e) => setFooter({ ...footer, subscribeTitle: e.target.value })} />

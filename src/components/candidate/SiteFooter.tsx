@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { Wordmark } from '@/components/ui/Wordmark';
@@ -58,9 +57,9 @@ function asIcon(name: string): IconName {
 }
 
 /**
- * Marketing footer from the uploaded mockup shell: navy band, four columns,
- * gold underlines, chevron links, subscribe + socials, gold legal rule.
- * Columns and copy come from Settings › Footer.
+ * Public footer from the HTML-44 shell: solid navy, four columns (brand,
+ * Explore, Company, Stay informed), then a quiet legal bar. Columns and copy
+ * come from Settings › Footer so marketing can edit without a deploy.
  */
 export async function SiteFooter({ locale }: { locale: Locale }) {
   const settings = await getSiteSettings();
@@ -72,29 +71,26 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
     .replaceAll('{{brand}}', general.siteName || company.tradingAs);
   const t = (english: string) => siteText(locale, english);
   const page = (path: string) => localHref(locale, path);
-  /* Prefer a real cityscape for the lower band. The uploaded footer PNG is a
-     full UI mockup, not a photograph — never use it as the skyline fill. */
-  const skyline =
-    footer.backgroundImage && !footer.backgroundImage.includes('footer-lisbon')
-      ? footer.backgroundImage
-      : '/photos/lisbon.jpg';
 
   return (
-    <footer className="relative overflow-hidden bg-[#142438] text-white">
-      <div className="relative mx-auto grid w-full max-w-[1200px] gap-10 px-[clamp(16px,4cqi,56px)] pt-[clamp(40px,7cqi,80px)] pb-10 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.75fr)_minmax(0,0.75fr)_minmax(0,1fr)]">
-        <div className="sm:col-span-2 lg:col-span-1">
+    <footer className="bg-[#142438] text-white">
+      <div className="mx-auto grid w-full max-w-[1240px] gap-10 px-[clamp(16px,4cqi,26px)] py-[clamp(40px,6cqi,64px)] sm:grid-cols-2 lg:grid-cols-4">
+        <div>
           <span className="inline-block max-w-[min(208px,70vw)]">
             <Wordmark href={page('/')} tone="dark" size={36} />
           </span>
           {footer.blurb ? (
-            <p className="m-0 mt-5 max-w-[38ch] text-[14px] leading-[1.6] text-white/88">{t(footer.blurb)}</p>
+            <p className="m-0 mt-4 max-w-[36ch] text-[14px] leading-[1.55] text-white/88">{t(footer.blurb)}</p>
+          ) : null}
+          {footer.disclaimer ? (
+            <p className="m-0 mt-3 max-w-[36ch] text-[12px] leading-[1.5] text-white/55">{t(footer.disclaimer)}</p>
           ) : null}
           {footer.trustBadges.length > 0 ? (
-            <ul className="m-0 mt-6 flex list-none flex-wrap gap-2.5 p-0">
+            <ul className="m-0 mt-5 flex list-none flex-wrap gap-2 p-0">
               {footer.trustBadges.map((badge) => (
                 <li
                   key={badge.label}
-                  className="inline-flex max-w-full items-center gap-2 rounded-[6px] border border-[var(--color-gold)]/55 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.04em] text-white/95 [overflow-wrap:anywhere]"
+                  className="inline-flex max-w-full items-center gap-2 rounded-[6px] border border-white/25 px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.04em] text-white/90"
                 >
                   <Icon name={asIcon(badge.icon)} className="size-3.5 text-[var(--color-gold)]" />
                   {t(badge.label)}
@@ -114,12 +110,11 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
         />
 
         <div>
-          <h2 className="display-serif m-0 text-[22px] font-normal text-white">
-            {t(footer.subscribeTitle)}
-            <span aria-hidden className="mt-2 block h-px w-10 bg-[var(--color-gold)]" />
-          </h2>
-          <p className="m-0 mt-4 text-[14px] leading-[1.5] text-white/85">{t(footer.subscribeNote)}</p>
-          <div className="mt-5">
+          <h2 className="m-0 text-[15px] font-semibold tracking-[-0.02em] text-white">{t(footer.subscribeTitle)}</h2>
+          {footer.subscribeNote ? (
+            <p className="m-0 mt-3 text-[14px] leading-[1.5] text-white/80">{t(footer.subscribeNote)}</p>
+          ) : null}
+          <div className="mt-4">
             <FooterSubscribe
               locale={locale}
               labels={{
@@ -133,9 +128,9 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
             />
           </div>
           {socials.length > 0 ? (
-            <div className="mt-8">
-              <p className="m-0 text-[14px] font-semibold text-white">{t(footer.followTitle)}</p>
-              <ul className="m-0 mt-3 flex list-none flex-wrap gap-2.5 p-0">
+            <div className="mt-6">
+              <p className="m-0 text-[13px] font-semibold text-white/90">{t(footer.followTitle)}</p>
+              <ul className="m-0 mt-2.5 flex list-none flex-wrap gap-2 p-0">
                 {socials.map(([name, url]) => (
                   <li key={name}>
                     <a
@@ -144,9 +139,9 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
                       rel="noopener noreferrer"
                       aria-label={name}
                       title={name}
-                      className="t-colors grid size-10 place-items-center rounded-[8px] border border-white/45 text-white no-underline hover:border-[var(--color-gold)] hover:text-[var(--color-gold)]"
+                      className="t-colors grid size-9 place-items-center rounded-[6px] border border-white/30 text-white no-underline hover:border-white hover:text-white"
                     >
-                      <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                      <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                         {SOCIAL_ICONS[name] ?? <circle cx="12" cy="12" r="8" />}
                       </svg>
                     </a>
@@ -158,46 +153,14 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
         </div>
       </div>
 
-      {/* Mockup skyline band under the columns — photograph only, not the UI PNG. */}
-      <div className="relative mt-4 h-[140px] w-full sm:h-[180px]">
-        <Image
-          src={skyline}
-          alt={footer.backgroundImageAlt || ''}
-          fill
-          sizes="100vw"
-          className="object-cover object-[center_70%] opacity-70"
-          unoptimized={!skyline.startsWith('/')}
-        />
-        <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-[#142438] via-[#142438]/35 to-transparent" />
-      </div>
-
-      <div className="relative border-t border-[var(--color-gold)]/70">
-        <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-4 px-[clamp(20px,4cqi,56px)] py-5 md:flex-row md:items-center md:justify-between">
-          <div className="flex min-w-0 flex-wrap items-center gap-x-5 gap-y-3">
-            {/* Parent-group mark restored on the left of the legal bar, as on the old site. */}
-            {company.parentBrand ? (
-              <a
-                href={company.website || undefined}
-                target={company.website ? '_blank' : undefined}
-                rel={company.website ? 'noopener noreferrer' : undefined}
-                className="t-colors shrink-0 opacity-90 hover:opacity-100"
-              >
-                <Image
-                  src="/smith-adams-group-light-320.png"
-                  alt={`${company.parentBrand} Group`}
-                  width={320}
-                  height={68}
-                  className="h-auto w-[120px]"
-                />
-              </a>
-            ) : null}
-            <p className="m-0 text-[13px] text-white/88">{copyright}</p>
-          </div>
-          <nav aria-label="Legal" className="flex flex-wrap items-center gap-x-3 gap-y-2 text-[13px]">
+      <div className="border-t border-white/15">
+        <div className="mx-auto flex w-full max-w-[1240px] flex-col gap-3 px-[clamp(16px,4cqi,26px)] py-4 text-[13px] text-white/70 sm:flex-row sm:items-center sm:justify-between">
+          <p className="m-0">{copyright}</p>
+          <nav aria-label="Legal" className="flex flex-wrap items-center gap-x-2 gap-y-1">
             {footer.legalLinks.map((item, index) => (
-              <span key={item.href} className="inline-flex items-center gap-3">
-                {index > 0 ? <span aria-hidden className="text-white/45">|</span> : null}
-                <Link href={page(item.href)} className="t-colors text-white/90 no-underline hover:text-[var(--color-gold)]">
+              <span key={item.href} className="inline-flex items-center gap-2">
+                {index > 0 ? <span aria-hidden className="text-white/35">•</span> : null}
+                <Link href={page(item.href)} className="t-colors text-white/75 no-underline hover:text-white">
                   {t(item.label)}
                 </Link>
               </span>
@@ -212,17 +175,11 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
 function FooterLinkColumn({ title, links }: { title: string; links: { href: string; label: string }[] }) {
   return (
     <div className="min-w-0">
-      <h2 className="display-serif m-0 text-[22px] font-normal text-white">
-        {title}
-        <span aria-hidden className="mt-2 block h-px w-10 bg-[var(--color-gold)]" />
-      </h2>
-      <ul className="m-0 mt-5 flex list-none flex-col gap-3 p-0">
+      <h2 className="m-0 text-[15px] font-semibold tracking-[-0.02em] text-white">{title}</h2>
+      <ul className="m-0 mt-4 flex list-none flex-col gap-2.5 p-0">
         {links.map((item) => (
           <li key={`${item.href}-${item.label}`}>
-            <Link href={item.href} className="t-colors inline-flex items-center gap-2 text-[14px] text-white/90 no-underline hover:text-[var(--color-gold)]">
-              <span aria-hidden className="text-[var(--color-gold)]">
-                ›
-              </span>
+            <Link href={item.href} className="t-colors text-[14px] text-white/80 no-underline hover:text-white">
               {item.label}
             </Link>
           </li>

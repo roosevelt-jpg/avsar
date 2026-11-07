@@ -44,6 +44,7 @@ const schemas = {
   navigation: z.object({ items: z.array(nav).max(10), headerCta: z.object({ label: text(40), href: url, labels }) }),
   footer: z.object({
     blurb: text(400),
+    disclaimer: text(240),
     backgroundImage: url,
     backgroundImageAlt: text(160),
     quickLinksTitle: text(60),

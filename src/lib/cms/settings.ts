@@ -141,7 +141,9 @@ export type FooterTrustBadge = { label: string; icon: string };
 
 export type FooterSettings = {
   blurb: string;
-  /** Wide photograph behind the lower footer band. Empty = solid navy. */
+  /** Quiet disclaimer under the blurb (visa / outcomes wording). */
+  disclaimer: string;
+  /** Optional photograph behind the lower band. Empty = solid navy (HTML-44). */
   backgroundImage: string;
   backgroundImageAlt: string;
   quickLinksTitle: string;
@@ -446,41 +448,38 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     },
   },
   footer: {
-    blurb: 'A specialist international recruitment agency connecting skilled professionals with trusted employers in Portugal.',
-    backgroundImage: '/photos/lisbon.jpg',
-    backgroundImageAlt: 'Lisbon skyline — bridge lights and the waterfront at dusk',
-    quickLinksTitle: 'Quick Links',
+    /* Columns and copy mirror the HTML-44 public footer shell. */
+    blurb: 'Connecting skilled professionals in India with employers in Portugal.',
+    disclaimer: 'Recruitment outcomes and visa approvals depend on applicable requirements.',
+    backgroundImage: '',
+    backgroundImageAlt: '',
+    quickLinksTitle: 'Explore',
     quickLinks: [
-      { label: 'Home', href: '/' },
-      { label: 'Job Opportunities', href: '/jobs' },
-      { label: 'How It Works', href: '/how-it-works' },
-      { label: 'Why Portugal', href: '/why-portugal' },
-      { label: 'Visa & Relocation', href: '/visa-and-relocation' },
-      { label: 'For Employers', href: '/employers' },
+      { label: 'Jobs', href: '/jobs' },
+      { label: 'Industries', href: '/industries' },
+      { label: 'How it works', href: '/how-it-works' },
+      { label: 'Assessments', href: '/assessment' },
+      { label: 'Relocation', href: '/visa-and-relocation' },
     ],
     companyTitle: 'Company',
     companyLinks: [
-      { label: 'About Us', href: '/about' },
-      { label: 'Contact Us', href: '/contact' },
+      { label: 'About', href: '/about' },
+      { label: 'Contact', href: '/contact' },
       { label: 'FAQs', href: '/faq' },
-      { label: 'Success Stories', href: '/success-stories' },
-      { label: 'News & Insights', href: '/news-and-insights' },
+      { label: 'Employers', href: '/employers' },
+      { label: 'Create candidate profile', href: '/signup' },
     ],
     legalLinks: [
-      { label: 'Privacy Policy', href: '/privacy' },
-      { label: 'Terms of Service', href: '/terms' },
-      { label: 'Cookie Policy', href: '/cookie-policy' },
+      { label: 'Privacy', href: '/privacy' },
+      { label: 'Terms', href: '/terms' },
+      { label: 'Cookies', href: '/cookie-policy' },
     ],
-    trustBadges: [
-      { label: 'Trusted Recruitment', icon: 'shield' },
-      { label: 'EU Compliant', icon: 'globe' },
-      { label: 'Data Protected', icon: 'document' },
-    ],
-    subscribeTitle: 'Stay Connected',
-    subscribeNote: 'Get job updates, relocation tips and opportunities in Portugal.',
-    subscribePlaceholder: 'Enter your email address',
+    trustBadges: [],
+    subscribeTitle: 'Stay informed',
+    subscribeNote: 'Get recruitment news and platform updates.',
+    subscribePlaceholder: 'Email address',
     followTitle: 'Follow Us',
-    copyright: '© {{year}} {{brand}}. All rights reserved.',
+    copyright: '© {{year}} {{brand}} (Smith & Adams).',
   },
   applications: { requirePaidAssessment: false, allowQuickApply: true, filmUrl: '/video/intro.mp4', filmLabel: 'Watch how it works · under a minute' },
   seo: {
@@ -966,14 +965,18 @@ export function mergeSettings(rows: { key: string; value: unknown }[]): SiteSett
       quickLinks: linkList(storedFooter.quickLinks, DEFAULT_SETTINGS.footer.quickLinks, 10),
       companyLinks: linkList(storedFooter.companyLinks, DEFAULT_SETTINGS.footer.companyLinks, 10),
       legalLinks: linkList(storedFooter.legalLinks, DEFAULT_SETTINGS.footer.legalLinks, 8),
-      trustBadges:
-        Array.isArray(storedFooter.trustBadges) && storedFooter.trustBadges.length > 0
-          ? storedFooter.trustBadges
-              .filter((item): item is FooterTrustBadge => Boolean(item && typeof item === 'object'))
-              .map((item) => ({ label: String(item.label ?? ''), icon: String(item.icon ?? 'shield') }))
-              .filter((item) => item.label)
-              .slice(0, 6)
-          : DEFAULT_SETTINGS.footer.trustBadges,
+      /* Empty array is intentional (HTML-44 has no badges). Only fall back when missing. */
+      trustBadges: Array.isArray(storedFooter.trustBadges)
+        ? storedFooter.trustBadges
+            .filter((item): item is FooterTrustBadge => Boolean(item && typeof item === 'object'))
+            .map((item) => ({ label: String(item.label ?? ''), icon: String(item.icon ?? 'shield') }))
+            .filter((item) => item.label)
+            .slice(0, 6)
+        : DEFAULT_SETTINGS.footer.trustBadges,
+      disclaimer:
+        typeof storedFooter.disclaimer === 'string'
+          ? storedFooter.disclaimer
+          : DEFAULT_SETTINGS.footer.disclaimer,
     };
   }
   const storedGeneral = stored.general as Partial<SiteSettings['general']> | undefined;
