@@ -4,7 +4,7 @@
 -- The HTML-44 pack gives every candidate a Messages workspace. Threads already
 -- exist for the public desk; this migration lets a signed-in candidate own a
 -- thread and read/write their own messages without opening staff RLS.
--- Re-runnable.
+-- Candidates link via auth_user_id (not user_id). Re-runnable.
 -- ============================================================================
 
 alter table chat_threads
@@ -20,7 +20,7 @@ create policy chat_threads_candidate_select on chat_threads
   for select to authenticated
   using (
     candidate_id is not null
-    and candidate_id = (select id from candidates where user_id = auth.uid() limit 1)
+    and candidate_id in (select id from candidates where auth_user_id = (select auth.uid()))
   );
 
 -- Candidates open a new thread for themselves (web channel only).
@@ -28,7 +28,7 @@ drop policy if exists chat_threads_candidate_insert on chat_threads;
 create policy chat_threads_candidate_insert on chat_threads
   for insert to authenticated
   with check (
-    candidate_id = (select id from candidates where user_id = auth.uid() limit 1)
+    candidate_id in (select id from candidates where auth_user_id = (select auth.uid()))
     and channel = 'web'
   );
 
@@ -41,7 +41,7 @@ create policy assistant_messages_candidate_select on assistant_messages
     and exists (
       select 1 from chat_threads t
       where t.id = assistant_messages.thread_id
-        and t.candidate_id = (select id from candidates where user_id = auth.uid() limit 1)
+        and t.candidate_id in (select id from candidates where auth_user_id = (select auth.uid()))
     )
   );
 
@@ -55,6 +55,6 @@ create policy assistant_messages_candidate_insert on assistant_messages
     and exists (
       select 1 from chat_threads t
       where t.id = assistant_messages.thread_id
-        and t.candidate_id = (select id from candidates where user_id = auth.uid() limit 1)
+        and t.candidate_id in (select id from candidates where auth_user_id = (select auth.uid()))
     )
   );
