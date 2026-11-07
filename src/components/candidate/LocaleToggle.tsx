@@ -18,7 +18,7 @@ export function LocaleToggle({ locale }: { locale: Locale }) {
     <details className="group relative">
       <summary
         aria-label="Language"
-        className="t-colors flex cursor-pointer list-none items-center gap-1 rounded-[8px] border border-white/55 bg-transparent px-2 py-2 text-[13px] font-medium text-white sm:gap-1.5 sm:px-2.5 [&::-webkit-details-marker]:hidden"
+        className="t-colors flex cursor-pointer list-none items-center gap-1 rounded-[5px] border border-[#8098af] bg-transparent px-2 py-2 text-[13px] font-medium text-[#142438] sm:gap-1.5 sm:px-2.5 [&::-webkit-details-marker]:hidden"
       >
         <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth={1.7} aria-hidden>
           <circle cx="12" cy="12" r="9" />
@@ -30,7 +30,7 @@ export function LocaleToggle({ locale }: { locale: Locale }) {
         <span lang={locale} className="font-mono text-[11px] uppercase sm:hidden">
           {locale}
         </span>
-        <svg viewBox="0 0 24 24" className="hidden size-3.5 text-white/80 group-open:rotate-180 sm:block" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
+        <svg viewBox="0 0 24 24" className="hidden size-3.5 text-[#142438]/70 group-open:rotate-180 sm:block" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
           <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </summary>
