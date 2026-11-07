@@ -421,6 +421,7 @@ export const BLOCKS = {
           { value: 'value_cards', label: 'Elevated value cards (About page)' },
           { value: 'visa_desk', label: 'Visa checklist + relocation cards' },
           { value: 'sector_cards', label: 'Centered sector cards (Why Portugal)' },
+          { value: 'verticals', label: 'Icon columns with dividers (Our Verticals)' },
           { value: 'support_grid', label: 'Photo + 2×2 support cards (How it works)' },
         ],
       },

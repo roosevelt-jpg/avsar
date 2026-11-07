@@ -101,6 +101,67 @@ export const HOME: DefaultPage = {
       },
     ],
     [
+      'features',
+      {
+        eyebrow: 'Sectors we recruit for',
+        title: 'Our Verticals',
+        intro: 'Skilled roles with Portuguese employers — hospitality, care, trades, logistics and more.',
+        columns: '4',
+        style: 'verticals',
+        typing: false,
+        items: [
+          {
+            icon: 'briefcase',
+            title: 'Hospitality & hotels',
+            body: 'Front office, kitchen, F&B and hotel operations.',
+            link: { label: 'See jobs', href: '/jobs' },
+          },
+          {
+            icon: 'users',
+            title: 'Healthcare support',
+            body: 'Care and clinical support roles with written contracts.',
+            link: { label: 'See jobs', href: '/jobs' },
+          },
+          {
+            icon: 'home',
+            title: 'Construction & trades',
+            body: 'Skilled site and trade roles matched to verified experience.',
+            link: { label: 'See jobs', href: '/jobs' },
+          },
+          {
+            icon: 'globe',
+            title: 'Logistics & warehouses',
+            body: 'Warehouse, driving and supply-chain openings.',
+            link: { label: 'See jobs', href: '/jobs' },
+          },
+          {
+            icon: 'star',
+            title: 'Retail & service',
+            body: 'Store and customer-service roles for people-first candidates.',
+            link: { label: 'See jobs', href: '/jobs' },
+          },
+          {
+            icon: 'shield',
+            title: 'Facilities & cleaning',
+            body: 'Building services and facilities roles across Portugal.',
+            link: { label: 'See jobs', href: '/jobs' },
+          },
+          {
+            icon: 'euro',
+            title: 'Food production',
+            body: 'Kitchen and food-processing roles with clear pay terms.',
+            link: { label: 'See jobs', href: '/jobs' },
+          },
+          {
+            icon: 'document',
+            title: 'More on request',
+            body: 'Employers can request other roles through the portal.',
+            link: { label: 'All industries', href: '/industries' },
+          },
+        ],
+      },
+    ],
+    [
       'steps',
       {
         eyebrow: 'A SIMPLE, TRANSPARENT JOURNEY',

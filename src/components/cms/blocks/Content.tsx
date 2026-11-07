@@ -411,6 +411,7 @@ export function FeaturesBlock({ data, locale }: Props) {
   if (str(data, 'style') === 'mission') return <FeatureMission data={data} list={list} />;
   if (str(data, 'style') === 'value_cards') return <FeatureValueCards data={data} list={list} columns={columns} />;
   if (str(data, 'style') === 'sector_cards') return <FeatureSectorCards data={data} list={list} />;
+  if (str(data, 'style') === 'verticals') return <FeatureVerticals data={data} list={list} locale={locale} />;
   if (str(data, 'style') === 'support_grid') return <FeatureSupportGrid data={data} list={list} />;
   if (str(data, 'style') === 'visa_desk') return <FeatureVisaDesk data={data} list={list} />;
   const grid = featureColumns(columns);
@@ -617,6 +618,98 @@ function FeatureSectorCards({ data, list }: { data: BlockData; list: BlockData[]
           </li>
         ))}
       </ul>
+    </Section>
+  );
+}
+
+/**
+ * DSS-inspired verticals: centered heading, soft wash, icon columns separated
+ * by dotted rules. Palette stays S&A navy/gold; copy is ours.
+ */
+function FeatureVerticals({
+  data,
+  list,
+  locale,
+}: {
+  data: BlockData;
+  list: BlockData[];
+  locale: Locale;
+}) {
+  return (
+    <Section className="relative overflow-hidden !bg-[#f4f6f8] !py-[clamp(48px,7cqi,88px)]">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-[0.07]"
+        style={{
+          backgroundImage:
+            'radial-gradient(ellipse 70% 55% at 50% 40%, #142438 0%, transparent 70%)',
+        }}
+      />
+      <div className="relative z-10 mx-auto max-w-[1180px]">
+        <div className="mx-auto mb-[clamp(32px,4cqi,48px)] max-w-[640px] text-center">
+          {str(data, 'eyebrow') ? (
+            <p className="m-0 mb-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-[var(--color-gold)]">
+              {str(data, 'eyebrow')}
+            </p>
+          ) : null}
+          {str(data, 'title') ? (
+            <h2 className="m-0 text-balance text-[clamp(28px,3.6cqi,42px)] font-extrabold leading-[1.12] tracking-[-0.03em] text-[#142438]">
+              {str(data, 'title')}
+            </h2>
+          ) : null}
+          {str(data, 'title') ? (
+            <span aria-hidden className="mx-auto mt-4 block h-[3px] w-12 rounded-full bg-[var(--color-gold)]" />
+          ) : null}
+          {str(data, 'intro') ? (
+            <p className="m-0 mt-4 text-[15px] leading-[1.55] text-[#5c7084]">{str(data, 'intro')}</p>
+          ) : null}
+        </div>
+        <ul className="m-0 grid list-none grid-cols-1 divide-y divide-dashed divide-[#142438]/15 p-0 sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4">
+          {list.map((item, index) => {
+            const cardLink = link(item, 'link');
+            const inner = (
+              <>
+                <span className="mx-auto grid size-14 place-items-center text-[#142438]">
+                  <Icon name={str(item, 'icon') || 'briefcase'} className="size-8" />
+                </span>
+                <h3 className="m-0 mt-4 text-[16px] font-bold tracking-[-0.01em] text-[#142438]">
+                  {str(item, 'title')}
+                </h3>
+                {str(item, 'body') ? (
+                  <p className="m-0 mt-2 text-[13px] leading-[1.5] text-[#5c7084]">{str(item, 'body')}</p>
+                ) : null}
+              </>
+            );
+            /* Dotted column rules on larger screens; row rules via parent divide on phones. */
+            const colRule =
+              index % 2 === 1
+                ? 'sm:border-s sm:border-dashed sm:border-[#142438]/15'
+                : '';
+            const lgRule =
+              index % 4 !== 0 ? 'lg:border-s lg:border-dashed lg:border-[#142438]/15' : 'lg:border-s-0';
+            const rowRule = index >= 4 ? 'lg:border-t lg:border-dashed lg:border-[#142438]/15' : '';
+            return (
+              <li key={index} className={`px-5 py-8 text-center sm:px-6 ${colRule} ${lgRule} ${rowRule}`}>
+                {cardLink ? (
+                  <Link
+                    href={localHref(locale, cardLink.href)}
+                    className="t-colors block text-inherit no-underline hover:opacity-90"
+                  >
+                    {inner}
+                    {cardLink.label ? (
+                      <span className="mt-3 inline-block text-[12px] font-semibold text-[var(--color-gold)]">
+                        {cardLink.label} →
+                      </span>
+                    ) : null}
+                  </Link>
+                ) : (
+                  inner
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
     </Section>
   );
 }
