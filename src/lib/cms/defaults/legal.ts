@@ -1,4 +1,4 @@
-import { BRAND_SLIDES, slidesWithCaptions } from '@/lib/cms/brand-media';
+import { BRAND_SLIDES, PHOTO_KITCHEN, PHOTO_LISBON, PHOTO_PORTO, slidesWithCaptions } from '@/lib/cms/brand-media';
 import { makeBlocks, type DefaultPage } from './make';
 
 /**
@@ -320,9 +320,9 @@ export const CONTACT: DefaultPage = {
         highlights: [],
         layout: 'overlay',
         mediaType: 'image',
-        mediaSrc: '/photos/lisbon.jpg',
+        mediaSrc: PHOTO_LISBON.src,
         mediaPoster: '',
-        mediaAlt: 'Lisbon rooftops and castle hill overlooking the Tagus',
+        mediaAlt: PHOTO_LISBON.alt,
         slides: slidesWithCaptions(BRAND_SLIDES.contact),
         stats: [],
       },
@@ -362,7 +362,7 @@ export const CONTACT: DefaultPage = {
             body: 'Questions about jobs, the free test, visas or your application.',
             ctaLabel: 'Get Candidate Support',
             href: '#contact-form',
-            image: '/photos/brand/hero-lisbon-street.jpg',
+            image: PHOTO_PORTO.src,
           },
           {
             icon: 'briefcase',
@@ -370,7 +370,7 @@ export const CONTACT: DefaultPage = {
             body: 'Tell us the roles you need in Portugal. We shortlist assessed candidates.',
             ctaLabel: 'Hire Talent Today',
             href: '/employers',
-            image: '/photos/brand/employer-meeting.jpg',
+            image: PHOTO_KITCHEN.src,
           },
           {
             icon: 'clock',

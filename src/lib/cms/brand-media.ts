@@ -4,6 +4,9 @@
  * Paths live under `public/` so the CMS media picker and Settings forms can
  * keep or replace them later. Defaults import these packs so every shopfront
  * page ships a real slideshow instead of a single static frame.
+ *
+ * Prefer documentary place/work stills (Lisbon, Porto, kitchens, jobsites).
+ * Do not use `/photos/lisbon.jpg` — that file is Madrid Gran Vía, not Portugal.
  */
 
 export type BrandSlide = { src: string; alt: string; caption?: string };
@@ -21,35 +24,59 @@ export const HERO_LOOP = {
   poster: '/video/hero-poster.jpg',
 } as const;
 
+/** Real Portugal place photo — rooftops, Tagus, 25 de Abril Bridge. */
+export const PHOTO_LISBON = {
+  src: '/lisbon-rooftops-1200.jpg',
+  alt: 'Lisbon rooftops looking toward the Tagus and the 25 de Abril Bridge',
+} as const;
+
+/** Working kitchen crew — candid hospitality still. */
+export const PHOTO_KITCHEN = {
+  src: '/kitchen-work-1400.jpg',
+  alt: 'Kitchen team preparing food in a working restaurant kitchen',
+} as const;
+
+/** Construction site in Portugal. */
+export const PHOTO_SITE = {
+  src: '/photos/brand/hero-construction.jpg',
+  alt: 'Construction crew on a reinforced concrete site in Portugal',
+} as const;
+
+/** Lisbon tram on cobbles. */
+export const PHOTO_TRAM = {
+  src: '/photos/brand/journey-tram-real.jpg',
+  alt: 'Yellow Lisbon tram on a cobbled street',
+} as const;
+
+/** Porto Ribeira waterfront — Portugal place photo (not Lisbon). */
+export const PHOTO_PORTO = {
+  src: '/photos/brand/dash-banner.jpg',
+  alt: 'Porto Ribeira waterfront and Rabelo boats on the Douro',
+} as const;
+
 export const BRAND_SLIDES = {
   /* Documentary place/work stills — avoid posed AI portrait collages on heroes. */
-  careers: [
-    { src: '/lisbon-rooftops-1200.jpg', alt: 'Lisbon rooftops looking toward the Tagus and the 25 de Abril Bridge' },
-    { src: '/kitchen-work-1400.jpg', alt: 'Kitchen team preparing food in a working restaurant kitchen' },
-    { src: '/photos/brand/hero-construction.jpg', alt: 'Construction crew on a reinforced concrete site in Portugal' },
-    { src: '/photos/brand/journey-tram-real.jpg', alt: 'Yellow Lisbon tram on a cobbled street' },
-  ],
+  careers: [PHOTO_LISBON, PHOTO_KITCHEN, PHOTO_SITE, PHOTO_TRAM],
   jobs: [
-    { src: '/photos/brand/hero-kitchen-work.jpg', alt: 'Kitchen team at work in Portugal' },
-    { src: '/photos/brand/hero-jobsite.jpg', alt: 'Construction crew on site in Portugal' },
-    { src: '/photos/brand/hero-service-floor.jpg', alt: 'Restaurant service on the floor' },
-    { src: '/photos/brand/hero-lisbon-street.jpg', alt: 'Lisbon street where many roles are based' },
-    { src: '/photos/brand/journey-tram.jpg', alt: 'Everyday Lisbon — tram on a historic street' },
+    PHOTO_KITCHEN,
+    { src: '/photos/brand/hero-jobsite.jpg', alt: 'Workers tying rebar on a Portuguese building site' },
+    { src: '/photos/brand/hero-service-floor.jpg', alt: 'Plated dish on a restaurant service floor in Portugal' },
+    PHOTO_PORTO,
+    PHOTO_TRAM,
   ],
   journey: [
-    { src: '/photos/steps/profile.jpg', alt: 'Creating a career profile on a phone' },
-    { src: '/photos/steps/test.jpg', alt: 'Taking the free skills assessment' },
-    { src: '/photos/steps/apply.jpg', alt: 'Applying to a verified job' },
-    { src: '/photos/steps/interview.jpg', alt: 'Interviewing with an employer on a video call' },
-    { src: '/photos/steps/visa.jpg', alt: 'Preparing visa documents' },
-    { src: '/photos/steps/arrival.jpg', alt: 'Arriving in Portugal for work' },
-    { src: '/photos/brand/journey-tram.jpg', alt: 'A yellow Lisbon tram on a historic street' },
+    PHOTO_KITCHEN,
+    PHOTO_SITE,
+    { src: '/photos/documents.jpg', alt: 'Checking documents for a work visa' },
+    { src: '/photos/selected/flight.jpg', alt: 'Flight to Portugal after selection' },
+    PHOTO_TRAM,
+    PHOTO_LISBON,
   ],
   portugal: [
-    { src: '/photos/lisbon.jpg', alt: 'Lisbon waterfront and skyline' },
-    { src: '/lisbon-rooftops-1200.jpg', alt: 'Lisbon rooftops and the river Tagus' },
+    PHOTO_LISBON,
+    PHOTO_PORTO,
+    PHOTO_TRAM,
     { src: '/photos/brand/hero-hospitality.jpg', alt: 'Restaurant dining room in Portugal' },
-    { src: '/photos/brand/journey-tram.jpg', alt: 'Lisbon street with a yellow tram' },
     { src: '/photos/selected/housing.jpg', alt: 'Housing included with many roles' },
   ],
   visa: [
@@ -57,45 +84,40 @@ export const BRAND_SLIDES = {
     { src: '/photos/documents.jpg', alt: 'Checking documents for a work visa' },
     { src: '/photos/selected/flight.jpg', alt: 'Flight to Portugal after selection' },
     { src: '/photos/selected/contract.jpg', alt: 'Employment contract ready to sign' },
-    { src: '/photos/steps/arrival.jpg', alt: 'Arrival support in Portugal' },
-    { src: '/photos/brand/journey-tram.jpg', alt: 'Settling into life in Lisbon' },
+    PHOTO_TRAM,
+    PHOTO_LISBON,
   ],
   about: [
-    { src: '/photos/brand/hero-hospitality.jpg', alt: 'A busy restaurant floor in Portugal' },
-    { src: '/photos/brand/employer-meeting.jpg', alt: 'Hiring managers reviewing a placement' },
-    { src: '/photos/brand/hero-kitchen-work.jpg', alt: 'Kitchen work — a common Portugal role' },
-    { src: '/photos/lisbon.jpg', alt: 'Lisbon rooftops and the river' },
-    { src: '/photos/brand/journey-tram.jpg', alt: 'Everyday life in Lisbon' },
+    PHOTO_LISBON,
+    PHOTO_KITCHEN,
+    PHOTO_SITE,
+    { src: '/photos/brand/employer-handshake.jpg', alt: 'Handshake after agreeing a hiring brief' },
+    PHOTO_TRAM,
   ],
   contact: [
-    { src: '/photos/brand/employer-meeting.jpg', alt: 'Talking through a Portugal career move' },
+    PHOTO_LISBON,
     { src: '/photos/phone.jpg', alt: 'Support on WhatsApp and phone' },
-    { src: '/photos/brand/hero-service-floor.jpg', alt: 'Hospitality work in Portugal' },
-    { src: '/photos/lisbon.jpg', alt: 'Lisbon skyline' },
+    PHOTO_KITCHEN,
+    PHOTO_PORTO,
   ],
-  signup: [
-    { src: '/photos/brand/hero-lisbon-street.jpg', alt: 'Lisbon — where many roles are based' },
-    { src: '/photos/brand/hero-kitchen-work.jpg', alt: 'Kitchen work in Portugal' },
-    { src: '/photos/steps/profile.jpg', alt: 'Creating a free profile' },
-    { src: '/photos/brand/journey-tram.jpg', alt: 'Lisbon tram — your journey ahead' },
-  ],
+  signup: [PHOTO_LISBON, PHOTO_KITCHEN, PHOTO_TRAM, PHOTO_SITE],
   employers: [
-    { src: '/photos/brand/employer-meeting.jpg', alt: 'Hiring managers reviewing a placement together' },
-    { src: '/photos/brand/hero-kitchen-work.jpg', alt: 'Hospitality talent for Portuguese employers' },
-    { src: '/photos/brand/hero-jobsite.jpg', alt: 'Trade talent ready for Portuguese sites' },
-    { src: '/photos/brand/hero-lisbon-street.jpg', alt: 'Portugal — where placements are based' },
+    { src: '/photos/brand/employer-handshake.jpg', alt: 'Handshake after agreeing a hiring brief' },
+    PHOTO_KITCHEN,
+    PHOTO_SITE,
+    PHOTO_LISBON,
   ],
   employerRegister: [
-    { src: '/photos/brand/employer-meeting.jpg', alt: 'Employer team reviewing candidates' },
-    { src: '/photos/brand/employer-register-hero.jpg', alt: 'Employer reviewing candidates on a laptop' },
-    { src: '/photos/brand/hero-kitchen-work.jpg', alt: 'Hospitality talent for Portuguese employers' },
-    { src: '/photos/brand/hero-jobsite.jpg', alt: 'Trade talent for Portuguese sites' },
+    { src: '/photos/brand/employer-handshake.jpg', alt: 'Handshake after agreeing a hiring brief' },
+    PHOTO_KITCHEN,
+    PHOTO_SITE,
+    PHOTO_PORTO,
   ],
   jobDetailFallback: [
+    PHOTO_KITCHEN,
     { src: '/photos/kitchen.jpg', alt: 'Restaurant kitchen work in Portugal' },
-    { src: '/photos/brand/hero-kitchen-work.jpg', alt: 'Chef plating in a restaurant kitchen' },
-    { src: '/photos/brand/hero-service-floor.jpg', alt: 'Restaurant service on the floor' },
-    { src: '/photos/brand/hero-lisbon-street.jpg', alt: 'Lisbon, where many roles are based' },
+    { src: '/photos/brand/hero-service-floor.jpg', alt: 'Plated dish on a restaurant service floor' },
+    PHOTO_LISBON,
   ],
 } as const satisfies Record<string, BrandSlide[]>;
 

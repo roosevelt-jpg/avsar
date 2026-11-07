@@ -3,22 +3,25 @@
  * walkthrough paths in older page data are not in this repo, so a missing or
  * drawn image is swapped for one of these at render time. The label stays
  * whatever the page editor wrote.
+ *
+ * Prefer documentary Portugal place/work stills. Do not use `/photos/lisbon.jpg`
+ * — that file is Madrid Gran Vía, not Lisbon.
  */
 export const SCENE_PHOTOS = [
-  '/photos/kitchen.jpg',
-  '/photos/lisbon.jpg',
-  '/photos/documents.jpg',
-  '/photos/phone.jpg',
+  '/lisbon-rooftops-1200.jpg',
+  '/kitchen-work-1400.jpg',
+  '/photos/brand/hero-construction.jpg',
+  '/photos/brand/journey-tram-real.jpg',
 ] as const;
 
-/** One picture per step, in the order the homepage tells the story. */
+/** One picture per step — place/work documentary order, not staged hand gestures. */
 export const STEP_PHOTOS = [
-  '/photos/steps/profile.jpg',
-  '/photos/steps/test.jpg',
-  '/photos/steps/apply.jpg',
-  '/photos/steps/interview.jpg',
-  '/photos/steps/visa.jpg',
-  '/photos/steps/arrival.jpg',
+  '/kitchen-work-1400.jpg',
+  '/photos/documents.jpg',
+  '/photos/brand/hero-jobsite.jpg',
+  '/photos/brand/employer-handshake.jpg',
+  '/photos/selected/visa.jpg',
+  '/photos/brand/journey-tram-real.jpg',
 ] as const;
 
 const STEP_BY_PATH: Record<string, string> = {
@@ -41,31 +44,28 @@ export const SELECTED_FRAMES = [
   { src: '/photos/selected/visa.jpg', alt: 'A passport and the visa file' },
 ] as const;
 
+/** Paths that look like Portugal but are the wrong city or staged stock. */
+const BLOCKED_PHOTOS = ['/photos/lisbon.jpg', '/photos/brand/employer-meeting.jpg'];
+
+function isUsablePhoto(src: string): boolean {
+  if (!src) return false;
+  if (BLOCKED_PHOTOS.includes(src)) return false;
+  if (src.includes('/illustrations/')) return false;
+  if (src.startsWith('/walkthrough/')) return false;
+  if (src.startsWith('/video/')) return false;
+  return true;
+}
+
 export function scenePhoto(src: string, index: number): string {
   if (src && STEP_BY_PATH[src]) return STEP_BY_PATH[src];
-  if (
-    src &&
-    !src.includes('/illustrations/') &&
-    !src.startsWith('/walkthrough/') &&
-    !src.includes('lisbon-rooftops') &&
-    !src.startsWith('/video/')
-  ) {
-    return src;
-  }
+  if (isUsablePhoto(src)) return src;
   return SCENE_PHOTOS[index % SCENE_PHOTOS.length] ?? SCENE_PHOTOS[0];
 }
 
 /** A step card keeps the editor's own upload, and otherwise the picture for that step. */
 export function stepPhoto(src: string, index: number): string {
   if (src && STEP_BY_PATH[src]) return STEP_BY_PATH[src];
-  if (src && src.startsWith('/photos/steps/')) return src;
-  if (
-    src &&
-    !src.includes('/illustrations/') &&
-    !src.startsWith('/walkthrough/') &&
-    !src.startsWith('/video/')
-  ) {
-    return src;
-  }
+  if (src && src.startsWith('/photos/steps/') && isUsablePhoto(src)) return src;
+  if (isUsablePhoto(src)) return src;
   return STEP_PHOTOS[index % STEP_PHOTOS.length] ?? STEP_PHOTOS[0];
 }

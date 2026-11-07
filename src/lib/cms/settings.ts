@@ -504,7 +504,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
           'Tell us the roles you need. We deliver a pre-screened shortlist from India with recruitment and relocation support to Portugal.',
         ogTitle: '',
         ogDescription: '',
-        ogImage: '/photos/brand/employer-register-hero.jpg',
+        ogImage: '/photos/brand/employer-handshake.jpg',
       },
       pricing: {
         title: 'Pricing',
@@ -680,7 +680,10 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     badgeSubtext: 'Skilled • Verified • Compliant',
     badgeHref: '/employers/register',
     slides: [
-      { src: '/photos/brand/employer-meeting.jpg', alt: 'Hiring managers reviewing candidates together' },
+      { src: '/photos/brand/employer-handshake.jpg', alt: 'Handshake after agreeing a hiring brief' },
+      { src: '/kitchen-work-1400.jpg', alt: 'Kitchen team preparing food in a working restaurant kitchen' },
+      { src: '/photos/brand/hero-construction.jpg', alt: 'Construction crew on a Portuguese site' },
+      { src: '/lisbon-rooftops-1200.jpg', alt: 'Lisbon rooftops looking toward the Tagus' },
     ],
     /* Values stay empty unless real — the page hides empty stats. No mockup 1,200+ / 98%. */
     statsCandidatesValue: '',
@@ -699,8 +702,8 @@ export const DEFAULT_SETTINGS: SiteSettings = {
       { icon: 'headset', title: 'Dedicated Support', body: 'A dedicated team from hiring to onboarding.' },
     ],
     industriesTitle: 'Access Skilled Talent Across Key Industries',
-    industriesImage: '/photos/brand/journey-tram.jpg',
-    industriesImageAlt: 'A yellow Lisbon tram on a historic street',
+    industriesImage: '/photos/brand/journey-tram-real.jpg',
+    industriesImageAlt: 'Yellow Lisbon tram on a cobbled street',
     industries: [
       { icon: 'bed', label: 'Hospitality & Tourism' },
       { icon: 'hardhat', label: 'Construction & Trades' },
@@ -835,14 +838,16 @@ export function mergeSettings(rows: { key: string; value: unknown }[]): SiteSett
   }
   const storedLanding = stored.employerLanding as Partial<EmployerLanding> | undefined;
   if (storedLanding) {
+    const blockedSlides = new Set(['/photos/lisbon.jpg', '/photos/brand/employer-meeting.jpg']);
     const slides =
       Array.isArray(storedLanding.slides) && storedLanding.slides.length > 0
         ? storedLanding.slides
             .filter((slide): slide is EmployerLandingSlide => Boolean(slide && typeof slide === 'object'))
             .map((slide) => ({ src: String(slide.src ?? ''), alt: String(slide.alt ?? '') }))
-            .filter((slide) => slide.src)
+            .filter((slide) => slide.src && !blockedSlides.has(slide.src))
             .slice(0, 8)
         : DEFAULT_SETTINGS.employerLanding.slides;
+    const resolvedSlides = slides.length > 0 ? slides : DEFAULT_SETTINGS.employerLanding.slides;
     const reasons =
       Array.isArray(storedLanding.reasons) && storedLanding.reasons.length > 0
         ? storedLanding.reasons
@@ -871,13 +876,23 @@ export function mergeSettings(rows: { key: string; value: unknown }[]): SiteSett
             .filter((item) => item.label && item.href)
             .slice(0, 10)
         : DEFAULT_SETTINGS.employerLanding.headerLinks;
+    const industriesImage =
+      storedLanding.industriesImage === '/photos/brand/journey-tram.jpg' ||
+      storedLanding.industriesImage === '/photos/lisbon.jpg'
+        ? DEFAULT_SETTINGS.employerLanding.industriesImage
+        : (storedLanding.industriesImage ?? DEFAULT_SETTINGS.employerLanding.industriesImage);
     out.employerLanding = {
       ...DEFAULT_SETTINGS.employerLanding,
       ...storedLanding,
-      slides,
+      slides: resolvedSlides,
       reasons,
       industries,
       headerLinks,
+      industriesImage,
+      industriesImageAlt:
+        industriesImage === DEFAULT_SETTINGS.employerLanding.industriesImage
+          ? DEFAULT_SETTINGS.employerLanding.industriesImageAlt
+          : (storedLanding.industriesImageAlt ?? DEFAULT_SETTINGS.employerLanding.industriesImageAlt),
       steps:
         Array.isArray(storedLanding.steps) && storedLanding.steps.length > 0
           ? storedLanding.steps

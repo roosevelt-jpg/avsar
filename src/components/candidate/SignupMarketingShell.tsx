@@ -5,8 +5,8 @@ import { siteText } from '@/lib/cms/localize';
 import type { Locale } from '@/lib/i18n';
 
 const HERO = {
-  src: '/photos/brand/hero-lisbon-street.jpg',
-  alt: 'A professional ready for a career in Portugal',
+  src: '/lisbon-rooftops-1200.jpg',
+  alt: 'Lisbon rooftops looking toward the Tagus and the 25 de Abril Bridge',
 } as const;
 
 const BENEFITS = [
@@ -139,8 +139,8 @@ export function SignupMarketingShell({
               </ol>
               <div className="relative mt-4 hidden aspect-[5/4] overflow-hidden rounded-[14px] bg-[#142438] lg:block">
                 <Image
-                  src="/photos/brand/journey-tram.jpg"
-                  alt={t('A yellow Lisbon tram on a historic street')}
+                  src="/photos/brand/journey-tram-real.jpg"
+                  alt={t('Yellow Lisbon tram on a cobbled street')}
                   fill
                   sizes="280px"
                   className="object-cover"

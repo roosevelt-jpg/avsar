@@ -1,4 +1,4 @@
-import { BRAND_SLIDES, INTRO_FILM, slidesWithCaptions } from '@/lib/cms/brand-media';
+import { BRAND_SLIDES, INTRO_FILM, PHOTO_LISBON, PHOTO_PORTO, PHOTO_TRAM, slidesWithCaptions } from '@/lib/cms/brand-media';
 import { makeBlocks, type DefaultPage } from './make';
 
 /**
@@ -34,9 +34,9 @@ export const WHY_PORTUGAL: DefaultPage = {
         highlights: [],
         layout: 'overlay',
         mediaType: 'image',
-        mediaSrc: '/photos/lisbon.jpg',
+        mediaSrc: PHOTO_LISBON.src,
         mediaPoster: INTRO_FILM.poster,
-        mediaAlt: 'Lisbon rooftops and the 25 de Abril Bridge at sunset',
+        mediaAlt: PHOTO_LISBON.alt,
         slides: slidesWithCaptions(BRAND_SLIDES.portugal),
         stats: [],
       },
@@ -69,13 +69,13 @@ export const WHY_PORTUGAL: DefaultPage = {
           'Opportunity for long-term residency and a future in Europe.',
         ],
         cta: { label: '', href: '' },
-        image: '/photos/brand/journey-tram.jpg',
-        imageAlt: 'A yellow Lisbon tram on a historic street',
+        image: PHOTO_TRAM.src,
+        imageAlt: PHOTO_TRAM.alt,
         imageSide: 'left',
         style: 'stacked',
         gallery: [
-          { src: '/photos/brand/journey-tram.jpg', alt: 'A yellow Lisbon tram on a historic street' },
-          { src: '/photos/lisbon.jpg', alt: 'Portuguese coast and waterfront' },
+          { src: PHOTO_TRAM.src, alt: PHOTO_TRAM.alt },
+          { src: PHOTO_PORTO.src, alt: PHOTO_PORTO.alt },
         ],
       },
     ],
@@ -111,8 +111,8 @@ export const WHY_PORTUGAL: DefaultPage = {
         primary: { label: 'Create Free Profile', href: '/signup' },
         secondary: { label: '', href: '' },
         style: 'banner',
-        image: '/photos/lisbon.jpg',
-        imageAlt: 'Lisbon landmark — start of a career in Portugal',
+        image: PHOTO_LISBON.src,
+        imageAlt: PHOTO_LISBON.alt,
       },
     ],
   ]),

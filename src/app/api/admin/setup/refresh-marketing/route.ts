@@ -18,6 +18,7 @@ const SLUGS = new Set([
   'contact',
   'success-stories',
   'news-and-insights',
+  'industries',
   'cookie-policy',
   'faq',
 ]);

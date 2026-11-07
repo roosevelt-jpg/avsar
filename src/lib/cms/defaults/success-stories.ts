@@ -1,4 +1,4 @@
-import { BRAND_SLIDES, INTRO_FILM, slidesWithCaptions } from '@/lib/cms/brand-media';
+import { BRAND_SLIDES, INTRO_FILM, PHOTO_TRAM, slidesWithCaptions } from '@/lib/cms/brand-media';
 import { makeBlocks, type DefaultPage } from './make';
 
 /**
@@ -31,9 +31,9 @@ export const SUCCESS_STORIES: DefaultPage = {
         filmLabel: INTRO_FILM.label,
         highlights: ['Approved by our team', 'No invented testimonials', 'Linked from the site footer'],
         mediaType: 'image',
-        mediaSrc: '/photos/brand/journey-tram.jpg',
+        mediaSrc: PHOTO_TRAM.src,
         mediaPoster: INTRO_FILM.poster,
-        mediaAlt: 'Professionals who moved to Portugal for work',
+        mediaAlt: PHOTO_TRAM.alt,
         slides: slidesWithCaptions(BRAND_SLIDES.about),
         stats: [],
       },

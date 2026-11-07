@@ -28,7 +28,7 @@ export function EmployerRegisterHero({
   const list =
     slides.length > 0
       ? slides
-      : [{ src: '/photos/brand/employer-register-hero.jpg', alt: headline }];
+      : [{ src: '/photos/brand/employer-handshake.jpg', alt: headline }];
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [reduce, setReduce] = useState(false);

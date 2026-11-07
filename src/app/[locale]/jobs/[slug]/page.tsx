@@ -87,8 +87,8 @@ export default async function JobPage({ params }: Params) {
   const t = (english: string) => siteText(locale, english);
   const dateLocale = locale === 'en' ? 'en-GB' : locale;
 
-  const heroPhoto = image || '/photos/kitchen.jpg';
-  const sidePhoto = image && image !== '/photos/kitchen.jpg' ? image : '/photos/brand/hero-hospitality.jpg';
+  const heroPhoto = image || '/kitchen-work-1400.jpg';
+  const sidePhoto = image && image !== '/photos/kitchen.jpg' && image !== '/kitchen-work-1400.jpg' ? image : '/lisbon-rooftops-1200.jpg';
 
   const metaRow = [
     { icon: 'map', label: jobLocation(job) },
@@ -364,7 +364,7 @@ export default async function JobPage({ params }: Params) {
               <div className="overflow-hidden rounded-[16px] border border-[#142438]/08 bg-white shadow-[0_18px_40px_-28px_rgba(20,36,56,0.35)]">
                 <div className="relative aspect-[16/10]">
                   <Image
-                    src={BRAND_SLIDES.portugal[0]?.src || '/photos/lisbon.jpg'}
+                    src={BRAND_SLIDES.portugal[0]?.src || '/lisbon-rooftops-1200.jpg'}
                     alt={t('Lisbon rooftops')}
                     fill
                     sizes="340px"

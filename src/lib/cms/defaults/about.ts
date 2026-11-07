@@ -1,4 +1,4 @@
-import { BRAND_SLIDES, INTRO_FILM, slidesWithCaptions } from '@/lib/cms/brand-media';
+import { BRAND_SLIDES, INTRO_FILM, PHOTO_KITCHEN, PHOTO_LISBON, PHOTO_TRAM, slidesWithCaptions } from '@/lib/cms/brand-media';
 import { makeBlocks, type DefaultPage } from './make';
 
 /**
@@ -35,9 +35,9 @@ export const ABOUT: DefaultPage = {
         highlights: [],
         layout: 'overlay',
         mediaType: 'image',
-        mediaSrc: '/photos/lisbon.jpg',
+        mediaSrc: PHOTO_LISBON.src,
         mediaPoster: INTRO_FILM.poster,
-        mediaAlt: 'Lisbon rooftops and castle hill overlooking the Tagus',
+        mediaAlt: PHOTO_LISBON.alt,
         slides: slidesWithCaptions(BRAND_SLIDES.about),
         stats: [],
       },
@@ -64,8 +64,8 @@ export const ABOUT: DefaultPage = {
         intro: '',
         columns: '2',
         style: 'mission',
-        sideImage: '/photos/brand/employer-meeting.jpg',
-        sideImageAlt: 'S&A recruiters with a candidate preparing for Portugal',
+        sideImage: PHOTO_KITCHEN.src,
+        sideImageAlt: PHOTO_KITCHEN.alt,
         typing: false,
         items: [
           {
@@ -142,8 +142,8 @@ export const ABOUT: DefaultPage = {
           { icon: 'check', text: 'Compliance with international recruitment standards.' },
           { icon: 'check', text: 'A dedicated team committed to your success.' },
         ],
-        image: '/photos/brand/journey-tram.jpg',
-        imageAlt: 'A yellow Lisbon tram on a historic street',
+        image: PHOTO_TRAM.src,
+        imageAlt: PHOTO_TRAM.alt,
         cta: { label: 'Work With Us Today', href: '/signup' },
       },
     ],

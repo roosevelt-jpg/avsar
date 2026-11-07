@@ -91,13 +91,10 @@ export const DEFAULT_EMPLOYER_REGISTRATION: EmployerRegistrationSettings = {
   intro:
     'Tell us the roles you need, and we’ll deliver a pre-screened shortlist of qualified candidates from India, with full recruitment and relocation support to Portugal.',
   slides: [
-    {
-      src: '/photos/brand/employer-register-hero.jpg',
-      alt: 'Employer and colleague reviewing candidates on a laptop',
-    },
-    { src: '/photos/brand/employer-meeting.jpg', alt: 'Hiring managers reviewing candidates' },
-    { src: '/photos/brand/hero-jobsite.jpg', alt: 'Trade talent on a Portuguese site' },
-    { src: '/photos/brand/hero-chef.jpg', alt: 'Hospitality talent for Portuguese employers' },
+    { src: '/photos/brand/employer-handshake.jpg', alt: 'Handshake after agreeing a hiring brief' },
+    { src: '/kitchen-work-1400.jpg', alt: 'Kitchen team preparing food in a working restaurant kitchen' },
+    { src: '/photos/brand/hero-construction.jpg', alt: 'Construction crew on a Portuguese site' },
+    { src: '/photos/brand/dash-banner.jpg', alt: 'Porto Ribeira waterfront on the Douro' },
   ],
   highlights: [
     { icon: 'users', label: 'Pre-Screened Talent' },
@@ -114,8 +111,8 @@ export const DEFAULT_EMPLOYER_REGISTRATION: EmployerRegistrationSettings = {
   // Shell copy from the employer-registration mockup (editable in Settings).
   quote: 'S&A Recruitment helped us hire skilled and reliable staff from India quickly and professionally.',
   quoteAttribution: 'Operations Director, Hospitality Group, Portugal',
-  quoteImage: '/photos/lisbon.jpg',
-  quoteImageAlt: 'Terracotta rooftops and a yellow tram on a Lisbon hillside street',
+  quoteImage: '/lisbon-rooftops-1200.jpg',
+  quoteImageAlt: 'Lisbon rooftops looking toward the Tagus and the 25 de Abril Bridge',
   formTitle: 'Hire Talent – Employer Enquiry',
   formIntro: 'Complete the form below and our team will contact you within 1 business day.',
   step1Label: 'Company Details',

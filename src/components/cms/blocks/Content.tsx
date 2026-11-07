@@ -754,11 +754,11 @@ function splitFrames(data: BlockData): { src: string; alt: string }[] {
     .filter((item) => item.src);
   if (gallery.length > 1) return gallery;
   const image = str(data, 'image');
+  /* Swap only known bad/placeholder paths — keep documentary Portugal stills. */
   const replaced =
     !image ||
-    image.includes('lisbon-rooftops') ||
-    image.startsWith('/photos/lisbon') ||
-    image.startsWith('/photos/kitchen') ||
+    image === '/photos/lisbon.jpg' ||
+    image === '/photos/brand/employer-meeting.jpg' ||
     image.startsWith('/walkthrough/') ||
     image.includes('/illustrations/');
   if (!replaced) return [{ src: image, alt: str(data, 'imageAlt') }];

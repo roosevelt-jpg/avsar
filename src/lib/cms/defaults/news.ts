@@ -1,4 +1,4 @@
-import { BRAND_SLIDES, INTRO_FILM, slidesWithCaptions } from '@/lib/cms/brand-media';
+import { BRAND_SLIDES, INTRO_FILM, PHOTO_LISBON, slidesWithCaptions } from '@/lib/cms/brand-media';
 import { makeBlocks, type DefaultPage } from './make';
 
 /**
@@ -32,9 +32,9 @@ export const NEWS_AND_INSIGHTS: DefaultPage = {
         filmLabel: INTRO_FILM.label,
         highlights: [],
         mediaType: 'image',
-        mediaSrc: '/photos/lisbon.jpg',
+        mediaSrc: PHOTO_LISBON.src,
         mediaPoster: INTRO_FILM.poster,
-        mediaAlt: 'Lisbon waterfront',
+        mediaAlt: PHOTO_LISBON.alt,
         slides: slidesWithCaptions(BRAND_SLIDES.portugal),
         stats: [],
       },

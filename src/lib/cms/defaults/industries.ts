@@ -1,3 +1,4 @@
+import { PHOTO_PORTO } from '@/lib/cms/brand-media';
 import { makeBlocks, type DefaultPage } from './make';
 
 /**
@@ -32,9 +33,9 @@ export const INDUSTRIES: DefaultPage = {
         highlights: [],
         layout: 'split',
         mediaType: 'image',
-        mediaSrc: '/photos/brand/dash-banner.jpg',
+        mediaSrc: PHOTO_PORTO.src,
         mediaPoster: '',
-        mediaAlt: 'Professionals at work',
+        mediaAlt: PHOTO_PORTO.alt,
         slides: [],
         stats: [],
       },

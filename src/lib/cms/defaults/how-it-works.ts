@@ -1,4 +1,4 @@
-import { BRAND_SLIDES, INTRO_FILM, slidesWithCaptions } from '@/lib/cms/brand-media';
+import { BRAND_SLIDES, INTRO_FILM, PHOTO_LISBON, PHOTO_PORTO, PHOTO_TRAM, slidesWithCaptions } from '@/lib/cms/brand-media';
 import { makeBlocks, type DefaultPage } from './make';
 
 /**
@@ -34,9 +34,9 @@ export const HOW_IT_WORKS: DefaultPage = {
         highlights: [],
         layout: 'overlay',
         mediaType: 'image',
-        mediaSrc: '/photos/brand/hero-lisbon-street.jpg',
+        mediaSrc: PHOTO_PORTO.src,
         mediaPoster: INTRO_FILM.poster,
-        mediaAlt: 'A candidate ready for a career move to Portugal',
+        mediaAlt: PHOTO_PORTO.alt,
         slides: slidesWithCaptions(BRAND_SLIDES.journey),
         stats: [],
       },
@@ -112,8 +112,8 @@ export const HOW_IT_WORKS: DefaultPage = {
         intro: '',
         columns: '2',
         style: 'support_grid',
-        sideImage: '/photos/brand/journey-tram.jpg',
-        sideImageAlt: 'A yellow Lisbon tram on a historic street',
+        sideImage: PHOTO_TRAM.src,
+        sideImageAlt: PHOTO_TRAM.alt,
         checklistTitle: '',
         checklist: [],
         typing: false,
@@ -157,8 +157,8 @@ export const HOW_IT_WORKS: DefaultPage = {
         primary: { label: 'Create Free Profile', href: '/signup' },
         secondary: { label: '', href: '' },
         style: 'banner',
-        image: '/photos/lisbon.jpg',
-        imageAlt: 'Coastal Portugal — the start of a new career',
+        image: PHOTO_LISBON.src,
+        imageAlt: PHOTO_LISBON.alt,
       },
     ],
   ]),

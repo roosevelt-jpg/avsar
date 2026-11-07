@@ -1,4 +1,4 @@
-import { BRAND_SLIDES, INTRO_FILM, slidesWithCaptions } from '@/lib/cms/brand-media';
+import { BRAND_SLIDES, INTRO_FILM, PHOTO_LISBON, PHOTO_TRAM, slidesWithCaptions } from '@/lib/cms/brand-media';
 import { makeBlocks, type DefaultPage } from './make';
 
 /**
@@ -36,9 +36,9 @@ export const VISA: DefaultPage = {
         highlights: [],
         layout: 'overlay',
         mediaType: 'image',
-        mediaSrc: '/photos/lisbon.jpg',
+        mediaSrc: PHOTO_LISBON.src,
         mediaPoster: INTRO_FILM.poster,
-        mediaAlt: 'Lisbon and the Tagus — the destination after a successful visa',
+        mediaAlt: PHOTO_LISBON.alt,
         slides: slidesWithCaptions(BRAND_SLIDES.visa),
         stats: [],
       },
@@ -64,8 +64,8 @@ export const VISA: DefaultPage = {
         intro:
           'Five clear stages after a successful offer. Timings vary by case — your recruiter confirms the current checklist before you submit anything.',
         layout: 'journey',
-        sideImage: '/photos/brand/journey-tram.jpg',
-        sideImageAlt: 'A yellow Lisbon tram on a historic street',
+        sideImage: PHOTO_TRAM.src,
+        sideImageAlt: PHOTO_TRAM.alt,
         sideImageCaption: 'Start Your New Life in Portugal',
         sideImageSide: 'right',
         items: [
@@ -146,8 +146,8 @@ export const VISA: DefaultPage = {
         primary: { label: 'Create Free Profile', href: '/signup' },
         secondary: { label: '', href: '' },
         style: 'banner',
-        image: '/photos/lisbon.jpg',
-        imageAlt: 'Lisbon rooftops — life after arrival in Portugal',
+        image: PHOTO_LISBON.src,
+        imageAlt: PHOTO_LISBON.alt,
       },
     ],
   ]),
