@@ -233,6 +233,14 @@ export const HOME: DefaultPage = {
       },
     ],
     [
+      'featured_employers',
+      {
+        eyebrow: '',
+        title: 'As featured in',
+        cta: { label: 'View more clients', href: '/employers' },
+      },
+    ],
+    [
       'employer_band',
       {
         eyebrow: 'FOR EMPLOYERS',

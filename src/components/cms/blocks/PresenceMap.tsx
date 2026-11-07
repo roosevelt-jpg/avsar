@@ -17,6 +17,21 @@ type Place = {
   y: number;
 };
 
+/** Matches public/photos/brand/corridor-satellite.jpg (Esri World Imagery crop). */
+const MAP_WEST = -15;
+const MAP_EAST = 85;
+const MAP_SOUTH = 8;
+const MAP_NORTH = 52;
+const VIEW_W = 100;
+const VIEW_H = 70;
+
+function project(lon: number, lat: number) {
+  return {
+    x: ((lon - MAP_WEST) / (MAP_EAST - MAP_WEST)) * VIEW_W,
+    y: ((MAP_NORTH - lat) / (MAP_NORTH - MAP_SOUTH)) * VIEW_H,
+  };
+}
+
 function subscribeReducedMotion(onStoreChange: () => void) {
   const media = window.matchMedia('(prefers-reduced-motion: reduce)');
   media.addEventListener('change', onStoreChange);
@@ -30,6 +45,7 @@ function reducedMotionSnapshot() {
 function resolvePlace(office: Office, index: number): Omit<Place, 'id'> {
   const key = `${office.city}|${office.country ?? ''}`.toLowerCase();
   if (key.includes('lisbon') || key.includes('portugal')) {
+    const point = project(-9.14, 38.72);
     return {
       kind: 'office',
       label: office.city,
@@ -38,11 +54,11 @@ function resolvePlace(office: Office, index: number): Omit<Place, 'id'> {
       role: office.role || '',
       country: office.country || 'Portugal',
       flag: 'pt',
-      x: 21,
-      y: 41,
+      ...point,
     };
   }
   if (key.includes('dubai') || key.includes('emirates') || key.includes('uae')) {
+    const point = project(55.27, 25.2);
     return {
       kind: 'office',
       label: office.city,
@@ -51,10 +67,10 @@ function resolvePlace(office: Office, index: number): Omit<Place, 'id'> {
       role: office.role || '',
       country: office.country || 'United Arab Emirates',
       flag: 'ae',
-      x: 57,
-      y: 47,
+      ...point,
     };
   }
+  const fallback = project(40 + index * 8, 30);
   return {
     kind: 'office',
     label: office.city,
@@ -63,8 +79,7 @@ function resolvePlace(office: Office, index: number): Omit<Place, 'id'> {
     role: office.role || '',
     country: office.country || '',
     flag: 'generic',
-    x: 40 + index * 6,
-    y: 40,
+    ...fallback,
   };
 }
 
@@ -108,9 +123,9 @@ function FlagMark({ code, size = 14 }: { code: Place['flag']; size?: number }) {
 }
 
 /**
- * Stylised India → UAE → Portugal corridor. Country silhouettes, flag pins and
- * a live path tracker mirror the DSS footprint pattern without cloning their
- * Leaflet/satellite stack or inventing offices that are not in Settings.
+ * India → UAE → Portugal corridor over a hosted satellite basemap. Pins sit on
+ * real lon/lat; the dashed tracker and flag chips stay SVG/HTML overlays so we
+ * do not need Leaflet or live tile requests.
  */
 export function PresenceMapBlock({
   data,
@@ -125,6 +140,7 @@ export function PresenceMapBlock({
   const reduce = useSyncExternalStore(subscribeReducedMotion, reducedMotionSnapshot, () => false);
 
   const places = useMemo<Place[]>(() => {
+    const hub = project(77.2, 22.5);
     const list: Place[] = [
       {
         id: 'hub-india',
@@ -135,8 +151,7 @@ export function PresenceMapBlock({
         role: '',
         country: 'India',
         flag: 'in',
-        x: 71,
-        y: 52,
+        ...hub,
       },
     ];
     offices.forEach((office, index) => {
@@ -155,10 +170,12 @@ export function PresenceMapBlock({
   );
 
   const pinLabel = (place: Place) => (place.kind === 'hub' ? 'India' : place.label);
+  const lisbon = places.find((place) => place.flag === 'pt') ?? { x: 6, y: 21 };
+  const dubai = places.find((place) => place.flag === 'ae') ?? { x: 70, y: 43 };
+  const indiaPin = places.find((place) => place.flag === 'in') ?? { x: 92, y: 47 };
   const routeId = `corridor-route-${uid}`;
   const glowId = `corridor-glow-${uid}`;
-  const seaId = `corridor-sea-${uid}`;
-  const landId = `corridor-land-${uid}`;
+  const routePath = `M${lisbon.x.toFixed(2)} ${lisbon.y.toFixed(2)} C ${(lisbon.x + 18).toFixed(2)} ${(lisbon.y - 14).toFixed(2)}, ${(dubai.x - 12).toFixed(2)} ${(dubai.y - 10).toFixed(2)}, ${dubai.x.toFixed(2)} ${dubai.y.toFixed(2)} S ${(indiaPin.x - 8).toFixed(2)} ${(indiaPin.y + 2).toFixed(2)}, ${indiaPin.x.toFixed(2)} ${indiaPin.y.toFixed(2)}`;
 
   return (
     <section className="bg-[#142438] px-[clamp(16px,4cqi,56px)] py-[clamp(40px,6cqi,72px)] text-white">
@@ -209,17 +226,20 @@ export function PresenceMapBlock({
         </aside>
 
         <div className="presence-map relative min-h-[320px] overflow-hidden rounded-[14px] border border-white/10 bg-[#0b1622] sm:min-h-[420px]">
-          <svg viewBox="0 0 100 70" className="absolute inset-0 size-full" role="img" aria-label="Recruitment corridor from India through the UAE to Portugal">
+          {/* Hosted Esri World Imagery crop — no live tile SDK. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/photos/brand/corridor-satellite.jpg"
+            alt=""
+            className="absolute inset-0 size-full object-cover object-[center_45%]"
+            decoding="async"
+            loading="lazy"
+          />
+          <div className="absolute inset-0 bg-[#0b1622]/38" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0b1622]/55 via-transparent to-[#0b1622]/25" />
+
+          <svg viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} className="absolute inset-0 size-full" role="img" aria-label="Recruitment corridor from India through the UAE to Portugal">
             <defs>
-              <linearGradient id={seaId} x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="#12283c" />
-                <stop offset="55%" stopColor="#0f1c2c" />
-                <stop offset="100%" stopColor="#0a141f" />
-              </linearGradient>
-              <linearGradient id={landId} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#2a455c" />
-                <stop offset="100%" stopColor="#1a3044" />
-              </linearGradient>
               <filter id={glowId} x="-50%" y="-50%" width="200%" height="200%">
                 <feGaussianBlur stdDeviation="0.55" result="blur" />
                 <feMerge>
@@ -227,47 +247,15 @@ export function PresenceMapBlock({
                   <feMergeNode in="SourceGraphic" />
                 </feMerge>
               </filter>
-              <path id={routeId} d="M21 41 C 32 28, 46 30, 57 47 C 61 50, 66 52, 71 52" fill="none" />
+              <path id={routeId} d={routePath} fill="none" />
             </defs>
 
-            <rect width="100" height="70" fill={`url(#${seaId})`} />
-
-            <g fill={`url(#${landId})`} opacity="0.55">
-              <path d="M8 28 C 12 22, 18 20, 24 22 C 28 24, 30 30, 28 36 C 26 42, 22 48, 18 50 C 14 48, 10 42, 8 36 Z" />
-              <path d="M26 24 C 34 18, 48 16, 58 20 C 66 24, 70 30, 68 36 C 64 40, 54 38, 46 36 C 38 34, 30 32, 26 28 Z" opacity="0.45" />
-              <path d="M48 40 C 52 36, 60 34, 68 36 C 74 40, 78 46, 76 52 C 72 58, 64 60, 58 56 C 52 52, 48 46, 48 40 Z" />
-              <path d="M64 44 C 70 40, 78 42, 82 48 C 84 54, 80 60, 74 62 C 68 60, 64 54, 64 48 Z" />
-            </g>
-
-            <g>
-              <path
-                d="M17 36 C 19 33, 22 32, 24 34 C 25 37, 24 42, 23 46 C 22 49, 20 50, 18 48 C 16 45, 16 40, 17 36 Z"
-                fill={active?.flag === 'pt' ? '#3d5f7a' : '#2a455c'}
-                stroke="#b28a49"
-                strokeWidth={active?.flag === 'pt' ? 0.35 : 0.2}
-                opacity="0.95"
-              />
-              <path
-                d="M54 45 C 56 43, 60 43, 62 45 C 63 47, 62 50, 60 51 C 57 52, 54 50, 54 47 Z"
-                fill={active?.flag === 'ae' ? '#3d5f7a' : '#2a455c'}
-                stroke="#b28a49"
-                strokeWidth={active?.flag === 'ae' ? 0.35 : 0.2}
-                opacity="0.95"
-              />
-              <path
-                d="M66 46 C 70 42, 76 42, 80 46 C 82 50, 80 56, 76 58 C 72 60, 68 58, 66 54 C 64 50, 64 48, 66 46 Z"
-                fill={active?.flag === 'in' ? '#3d5f7a' : '#2a455c'}
-                stroke="#b28a49"
-                strokeWidth={active?.flag === 'in' ? 0.35 : 0.2}
-                opacity="0.95"
-              />
-            </g>
-
-            <use href={`#${routeId}`} stroke="#b28a49" strokeWidth="0.55" opacity="0.35" fill="none" />
+            <use href={`#${routeId}`} stroke="#142438" strokeWidth="1.1" opacity="0.35" fill="none" />
+            <use href={`#${routeId}`} stroke="#b28a49" strokeWidth="0.55" opacity="0.4" fill="none" />
             <use
               href={`#${routeId}`}
               className={reduce ? undefined : 'presence-route-dash'}
-              stroke="#b28a49"
+              stroke="#f4e0b5"
               strokeWidth="0.45"
               strokeDasharray="1.4 1.2"
               fill="none"
@@ -318,7 +306,6 @@ export function PresenceMapBlock({
             })}
           </svg>
 
-          {/* Flag chips sit in HTML so type stays sharp at every viewport size. */}
           {places.map((place) => {
             const selected = active?.id === place.id;
             return (
@@ -326,7 +313,7 @@ export function PresenceMapBlock({
                 key={`${place.id}-chip`}
                 type="button"
                 onClick={() => setActiveId(place.id)}
-                style={{ left: `${place.x}%`, top: `${(place.y / 70) * 100}%` }}
+                style={{ left: `${place.x}%`, top: `${(place.y / VIEW_H) * 100}%` }}
                 className={`absolute z-10 flex -translate-x-1/2 -translate-y-[140%] cursor-pointer items-center gap-1.5 rounded-full border px-2 py-1 text-[11px] font-semibold shadow-[0_8px_20px_rgba(0,0,0,0.35)] transition-colors ${
                   selected
                     ? 'border-[#b28a49] bg-[#142438] text-white'
@@ -340,7 +327,7 @@ export function PresenceMapBlock({
           })}
 
           {active ? (
-            <div className="absolute inset-x-4 bottom-4 z-20 rounded-[12px] border border-white/20 bg-[#142438]/88 p-4 backdrop-blur-sm sm:inset-x-auto sm:end-4 sm:w-[min(100%-2rem,320px)]">
+            <div className="absolute inset-x-4 bottom-4 z-20 rounded-[12px] border border-white/20 bg-[#142438]/88 p-4 backdrop-blur-sm sm:inset-x-auto sm:right-4 sm:w-[min(100%-2rem,320px)]">
               <div className="flex items-center gap-2">
                 <FlagMark code={active.flag} size={18} />
                 <p className="m-0 text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--color-gold)]">

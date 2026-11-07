@@ -615,9 +615,23 @@ export const BLOCKS = {
   },
   featured_employers: {
     label: 'Featured employers',
-    description: 'A moving row of every employer. A company appears when it is added or signs up. Only the heading is edited here.',
-    fields: [title],
-    empty: { title: 'Featured employers' },
+    description:
+      'A sliding logo row of every public employer (DSS-style cards). Companies appear when they are added or sign up — logos are never invented here.',
+    fields: [
+      { kind: 'text', name: 'eyebrow', label: 'Eyebrow', max: 40 },
+      title,
+      {
+        kind: 'link',
+        name: 'cta',
+        label: 'Button under the row',
+        help: 'e.g. View more clients → /employers',
+      },
+    ],
+    empty: {
+      eyebrow: '',
+      title: 'As featured in',
+      cta: { label: 'View more clients', href: '/employers' },
+    },
   },
   video: {
     label: 'Film',

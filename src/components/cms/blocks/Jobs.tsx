@@ -6,6 +6,7 @@ import { AREAS, POSITIONS } from '@/lib/data/positions';
 import { POSITION_LQIP, positionImage } from '@/lib/data/position-images';
 import type { Locale } from '@/lib/i18n';
 import { localePath } from '@/lib/i18n/path';
+import Link from 'next/link';
 import { JobCard } from '@/components/jobs/JobCard';
 import { CmsTextLink, Section, SectionHeading } from '../primitives';
 import { EmployerStrip } from './EmployerStrip';
@@ -46,23 +47,40 @@ export async function FeaturedJobsBlock({ data, locale }: Props) {
 }
 
 /**
- * Every employer, not a list typed into the page. The heading is the only
- * CMS field. With no employers yet the section is left out, rather than
- * showing an empty title.
+ * Every public employer as a DSS-style sliding logo row. Heading and optional
+ * CTA come from CMS; logos come from the employers table (never invented).
+ * With no employers yet the section stays out rather than showing empty cards.
  */
 export async function FeaturedEmployersBlock({ data, locale }: Props) {
   const employers = await listPublicEmployers();
   if (employers.length === 0) return null;
-  const title = siteText(locale, str(data, 'title') || 'Featured employers');
+  const eyebrow = str(data, 'eyebrow');
+  const title = siteText(locale, str(data, 'title') || 'As featured in');
+  const cta = link(data, 'cta');
   return (
-    <section className="bg-white px-[clamp(20px,4cqi,56px)] py-[clamp(40px,6cqi,72px)]">
+    <section className="bg-[#f7f8fa] px-[clamp(20px,4cqi,56px)] py-[clamp(40px,6cqi,72px)]">
       <div className="mx-auto w-full max-w-[1200px]">
-        <h2 className="m-0 mb-8 text-center text-[clamp(28px,3.2cqi,40px)] font-semibold tracking-[-0.02em] text-[#142438]">{title}</h2>
-        <EmployerStrip
-          employers={employers}
-          previousLabel={siteText(locale, 'Previous employers')}
-          nextLabel={siteText(locale, 'Next employers')}
-        />
+        {eyebrow ? (
+          <p className="m-0 mb-2 text-center text-[12px] font-semibold uppercase tracking-[0.16em] text-[#b28a49]">{eyebrow}</p>
+        ) : null}
+        <h2 className="m-0 text-center text-[clamp(26px,3.2cqi,36px)] font-semibold tracking-[-0.02em] text-[#142438]">{title}</h2>
+        <div className="mt-6">
+          <EmployerStrip
+            employers={employers}
+            previousLabel={siteText(locale, 'Previous employers')}
+            nextLabel={siteText(locale, 'Next employers')}
+          />
+        </div>
+        {cta?.href && cta.label ? (
+          <div className="mt-8 flex justify-center">
+            <Link
+              href={localePath(locale, cta.href)}
+              className="inline-flex items-center justify-center rounded-[6px] border border-[#142438] bg-white px-6 py-2.5 text-[14px] font-semibold text-[#142438] transition-colors hover:border-[#b28a49] hover:bg-[#142438] hover:text-white"
+            >
+              {cta.label}
+            </Link>
+          </div>
+        ) : null}
       </div>
     </section>
   );
