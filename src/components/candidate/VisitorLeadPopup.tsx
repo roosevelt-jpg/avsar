@@ -13,12 +13,11 @@ function subscribeNothing() {
 }
 
 const field =
-  't-colors w-full rounded-[10px] border border-[#142438]/18 bg-[#f7f8fa] px-3.5 py-3 text-[15px] text-[#142438] outline-none placeholder:text-[#142438]/40 focus:border-[var(--color-gold)] focus:bg-white';
+  't-colors w-full rounded-[8px] border border-[#142438]/18 bg-[#f7f8fa] px-3 py-2 text-[14px] text-[#142438] outline-none placeholder:text-[#142438]/40 focus:border-[var(--color-gold)] focus:bg-white';
 
 /**
- * First-visit modal for marketing pages. Asks for name + email or phone, then
- * stores a CRM lead (source visitor_popup). Dismiss or submit writes
- * localStorage so returning browsers are not asked again.
+ * Compact first-visit modal. Kept short so it fits a laptop viewport; only
+ * name plus email or phone are required. Dismiss/submit is remembered.
  */
 export function VisitorLeadPopup({ locale }: { locale: Locale }) {
   const mounted = useSyncExternalStore(subscribeNothing, () => true, () => false);
@@ -27,10 +26,8 @@ export function VisitorLeadPopup({ locale }: { locale: Locale }) {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [city, setCity] = useState('');
   const [topic, setTopic] = useState<'candidate' | 'employer'>('candidate');
   const [whatsappOk, setWhatsappOk] = useState(false);
-  const [note, setNote] = useState('');
   const [challenge, setChallenge] = useState<string | null>(null);
   const [challengeKey, setChallengeKey] = useState(0);
   const [busy, setBusy] = useState(false);
@@ -42,7 +39,6 @@ export function VisitorLeadPopup({ locale }: { locale: Locale }) {
     if (!mounted) return;
     const prefs = readVisitorLeadPrefs();
     if (prefs.decided) return;
-    /* Short delay so the cookie banner and first paint settle first. */
     const timer = window.setTimeout(() => {
       setReady(true);
       setOpen(true);
@@ -89,10 +85,10 @@ export function VisitorLeadPopup({ locale }: { locale: Locale }) {
       fullName: fullName.trim(),
       email: email.trim(),
       phone: phone.trim(),
-      city: city.trim(),
+      city: '',
       topic,
       whatsappOk,
-      note: note.trim(),
+      note: '',
       locale,
     });
     try {
@@ -121,7 +117,7 @@ export function VisitorLeadPopup({ locale }: { locale: Locale }) {
       }
       setDone(true);
       remember({ decided: true, submitted: true });
-      window.setTimeout(() => setOpen(false), 1600);
+      window.setTimeout(() => setOpen(false), 1400);
     } catch {
       setError('That did not save. Please try again in a moment.');
       setChallenge(null);
@@ -132,129 +128,136 @@ export function VisitorLeadPopup({ locale }: { locale: Locale }) {
   }
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-end justify-center p-4 sm:items-center">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-4">
       <button
         type="button"
         aria-label="Dismiss welcome form"
-        className="absolute inset-0 cursor-pointer border-0 bg-[#142438]/55"
+        className="absolute inset-0 cursor-pointer border-0 bg-[#142438]/45"
         onClick={() => dismiss(false)}
       />
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="visitor-lead-title"
-        className="relative z-[61] w-full max-w-[440px] overflow-hidden rounded-[16px] border border-[#142438]/12 bg-white text-[#142438] shadow-[0_24px_60px_rgba(20,36,56,0.35)]"
+        className="relative z-[61] flex max-h-[min(520px,88dvh)] w-full max-w-[380px] flex-col overflow-hidden rounded-[14px] border border-[#142438]/12 bg-white text-[#142438] shadow-[0_20px_50px_rgba(20,36,56,0.3)]"
       >
-        <div className="border-b border-[#142438]/10 bg-[#142438] px-5 py-4 text-white">
-          <p className="m-0 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#b28a49]">Welcome</p>
-          <h2 id="visitor-lead-title" className="m-0 mt-1 text-[22px] font-semibold tracking-[-0.02em]">
-            Leave your details
-          </h2>
-          <p className="m-0 mt-2 text-[14px] leading-[1.45] text-white/85">
-            Tell us who you are and we will get back to you. It takes under a minute.
-          </p>
+        <div className="flex shrink-0 items-start justify-between gap-3 bg-[#142438] px-4 py-3 text-white">
+          <div className="min-w-0">
+            <p className="m-0 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#b28a49]">Welcome</p>
+            <h2 id="visitor-lead-title" className="m-0 mt-0.5 text-[18px] font-semibold tracking-[-0.02em]">
+              Leave your details
+            </h2>
+          </div>
+          <button
+            type="button"
+            onClick={() => dismiss(false)}
+            className="grid size-8 shrink-0 cursor-pointer place-items-center rounded-[8px] border-0 bg-white/10 text-[18px] leading-none text-white hover:bg-white/16"
+            aria-label="Close"
+          >
+            ×
+          </button>
         </div>
 
         {done ? (
-          <div className="px-5 py-8 text-center">
-            <p className="m-0 text-[17px] font-semibold text-[#142438]">Thank you — we have your details.</p>
-            <p className="m-0 mt-2 text-[14px] text-[#5c7084]">A recruiter will follow up when they can.</p>
+          <div className="px-4 py-6 text-center">
+            <p className="m-0 text-[15px] font-semibold">Thank you — we have your details.</p>
+            <p className="m-0 mt-1 text-[13px] text-[#5c7084]">A recruiter will follow up when they can.</p>
           </div>
         ) : (
-          <form onSubmit={(event) => void submit(event)} className="flex flex-col gap-3 px-5 py-5">
-            <div className="grid grid-cols-2 gap-2 rounded-[10px] border border-[#142438]/12 bg-[#f7f8fa] p-1">
-              <button
-                type="button"
-                className={`cursor-pointer rounded-[8px] border-0 px-3 py-2 text-[13px] font-semibold ${
-                  topic === 'candidate' ? 'bg-white text-[#142438] shadow-sm' : 'bg-transparent text-[#5c7084]'
-                }`}
-                onClick={() => setTopic('candidate')}
-              >
-                Looking for a job
-              </button>
-              <button
-                type="button"
-                className={`cursor-pointer rounded-[8px] border-0 px-3 py-2 text-[13px] font-semibold ${
-                  topic === 'employer' ? 'bg-white text-[#142438] shadow-sm' : 'bg-transparent text-[#5c7084]'
-                }`}
-                onClick={() => setTopic('employer')}
-              >
-                Hiring talent
-              </button>
+          <form onSubmit={(event) => void submit(event)} className="flex min-h-0 flex-1 flex-col">
+            <div className="min-h-0 flex-1 space-y-2.5 overflow-y-auto px-4 py-3">
+              <div className="grid grid-cols-2 gap-1 rounded-[8px] border border-[#142438]/12 bg-[#f7f8fa] p-0.5">
+                <button
+                  type="button"
+                  className={`cursor-pointer rounded-[6px] border-0 px-2 py-1.5 text-[12px] font-semibold ${
+                    topic === 'candidate' ? 'bg-white text-[#142438] shadow-sm' : 'bg-transparent text-[#5c7084]'
+                  }`}
+                  onClick={() => setTopic('candidate')}
+                >
+                  Looking for a job
+                </button>
+                <button
+                  type="button"
+                  className={`cursor-pointer rounded-[6px] border-0 px-2 py-1.5 text-[12px] font-semibold ${
+                    topic === 'employer' ? 'bg-white text-[#142438] shadow-sm' : 'bg-transparent text-[#5c7084]'
+                  }`}
+                  onClick={() => setTopic('employer')}
+                >
+                  Hiring talent
+                </button>
+              </div>
+
+              <label className="block text-[12px] font-medium text-[#3d4f63]">
+                Full name
+                <input className={`${field} mt-1`} value={fullName} onChange={(e) => setFullName(e.target.value)} autoComplete="name" required />
+              </label>
+
+              <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                <label className="block text-[12px] font-medium text-[#3d4f63]">
+                  Email
+                  <input
+                    type="email"
+                    className={`${field} mt-1`}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    autoComplete="email"
+                    placeholder="you@example.com"
+                  />
+                </label>
+                <label className="block text-[12px] font-medium text-[#3d4f63]">
+                  Phone
+                  <input
+                    className={`${field} mt-1`}
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    autoComplete="tel"
+                    placeholder="+91…"
+                  />
+                </label>
+              </div>
+
+              <label className="flex items-start gap-2 text-[12px] leading-[1.35] text-[#3d4f63]">
+                <input
+                  type="checkbox"
+                  checked={whatsappOk}
+                  onChange={(e) => setWhatsappOk(e.target.checked)}
+                  className="mt-0.5 size-3.5 accent-[#b28a49]"
+                  disabled={!phone.trim()}
+                />
+                <span>You may contact me on WhatsApp.</span>
+              </label>
+
+              <div className="scale-90 origin-top-left">
+                <Turnstile key={challengeKey} onToken={setChallenge} />
+              </div>
+
+              {error ? <p className="m-0 text-[12px] text-[#b42318]">{error}</p> : null}
             </div>
 
-            <label className="block text-[13px] font-medium text-[#3d4f63]">
-              Full name
-              <input className={`${field} mt-1`} value={fullName} onChange={(e) => setFullName(e.target.value)} autoComplete="name" required />
-            </label>
-            <label className="block text-[13px] font-medium text-[#3d4f63]">
-              Email
-              <input
-                type="email"
-                className={`${field} mt-1`}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                autoComplete="email"
-                placeholder="you@example.com"
-              />
-            </label>
-            <label className="block text-[13px] font-medium text-[#3d4f63]">
-              Phone / WhatsApp
-              <input
-                className={`${field} mt-1`}
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                autoComplete="tel"
-                placeholder="+91…"
-              />
-            </label>
-            <label className="block text-[13px] font-medium text-[#3d4f63]">
-              City <span className="font-normal text-[#5c7084]">(optional)</span>
-              <input className={`${field} mt-1`} value={city} onChange={(e) => setCity(e.target.value)} autoComplete="address-level2" />
-            </label>
-            <label className="block text-[13px] font-medium text-[#3d4f63]">
-              Anything we should know? <span className="font-normal text-[#5c7084]">(optional)</span>
-              <textarea className={`${field} mt-1`} rows={2} maxLength={500} value={note} onChange={(e) => setNote(e.target.value)} />
-            </label>
-
-            <label className="flex items-start gap-2 text-[13px] text-[#3d4f63]">
-              <input
-                type="checkbox"
-                checked={whatsappOk}
-                onChange={(e) => setWhatsappOk(e.target.checked)}
-                className="mt-0.5 size-4 accent-[#b28a49]"
-                disabled={!phone.trim()}
-              />
-              <span>You may contact me on WhatsApp about jobs and next steps.</span>
-            </label>
-
-            <Turnstile key={challengeKey} onToken={setChallenge} />
-
-            {error ? <p className="m-0 text-[13px] text-[#b42318]">{error}</p> : null}
-
-            <div className="mt-1 flex flex-col gap-2 sm:flex-row sm:items-center">
-              <button
-                type="submit"
-                disabled={!canSubmit}
-                className="cursor-pointer rounded-[10px] border-0 bg-[#b28a49] px-5 py-3 text-[14px] font-semibold text-[#142438] hover:bg-[#c49a58] disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {busy ? 'Sending…' : 'Send my details'}
-              </button>
-              <button
-                type="button"
-                onClick={() => dismiss(false)}
-                className="cursor-pointer rounded-[10px] border-0 bg-transparent px-4 py-3 text-[14px] font-medium text-[#5c7084] hover:text-[#142438]"
-              >
-                Maybe later
-              </button>
+            <div className="shrink-0 border-t border-[#142438]/08 px-4 py-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="submit"
+                  disabled={!canSubmit}
+                  className="cursor-pointer rounded-[8px] border-0 bg-[#b28a49] px-4 py-2 text-[13px] font-semibold text-[#142438] hover:bg-[#c49a58] disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {busy ? 'Sending…' : 'Send my details'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => dismiss(false)}
+                  className="cursor-pointer rounded-[8px] border-0 bg-transparent px-2 py-2 text-[13px] font-medium text-[#5c7084] hover:text-[#142438]"
+                >
+                  Maybe later
+                </button>
+              </div>
+              <p className="m-0 mt-2 text-[11px] leading-[1.4] text-[#5c7084]">
+                We store these details to reply.{' '}
+                <Link href={localHref(locale, '/privacy')} className="font-semibold text-[#142438] underline-offset-2 hover:underline">
+                  Privacy
+                </Link>
+              </p>
             </div>
-            <p className="m-0 text-[12px] leading-[1.45] text-[#5c7084]">
-              By sending, you agree we may store these details to reply to you. See our{' '}
-              <Link href={localHref(locale, '/privacy')} className="font-semibold text-[#142438] underline-offset-2 hover:underline">
-                privacy notice
-              </Link>
-              .
-            </p>
           </form>
         )}
       </div>
