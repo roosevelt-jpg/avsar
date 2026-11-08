@@ -19,6 +19,14 @@ export const screeningQuestionSchema = z.object({
 export const jobInputSchema = z
   .object({
     slug: z.string().trim().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'lower-case words joined by hyphens').max(80),
+    referenceCode: z.preprocess(
+      (value) => (typeof value === 'string' && value.trim() === '' ? null : value),
+      z
+        .string()
+        .trim()
+        .regex(/^[A-Za-z0-9-]{3,24}$/, 'letters, numbers or hyphens, 3–24 characters')
+        .nullable(),
+    ),
     title: z.string().trim().min(3).max(140),
     positionSlug: z.string().trim().max(40).nullable(),
     area: z.string().trim().max(40).nullable(),

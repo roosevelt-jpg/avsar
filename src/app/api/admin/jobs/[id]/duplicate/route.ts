@@ -13,6 +13,8 @@ export const runtime = 'nodejs';
 const NOT_COPIED = [
   'id', 'slug', 'status', 'published_at', 'created_at', 'updated_at', 'created_by', 'updated_by', 'search',
   'requested_at', 'requested_by', 'request_note',
+  /* New listing code is assigned by the DB trigger so copies stay unique. */
+  'reference_code',
 ];
 
 /**

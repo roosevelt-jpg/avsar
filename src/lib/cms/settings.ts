@@ -753,7 +753,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     sortNewest: 'Newest',
     sortSalary: 'Salary',
     verifiedBadge: 'Verified',
-    viewDetails: 'View Details',
+    viewDetails: 'More Info',
     applyNow: 'Apply Now',
     /* Board page fills vacancies from the live published count; other values stay empty unless real. */
     statsVacanciesValue: '',

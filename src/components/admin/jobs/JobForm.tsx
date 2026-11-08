@@ -23,6 +23,7 @@ type Employer = { id: string; name: string };
 type FormState = {
   title: string;
   slug: string;
+  referenceCode: string;
   positionSlug: string;
   employerId: string;
   employerDisplay: string;
@@ -60,6 +61,7 @@ function toForm(job: Job | null): FormState {
   return {
     title: job?.title ?? '',
     slug: job?.slug ?? '',
+    referenceCode: job?.referenceCode ?? '',
     positionSlug: job?.positionSlug ?? '',
     employerId: job?.employerId ?? '',
     employerDisplay: job?.employerDisplay ?? '',
@@ -101,6 +103,7 @@ function toPayload(form: FormState) {
   const position = POSITIONS.find((p) => p.slug === form.positionSlug);
   return {
     slug: form.slug,
+    referenceCode: form.referenceCode.trim() || null,
     title: form.title,
     positionSlug: form.positionSlug || null,
     area: position?.area ?? null,
@@ -245,6 +248,14 @@ export function JobForm({
             </L>
             <L label="Web address" help={`/jobs/${form.slug || '...'}`}>
               <input className={INPUT} value={form.slug} onChange={(e) => { setSlugTouched(true); set('slug', slugify(e.target.value)); }} />
+            </L>
+            <L label="Listing code" help="Shown on the jobs board as Code. Leave blank on new jobs and one is assigned.">
+              <input
+                className={INPUT}
+                value={form.referenceCode}
+                onChange={(e) => set('referenceCode', e.target.value.replace(/[^A-Za-z0-9-]/g, '').slice(0, 24))}
+                placeholder="Auto on save"
+              />
             </L>
           </div>
           <L label="One-line summary" help="Shown on job cards. Up to 300 characters.">

@@ -24,6 +24,8 @@ export type ScreeningQuestion = {
 export type Job = {
   id: string;
   slug: string;
+  /** Public listing code shown on the jobs board (e.g. "143736"). */
+  referenceCode: string;
   title: string;
   positionSlug: string | null;
   area: string | null;
@@ -85,6 +87,19 @@ export const COUNTRY_NAMES: Record<string, string> = {
 
 const PERIOD_LABEL = { hour: 'hour', month: 'month', year: 'year' } as const;
 
+/**
+ * Public board code. Prefer the DB-assigned reference; if the migration is not
+ * applied yet, derive a stable six-digit code from the job id so the card still
+ * matches the DSS layout without inventing a new number on each render.
+ */
+export function jobListingCode(job: Pick<Job, 'id' | 'referenceCode'>): string {
+  if (job.referenceCode) return job.referenceCode;
+  const hex = job.id.replace(/-/g, '').slice(0, 8);
+  const n = Number.parseInt(hex, 16);
+  if (!Number.isFinite(n)) return job.id.slice(0, 6).toUpperCase();
+  return String(100000 + (n % 900000));
+}
+
 /** "€1,050 to €1,250 a month", or null when no salary was given. */
 export function formatSalary(job: Pick<Job, 'salaryMinEur' | 'salaryMaxEur' | 'salaryPeriod'>): string | null {
   const fmt = (n: number) => `€${n.toLocaleString('en-US')}`;
@@ -123,6 +138,7 @@ export function jobFromRow(row: Record<string, unknown>): Job {
   return {
     id: String(row.id),
     slug: String(row.slug),
+    referenceCode: String(row.reference_code ?? '').trim(),
     title: String(row.title ?? ''),
     positionSlug: (row.position_slug as string | null) ?? null,
     area: (row.area as string | null) ?? null,
@@ -169,6 +185,7 @@ export function jobFromRow(row: Record<string, unknown>): Job {
 export function jobToRow(job: JobInput): Record<string, unknown> {
   return {
     slug: job.slug,
+    reference_code: job.referenceCode?.trim() || null,
     title: job.title,
     position_slug: job.positionSlug || null,
     area: job.area || null,
