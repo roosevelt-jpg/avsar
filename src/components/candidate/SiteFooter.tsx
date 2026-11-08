@@ -154,9 +154,12 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
       </div>
 
       <div className="border-t border-white/15">
-        <div className="mx-auto flex w-full max-w-[1240px] flex-col gap-3 px-[clamp(16px,4cqi,26px)] py-4 text-[13px] text-white/70 sm:flex-row sm:items-center sm:justify-between">
-          <p className="m-0">{copyright}</p>
-          <nav aria-label="Legal" className="flex flex-wrap items-center gap-x-2 gap-y-1">
+        <div className="mx-auto grid w-full max-w-[1240px] grid-cols-1 items-center gap-3 px-[clamp(16px,4cqi,26px)] py-4 text-[13px] text-white/70 sm:grid-cols-[1fr_auto_1fr]">
+          <p className="m-0 text-center sm:text-start">{copyright}</p>
+          <span className="mx-auto inline-flex max-w-[min(160px,55vw)] opacity-90">
+            <Wordmark href={page('/')} tone="dark" size={28} />
+          </span>
+          <nav aria-label="Legal" className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 sm:justify-end">
             {footer.legalLinks.map((item, index) => (
               <span key={item.href} className="inline-flex items-center gap-2">
                 {index > 0 ? <span aria-hidden className="text-white/35">•</span> : null}
