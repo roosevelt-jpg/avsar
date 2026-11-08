@@ -2,6 +2,7 @@ import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { MarketShell } from '@/components/candidate/MarketShell';
 import { MarketingFooter } from '@/components/candidate/MarketingFooter';
+import { getViewer } from '@/lib/auth';
 import { PATHNAME_HEADER } from '@/proxy';
 import { isLocale, locales, localeDirection } from '@/lib/i18n';
 
@@ -27,14 +28,16 @@ export default async function LocaleLayout({
    * one attribute flips text alignment, list markers, the order of flex and
    * grid children, and which side the scrollbar sits on.
    *
-   * The marketing footer is a Server Component: any signed-in audience never
-   * sees it, and auth/funnel routes stay quiet even for anonymous visitors.
+   * Signed-in candidates / staff / employers get no marketing chrome or footer;
+   * their pages wrap in CandidateDashShell / AdminShell themselves.
    */
   const pathname = (await headers()).get(PATHNAME_HEADER) ?? '';
+  const viewer = await getViewer();
+  const signedIn = viewer.role !== 'anonymous';
 
   return (
     <div lang={locale} dir={localeDirection[locale]} className="avsar-root">
-      <MarketShell locale={locale}>
+      <MarketShell locale={locale} signedIn={signedIn}>
         {children}
         <MarketingFooter locale={locale} pathname={pathname} />
       </MarketShell>

@@ -11,6 +11,7 @@ import { TURNSTILE_HEADER, verifyTurnstile } from '@/lib/security/turnstile';
 import { getAdminSupabase } from '@/lib/supabase/admin';
 import { attachLeads, findSamePerson } from '@/lib/console/same-person';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
+import { refreshIntegrations } from '@/lib/integrations/runtime';
 
 export const runtime = 'nodejs';
 
@@ -60,6 +61,7 @@ export async function POST(request: Request) {
   }
 
   return withIdempotency(request, 'leads.visitor', anonymousActor(ip), async () => {
+    await refreshIntegrations();
     const admin = getAdminSupabase();
     if (!admin) return NextResponse.json({ error: 'storage_unconfigured' }, { status: 503 });
 

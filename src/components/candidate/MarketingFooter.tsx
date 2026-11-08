@@ -14,8 +14,9 @@ import { SiteFooter } from '@/components/candidate/SiteFooter';
  * footer HTML on first paint.
  */
 const QUIET_ANON = /\/(signin|signup|go|reset-password|applicant)(\/|$)/;
-const QUIET_APP =
-  /\/(dashboard|profile|assessment|admin)(\/|$)|\/jobs(\/|$)/i;
+/* Jobs stay public for anonymous visitors (they still get the shop footer).
+   Signed-in audiences are blocked by the viewer check below. */
+const QUIET_APP = /\/(dashboard|profile|assessment|admin)(\/|$)/i;
 
 export async function MarketingFooter({
   locale,
