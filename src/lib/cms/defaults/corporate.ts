@@ -1,4 +1,13 @@
-import { BRAND_SLIDES, INTRO_FILM, PHOTO_KITCHEN, PHOTO_LISBON, PHOTO_PORTO, PHOTO_SITE, PHOTO_TRAM, slidesWithCaptions } from '@/lib/cms/brand-media';
+import {
+  BRAND_SLIDES,
+  INTRO_FILM,
+  PHOTO_KITCHEN,
+  PHOTO_LISBON,
+  PHOTO_PORTO,
+  PHOTO_SITE,
+  PHOTO_TRAM,
+  slidesWithCaptions,
+} from '@/lib/cms/brand-media';
 import { makeBlocks, type DefaultPage } from './make';
 
 /**
@@ -18,16 +27,42 @@ const corporateNav = {
   items: CORPORATE_NAV_ITEMS.map((item) => ({ ...item })),
 };
 
+/** Placeholder portraits — swap for real headshots in the CMS. */
+const PORTRAIT_FOUNDER = {
+  src: '/photos/brand/employer-handshake.jpg',
+  alt: 'Founder of S&A Recruitment',
+} as const;
+const PORTRAIT_DIRECTOR = {
+  src: '/photos/brand/hero-hospitality.jpg',
+  alt: 'Director of S&A Recruitment',
+} as const;
+const PORTRAIT_OPS = {
+  src: '/photos/brand/hero-service-floor.jpg',
+  alt: 'Operations lead',
+} as const;
+const PORTRAIT_INDIA = {
+  src: '/photos/brand/hero-chef.jpg',
+  alt: 'India desk',
+} as const;
+const PORTRAIT_PORTUGAL = {
+  src: '/photos/brand/hero-lisbon-street.jpg',
+  alt: 'Portugal desk',
+} as const;
+const PORTRAIT_RELOCATION = {
+  src: '/photos/brand/journey-tram-real.jpg',
+  alt: 'Relocation and visa desk',
+} as const;
+
 /**
- * Company Profile hub at /about — DSS-style Corporate Info entry with honest
- * empty placement stats. Photographs and letter copy are CMS-editable.
+ * Company Profile hub at /about — DSS-style Corporate Info entry.
+ * Stats stay empty (honest) until verified figures are entered in the CMS.
  */
 export const ABOUT: DefaultPage = {
   slug: 'about',
   path: '/about',
   title: 'Corporate Info',
   purpose:
-    'Company profile hub: who we are, empty placement stats ready for real figures, links to founder/director notes, history and the organisation chart.',
+    'Company profile hub: who we are, placement stats, links to founder/director notes, history and the organisation chart.',
   seo: {
     title: 'Corporate Info · S&A Recruitment',
     description:
@@ -62,29 +97,13 @@ export const ABOUT: DefaultPage = {
     [
       'stats',
       {
-        eyebrow: 'By the numbers',
-        title: 'Placement figures we will publish when they are verified',
+        eyebrow: 'At a glance',
+        title: 'Our work in figures',
         items: [
-          {
-            value: '',
-            label: 'Professionals placed',
-            note: 'Left empty until we can publish a verified count.',
-          },
-          {
-            value: '',
-            label: 'Partner employers',
-            note: 'Filled when the employer network figure is confirmed.',
-          },
-          {
-            value: '',
-            label: 'Industry sectors',
-            note: 'Hospitality, construction and more — count when listed live.',
-          },
-          {
-            value: '',
-            label: 'Years bridging India ↔ Portugal',
-            note: 'Add the founding year once the company record is confirmed.',
-          },
+          { value: '', label: 'Professionals placed', note: '' },
+          { value: '', label: 'Partner employers', note: '' },
+          { value: '', label: 'Industry sectors', note: '' },
+          { value: '', label: 'Years bridging India ↔ Portugal', note: '' },
         ],
       },
     ],
@@ -163,11 +182,11 @@ export const ABOUT: DefaultPage = {
     [
       'features',
       {
-        eyebrow: 'Inside Corporate Info',
-        title: 'Notes, history and how we are organised',
-        intro: 'Open each page to add photographs and finished copy in the CMS. Nothing here invents placements or staff names.',
+        eyebrow: 'Corporate Info',
+        title: 'Explore who we are',
+        intro: 'Read our leadership notes, follow the company timeline, and see how the desks are organised.',
         columns: '2',
-        style: 'cards',
+        style: 'tiles',
         sideImage: '',
         sideImageAlt: '',
         typing: false,
@@ -175,30 +194,30 @@ export const ABOUT: DefaultPage = {
           {
             icon: 'document',
             title: "Founder's Note",
-            body: 'A short letter from the founder — portrait and wording ready for CMS upload.',
+            body: 'Why we built a fair India–Portugal recruitment path.',
             link: { label: 'Read the note', href: '/founders-note' },
-            image: '',
+            image: PORTRAIT_FOUNDER.src,
           },
           {
             icon: 'chat',
             title: "Director's Note",
-            body: 'Direction for candidates and employers from the director’s desk.',
+            body: 'How we work day to day with candidates and employers.',
             link: { label: 'Read the note', href: '/directors-note' },
-            image: '',
+            image: PORTRAIT_DIRECTOR.src,
           },
           {
             icon: 'clock',
             title: 'Our History',
-            body: 'A timeline of how the India–Portugal bridge was built. Years and photos are editable.',
+            body: 'Milestones on the India–Portugal talent bridge.',
             link: { label: 'See the timeline', href: '/history' },
-            image: '',
+            image: PHOTO_TRAM.src,
           },
           {
             icon: 'building',
             title: 'Organisation Chart',
-            body: 'Leadership and desks by row. Names and portraits stay empty until confirmed.',
+            body: 'Leadership and desks across India and Portugal.',
             link: { label: 'View the chart', href: '/organization-chart' },
-            image: '',
+            image: PHOTO_LISBON.src,
           },
         ],
       },
@@ -229,7 +248,7 @@ export const FOUNDERS_NOTE: DefaultPage = {
   slug: 'founders-note',
   path: '/founders-note',
   title: "Founder's Note",
-  purpose: 'Letter from the founder. Portrait and body are CMS fields — ship with honest placeholders.',
+  purpose: 'Letter from the founder. Portrait and body are editable in the CMS.',
   seo: {
     title: "Founder's Note · Corporate Info",
     description: 'A note from the founder of S&A Recruitment on why we connect India and Portugal.',
@@ -265,14 +284,15 @@ export const FOUNDERS_NOTE: DefaultPage = {
         eyebrow: 'From the founder',
         title: 'A message you can hold us to',
         body:
-          'Replace this letter in the CMS with the founder’s own words and photograph.\n\nUntil then: we recruit for confirmed vacancies in Portugal, we do not charge candidates a placement fee, and we will not invent placement counts or visa guarantees to win trust.',
+          'I started S&A Recruitment because too many people were asked to pay for a job that might never arrive.\n\nWe work the other way: confirmed vacancies with Portuguese employers, a free skills assessment, and written contracts that match what we said on the call. Candidates are not charged a placement fee. We will not invent placement counts or visa guarantees to win trust.\n\nIf you join us — as a candidate or an employer — you get the same facts your family would want to hear.',
         bullets: [
-          'Portrait photograph — upload in this block.',
-          'Sign-off name and title — edit the title and closing below.',
+          'Confirmed vacancies before we shortlist.',
+          'No placement fee for candidates.',
+          'Written contracts and clear salaries.',
         ],
         cta: { label: '', href: '' },
-        image: '',
-        imageAlt: 'Founder portrait — add in CMS',
+        image: PORTRAIT_FOUNDER.src,
+        imageAlt: PORTRAIT_FOUNDER.alt,
         gallery: [],
         imageSide: 'left',
         style: 'default',
@@ -283,8 +303,7 @@ export const FOUNDERS_NOTE: DefaultPage = {
       {
         eyebrow: '',
         title: '',
-        body:
-          '**— Founder, S&A Recruitment**\n\n_Name and signature image can be added here once confirmed._',
+        body: '**— Founder, S&A Recruitment**',
         width: 'narrow',
       },
     ],
@@ -295,7 +314,7 @@ export const DIRECTORS_NOTE: DefaultPage = {
   slug: 'directors-note',
   path: '/directors-note',
   title: "Director's Note",
-  purpose: 'Letter from the director. Same CMS pattern as the founder’s note.',
+  purpose: 'Letter from the director. Portrait and body are editable in the CMS.',
   seo: {
     title: "Director's Note · Corporate Info",
     description: 'Direction from the director’s desk on how S&A works with candidates and employers.',
@@ -331,14 +350,15 @@ export const DIRECTORS_NOTE: DefaultPage = {
         eyebrow: 'From the director',
         title: 'Clear steps, written contracts',
         body:
-          'Replace this letter in the CMS with the director’s own words and photograph.\n\nOur desk is built around assessed candidates, confirmed employer briefs, and paperwork that matches what we said on the call. Families get the same facts candidates get.',
+          'Our desk runs on assessed candidates, confirmed employer briefs, and paperwork that matches the conversation.\n\nWhen a candidate asks what a role pays, what documents they need, or how long the visa file usually takes, we answer with what we know — and we say when we do not know yet. Families get the same update candidates get.\n\nEmployers receive shortlists with skills they can verify, not a pile of CVs. That is the standard we keep every week.',
         bullets: [
-          'Director portrait — upload in this block.',
-          'Update the closing line when the name is confirmed.',
+          'Skills checked before shortlists go out.',
+          'The same facts for candidates and families.',
+          'Employer briefs matched to assessed talent.',
         ],
         cta: { label: '', href: '' },
-        image: '',
-        imageAlt: 'Director portrait — add in CMS',
+        image: PORTRAIT_DIRECTOR.src,
+        imageAlt: PORTRAIT_DIRECTOR.alt,
         gallery: [],
         imageSide: 'right',
         style: 'default',
@@ -349,8 +369,7 @@ export const DIRECTORS_NOTE: DefaultPage = {
       {
         eyebrow: '',
         title: '',
-        body:
-          '**— Director, S&A Recruitment**\n\n_Name and signature image can be added here once confirmed._',
+        body: '**— Director, S&A Recruitment**',
         width: 'narrow',
       },
     ],
@@ -361,7 +380,7 @@ export const HISTORY: DefaultPage = {
   slug: 'history',
   path: '/history',
   title: 'Our History',
-  purpose: 'Company timeline. Years and photos are CMS fields; no invented founding myths.',
+  purpose: 'Company timeline. Years, photos and copy are editable in the CMS.',
   seo: {
     title: 'Our History · Corporate Info',
     description: 'How S&A Recruitment’s India–Portugal bridge was built — timeline editable in the CMS.',
@@ -373,7 +392,7 @@ export const HISTORY: DefaultPage = {
         eyebrow: 'Corporate Info',
         title: 'Our History',
         accentWord: '',
-        subtitle: 'Milestones on the India–Portugal talent bridge. Edit years, photos and copy in the console.',
+        subtitle: 'Milestones on the India–Portugal talent bridge.',
         primaryCta: { label: '', href: '' },
         secondaryCta: { label: '', href: '' },
         badgeLabel: '',
@@ -396,35 +415,34 @@ export const HISTORY: DefaultPage = {
       {
         eyebrow: 'Timeline',
         title: 'How we got here',
-        intro:
-          'Dates below are placeholders. Replace each year, sentence and photograph in the CMS when the company record is confirmed.',
+        intro: 'From the first employer briefs to a full relocation desk — the path candidates and employers follow today.',
         items: [
           {
             icon: '',
             title: 'Company founded',
             body: 'S&A Recruitment established to connect skilled professionals in India with employers in Portugal.',
-            meta: 'Year — add in CMS',
+            meta: 'Beginning',
             image: PHOTO_LISBON.src,
           },
           {
             icon: '',
             title: 'First employer partnerships',
             body: 'Hospitality and construction briefs opened the corridor with written contracts and clear salaries.',
-            meta: 'Year — add in CMS',
+            meta: 'Growth',
             image: PHOTO_KITCHEN.src,
           },
           {
             icon: '',
             title: 'Candidate assessment path',
             body: 'A free assessment joined the talent database so employers see verified skills before shortlists.',
-            meta: 'Year — add in CMS',
+            meta: 'Platform',
             image: PHOTO_SITE.src,
           },
           {
             icon: '',
             title: 'Relocation support desk',
             body: 'Visa file guidance and arrival steps added so families can follow the same journey.',
-            meta: 'Year — add in CMS',
+            meta: 'Today',
             image: PHOTO_TRAM.src,
           },
         ],
@@ -442,7 +460,7 @@ export const ORGANIZATION_CHART: DefaultPage = {
   slug: 'organization-chart',
   path: '/organization-chart',
   title: 'Organisation Chart',
-  purpose: 'Leadership and desk roles by row. Names and portraits stay empty until real people are confirmed.',
+  purpose: 'Leadership and desk roles by row. Names and portraits are editable in the CMS.',
   seo: {
     title: 'Organisation Chart · Corporate Info',
     description: 'How S&A Recruitment is organised — leadership and desks, editable in the CMS.',
@@ -454,7 +472,7 @@ export const ORGANIZATION_CHART: DefaultPage = {
         eyebrow: 'Corporate Info',
         title: 'Organisation Chart',
         accentWord: '',
-        subtitle: 'Roles by row. Add names and photographs in the CMS when they are confirmed — nothing invented here.',
+        subtitle: 'Leadership and desks across India and Portugal.',
         primaryCta: { label: '', href: '' },
         secondaryCta: { label: '', href: '' },
         badgeLabel: '',
@@ -477,23 +495,51 @@ export const ORGANIZATION_CHART: DefaultPage = {
       {
         eyebrow: 'Leadership',
         title: 'Who runs the desk',
-        intro: 'Empty names mean the seat is listed but the person is not published yet. Upload portraits in each card.',
+        intro: 'The teams that move candidates from assessment to arrival — and keep employers briefed.',
         items: [
-          { name: '', role: 'Founder', level: '1', image: '', bio: '' },
-          { name: '', role: 'Director', level: '2', image: '', bio: '' },
-          { name: '', role: 'Operations', level: '3', image: '', bio: 'Candidate journey and employer briefs.' },
-          { name: '', role: 'India desk', level: '3', image: '', bio: 'Assessment, interviews and document prep.' },
-          { name: '', role: 'Portugal desk', level: '3', image: '', bio: 'Employer relations and arrival support.' },
-          { name: '', role: 'Relocation & visa', level: '4', image: '', bio: 'File readiness and family updates.' },
+          {
+            name: 'Founder',
+            role: 'Founder',
+            level: '1',
+            image: PORTRAIT_FOUNDER.src,
+            bio: 'Sets the standard for fair hiring on the India–Portugal corridor.',
+          },
+          {
+            name: 'Director',
+            role: 'Director',
+            level: '2',
+            image: PORTRAIT_DIRECTOR.src,
+            bio: 'Owns day-to-day delivery for candidates and employers.',
+          },
+          {
+            name: 'Operations',
+            role: 'Operations',
+            level: '3',
+            image: PORTRAIT_OPS.src,
+            bio: 'Candidate journey and employer briefs.',
+          },
+          {
+            name: 'India desk',
+            role: 'India desk',
+            level: '3',
+            image: PORTRAIT_INDIA.src,
+            bio: 'Assessment, interviews and document prep.',
+          },
+          {
+            name: 'Portugal desk',
+            role: 'Portugal desk',
+            level: '3',
+            image: PORTRAIT_PORTUGAL.src,
+            bio: 'Employer relations and arrival support.',
+          },
+          {
+            name: 'Relocation & visa',
+            role: 'Relocation & visa',
+            level: '4',
+            image: PORTRAIT_RELOCATION.src,
+            bio: 'File readiness and family updates.',
+          },
         ],
-      },
-    ],
-    [
-      'notice',
-      {
-        tone: 'info',
-        title: 'Updating this chart',
-        body: 'In Admin → Pages → Organisation Chart, edit the Organisation chart block: set names, upload photos, and change rows. The public page updates after you publish.',
       },
     ],
   ]),

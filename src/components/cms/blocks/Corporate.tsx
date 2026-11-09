@@ -60,8 +60,8 @@ export function CorporateNavBlock({ data, locale }: Props) {
 }
 
 /**
- * Organisation chart by level. Empty names render as a quiet placeholder so
- * editors can fill portraits and people later without inventing staff.
+ * Organisation chart by level. Name, role, photo and bio come from the CMS;
+ * missing fields simply omit that line — no instructional placeholders.
  */
 export function OrgChartBlock({ data }: Props) {
   const list = items(data, 'items').filter((item) => str(item, 'role') || str(item, 'name'));
@@ -93,22 +93,24 @@ export function OrgChartBlock({ data }: Props) {
                   const role = str(person, 'role');
                   const image = str(person, 'image');
                   const bio = str(person, 'bio');
+                  const heading = name || role;
+                  const showRoleUnderName = Boolean(name && role && name !== role);
                   return (
                     <li
                       key={`${level}-${index}`}
                       className="flex w-[min(100%,220px)] flex-col items-center text-center"
                     >
                       <div className="relative size-[112px] overflow-hidden rounded-full bg-[#e8edf2] ring-1 ring-[#142438]/10">
-                        {image ? (
-                          <CmsImage src={image} alt={name || role} sizes="112px" />
-                        ) : (
-                          <span className="grid size-full place-items-center text-[13px] text-muted">Photo</span>
-                        )}
+                        {image ? <CmsImage src={image} alt={heading} sizes="112px" /> : null}
                       </div>
-                      <p className="m-0 mt-4 text-[17px] font-semibold tracking-[-0.02em] text-[#142438]">
-                        {name || 'To be confirmed'}
-                      </p>
-                      {role ? <p className="m-0 mt-1 text-[14px] font-medium text-[#b28a49]">{role}</p> : null}
+                      {heading ? (
+                        <p className="m-0 mt-4 text-[17px] font-semibold tracking-[-0.02em] text-[#142438]">
+                          {heading}
+                        </p>
+                      ) : null}
+                      {showRoleUnderName ? (
+                        <p className="m-0 mt-1 text-[14px] font-medium text-[#b28a49]">{role}</p>
+                      ) : null}
                       {bio ? <p className="m-0 mt-2 text-[13px] leading-[1.5] text-ink-2">{bio}</p> : null}
                     </li>
                   );
