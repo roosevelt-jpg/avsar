@@ -38,6 +38,10 @@ const SLUGS = new Set([
   'why-portugal',
   'visa-and-relocation',
   'about',
+  'founders-note',
+  'directors-note',
+  'history',
+  'organization-chart',
   'contact',
   'success-stories',
   'news-and-insights',
@@ -134,6 +138,64 @@ async function main() {
     process.exit(1);
   }
   console.log('Updated employerRegistration photo fields');
+
+  /* Corporate Info: rename About in the header and expand Company footer links. */
+  const { data: existingNav } = await admin.from('site_settings').select('value').eq('key', 'navigation').maybeSingle();
+  const navCurrent =
+    existingNav?.value && typeof existingNav.value === 'object'
+      ? (existingNav.value as Record<string, unknown>)
+      : {};
+  const main = Array.isArray(navCurrent.main) ? [...(navCurrent.main as Record<string, unknown>[])] : [];
+  const aboutIndex = main.findIndex((item) => item.href === '/about');
+  if (aboutIndex >= 0) {
+    main[aboutIndex] = {
+      ...main[aboutIndex],
+      label: 'Corporate Info',
+      labelHi: 'कंपनी जानकारी',
+      labelAr: 'معلومات الشركة',
+      href: '/about',
+    };
+  } else {
+    main.push({
+      label: 'Corporate Info',
+      labelHi: 'कंपनी जानकारी',
+      labelAr: 'معلومات الشركة',
+      labels: {},
+      href: '/about',
+    });
+  }
+  const { error: navError } = await admin.from('site_settings').upsert(
+    { key: 'navigation', value: { ...navCurrent, main }, updated_at: now },
+    { onConflict: 'key' },
+  );
+  if (navError) {
+    console.error(navError);
+    process.exit(1);
+  }
+  console.log('Updated navigation: Corporate Info → /about');
+
+  const { data: existingFooter } = await admin.from('site_settings').select('value').eq('key', 'footer').maybeSingle();
+  const footerCurrent =
+    existingFooter?.value && typeof existingFooter.value === 'object'
+      ? (existingFooter.value as Record<string, unknown>)
+      : {};
+  const companyLinks = DEFAULT_SETTINGS.footer.companyLinks;
+  const { error: footerError } = await admin.from('site_settings').upsert(
+    {
+      key: 'footer',
+      value: { ...footerCurrent, companyLinks },
+      updated_at: now,
+    },
+    { onConflict: 'key' },
+  );
+  if (footerError) {
+    console.error(footerError);
+    process.exit(1);
+  }
+  console.log(
+    'Updated footer companyLinks:',
+    companyLinks.map((link) => link.href).join(' · '),
+  );
 }
 
 void main();

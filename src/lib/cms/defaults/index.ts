@@ -6,7 +6,7 @@ import { VISA } from './visa';
 import { FAQ } from './faq';
 import { STAY_SAFE } from './stay-safe';
 import { FOR_YOUR_FAMILY } from './for-your-family';
-import { ABOUT } from './about';
+import { ABOUT, DIRECTORS_NOTE, FOUNDERS_NOTE, HISTORY, ORGANIZATION_CHART } from './corporate';
 import { JOBS_INTRO } from './jobs';
 import { SUCCESS_STORIES } from './success-stories';
 import { NEWS_AND_INSIGHTS } from './news';
@@ -36,6 +36,10 @@ export const DEFAULT_PAGES: DefaultPage[] = [
   STAY_SAFE,
   FOR_YOUR_FAMILY,
   ABOUT,
+  FOUNDERS_NOTE,
+  DIRECTORS_NOTE,
+  HISTORY,
+  ORGANIZATION_CHART,
   INDUSTRIES,
   SUCCESS_STORIES,
   NEWS_AND_INSIGHTS,

@@ -20,6 +20,7 @@ import { LiveFunnelBlock } from './blocks/LiveFunnel';
 import { CandidateStoriesBlock, GalleryBlock, TestimonialsBlock, VideoBlock } from './blocks/Media';
 import { ContactCardsBlock, FaqBlock } from './blocks/Faq';
 import { EmployerBandBlock, PressBarBlock } from './blocks/Brand';
+import { CorporateNavBlock, OrgChartBlock } from './blocks/Corporate';
 import { PresenceMapBlock } from './blocks/PresenceMap';
 
 /**
@@ -88,6 +89,10 @@ export function BlockRenderer({ blocks, locale, settings }: { blocks: Block[]; l
             return <ContactCardsBlock key={block.id} {...props} settings={settings} />;
           case 'presence_map':
             return <PresenceMapBlock key={block.id} data={data} offices={settings.company.offices} />;
+          case 'corporate_nav':
+            return <CorporateNavBlock key={block.id} {...props} />;
+          case 'org_chart':
+            return <OrgChartBlock key={block.id} {...props} />;
           default:
             return null;
         }

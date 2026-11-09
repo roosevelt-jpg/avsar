@@ -891,6 +891,76 @@ export const BLOCKS = {
       hubNote: '',
     },
   },
+  corporate_nav: {
+    label: 'Corporate Info links',
+    description:
+      'Sub-navigation across Company Profile, founder/director notes, history and the organisation chart. Highlight follows the current URL.',
+    fields: [
+      {
+        kind: 'text',
+        name: 'eyebrow',
+        label: 'Label',
+        help: 'Small heading above the links, e.g. “Corporate Info”.',
+        max: 80,
+      },
+      {
+        kind: 'list',
+        name: 'items',
+        label: 'Links',
+        itemLabel: 'Link',
+        max: 8,
+        fields: [
+          { kind: 'text', name: 'label', label: 'Label', max: 60 },
+          { kind: 'url', name: 'href', label: 'Goes to' },
+        ],
+      },
+    ],
+    empty: {
+      eyebrow: 'Corporate Info',
+      items: [],
+    },
+  },
+  org_chart: {
+    label: 'Organisation chart',
+    description:
+      'Leadership and desk roles in rows by level. Leave names empty until real people are confirmed — no invented portraits.',
+    fields: [
+      eyebrow,
+      title,
+      intro,
+      {
+        kind: 'list',
+        name: 'items',
+        label: 'People',
+        itemLabel: 'Person',
+        max: 16,
+        fields: [
+          { kind: 'text', name: 'name', label: 'Name', help: 'Leave blank until confirmed.', max: 80 },
+          { kind: 'text', name: 'role', label: 'Role', max: 100 },
+          {
+            kind: 'select',
+            name: 'level',
+            label: 'Row',
+            help: '1 is the top row. Same number = same row.',
+            options: [
+              { value: '1', label: '1 — top' },
+              { value: '2', label: '2' },
+              { value: '3', label: '3' },
+              { value: '4', label: '4' },
+            ],
+          },
+          { kind: 'media', name: 'image', label: 'Photograph', accept: 'image', optional: true },
+          { kind: 'textarea', name: 'bio', label: 'Short note', rows: 2, max: 240 },
+        ],
+      },
+    ],
+    empty: {
+      eyebrow: '',
+      title: 'Organisation chart',
+      intro: '',
+      items: [],
+    },
+  },
 } satisfies Record<string, Definition>;
 
 export type BlockType = keyof typeof BLOCKS;

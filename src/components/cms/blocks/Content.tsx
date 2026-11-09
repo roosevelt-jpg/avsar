@@ -77,19 +77,24 @@ export function TrustBarBlock({ data }: Props) {
 
 export function StatsBlock({ data }: Props) {
   const list = items(data, 'items');
+  if (!list.length) return null;
   return (
     <Section tone="ink">
       <SectionHeading eyebrow={str(data, 'eyebrow')} title={str(data, 'title')} dark />
       <ul className="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-px overflow-hidden rounded-[22px] border border-dark-line bg-dark-line p-0">
-        {list.map((item, index) => (
-          <li key={index} className="bg-night p-[clamp(20px,3cqi,32px)]">
-            <p className="m-0 text-[clamp(44px,6cqi,72px)] font-semibold leading-none tracking-[-0.04em] text-on-night">
-              <CountUpValue value={str(item, 'value')} />
-            </p>
-            <p className="m-0 mt-3 text-[16px] text-on-night">{str(item, 'label')}</p>
-            {str(item, 'note') ? <p className="m-0 mt-1 text-[14px] text-dark-muted">{str(item, 'note')}</p> : null}
-          </li>
-        ))}
+        {list.map((item, index) => {
+          /* Empty value stays honest: em dash, never a made-up count. */
+          const value = str(item, 'value').trim() || '—';
+          return (
+            <li key={index} className="bg-night p-[clamp(20px,3cqi,32px)]">
+              <p className="m-0 text-[clamp(44px,6cqi,72px)] font-semibold leading-none tracking-[-0.04em] text-on-night">
+                <CountUpValue value={value} />
+              </p>
+              <p className="m-0 mt-3 text-[16px] text-on-night">{str(item, 'label')}</p>
+              {str(item, 'note') ? <p className="m-0 mt-1 text-[14px] text-dark-muted">{str(item, 'note')}</p> : null}
+            </li>
+          );
+        })}
       </ul>
     </Section>
   );
