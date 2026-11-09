@@ -14,8 +14,8 @@ import { createClient } from '@supabase/supabase-js';
 
 const EMAIL = 'employer@smithandadams.com';
 const PASSWORD = '12345678';
-const FULL_NAME = 'Local Demo Employer';
-const COMPANY = 'Local Demo Employer (Lisbon)';
+const FULL_NAME = 'Smith & Adams';
+const COMPANY = 'Smith & Adams (Lisbon)';
 const COUNTRY = 'PT';
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
@@ -116,7 +116,16 @@ async function main() {
     }
     console.log('Created employer', employerId);
   } else {
-    console.log('Already linked to employer', employerId);
+    /* Keep the display name in sync when the seed constants change. */
+    const { error: renameError } = await admin
+      .from('employers')
+      .update({ name: COMPANY, country: COUNTRY })
+      .eq('id', employerId);
+    if (renameError) {
+      console.error('Employer rename failed:', renameError.message);
+      process.exit(1);
+    }
+    console.log('Updated employer', employerId, '→', COMPANY);
   }
 
   console.log(`

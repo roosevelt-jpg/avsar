@@ -15,7 +15,7 @@ import { createClient } from '@supabase/supabase-js';
 
 const EMAIL = 'candidate@smithandadams.com';
 const PASSWORD = '12345678';
-const FULL_NAME = 'Local Demo Applicant';
+const FULL_NAME = 'Asha Menon';
 const PHONE = '+919876543210';
 const COHORT_ID = 'cohort-01';
 const POSITION = 'chef';

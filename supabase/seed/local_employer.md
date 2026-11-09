@@ -9,7 +9,7 @@ For sandbox / local testing of the employer portal only. Not for production.
 | Sign-in | `/en/signin` (password) → `/admin/employer` |
 | Email | `employer@smithandadams.com` |
 | Password | `12345678` |
-| Company | Local Demo Employer (Lisbon) |
+| Company | Smith & Adams (Lisbon) |
 
 ## Create / refresh the account
 

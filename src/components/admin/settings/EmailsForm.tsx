@@ -29,7 +29,7 @@ const EXAMPLE: Record<string, string> = {
   message: 'Thank you for your message. The cook vacancies in Lisbon are open until 30 November.',
   vacancies: 'Cook, Lisbon (2); Kitchen assistant, Porto (1)',
   line: 'New application: Cook, Lisbon',
-  company: 'Local Demo Employer (Lisbon)',
+  company: 'Smith & Adams (Lisbon)',
   price: '₹4,999',
 };
 

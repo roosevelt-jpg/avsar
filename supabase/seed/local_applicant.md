@@ -9,7 +9,7 @@ For sandbox / local testing of the candidate dashboard only. Not for production.
 | Sign-in | `/en/applicant/signin` (password) → `/en/dashboard` |
 | Email | `candidate@smithandadams.com` |
 | Password | `12345678` |
-| Name | Local Demo Applicant |
+| Name | Asha Menon |
 | Profile | Chef · Mumbai · completed (unpaid) |
 
 ## Create / refresh the account
