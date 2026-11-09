@@ -58,8 +58,12 @@ export function JobsBoardHero({
         : [];
 
   return (
-    <section aria-label="Job opportunities" className="relative isolate overflow-hidden bg-[#142438] text-white">
-      <div className="absolute inset-0" aria-hidden>
+    /*
+      z-20 keeps the floating search above the listing band. Do not use
+      overflow-hidden here — it would clip the card where it overlaps the next section.
+    */
+    <section aria-label="Job opportunities" className="relative z-20 bg-[#142438] text-white">
+      <div className="absolute inset-0 overflow-hidden" aria-hidden>
         <MarketingSlideshow slides={pack} className="absolute inset-0 size-full" sizes="100vw" />
         <div className="absolute inset-0 bg-[#142438]/45" />
         <div className="absolute inset-0 bg-gradient-to-r from-[#142438]/92 via-[#142438]/72 to-[#142438]/25" />
@@ -97,7 +101,7 @@ export function JobsBoardHero({
         </div>
 
         {/* Search floats over the ivory listing band — mockup Job Opportunities page. */}
-        <div className="relative z-10 -mb-8 sm:-mb-10">{search}</div>
+        <div className="relative z-10 -mb-9 sm:-mb-11">{search}</div>
       </div>
     </section>
   );

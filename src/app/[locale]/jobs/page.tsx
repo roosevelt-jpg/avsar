@@ -242,7 +242,8 @@ export default async function JobsPage({
 
         {signedIn ? <div className="mb-6">{searchForm}</div> : null}
 
-        <section className={signedIn ? 'pb-4 pt-2' : 'px-[clamp(20px,4cqi,56px)] pb-[clamp(48px,7cqi,96px)] pt-12 sm:pt-14'}>
+        {/* pt clears the floating hero search card; keep this band under the hero (z-20). */}
+        <section className={signedIn ? 'relative z-0 pb-4 pt-2' : 'relative z-0 px-[clamp(20px,4cqi,56px)] pb-[clamp(48px,7cqi,96px)] pt-14 sm:pt-16'}>
           <div className="mx-auto w-full max-w-[1200px]">
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,280px)_minmax(0,1fr)]">
               <aside className="shop-sticky rounded-[14px] bg-[#142438] p-5 text-white shadow-[0_18px_40px_-28px_rgba(20,36,56,0.65)] lg:sticky lg:self-start">
