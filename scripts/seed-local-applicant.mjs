@@ -13,8 +13,8 @@
 import { createHmac } from 'node:crypto';
 import { createClient } from '@supabase/supabase-js';
 
-const EMAIL = 'applicant.local@avsar.dev';
-const PASSWORD = 'LocalApplicant1!';
+const EMAIL = 'candidate@smithandadams.com';
+const PASSWORD = '12345678';
 const FULL_NAME = 'Local Demo Applicant';
 const PHONE = '+919876543210';
 const COHORT_ID = 'cohort-01';

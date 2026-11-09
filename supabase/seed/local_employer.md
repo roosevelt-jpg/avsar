@@ -7,8 +7,8 @@ For sandbox / local testing of the employer portal only. Not for production.
 | Field | Value |
 |---|---|
 | Sign-in | `/en/signin` (password) → `/admin/employer` |
-| Email | `employer.local@avsar.dev` |
-| Password | `LocalEmployer1!` |
+| Email | `employer@smithandadams.com` |
+| Password | `12345678` |
 | Company | Local Demo Employer (Lisbon) |
 
 ## Create / refresh the account

@@ -7,8 +7,8 @@ For sandbox / local testing of the candidate dashboard only. Not for production.
 | Field | Value |
 |---|---|
 | Sign-in | `/en/applicant/signin` (password) → `/en/dashboard` |
-| Email | `applicant.local@avsar.dev` |
-| Password | `LocalApplicant1!` |
+| Email | `candidate@smithandadams.com` |
+| Password | `12345678` |
 | Name | Local Demo Applicant |
 | Profile | Chef · Mumbai · completed (unpaid) |
 

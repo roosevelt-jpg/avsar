@@ -12,8 +12,8 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-const EMAIL = 'employer.local@avsar.dev';
-const PASSWORD = 'LocalEmployer1!';
+const EMAIL = 'employer@smithandadams.com';
+const PASSWORD = '12345678';
 const FULL_NAME = 'Local Demo Employer';
 const COMPANY = 'Local Demo Employer (Lisbon)';
 const COUNTRY = 'PT';
