@@ -923,7 +923,7 @@ export const BLOCKS = {
   org_chart: {
     label: 'Organisation chart',
     description:
-      'Leadership and desk roles in rows by level. Leave names empty until real people are confirmed — no invented portraits.',
+      'Leadership and desk roles in rows by level. In the editor: edit any person, Remove to delete, or + Add person for a new card. Reorder with ↑ ↓.',
     fields: [
       eyebrow,
       title,
@@ -932,10 +932,11 @@ export const BLOCKS = {
         kind: 'list',
         name: 'items',
         label: 'People',
+        help: 'Add, edit, reorder or remove anyone. Row number controls which line they sit on (1 = top).',
         itemLabel: 'Person',
-        max: 16,
+        max: 40,
         fields: [
-          { kind: 'text', name: 'name', label: 'Name', help: 'Leave blank until confirmed.', max: 80 },
+          { kind: 'text', name: 'name', label: 'Name', max: 80 },
           { kind: 'text', name: 'role', label: 'Role', max: 100 },
           {
             kind: 'select',
@@ -947,6 +948,7 @@ export const BLOCKS = {
               { value: '2', label: '2' },
               { value: '3', label: '3' },
               { value: '4', label: '4' },
+              { value: '5', label: '5' },
             ],
           },
           { kind: 'media', name: 'image', label: 'Photograph', accept: 'image', optional: true },
