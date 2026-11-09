@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { BrandGroupLogo } from '@/components/ui/BrandGroupLogo';
 import { Wordmark } from '@/components/ui/Wordmark';
 import { FooterSubscribe } from '@/components/candidate/FooterSubscribe';
 import { Icon } from '@/components/cms/primitives';
@@ -156,9 +157,14 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
       <div className="border-t border-white/15">
         <div className="mx-auto grid w-full max-w-[1240px] grid-cols-1 items-center gap-3 px-[clamp(16px,4cqi,26px)] py-4 text-[13px] text-white/70 sm:grid-cols-[1fr_auto_1fr]">
           <p className="m-0 text-center sm:text-start">{copyright}</p>
-          <span className="mx-auto inline-flex max-w-[min(160px,55vw)] opacity-90">
-            <Wordmark href={page('/')} tone="dark" size={28} />
-          </span>
+          {/* Group wordmark is SVG ink only — no plate/background behind the letters. */}
+          <Link
+            href={page('/')}
+            aria-label="Smith & Adams Group"
+            className="mx-auto inline-flex max-w-[min(180px,60vw)] bg-transparent no-underline"
+          >
+            <BrandGroupLogo tone="dark" size={30} />
+          </Link>
           <nav aria-label="Legal" className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 sm:justify-end">
             {footer.legalLinks.map((item, index) => (
               <span key={item.href} className="inline-flex items-center gap-2">
