@@ -44,11 +44,14 @@ export function EnquireDrawer({ locale }: { locale: Locale }) {
         aria-expanded={open}
         aria-controls="enquire-drawer"
         onClick={() => setOpen(true)}
-        className={`fixed top-1/2 right-0 z-40 -translate-y-1/2 cursor-pointer rounded-l-[8px] border-0 bg-[#b28a49] px-2.5 py-4 text-[13px] font-semibold tracking-[0.08em] text-[#142438] shadow-[0_8px_24px_rgba(20,36,56,0.25)] transition-opacity duration-300 [writing-mode:vertical-rl] [text-orientation:mixed] hover:bg-[#9a743c] ${
+        className={`fixed top-1/2 right-0 z-40 -translate-y-1/2 cursor-pointer rounded-l-[8px] border-0 bg-[#b28a49] px-2.5 py-4 text-[13px] font-semibold tracking-[0.08em] text-white shadow-[0_8px_24px_rgba(20,36,56,0.25)] transition-opacity duration-300 hover:bg-[#9a743c] ${
           visible && !open ? 'opacity-100' : 'pointer-events-none opacity-0'
         }`}
       >
-        Enquire
+        {/* vertical-lr + 180° makes the label read bottom → top without flipping the tab chrome. */}
+        <span className="inline-block rotate-180 [writing-mode:vertical-lr] [text-orientation:mixed]">
+          Enquire
+        </span>
       </button>
 
       {open ? (
