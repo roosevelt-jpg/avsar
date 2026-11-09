@@ -325,6 +325,7 @@ const schemas = {
     heroIntro: text(500).min(1),
     heroImage: text(300).min(1),
     heroImageAlt: text(160),
+    heroSlides: z.array(z.object({ src: text(300).min(1), alt: text(160) })).max(12),
     searchKeywordPlaceholder: text(80).min(1),
     searchLocationLabel: text(40).min(1),
     searchCategoryLabel: text(40).min(1),

@@ -159,6 +159,9 @@ export type FooterSettings = {
   copyright: string;
 };
 
+/** One photograph in the /jobs hero slideshow. */
+export type JobsBoardSlide = { src: string; alt: string };
+
 /** Labels on the jobs board. {count} is replaced with a live figure. */
 export type JobsBoardSettings = {
   /** Hero shell on /jobs (mockup). */
@@ -168,6 +171,8 @@ export type JobsBoardSettings = {
   heroIntro: string;
   heroImage: string;
   heroImageAlt: string;
+  /** Cycling hero photographs. When empty, heroImage is used alone. */
+  heroSlides: JobsBoardSlide[];
   searchKeywordPlaceholder: string;
   searchLocationLabel: string;
   searchCategoryLabel: string;
@@ -736,6 +741,13 @@ export const DEFAULT_SETTINGS: SiteSettings = {
       'Discover real, company-verified opportunities for skilled professionals from India. Apply, get matched, and start your journey to work and live in Portugal.',
     heroImage: '/photos/brand/jobs-hero-1.jpg',
     heroImageAlt: 'A chef and a construction worker smiling with Lisbon rooftops behind them',
+    heroSlides: [
+      { src: '/kitchen-work-1400.jpg', alt: 'Kitchen team preparing food in a working restaurant kitchen' },
+      { src: '/photos/brand/hero-jobsite.jpg', alt: 'Workers tying rebar on a Portuguese building site' },
+      { src: '/photos/brand/hero-service-floor.jpg', alt: 'Plated dish on a restaurant service floor in Portugal' },
+      { src: '/photos/brand/dash-banner.jpg', alt: 'Porto Ribeira waterfront and Rabelo boats on the Douro' },
+      { src: '/photos/brand/journey-tram-real.jpg', alt: 'Yellow Lisbon tram on a cobbled street' },
+    ],
     searchKeywordPlaceholder: 'Job title, skill or keyword',
     searchLocationLabel: 'Portugal',
     searchCategoryLabel: 'Job category',
@@ -1009,6 +1021,25 @@ export function mergeSettings(rows: { key: string; value: unknown }[]): SiteSett
   /* Strip mockup leftovers (150+, 1,200+, 98%) from older Settings rows. */
   const scrubMock = (value: string) =>
     /1,?200|150\+|60\+|98%|20\+|30[–-]45/i.test(value.trim()) ? '' : value;
+  {
+    const board = out.jobsBoard;
+    const storedSlides = Array.isArray(board.heroSlides) ? board.heroSlides : [];
+    const heroSlides = storedSlides
+      .filter((slide): slide is JobsBoardSlide => Boolean(slide && typeof slide === 'object'))
+      .map((slide) => ({ src: String(slide.src ?? ''), alt: String(slide.alt ?? '') }))
+      .filter((slide) => slide.src)
+      .slice(0, 12);
+    out.jobsBoard = {
+      ...DEFAULT_SETTINGS.jobsBoard,
+      ...board,
+      heroSlides:
+        heroSlides.length > 0
+          ? heroSlides
+          : board.heroImage
+            ? [{ src: board.heroImage, alt: board.heroImageAlt || '' }]
+            : DEFAULT_SETTINGS.jobsBoard.heroSlides,
+    };
+  }
   out.jobsBoard.statsVacanciesValue = scrubMock(out.jobsBoard.statsVacanciesValue);
   out.jobsBoard.statsEmployersValue = scrubMock(out.jobsBoard.statsEmployersValue);
   out.jobsBoard.statsPlacedValue = scrubMock(out.jobsBoard.statsPlacedValue);

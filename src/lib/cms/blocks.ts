@@ -61,7 +61,8 @@ type Definition = {
 export const BLOCKS = {
   hero: {
     label: 'Hero',
-    description: 'The top of a page: headline, subtitle, buttons and an image or film.',
+    description:
+      'The top of a page: headline, buttons and a photograph slideshow. Upload new hero images under Slideshow (Add slide → Choose from library → Upload new).',
     fields: [
       eyebrow,
       { kind: 'text', name: 'title', label: 'Headline', max: 160 },
@@ -75,6 +76,42 @@ export const BLOCKS = {
       { kind: 'textarea', name: 'subtitle', label: 'Subtitle', rows: 3, max: 500 },
       { kind: 'link', name: 'primaryCta', label: 'Primary button' },
       { kind: 'link', name: 'secondaryCta', label: 'Secondary button', help: 'Outline button next to the primary action' },
+      {
+        kind: 'select',
+        name: 'layout',
+        label: 'Layout',
+        options: [
+          { value: 'overlay', label: 'Full-bleed photograph with text over it' },
+          { value: 'split', label: 'Text beside the media' },
+          { value: 'stacked', label: 'Text centred, media wide underneath' },
+        ],
+      },
+      {
+        kind: 'select',
+        name: 'mediaType',
+        label: 'Media',
+        options: [
+          { value: 'image', label: 'Image / slideshow' },
+          { value: 'video', label: 'Film' },
+          { value: 'none', label: 'None (centred text)' },
+        ],
+      },
+      {
+        kind: 'list',
+        name: 'slides',
+        label: 'Hero slideshow',
+        help: 'Upload or pick photographs that cycle in the hero. Add slide → Choose from library → Upload new. When this list has items, it replaces the single image below.',
+        itemLabel: 'Slide',
+        max: 12,
+        fields: [
+          { kind: 'media', name: 'src', label: 'Photograph', accept: 'image' },
+          { kind: 'text', name: 'alt', label: 'Description', max: 160 },
+          { kind: 'text', name: 'caption', label: 'Caption', help: 'Optional short line on the photo', max: 80 },
+        ],
+      },
+      { kind: 'media', name: 'mediaSrc', label: 'Fallback image or film', accept: 'any', help: 'Used only when the slideshow above is empty.' },
+      { kind: 'media', name: 'mediaPoster', label: 'Film poster image', accept: 'image' },
+      { kind: 'text', name: 'mediaAlt', label: 'Image description (for screen readers)', max: 200 },
       {
         kind: 'text',
         name: 'badgeLabel',
@@ -127,42 +164,6 @@ export const BLOCKS = {
         help: 'A very faint map behind the headline with flight routes from Delhi and Mumbai to Lisbon and Porto.',
       },
       {
-        kind: 'select',
-        name: 'layout',
-        label: 'Layout',
-        options: [
-          { value: 'split', label: 'Text beside the media' },
-          { value: 'stacked', label: 'Text centred, media wide underneath' },
-          { value: 'overlay', label: 'Full-bleed photograph with text over it' },
-        ],
-      },
-      {
-        kind: 'select',
-        name: 'mediaType',
-        label: 'Media',
-        options: [
-          { value: 'video', label: 'Film' },
-          { value: 'image', label: 'Image' },
-          { value: 'none', label: 'None (centred text)' },
-        ],
-      },
-      { kind: 'media', name: 'mediaSrc', label: 'Image or film', accept: 'any', help: 'Used when the slideshow below is empty.' },
-      { kind: 'media', name: 'mediaPoster', label: 'Film poster image', accept: 'image' },
-      { kind: 'text', name: 'mediaAlt', label: 'Image description (for screen readers)', max: 200 },
-      {
-        kind: 'list',
-        name: 'slides',
-        label: 'Slideshow',
-        help: 'Photographs that cycle beside the headline. When this list has items, it replaces the single image or film above.',
-        itemLabel: 'Slide',
-        max: 8,
-        fields: [
-          { kind: 'media', name: 'src', label: 'Photograph', accept: 'image' },
-          { kind: 'text', name: 'alt', label: 'Description', max: 160 },
-          { kind: 'text', name: 'caption', label: 'Caption', help: 'Optional short line on the photo', max: 80 },
-        ],
-      },
-      {
         kind: 'list',
         name: 'stats',
         label: 'Stats strip',
@@ -191,8 +192,8 @@ export const BLOCKS = {
       bubbles: [],
       liveProof: false,
       routeMap: false,
-      layout: 'split',
-      mediaType: 'none',
+      layout: 'overlay',
+      mediaType: 'image',
       mediaSrc: '',
       mediaPoster: '',
       mediaAlt: '',

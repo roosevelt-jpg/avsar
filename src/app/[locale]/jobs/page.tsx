@@ -8,11 +8,8 @@ import { BlockRenderer } from '@/components/cms/BlockRenderer';
 import { cmsMetadata } from '@/components/cms/CmsPageView';
 import { JobCard } from '@/components/jobs/JobCard';
 import { JobsBoardHero } from '@/components/jobs/JobsBoardHero';
-import { BRAND_SLIDES } from '@/lib/cms/brand-media';
 import { getPublishedPage, getSiteSettings } from '@/lib/cms/data';
 import { getFunnelStats } from '@/lib/stats/funnel';
-
-const JOBS_HERO_SLIDES = BRAND_SLIDES.jobs.map((slide) => ({ src: slide.src, alt: slide.alt }));
 import { listPublishedJobs, openCities } from '@/lib/jobs/data';
 import {
   EXPERIENCE_BANDS,
@@ -103,6 +100,12 @@ export default async function JobsPage({
   ]);
 
   const board = settings.jobsBoard;
+  const heroSlides =
+    board.heroSlides.length > 0
+      ? board.heroSlides.map((slide) => ({ src: slide.src, alt: slide.alt }))
+      : board.heroImage
+        ? [{ src: board.heroImage, alt: board.heroImageAlt }]
+        : [];
   const tx = (english: string) => siteText(locale, english);
   const saved = viewer.role === 'candidate' ? await savedJobIds(viewer.candidate.id) : null;
 
@@ -234,7 +237,7 @@ export default async function JobsPage({
           intro={board.heroIntro}
           imageSrc={board.heroImage}
           imageAlt={board.heroImageAlt}
-          slides={JOBS_HERO_SLIDES}
+          slides={heroSlides}
           stats={heroStats}
           search={searchForm}
         />

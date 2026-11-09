@@ -965,28 +965,81 @@ export function JobsBoardForm({ initial }: { initial: SiteSettings['jobsBoard'] 
     salaryMinLabel: initial.salaryMinLabel || 'Min',
     salaryMaxLabel: initial.salaryMaxLabel || 'Max',
     sortLabel: initial.sortLabel || 'Sort by',
+    heroSlides:
+      Array.isArray(initial.heroSlides) && initial.heroSlides.length > 0
+        ? initial.heroSlides
+        : initial.heroImage
+          ? [{ src: initial.heroImage, alt: initial.heroImageAlt || '' }]
+          : [{ src: '', alt: '' }],
   }));
   const saver = useSettingsSaver('jobsBoard');
-  const set = (key: keyof SiteSettings['jobsBoard'], value: string) => setBoard({ ...board, [key]: value });
+  const set = <K extends keyof SiteSettings['jobsBoard']>(key: K, value: SiteSettings['jobsBoard'][K]) =>
+    setBoard({ ...board, [key]: value });
 
   return (
     <div className="flex flex-col gap-5">
-      <Section title="Hero" lead="Full-bleed photograph and pitch on /jobs.">
+      <Section title="Hero" lead="Full-bleed pitch on /jobs. Upload as many slideshow photographs as you need.">
         <div className="grid gap-3 sm:grid-cols-2">
           <Field label="Eyebrow"><input className={INPUT} value={board.heroEyebrow} onChange={(e) => set('heroEyebrow', e.target.value)} /></Field>
           <Field label="Accent word"><input className={INPUT} value={board.heroAccentWord} onChange={(e) => set('heroAccentWord', e.target.value)} /></Field>
         </div>
         <Field label="Headline"><input className={INPUT} value={board.heroHeadline} onChange={(e) => set('heroHeadline', e.target.value)} /></Field>
         <Field label="Introduction"><textarea className={INPUT} rows={3} value={board.heroIntro} onChange={(e) => set('heroIntro', e.target.value)} /></Field>
-        <MediaField
-          label="Photograph"
-          accept="image"
-          value={board.heroImage}
-          onChange={(heroImage) => set('heroImage', heroImage)}
-        />
-        <Field label="Photograph description">
-          <input className={INPUT} value={board.heroImageAlt} onChange={(e) => set('heroImageAlt', e.target.value)} />
-        </Field>
+        <p className="m-0 mt-2 text-[13px] font-medium text-ink-2">Hero slideshow</p>
+        <p className="m-0 text-[12px] text-muted">Choose from library or Upload new on each slide. The first slide also fills the fallback photograph.</p>
+        <ul className="m-0 flex list-none flex-col gap-3 p-0">
+          {board.heroSlides.map((slide, index) => (
+            <li key={index} className="grid gap-3 rounded-[12px] bg-paper p-3 sm:grid-cols-2">
+              <MediaField
+                label={`Photograph ${index + 1}`}
+                accept="image"
+                value={slide.src}
+                onChange={(src) => {
+                  const heroSlides = board.heroSlides.map((row, i) => (i === index ? { ...row, src } : row));
+                  setBoard({
+                    ...board,
+                    heroSlides,
+                    ...(index === 0 ? { heroImage: src } : {}),
+                  });
+                }}
+              />
+              <Field label="Description">
+                <input
+                  className={INPUT}
+                  value={slide.alt}
+                  onChange={(e) => {
+                    const alt = e.target.value;
+                    const heroSlides = board.heroSlides.map((row, i) => (i === index ? { ...row, alt } : row));
+                    setBoard({
+                      ...board,
+                      heroSlides,
+                      ...(index === 0 ? { heroImageAlt: alt } : {}),
+                    });
+                  }}
+                />
+              </Field>
+            </li>
+          ))}
+        </ul>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            className="text-[13px] text-accent"
+            disabled={board.heroSlides.length >= 12}
+            onClick={() => set('heroSlides', [...board.heroSlides, { src: '', alt: '' }])}
+          >
+            Add slide
+          </button>
+          {board.heroSlides.length > 1 ? (
+            <button
+              type="button"
+              className="text-[13px] text-muted"
+              onClick={() => set('heroSlides', board.heroSlides.slice(0, -1))}
+            >
+              Remove last
+            </button>
+          ) : null}
+        </div>
       </Section>
       <Section title="Search bar" lead="Placeholders and the search button on /jobs.">
         <div className="grid gap-3 sm:grid-cols-2">
@@ -1030,7 +1083,20 @@ export function JobsBoardForm({ initial }: { initial: SiteSettings['jobsBoard'] 
         <Field label="Empty title"><input className={INPUT} value={board.emptyTitle} onChange={(e) => set('emptyTitle', e.target.value)} /></Field>
         <Field label="Empty body"><textarea className={INPUT} rows={2} value={board.emptyBody} onChange={(e) => set('emptyBody', e.target.value)} /></Field>
       </Section>
-      <SaveBar onSave={() => saver.save(board)} state={saver.state} busy={saver.busy} />
+      <SaveBar
+        onSave={() => {
+          const heroSlides = board.heroSlides.filter((slide) => slide.src.trim());
+          const first = heroSlides[0];
+          saver.save({
+            ...board,
+            heroSlides,
+            heroImage: first?.src || board.heroImage,
+            heroImageAlt: first?.alt || board.heroImageAlt,
+          });
+        }}
+        state={saver.state}
+        busy={saver.busy}
+      />
     </div>
   );
 }

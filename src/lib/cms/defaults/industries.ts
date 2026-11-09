@@ -1,4 +1,4 @@
-import { PHOTO_PORTO } from '@/lib/cms/brand-media';
+import { BRAND_SLIDES, PHOTO_PORTO, slidesWithCaptions } from '@/lib/cms/brand-media';
 import { makeBlocks, type DefaultPage } from './make';
 
 /**
@@ -31,12 +31,12 @@ export const INDUSTRIES: DefaultPage = {
         filmUrl: '',
         filmLabel: '',
         highlights: [],
-        layout: 'split',
+        layout: 'overlay',
         mediaType: 'image',
         mediaSrc: PHOTO_PORTO.src,
         mediaPoster: '',
         mediaAlt: PHOTO_PORTO.alt,
-        slides: [],
+        slides: slidesWithCaptions(BRAND_SLIDES.jobs),
         stats: [],
       },
     ],

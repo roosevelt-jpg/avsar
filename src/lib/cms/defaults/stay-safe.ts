@@ -1,3 +1,4 @@
+import { BRAND_SLIDES, slidesWithCaptions } from '@/lib/cms/brand-media';
 import { makeBlocks, type DefaultPage } from './make';
 
 export const STAY_SAFE: DefaultPage = {
@@ -15,15 +16,22 @@ export const STAY_SAFE: DefaultPage = {
       {
         eyebrow: 'Your safety',
         title: 'Fake job offers are common. Here is how to spot them.',
+        accentWord: '',
         subtitle:
           'People use the names of real recruiters to take money from job seekers. These are the rules we always follow, so you can tell us apart from anyone pretending to be us.',
         primaryCta: { label: 'Report a suspicious offer', href: 'mailto:{{support_email}}?subject=Suspicious%20offer' },
         secondaryCta: { label: 'See real open jobs', href: '/jobs' },
+        badgeLabel: '',
+        badgeHref: '',
+        filmUrl: '',
+        filmLabel: '',
         highlights: [],
-        mediaType: 'none',
-        mediaSrc: '',
+        layout: 'overlay',
+        mediaType: 'image',
+        mediaSrc: BRAND_SLIDES.careers[0]?.src ?? '',
         mediaPoster: '',
-        mediaAlt: '',
+        mediaAlt: BRAND_SLIDES.careers[0]?.alt ?? '',
+        slides: slidesWithCaptions(BRAND_SLIDES.careers),
         stats: [],
       },
     ],

@@ -1,3 +1,4 @@
+import { BRAND_SLIDES, slidesWithCaptions } from '@/lib/cms/brand-media';
 import { makeBlocks, type DefaultPage } from './make';
 
 /**
@@ -22,15 +23,22 @@ export const FOR_YOUR_FAMILY: DefaultPage = {
       {
         eyebrow: 'Before anyone pays',
         title: 'Read this before money leaves your family',
+        accentWord: '',
         subtitle:
           'Joining, the rewritten CV, the test and the score are free. The only charges are two reports, paid on this website. A job and a visa are not for sale.',
         primaryCta: { label: 'Create a free account', href: '/signup' },
         secondaryCta: { label: 'Send this page on WhatsApp', href: '#send' },
+        badgeLabel: '',
+        badgeHref: '',
+        filmUrl: '',
+        filmLabel: '',
         highlights: [],
-        mediaType: 'none',
-        mediaSrc: '',
+        layout: 'overlay',
+        mediaType: 'image',
+        mediaSrc: BRAND_SLIDES.journey[0]?.src ?? '',
         mediaPoster: '',
-        mediaAlt: '',
+        mediaAlt: BRAND_SLIDES.journey[0]?.alt ?? '',
+        slides: slidesWithCaptions(BRAND_SLIDES.journey),
         stats: [],
       },
     ],

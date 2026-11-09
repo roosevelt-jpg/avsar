@@ -63,7 +63,7 @@ export function MediaField({
               onClick={() => setOpen(true)}
               className="cursor-pointer rounded-full border border-line-strong bg-surface px-3 py-1.5 text-[13px] hover:border-ink"
             >
-              Choose from library
+              Choose or upload
             </button>
             {value ? (
               <button

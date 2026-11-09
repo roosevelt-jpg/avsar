@@ -1,3 +1,4 @@
+import { BRAND_SLIDES, slidesWithCaptions } from '@/lib/cms/brand-media';
 import { makeBlocks, type DefaultPage } from './make';
 
 export const FAQ: DefaultPage = {
@@ -15,14 +16,21 @@ export const FAQ: DefaultPage = {
       {
         eyebrow: 'FAQ',
         title: 'Questions, answered plainly.',
+        accentWord: '',
         subtitle: 'If your question is not here, message us on WhatsApp at {{whatsapp}} or email {{support_email}}.',
         primaryCta: { label: 'See open jobs', href: '/jobs' },
         secondaryCta: { label: '', href: '' },
+        badgeLabel: '',
+        badgeHref: '',
+        filmUrl: '',
+        filmLabel: '',
         highlights: [],
-        mediaType: 'none',
-        mediaSrc: '',
+        layout: 'overlay',
+        mediaType: 'image',
+        mediaSrc: BRAND_SLIDES.portugal[0]?.src ?? '',
         mediaPoster: '',
-        mediaAlt: '',
+        mediaAlt: BRAND_SLIDES.portugal[0]?.alt ?? '',
+        slides: slidesWithCaptions(BRAND_SLIDES.portugal),
         stats: [],
       },
     ],

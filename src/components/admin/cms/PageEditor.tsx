@@ -65,6 +65,10 @@ export function PageEditor(props: {
 
   function add(type: BlockType) {
     const block = emptyBlock(type);
+    /* New heroes start with one empty slideshow slot so upload is one click away. */
+    if (type === 'hero' && Array.isArray(block.data.slides) && block.data.slides.length === 0) {
+      block.data.slides = [{ src: '', alt: '', caption: '' }];
+    }
     setBlocks((current) => [...current, block]);
     setOpenId(block.id);
     setAdding(false);
