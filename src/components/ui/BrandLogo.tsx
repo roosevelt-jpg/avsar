@@ -46,14 +46,20 @@ export function BrandLogo({
         The column is only as wide as its text; the gold rule is width 100% of
         that column so it cannot overshoot RECRUITMENT / SMITH & ADAMS.
       */}
-      <span className="inline-flex flex-col justify-center" style={{ gap: Math.max(2, Math.round(size * 0.06)) }}>
+      <span
+        className="inline-flex w-max flex-col justify-center"
+        style={{ gap: Math.max(2, Math.round(size * 0.06)) }}
+      >
         <span
           className="whitespace-nowrap leading-none"
           style={{
             fontFamily: 'var(--font-schibsted), system-ui, sans-serif',
             fontSize: stackSize,
             fontWeight: 700,
+            /* Negative margin cancels the trailing letter-spacing so the
+               column width matches the last glyph, not an empty gap after it. */
             letterSpacing: '0.2em',
+            marginRight: '-0.2em',
             color: ink,
           }}
         >
@@ -71,6 +77,7 @@ export function BrandLogo({
             fontSize: subSize,
             fontWeight: 600,
             letterSpacing: '0.18em',
+            marginRight: '-0.18em',
             color: muted,
           }}
         >

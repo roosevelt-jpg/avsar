@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 import type { Locale } from '@/lib/i18n';
+import { AssessmentDrawer } from '@/components/candidate/AssessmentDrawer';
 import { EnquireDrawer } from '@/components/candidate/EnquireDrawer';
 import { ConsentPreferences } from '@/components/candidate/ConsentPreferences';
 import { ScrollTop } from '@/components/candidate/ScrollTop';
@@ -10,9 +11,10 @@ import { VisitorLeadPopup } from '@/components/candidate/VisitorLeadPopup';
 
 /**
  * Marketing palette on public shopfront pages. Dashboard, assessment and
- * account screens stay on the quiet console tokens. Site chrome (enquire
- * drawer, consent FAB, scroll-top, first-visit lead popup) mounts only for
- * anonymous visitors on marketing routes — never when someone is signed in.
+ * account screens stay on the quiet console tokens. Site chrome (assessment
+ * and enquire edge tabs, consent FAB, scroll-top, first-visit lead popup)
+ * mounts only for anonymous visitors on marketing routes — never when
+ * someone is signed in.
  */
 /* Signup keeps the marketing palette so the registration hero matches the shop. */
 const QUIET = /\/(dashboard|assessment|profile|signin|go|reset-password|applicant)(\/|$)/;
@@ -34,6 +36,7 @@ export function MarketShell({
   return (
     <div className="market relative bg-white text-[#142438]">
       {children}
+      <AssessmentDrawer locale={locale} />
       <EnquireDrawer locale={locale} />
       <ConsentPreferences locale={locale} />
       {NO_VISITOR_POPUP.test(path) ? null : <VisitorLeadPopup locale={locale} />}
