@@ -579,6 +579,7 @@ export const BLOCKS = {
         options: [
           { value: 'default', label: 'Default split' },
           { value: 'stacked', label: 'Stacked photos + checklist (Why Portugal)' },
+          { value: 'letter', label: 'Leadership letter (compact portrait)' },
         ],
       },
     ],

@@ -79,19 +79,19 @@ export function StatsBlock({ data }: Props) {
   const list = items(data, 'items');
   if (!list.length) return null;
   return (
-    <Section tone="ink">
+    <Section tone="ink" className="!py-[clamp(28px,4cqi,48px)]">
       <SectionHeading eyebrow={str(data, 'eyebrow')} title={str(data, 'title')} dark />
-      <ul className="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-px overflow-hidden rounded-[22px] border border-dark-line bg-dark-line p-0">
+      <ul className="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-px overflow-hidden rounded-[16px] border border-dark-line bg-dark-line p-0">
         {list.map((item, index) => {
           /* Empty value stays honest: em dash, never a made-up count. */
           const value = str(item, 'value').trim() || '—';
           return (
-            <li key={index} className="bg-night p-[clamp(20px,3cqi,32px)]">
-              <p className="m-0 text-[clamp(44px,6cqi,72px)] font-semibold leading-none tracking-[-0.04em] text-on-night">
+            <li key={index} className="bg-night p-[clamp(14px,2cqi,22px)]">
+              <p className="m-0 text-[clamp(28px,3.6cqi,40px)] font-semibold leading-none tracking-[-0.04em] text-on-night">
                 <CountUpValue value={value} />
               </p>
-              <p className="m-0 mt-3 text-[16px] text-on-night">{str(item, 'label')}</p>
-              {str(item, 'note') ? <p className="m-0 mt-1 text-[14px] text-dark-muted">{str(item, 'note')}</p> : null}
+              <p className="m-0 mt-2 text-[13px] text-on-night">{str(item, 'label')}</p>
+              {str(item, 'note') ? <p className="m-0 mt-1 text-[12px] text-dark-muted">{str(item, 'note')}</p> : null}
             </li>
           );
         })}
@@ -270,7 +270,7 @@ function StepsJourney({ data }: { data: BlockData }) {
 function StepsTimeline({ data }: { data: BlockData }) {
   const list = items(data, 'items');
   return (
-    <Section id="how" className="!bg-white">
+    <Section id="how" className="!bg-white !py-[clamp(28px,4cqi,48px)]">
       <SectionHeading eyebrow={str(data, 'eyebrow')} title={str(data, 'title')} intro={str(data, 'intro')} />
       <ol className="m-0 grid list-none grid-cols-1 p-0 md:grid-cols-2">
         {list.map((item, index) => {
@@ -280,23 +280,23 @@ function StepsTimeline({ data }: { data: BlockData }) {
           return (
             <li
               key={index}
-              className={`flex items-start gap-5 py-8 md:gap-7 md:py-10 ${
+              className={`flex items-start gap-3.5 py-5 md:gap-4 md:py-6 ${
                 index > 0 ? 'border-t border-dotted border-[#142438]/25 md:border-t-0' : ''
               } ${index >= 2 ? 'md:border-t md:border-dotted md:border-[#142438]/25' : ''} ${
-                secondColumn ? 'md:border-s md:border-dotted md:border-[#142438]/25 md:ps-10' : 'md:pe-10'
+                secondColumn ? 'md:border-s md:border-dotted md:border-[#142438]/25 md:ps-7' : 'md:pe-7'
               }`}
             >
               {photo ? (
-                <div className="relative size-[88px] shrink-0 overflow-hidden rounded-full bg-[#f3f6f9] ring-1 ring-[#142438]/10 md:size-[112px]">
-                  <CmsImage src={photo} alt="" sizes="112px" />
+                <div className="relative size-[64px] shrink-0 overflow-hidden rounded-full bg-[#f3f6f9] ring-1 ring-[#142438]/10 md:size-[72px]">
+                  <CmsImage src={photo} alt="" sizes="72px" />
                 </div>
               ) : null}
-              <div className="min-w-0 pt-1">
-                <h3 className="m-0 text-[clamp(20px,2cqi,26px)] font-semibold leading-[1.2] tracking-[-0.02em] text-[#142438]">
+              <div className="min-w-0 pt-0.5">
+                <h3 className="m-0 text-[clamp(16px,1.8cqi,20px)] font-semibold leading-[1.25] tracking-[-0.02em] text-[#142438]">
                   {str(item, 'title').replace(/^\d+\.\s*/, '')}
                 </h3>
-                <p className="m-0 mt-2 max-w-[42ch] text-[15px] leading-[1.6] text-[#3d5168]">{str(item, 'body')}</p>
-                {meta ? <p className="m-0 mt-4 text-[15px] font-medium text-[#b28a49]">{meta}</p> : null}
+                <p className="m-0 mt-1.5 max-w-[42ch] text-[13px] leading-[1.5] text-[#3d5168]">{str(item, 'body')}</p>
+                {meta ? <p className="m-0 mt-2.5 text-[13px] font-medium text-[#b28a49]">{meta}</p> : null}
               </div>
             </li>
           );
@@ -311,7 +311,7 @@ function TileArrow({ href, label, locale }: { href: string; label: string; local
   const resolved = localHref(locale, href);
   const external = /^https?:/i.test(resolved);
   const className =
-    'mt-5 grid size-10 shrink-0 place-items-center self-end rounded-full bg-[#b28a49] text-white no-underline';
+    'mt-3 grid size-8 shrink-0 place-items-center self-end rounded-full bg-[#b28a49] text-white no-underline';
   const icon = (
     <svg viewBox="0 0 16 16" className="size-4 rtl:-scale-x-100" aria-hidden>
       <path d="M4.5 11.5 11.5 4.5M11.5 4.5H7M11.5 4.5V9" fill="none" stroke="currentColor" strokeWidth="1.6" />
@@ -342,31 +342,31 @@ function featureColumns(columns: number): string {
  */
 function FeatureTiles({ data, locale, list, columns }: Props & { list: BlockData[]; columns: number }) {
   return (
-    <Section className="!bg-[#f4f5f7] !py-[clamp(40px,6cqi,72px)]">
+    <Section className="!bg-[#f4f5f7] !py-[clamp(28px,4cqi,52px)]">
       <SectionHeading eyebrow={str(data, 'eyebrow')} title={str(data, 'title')} intro={str(data, 'intro')} />
-      <ul className={`m-0 mt-8 grid list-none grid-cols-1 items-stretch gap-5 p-0 ${featureColumns(columns)}`}>
+      <ul className={`m-0 mt-5 grid list-none grid-cols-1 items-stretch gap-3.5 p-0 ${featureColumns(columns)}`}>
         {list.map((item, index) => {
           const cardLink = link(item, 'link');
           const rawImage = str(item, 'image');
           const image = rawImage ? scenePhoto(rawImage, index) : '';
           const body = str(item, 'body');
           return (
-            <li key={index} className="flex h-full flex-col overflow-hidden rounded-[14px] bg-white">
+            <li key={index} className="flex h-full flex-col overflow-hidden rounded-[12px] bg-white">
               {image ? (
-                <div className="relative aspect-[5/4] bg-[#e8eaed]">
+                <div className="relative aspect-[16/10] bg-[#e8eaed]">
                   <CmsImage src={image} alt={str(item, 'title')} sizes="(max-width: 768px) 100vw, 25vw" />
                 </div>
               ) : (
-                <div className="grid aspect-[5/4] place-items-center bg-[#e8eaed] text-[var(--color-gold)]">
-                  <Icon name={str(item, 'icon')} className="size-8" />
+                <div className="grid aspect-[16/10] place-items-center bg-[#e8eaed] text-[var(--color-gold)]">
+                  <Icon name={str(item, 'icon')} className="size-7" />
                 </div>
               )}
-              <div className="flex flex-1 flex-col px-4 py-4 text-[#142438]">
-                <h3 className="display-serif m-0 text-[20px] font-normal leading-[1.25]">{str(item, 'title')}</h3>
+              <div className="flex flex-1 flex-col px-3.5 py-3 text-[#142438]">
+                <h3 className="display-serif m-0 text-[17px] font-normal leading-[1.25]">{str(item, 'title')}</h3>
                 {data.typing === true ? (
-                  <TypeOnView text={body} className="m-0 mt-2 text-[14px] leading-[1.55] text-ink-2" />
+                  <TypeOnView text={body} className="m-0 mt-1.5 text-[13px] leading-[1.5] text-ink-2" />
                 ) : (
-                  <p className="m-0 mt-2 text-[14px] leading-[1.55] text-ink-2">{body}</p>
+                  <p className="m-0 mt-1.5 text-[13px] leading-[1.5] text-ink-2">{body}</p>
                 )}
                 {cardLink?.href && cardLink.label ? (
                   <TileArrow href={cardLink.href} label={cardLink.label} locale={locale} />
@@ -725,27 +725,27 @@ function FeatureVerticals({
 /** About mockup: four elevated white cards with gold icons. */
 function FeatureValueCards({ data, list, columns }: { data: BlockData; list: BlockData[]; columns: number }) {
   return (
-    <Section className="!bg-[var(--color-ivory,#f4f5f7)] !py-[clamp(40px,6cqi,80px)]">
-      <div className="mb-[clamp(28px,4cqi,40px)] max-w-[640px]">
+    <Section className="!bg-[var(--color-ivory,#f4f5f7)] !py-[clamp(28px,4cqi,52px)]">
+      <div className="mb-[clamp(16px,2.4cqi,28px)] max-w-[640px]">
         {str(data, 'eyebrow') ? (
-          <p className="m-0 mb-2 text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--color-gold)]">{str(data, 'eyebrow')}</p>
+          <p className="m-0 mb-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-gold)]">{str(data, 'eyebrow')}</p>
         ) : null}
         {str(data, 'title') ? (
-          <h2 className="display-serif m-0 text-balance text-[clamp(30px,3.8cqi,46px)] leading-[1.1] text-[#142438]">{str(data, 'title')}</h2>
+          <h2 className="display-serif m-0 text-balance text-[clamp(24px,3cqi,34px)] leading-[1.15] text-[#142438]">{str(data, 'title')}</h2>
         ) : null}
-        {str(data, 'intro') ? <p className="m-0 mt-3 text-[15px] leading-[1.55] text-ink-2">{str(data, 'intro')}</p> : null}
+        {str(data, 'intro') ? <p className="m-0 mt-2 text-[13px] leading-[1.5] text-ink-2">{str(data, 'intro')}</p> : null}
       </div>
-      <ul className={`m-0 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2 ${columns >= 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-3'}`}>
+      <ul className={`m-0 grid list-none grid-cols-1 gap-3 p-0 sm:grid-cols-2 ${columns >= 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-3'}`}>
         {list.map((item, index) => (
           <li
             key={index}
-            className="rounded-[14px] border border-[#142438]/08 bg-white p-6 shadow-[0_14px_32px_-24px_rgba(20,36,56,0.35)]"
+            className="rounded-[12px] border border-[#142438]/08 bg-white p-4 shadow-[0_10px_24px_-20px_rgba(20,36,56,0.35)]"
           >
-            <span className="grid size-11 place-items-center rounded-full bg-[var(--color-gold)]/12 text-[var(--color-gold)]">
-              <Icon name={str(item, 'icon')} className="size-5" />
+            <span className="grid size-9 place-items-center rounded-full bg-[var(--color-gold)]/12 text-[var(--color-gold)]">
+              <Icon name={str(item, 'icon')} className="size-4" />
             </span>
-            <h3 className="m-0 mt-4 text-[18px] font-semibold tracking-[-0.01em] text-[#142438]">{str(item, 'title')}</h3>
-            <p className="m-0 mt-2 text-[14px] leading-[1.55] text-ink-2">{str(item, 'body')}</p>
+            <h3 className="m-0 mt-3 text-[15px] font-semibold tracking-[-0.01em] text-[#142438]">{str(item, 'title')}</h3>
+            <p className="m-0 mt-1.5 text-[13px] leading-[1.5] text-ink-2">{str(item, 'body')}</p>
           </li>
         ))}
       </ul>
@@ -786,6 +786,57 @@ export function SplitBlock({ data, locale }: Props) {
   const eyebrow = str(data, 'eyebrow');
   const title = str(data, 'title');
   const body = str(data, 'body');
+
+  /* Founder / director notes: tighter type and a portrait-sized photo. */
+  if (str(data, 'style') === 'letter') {
+    return (
+      <Section className="!bg-white !py-[clamp(24px,3.5cqi,40px)]">
+        <div
+          className={`grid grid-cols-1 items-start gap-6 md:gap-8 ${
+            frames.length ? 'lg:grid-cols-[minmax(0,200px)_minmax(0,1fr)] lg:items-start' : ''
+          }`}
+        >
+          {frames.length ? (
+            <div className={left ? 'lg:order-1' : 'lg:order-2'}>
+              <div className="relative mx-auto aspect-[4/5] w-full max-w-[200px] overflow-hidden rounded-[10px] bg-[#142438]">
+                <FrameCycle frames={frames} alt={str(data, 'imageAlt')} />
+              </div>
+            </div>
+          ) : null}
+          <div className={`min-w-0 ${left ? 'lg:order-2' : 'lg:order-1'}`}>
+            {eyebrow ? (
+              <p className="m-0 mb-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#b28a49]">{eyebrow}</p>
+            ) : null}
+            {title ? (
+              <h2 className="m-0 text-balance text-[clamp(22px,2.6cqi,30px)] font-semibold leading-[1.15] tracking-[-0.02em] text-[#142438]">
+                {title}
+              </h2>
+            ) : null}
+            {body ? (
+              <Markdown text={body} locale={locale} className="mt-3 !gap-2 text-[14px] !leading-[1.55] text-[#3d5168]" />
+            ) : null}
+            {bullets.length > 0 ? (
+              <ul className="m-0 mt-4 grid list-none grid-cols-1 gap-2 p-0 sm:grid-cols-2">
+                {bullets.map((bullet) => (
+                  <li key={bullet} className="flex items-start gap-2 text-[13px] leading-[1.4] text-[#142438]">
+                    <span className="grid size-5 shrink-0 place-items-center rounded-[6px] border border-[#142438]/10 bg-white text-[#b28a49]">
+                      <Icon name="check" className="size-3" />
+                    </span>
+                    <span className="pt-0.5">{bullet}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+            {cta ? (
+              <div className="mt-4">
+                <CmsTextLink href={cta.href} label={cta.label} locale={locale} />
+              </div>
+            ) : null}
+          </div>
+        </div>
+      </Section>
+    );
+  }
 
   /* Why Portugal mockup: overlapping photo stack beside a gold-tick checklist. */
   if (str(data, 'style') === 'stacked') {
@@ -945,7 +996,7 @@ export function RichTextBlock({ data, locale }: Props) {
     <Section>
       <div className={narrow ? 'mx-auto max-w-[720px]' : ''}>
         <SectionHeading eyebrow={str(data, 'eyebrow')} title={str(data, 'title')} />
-        <Markdown text={str(data, 'body')} locale={locale} className="text-[17px] text-ink-2" />
+        <Markdown text={str(data, 'body')} locale={locale} className="text-[16px] leading-[1.6] text-ink-2" />
       </div>
     </Section>
   );

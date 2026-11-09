@@ -11,6 +11,15 @@ import { localePath } from '@/lib/i18n';
 import { getViewer } from '@/lib/auth';
 import { BlockRenderer } from './BlockRenderer';
 
+/** Corporate Info hub and siblings — denser cards and section rhythm than shopfront pages. */
+const COMPACT_SLUGS = new Set([
+  'about',
+  'founders-note',
+  'directors-note',
+  'history',
+  'organization-chart',
+]);
+
 /** A whole CMS page: header and rendered blocks. The footer comes from the locale layout. */
 export async function CmsPageView({
   page,
@@ -31,12 +40,17 @@ export async function CmsPageView({
     publicOrigin(),
   ]);
   const signedInCandidate = viewer.role === 'candidate';
+  const compact = COMPACT_SLUGS.has(page.slug);
 
   const body = (
     <>
       {banner}
       {signedInCandidate ? null : <SiteHeader locale={locale} />}
-      <main className={signedInCandidate ? 'min-w-0' : undefined}>
+      <main
+        className={[signedInCandidate ? 'min-w-0' : undefined, compact ? 'cms-compact' : undefined]
+          .filter(Boolean)
+          .join(' ')}
+      >
         {notice}
         <BlockRenderer blocks={page.blocks} locale={locale} settings={settings} />
         {page.slug === 'for-your-family' ? (

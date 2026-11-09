@@ -19,15 +19,15 @@ export function CorporateNavBlock({ data, locale }: Props) {
   if (!list.length) return null;
 
   return (
-    <section className="border-b border-line bg-[#f4f5f7] px-[clamp(20px,4cqi,56px)] py-4">
-      <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-3 md:flex-row md:items-center md:gap-6">
+    <section className="border-b border-line bg-[#f4f5f7] px-[clamp(16px,3cqi,40px)] py-2.5">
+      <div className="mx-auto flex w-full max-w-[1080px] flex-col gap-2 md:flex-row md:items-center md:gap-4">
         {str(data, 'eyebrow') ? (
-          <p className="m-0 shrink-0 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#b28a49]">
+          <p className="m-0 shrink-0 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#b28a49]">
             {str(data, 'eyebrow')}
           </p>
         ) : null}
         <nav aria-label={str(data, 'eyebrow') || 'Corporate Info'} className="min-w-0">
-          <ul className="m-0 flex list-none flex-wrap gap-x-1 gap-y-2 p-0">
+          <ul className="m-0 flex list-none flex-wrap gap-1 p-0">
             {list.map((item, index) => {
               const href = str(item, 'href');
               const resolved = localHref(locale, href);
@@ -41,7 +41,7 @@ export function CorporateNavBlock({ data, locale }: Props) {
                   <Link
                     href={resolved}
                     aria-current={active ? 'page' : undefined}
-                    className={`inline-flex rounded-md px-3 py-1.5 text-[14px] no-underline transition-colors ${
+                    className={`inline-flex rounded-md px-2.5 py-1 text-[13px] no-underline transition-colors ${
                       active
                         ? 'bg-[#142438] font-semibold text-white'
                         : 'text-[#142438] hover:bg-white'
@@ -60,8 +60,8 @@ export function CorporateNavBlock({ data, locale }: Props) {
 }
 
 /**
- * Organisation chart by level. Name, role, photo and bio come from the CMS;
- * missing fields simply omit that line — no instructional placeholders.
+ * Organisation chart by level. Compact cards so a full leadership + team
+ * roster stays readable without oversized portraits.
  */
 export function OrgChartBlock({ data }: Props) {
   const list = items(data, 'items').filter((item) => str(item, 'role') || str(item, 'name'));
@@ -77,17 +77,17 @@ export function OrgChartBlock({ data }: Props) {
   const levels = [...byLevel.keys()].sort((a, b) => Number(a) - Number(b));
 
   return (
-    <Section>
+    <Section className="!py-[clamp(28px,4cqi,48px)]">
       <SectionHeading eyebrow={str(data, 'eyebrow')} title={str(data, 'title')} intro={str(data, 'intro')} align="center" />
-      <div className="flex flex-col items-center gap-8">
+      <div className="flex flex-col items-center gap-5">
         {levels.map((level, levelIndex) => {
           const row = byLevel.get(level) ?? [];
           return (
-            <div key={level} className="flex w-full flex-col items-center gap-4">
+            <div key={level} className="flex w-full flex-col items-center gap-3">
               {levelIndex > 0 ? (
-                <div className="h-8 w-px bg-[#142438]/20" aria-hidden />
+                <div className="h-5 w-px bg-[#142438]/15" aria-hidden />
               ) : null}
-              <ul className="m-0 flex list-none flex-wrap justify-center gap-5 p-0 md:gap-7">
+              <ul className="m-0 flex list-none flex-wrap justify-center gap-3 p-0 sm:gap-4">
                 {row.map((person, index) => {
                   const name = str(person, 'name');
                   const role = str(person, 'role');
@@ -98,20 +98,20 @@ export function OrgChartBlock({ data }: Props) {
                   return (
                     <li
                       key={`${level}-${index}`}
-                      className="flex w-[min(100%,220px)] flex-col items-center text-center"
+                      className="flex w-[min(100%,148px)] flex-col items-center text-center sm:w-[158px]"
                     >
-                      <div className="relative size-[112px] overflow-hidden rounded-full bg-[#e8edf2] ring-1 ring-[#142438]/10">
-                        {image ? <CmsImage src={image} alt={heading} sizes="112px" /> : null}
+                      <div className="relative size-[72px] overflow-hidden rounded-full bg-[#e8edf2] ring-1 ring-[#142438]/10 sm:size-[80px]">
+                        {image ? <CmsImage src={image} alt={heading} sizes="80px" /> : null}
                       </div>
                       {heading ? (
-                        <p className="m-0 mt-4 text-[17px] font-semibold tracking-[-0.02em] text-[#142438]">
+                        <p className="m-0 mt-2.5 text-[14px] font-semibold leading-[1.25] tracking-[-0.02em] text-[#142438]">
                           {heading}
                         </p>
                       ) : null}
                       {showRoleUnderName ? (
-                        <p className="m-0 mt-1 text-[14px] font-medium text-[#b28a49]">{role}</p>
+                        <p className="m-0 mt-0.5 text-[12px] font-medium leading-[1.35] text-[#b28a49]">{role}</p>
                       ) : null}
-                      {bio ? <p className="m-0 mt-2 text-[13px] leading-[1.5] text-ink-2">{bio}</p> : null}
+                      {bio ? <p className="m-0 mt-1.5 text-[12px] leading-[1.4] text-ink-2">{bio}</p> : null}
                     </li>
                   );
                 })}

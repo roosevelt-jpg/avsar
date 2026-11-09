@@ -320,7 +320,7 @@ export const FOUNDERS_NOTE: DefaultPage = {
         imageAlt: TEAM.george.alt,
         gallery: [],
         imageSide: 'left',
-        style: 'default',
+        style: 'letter',
       },
     ],
     [
@@ -387,7 +387,7 @@ export const DIRECTORS_NOTE: DefaultPage = {
         imageAlt: TEAM.suelen.alt,
         gallery: [],
         imageSide: 'right',
-        style: 'default',
+        style: 'letter',
       },
     ],
     [

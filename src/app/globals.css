@@ -1319,3 +1319,88 @@ html {
   clip-path: inset(50%);
   white-space: nowrap;
 }
+
+/* --------------------------------------------------------------------------
+   Corporate Info pages (about, notes, history, org chart): denser rhythm so
+   image/text cards read clean rather than oversized shopfront sections.
+   -------------------------------------------------------------------------- */
+.cms-compact > section {
+  padding-block: clamp(28px, 4cqi, 52px);
+  padding-inline: clamp(16px, 3cqi, 40px);
+}
+.cms-compact > section > div {
+  max-width: 1080px;
+}
+.cms-compact h2 {
+  font-size: clamp(22px, 2.6cqi, 32px) !important;
+  line-height: 1.15 !important;
+}
+.cms-compact [class*="mb-[clamp(28px"] {
+  margin-bottom: clamp(16px, 2.4cqi, 28px) !important;
+}
+.cms-compact p,
+.cms-compact li {
+  font-size: 14px;
+  line-height: 1.5;
+}
+.cms-compact .text-\[clamp\(16px\,1\.5cqi\,18px\)\] {
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  margin-top: 0.75rem !important;
+}
+/* Explore / feature tiles: shorter photos, tighter panels. */
+.cms-compact ul li .aspect-\[5\/4\] {
+  aspect-ratio: 16 / 10;
+}
+.cms-compact ul li .display-serif {
+  font-size: 17px !important;
+  line-height: 1.25 !important;
+}
+.cms-compact ul li .mt-5.size-10 {
+  margin-top: 0.75rem;
+  width: 2rem;
+  height: 2rem;
+}
+.cms-compact ul.gap-5 {
+  gap: 0.85rem;
+}
+.cms-compact ul.mt-8 {
+  margin-top: 1rem;
+}
+/* Value cards and similar padded cards. */
+.cms-compact li.p-6 {
+  padding: 1rem !important;
+}
+.cms-compact li .size-11 {
+  width: 2.25rem;
+  height: 2.25rem;
+}
+.cms-compact li .mt-4.text-\[18px\] {
+  margin-top: 0.75rem;
+  font-size: 15px !important;
+}
+/* Stats strip: smaller figures. */
+.cms-compact li .text-\[clamp\(44px\,6cqi\,72px\)\] {
+  font-size: clamp(28px, 3.6cqi, 40px) !important;
+}
+.cms-compact li.p-\[clamp\(20px\,3cqi\,32px\)\] {
+  padding: clamp(14px, 2cqi, 20px) !important;
+}
+/* History timeline circles. */
+.cms-compact li .size-\[88px\],
+.cms-compact li .md\:size-\[112px\] {
+  width: 64px !important;
+  height: 64px !important;
+}
+.cms-compact li.py-8,
+.cms-compact li.md\:py-10 {
+  padding-block: 1.25rem !important;
+}
+.cms-compact li .text-\[clamp\(20px\,2cqi\,26px\)\] {
+  font-size: clamp(16px, 1.8cqi, 20px) !important;
+}
+/* Rich text on corporate pages. */
+.cms-compact .text-\[17px\] {
+  font-size: 14px !important;
+  line-height: 1.55 !important;
+}
