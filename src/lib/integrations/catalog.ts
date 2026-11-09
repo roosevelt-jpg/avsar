@@ -38,14 +38,14 @@ export const INTEGRATIONS: IntegrationGroup[] = [
         id: 'payments',
         name: 'Active payment rail',
         description:
-          'Which provider takes the package payment. Only one is live at a time. Production default for India is EximPe (INR + UPI). Leave unset to use EximPe. N-Genius is cards-only AED.',
+          'Which provider takes the package payment. Only one is live at a time. Production default is Network International (N-Genius) Hosted Payment Page in AED. Leave unset to use N-Genius. EximPe remains available for INR + UPI.',
         fields: [
           {
             name: 'PAYMENT_PROVIDER',
             label: 'Provider',
             secret: false,
-            options: ['eximpe', 'razorpay', 'paytm', 'cashfree', 'ngenius', 'stripe', 'viva', 'dodo'],
-            hint: 'eximpe for UPI from India; ngenius for AED cards only',
+            options: ['ngenius', 'eximpe', 'razorpay', 'paytm', 'cashfree', 'stripe', 'viva', 'dodo'],
+            hint: 'ngenius (AED: card, Apple Pay, Samsung Pay, Google Pay); eximpe for INR + UPI',
           },
         ],
       },
@@ -105,14 +105,21 @@ export const INTEGRATIONS: IntegrationGroup[] = [
       {
         id: 'ngenius',
         name: 'Network International (N-Genius)',
-        description: 'Card payments in AED to the UAE company. In the N-Genius portal, point the webhook at this site’s payments webhook path and send the secret in a custom header.',
-        docs: 'https://docs.ngenius-payments.com',
+        description:
+          'Hosted Payment Page in AED to the UAE company: card, Apple Pay, Samsung Pay, Google Pay (and UPI if Network enabled it on the outlet). In the N-Genius portal, point the webhook at this site’s payments webhook path and send the secret in a custom header. Charge currency must be AED.',
+        docs: 'https://docs.ngenius-payments.com/reference/set-up-n-genius#hosted-payment-page',
         fields: [
           { name: 'NGENIUS_API_KEY', label: 'API key', secret: true },
           { name: 'NGENIUS_OUTLET_REF', label: 'Outlet reference', secret: false },
           { name: 'NGENIUS_WEBHOOK_SECRET', label: 'Webhook secret', secret: true },
           { name: 'NGENIUS_WEBHOOK_HEADER', label: 'Webhook header name', secret: false, hint: 'Default: x-webhook-secret' },
           { name: 'NGENIUS_ENV', label: 'Environment', secret: false, options: ENV_CHOICE },
+          {
+            name: 'NGENIUS_METHODS',
+            label: 'Checkout method buttons',
+            secret: false,
+            hint: 'Comma-separated unlock UI: card, apple_pay, samsung_pay, google_pay (add upi only if Network enabled it on the outlet). Leave blank for the default four.',
+          },
         ],
       },
       {

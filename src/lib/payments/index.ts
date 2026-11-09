@@ -11,14 +11,14 @@ import type { PaymentMethodHint, PaymentProvider } from './types';
 /**
  * Which rail collects from candidates.
  *
- * Production default is EximPe (INR + UPI) so Indian candidates can pay without
- * international-card friction. Credentials live in Settings › Integrations.
- * Other rails stay wired; only one is active via PAYMENT_PROVIDER.
+ * Production default is Network International (N-Genius) Hosted Payment Page in
+ * AED — the rail the owner signed with. Credentials live in Settings ›
+ * Integrations. Other rails stay wired; only one is active via PAYMENT_PROVIDER.
  */
 export function getPaymentProvider(): PaymentProvider {
   switch (process.env.PAYMENT_PROVIDER) {
-    case 'ngenius':
-      return ngeniusProvider;
+    case 'eximpe':
+      return eximpeProvider;
     case 'dodo':
       return dodoProvider;
     case 'viva':
@@ -31,9 +31,9 @@ export function getPaymentProvider(): PaymentProvider {
       return paytmProvider;
     case 'stripe':
       return stripeProvider;
-    case 'eximpe':
+    case 'ngenius':
     default:
-      return eximpeProvider;
+      return ngeniusProvider;
   }
 }
 
@@ -65,6 +65,25 @@ export type {
  * PA-CB authorisation; Razorpay reaches them from inside it. All three offer
  * UPI by construction, so there is nothing to configure.
  */
+const ALL_HINTS: readonly PaymentMethodHint[] = [
+  'upi',
+  'card',
+  'netbanking',
+  'apple_pay',
+  'samsung_pay',
+  'google_pay',
+];
+
+function parseMethodList(raw: string | undefined, fallback: PaymentMethodHint[]): PaymentMethodHint[] {
+  const parsed = (raw ?? '')
+    .split(',')
+    .map((method) => method.trim())
+    .filter((method): method is PaymentMethodHint =>
+      (ALL_HINTS as readonly string[]).includes(method),
+    );
+  return parsed.length > 0 ? parsed : fallback;
+}
+
 export function availablePaymentMethods(): PaymentMethodHint[] {
   const provider = getPaymentProvider().name;
 
@@ -73,28 +92,27 @@ export function availablePaymentMethods(): PaymentMethodHint[] {
     offering them would put two choices in front of a candidate that the rail
     cannot charge. Its hosted page decides the rest for itself from what is
     enabled on the account, so one honest hint is enough here.
-
-    This used to say "anything that is not Stripe does all three", which was
-    true while every other rail was Indian and stopped being true the moment a
-    European one existed.
   */
-  /* The whole reason this rail exists. Their hosted page shows the rest. */
   if (provider === 'dodo') return ['upi', 'card'];
 
-  if (provider === 'viva' || provider === 'ngenius') return ['card'];
+  if (provider === 'viva') return ['card'];
 
-  /* Razorpay, Paytm, EximPe, Cashfree, Dodo: Indian methods by construction. */
+  /* Network Hosted Payment Page: card plus the wallets Network enabled on the
+     outlet. Override with NGENIUS_METHODS (comma-separated) if the outlet only
+     has a subset, or to surface UPI when Network turns that on for e‑commerce. */
+  if (provider === 'ngenius') {
+    return parseMethodList(process.env.NGENIUS_METHODS, [
+      'card',
+      'apple_pay',
+      'samsung_pay',
+      'google_pay',
+    ]);
+  }
+
+  /* Razorpay, Paytm, EximPe, Cashfree: Indian methods by construction. */
   if (provider !== 'stripe') return ['upi', 'card', 'netbanking'];
 
-  const configured = (process.env.STRIPE_METHODS ?? 'card')
-    .split(',')
-    .map((method) => method.trim())
-    .filter((method): method is PaymentMethodHint =>
-      method === 'upi' || method === 'card' || method === 'netbanking',
-    );
-
-  /* Never leave the candidate with no way to pay because of a typo. */
-  return configured.length > 0 ? configured : ['card'];
+  return parseMethodList(process.env.STRIPE_METHODS, ['card']);
 }
 
 /**

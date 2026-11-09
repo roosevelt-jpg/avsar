@@ -167,7 +167,7 @@ Content is blocks, not raw HTML. Do not paste invented quotes. Candidate stories
 | Company and pricing | `/admin/settings/company` | `company.manage` | Legal name, address, package price and currency, shortlist score, historical hire figures, days to deliver the report and the legal review |
 | Integrations | `/admin/settings/integrations` | `integrations.manage` | Payment rail, email, WhatsApp, and other keys. Secrets are stored encrypted. The console value overrides the hosting environment within about a minute |
 
-Production payment default in code is **EximPe in INR** (UPI). Switch the rail here only when finance has the merchant account. N-Genius is cards in AED and has no UPI.
+Production payment default in code is **N-Genius in AED** (Hosted Payment Page: card, Apple Pay, Samsung Pay, Google Pay). Switch the rail here only when finance changes merchant account. EximPe remains the INR + UPI alternative.
 
 ### Administration
 

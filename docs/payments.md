@@ -1,29 +1,9 @@
 # Payments
 
-## Production default: EximPe + INR (UPI)
+## Production default: Network International (N-Genius) + AED
 
-Indian candidates convert when they can pay with UPI. The code default and the
-recommended live configuration is:
-
-```
-PAYMENT_PROVIDER=eximpe
-NEXT_PUBLIC_CHARGE_CURRENCY=INR
-```
-
-Unset `PAYMENT_PROVIDER` also selects EximPe. The fee is charged in rupees by
-UPI, RuPay or Indian net banking, and settles to the UAE company under EximPe's
-RBI PA-CB import authorisation. Charge currency, fee and VAT are set in
-Settings › Company & pricing; checkout refuses (`payment_misconfigured`) if the
-currency does not match what the rail can charge (`RAIL_CURRENCIES` in
-`src/lib/company/config.ts`) or the fee is zero.
-
-When the seller changes, update it in Settings › Company & pricing.
-See `docs/v2-platform.md`, "Before launch".
-
-## Fallback: Network International (cards only, AED)
-
-The owner questionnaire also named Network International. That adapter is
-`src/lib/payments/ngenius.ts` and remains available when UPI is not the priority:
+The owner signed with Network International. The code default is the Hosted
+Payment Page adapter in `src/lib/payments/ngenius.ts`:
 
 ```
 PAYMENT_PROVIDER=ngenius
@@ -33,11 +13,32 @@ NGENIUS_OUTLET_REF=...
 NGENIUS_ENV=production
 NGENIUS_WEBHOOK_HEADER=x-webhook-secret
 NGENIUS_WEBHOOK_SECRET=...
+NGENIUS_METHODS=card,apple_pay,samsung_pay,google_pay
 ```
 
-- **Cards only. No UPI.** Many Indian debit cards block international online
-  payments; the unlock box says so.
-- Magnati has no adapter yet.
+Unset `PAYMENT_PROVIDER` also selects N-Genius. Checkout shows card, Apple Pay,
+Samsung Pay and Google Pay; the candidate is redirected to Network’s hosted
+page. Wallets and card schemes only appear on that page when Network has
+enabled them on the outlet. If Network enables UPI for this merchant’s
+e‑commerce outlet, add `upi` to `NGENIUS_METHODS` so the unlock UI offers it
+(the HPP still decides what it can actually charge).
+
+Charge currency, fee and VAT are set in Settings › Company & pricing; checkout
+refuses (`payment_misconfigured`) if the currency does not match what the rail
+can charge (`RAIL_CURRENCIES` in `src/lib/company/config.ts`) or the fee is zero.
+
+## Alternative: EximPe + INR (UPI)
+
+When candidates must pay by Indian UPI without relying on Network’s outlet
+configuration, switch to EximPe:
+
+```
+PAYMENT_PROVIDER=eximpe
+NEXT_PUBLIC_CHARGE_CURRENCY=INR
+```
+
+The fee is charged in rupees by UPI, RuPay or Indian net banking under EximPe’s
+RBI PA-CB import authorisation.
 
 ---
 

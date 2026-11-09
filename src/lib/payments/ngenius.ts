@@ -10,17 +10,17 @@ import type {
  * Network International (N-Genius Online), on the UAE company.
  *
  * The owner's chosen acquirer: the merchant account is held by the Dubai
- * entity and settles in AED. Magnati is the other UAE acquirer named; it has no
- * adapter yet because no API documentation or credentials have been supplied.
+ * entity and settles in AED. Integration path is the Hosted Payment Page
+ * (https://docs.ngenius-payments.com/reference/set-up-n-genius#hosted-payment-page):
+ * create an order, redirect to `_links.payment.href`, return with `?ref=`.
+ * No card data touches this server.
  *
- * Hosted payment page, which means a redirect: we create an order, send the
- * browser to Network's page, and it comes back to our return URL with `?ref=`
- * appended. No card data touches this server.
- *
- * Cards only. UAE acquirers do not offer UPI, so an Indian candidate pays by
- * debit or credit card as an international transaction. Many Indian debit
- * cards have international e-commerce switched off by default, which is why the
- * checkout copy tells the candidate before they start.
+ * Methods the outlet can show: card schemes, Apple Pay, Samsung Pay, Google
+ * Pay, and anything else Network enabled (including UPI if they turned it on
+ * for this merchant). Checkout can narrow the page with `merchantAttributes.offerOnly`
+ * for Apple Pay and Samsung Pay; card and Google Pay leave the filter off so
+ * every scheme Network configured stays available (Google Pay is not in
+ * Network's documented offerOnly list).
  *
  * Webhooks carry no signature. N-Genius lets the merchant configure one custom
  * header and value on the webhook, which proves the sender knows a shared
@@ -28,6 +28,16 @@ import type {
  * to learn which order to look up, and what happened to it is read back from
  * the authenticated API.
  */
+
+/** Narrow the Hosted Payment Page when Network documents the method for offerOnly. */
+function offerOnlyFor(hint: CheckoutRequest['methodHint']): string | undefined {
+  if (hint === 'apple_pay') return 'APPLE_PAY';
+  if (hint === 'samsung_pay') return 'SAMSUNG_PAY';
+  /* Card, Google Pay, UPI: do not restrict. Restricting card to a scheme list
+     fails order creation when any listed scheme is missing on the outlet;
+     Google Pay and UPI are not in Network's published offerOnly values. */
+  return undefined;
+}
 
 type Env = {
   apiKey: string;
@@ -158,6 +168,7 @@ export const ngeniusProvider: PaymentProvider = {
 
     /* `value` is in minor units (fils for AED), which is what `amountMinor`
        already holds, so nothing is converted here. */
+    const offerOnly = offerOnlyFor(request.methodHint);
     const response = await fetch(
       `${config.base}/transactions/outlets/${encodeURIComponent(config.outlet)}/orders`,
       {
@@ -173,14 +184,21 @@ export const ngeniusProvider: PaymentProvider = {
             cancelUrl: request.cancelUrl,
             cancelText: 'Back to my dashboard',
             skipConfirmationPage: true,
+            ...(offerOnly ? { offerOnly } : {}),
           },
-          merchantDefinedData: { receipt: request.receipt },
+          merchantDefinedData: {
+            receipt: request.receipt,
+            method_hint: request.methodHint,
+            candidate_id: request.metadata.candidate_id ?? '',
+            product: request.metadata.product ?? '',
+          },
         }),
       },
     );
 
     if (!response.ok) {
-      console.error('[ngenius] create order failed', response.status);
+      const detail = await response.text().catch(() => '');
+      console.error('[ngenius] create order failed', response.status, detail.slice(0, 400));
       throw new Error('ngenius_create_failed');
     }
 

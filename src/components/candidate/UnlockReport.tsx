@@ -31,6 +31,9 @@ const METHOD_LABELS: Record<PaymentMethodHint, string> = {
   upi: 'UPI',
   card: 'Debit or credit card',
   netbanking: 'Net banking',
+  apple_pay: 'Apple Pay',
+  samsung_pay: 'Samsung Pay',
+  google_pay: 'Google Pay',
 };
 
 export function UnlockReport({
@@ -415,15 +418,21 @@ export function UnlockReport({
         </a>
       </div>
 
-      {/* A card-only rail abroad is an international payment for an Indian card,
-          and many banks switch that off by default. Saying so first saves a
-          declined payment the candidate would read as a problem with us. */}
-      {!methods.includes('upi') && (
+      {/* N-Genius (and other non-INR rails) charge abroad. Indian debit cards
+          often block international e‑commerce until the candidate turns it on. */}
+      {provider === 'ngenius' ? (
+        <p className="mt-2.5 mb-0 max-w-[62ch] text-[13px] leading-[1.6] text-muted">
+          {siteText(
+            locale,
+            'You pay on Network International’s secure page (card, Apple Pay, Samsung Pay or Google Pay). The charge is in AED to our UAE company; your bank converts it to rupees. If a card is declined, turn on international online payments in your bank app and try again, or use a wallet.',
+          )}
+        </p>
+      ) : !methods.includes('upi') ? (
         <p className="mt-2.5 mb-0 max-w-[62ch] text-[13px] leading-[1.6] text-muted">
           This is an international card payment to our UAE company, so your bank converts it to rupees. If your
           card is declined, turn on international online payments in your bank app and try again.
         </p>
-      )}
+      ) : null}
 
       <CheckoutTrust locale={locale} company={company} whatsapp={whatsapp} supportEmail={supportEmail} />
 

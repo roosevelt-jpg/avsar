@@ -118,7 +118,14 @@ export const signupProfileSchema = z.object({
   cityState: z.string().trim().min(2).max(120),
 });
 
-export const paymentMethodSchema = z.enum(['upi', 'card', 'netbanking']);
+export const paymentMethodSchema = z.enum([
+  'upi',
+  'card',
+  'netbanking',
+  'apple_pay',
+  'samsung_pay',
+  'google_pay',
+]);
 
 export const signupSchema = withPhoneCheck(
   accountFields.merge(signupProfileSchema).extend({

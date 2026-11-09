@@ -32,13 +32,23 @@
  *    European entity is the one charging, and therefore the one the site has to
  *    name. It does not do UPI, so India still needs a rail of its own.
  *  - **Network International (N-Genius)**, a UAE acquirer, on the Dubai
- *    company, settling in AED. The owner's chosen rail. Cards only, no UPI.
+ *    company, settling in AED. The owner's chosen rail: Hosted Payment Page
+ *    with card, Apple Pay, Samsung Pay and Google Pay (whatever Network has
+ *    enabled on the outlet). UPI on that rail is only available if Network
+ *    enabled it on the outlet; the HPP then surfaces it without a separate
+ *    adapter.
  *
  * Everything above this interface is rail-agnostic, so which one is active is a
  * commercial decision rather than a rewrite.
  */
 
-export type PaymentMethodHint = 'upi' | 'card' | 'netbanking';
+export type PaymentMethodHint =
+  | 'upi'
+  | 'card'
+  | 'netbanking'
+  | 'apple_pay'
+  | 'samsung_pay'
+  | 'google_pay';
 
 export type CheckoutRequest = {
   amountMinor: number;
