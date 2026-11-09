@@ -181,12 +181,17 @@ function StepsJourney({ data }: { data: BlockData }) {
   const stepCols =
     list.length >= 5 ? 'xl:grid-cols-5' : list.length === 4 ? 'xl:grid-cols-4' : 'xl:grid-cols-3';
 
-  /* Fixed portrait-leaning frame so the place photo stays sharp and cropped
-     intentionally — stretching to the short step row made older stills look warped. */
+  /* On large screens the photo column stretches to the steps card height;
+     object-cover crops a realistic landscape still so nothing looks stretched. */
   const photo = sideImage ? (
-    <div className="relative aspect-[4/5] min-h-[260px] overflow-hidden rounded-[18px] bg-[#142438] lg:aspect-[3/4] lg:min-h-[320px] lg:self-center">
+    <div className="relative aspect-[4/3] min-h-[220px] overflow-hidden rounded-[18px] bg-[#142438] lg:aspect-auto lg:h-auto lg:min-h-0 lg:self-stretch">
       <div className="absolute inset-0">
-        <CmsImage src={sideImage} alt={str(data, 'sideImageAlt')} sizes="(max-width: 1024px) 100vw, 38vw" className="object-[center_40%]" />
+        <CmsImage
+          src={sideImage}
+          alt={str(data, 'sideImageAlt')}
+          sizes="(max-width: 1024px) 100vw, 38vw"
+          className="object-cover object-center"
+        />
       </div>
       {caption ? (
         <div className="absolute inset-x-4 bottom-4 z-[1] rounded-[12px] bg-[#f4f5f7]/95 px-4 py-3 text-[#142438] shadow-[0_8px_24px_-12px_rgba(20,36,56,0.45)]">
@@ -200,26 +205,28 @@ function StepsJourney({ data }: { data: BlockData }) {
   ) : null;
 
   const steps = (
-    <ol className={`m-0 grid list-none grid-cols-1 gap-5 p-0 sm:grid-cols-2 ${stepCols} xl:gap-2`}>
-      {list.map((item, index) => (
-        <li key={index} className="relative min-w-0 px-1 py-2">
-          {index < list.length - 1 ? (
-            <span
-              aria-hidden
-              className="absolute -end-1 top-6 z-10 hidden text-[18px] text-[var(--color-gold)] xl:block"
-            >
-              ›
+    <div className="rounded-[18px] border border-[#142438]/10 bg-white px-4 py-5 sm:px-5 lg:self-stretch">
+      <ol className={`m-0 grid list-none grid-cols-1 gap-5 p-0 sm:grid-cols-2 ${stepCols} xl:gap-2`}>
+        {list.map((item, index) => (
+          <li key={index} className="relative min-w-0 px-1 py-2">
+            {index < list.length - 1 ? (
+              <span
+                aria-hidden
+                className="absolute -end-1 top-6 z-10 hidden text-[18px] text-[var(--color-gold)] xl:block"
+              >
+                ›
+              </span>
+            ) : null}
+            <span className="grid size-10 place-items-center text-[var(--color-gold)]">
+              <Icon name={str(item, 'icon') || 'check'} className="size-6" />
             </span>
-          ) : null}
-          <span className="grid size-10 place-items-center text-[var(--color-gold)]">
-            <Icon name={str(item, 'icon') || 'check'} className="size-6" />
-          </span>
-          <h3 className="m-0 mt-3 text-[16px] font-semibold leading-[1.25] text-[#142438]">{str(item, 'title').replace(/^\d+\.\s*/, '')}</h3>
-          <p className="m-0 mt-2 text-[13px] leading-[1.5] text-ink-2">{str(item, 'body')}</p>
-          {str(item, 'meta') ? <p className="m-0 mt-3 text-[12px] font-medium text-muted">{str(item, 'meta')}</p> : null}
-        </li>
-      ))}
-    </ol>
+            <h3 className="m-0 mt-3 text-[16px] font-semibold leading-[1.25] text-[#142438]">{str(item, 'title').replace(/^\d+\.\s*/, '')}</h3>
+            <p className="m-0 mt-2 text-[13px] leading-[1.5] text-ink-2">{str(item, 'body')}</p>
+            {str(item, 'meta') ? <p className="m-0 mt-3 text-[12px] font-medium text-muted">{str(item, 'meta')}</p> : null}
+          </li>
+        ))}
+      </ol>
+    </div>
   );
 
   return (
