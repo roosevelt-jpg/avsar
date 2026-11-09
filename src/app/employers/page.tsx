@@ -75,7 +75,7 @@ export default async function EmployersPage() {
           </nav>
 
           <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-            <LocaleToggle locale="en" />
+            <LocaleToggle locale="en" tone="topline" />
             <AccountMenu locale="en" tone="employer" />
             <Link
               href={page.ctaHref || '/employers/register'}

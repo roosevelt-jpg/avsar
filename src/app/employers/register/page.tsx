@@ -55,7 +55,8 @@ export default async function EmployerRegisterPage() {
             })}
           </nav>
           <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-            <LocaleToggle locale="en" />
+            {/* Navy employer chrome needs the topline (light) locale control, not the white-header ink. */}
+            <LocaleToggle locale="en" tone="topline" />
             <AccountMenu locale="en" tone="employer" />
             <Link
               href={page.headerCtaHref || '/employers/register'}
