@@ -45,7 +45,7 @@ export const PHOTO_SITE = {
 /** Lisbon tram on cobbles. */
 export const PHOTO_TRAM = {
   src: '/photos/brand/journey-tram-real.jpg',
-  alt: 'Yellow Lisbon tram on a cobbled street',
+  alt: 'Yellow Lisbon tram on a tiled Alfama street',
 } as const;
 
 /** Porto Ribeira waterfront — Portugal place photo (not Lisbon). */

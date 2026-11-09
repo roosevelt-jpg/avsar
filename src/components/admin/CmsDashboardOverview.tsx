@@ -65,14 +65,14 @@ export function CmsDashHero({ canEdit }: { canEdit: boolean }) {
   return (
     <section className="relative overflow-hidden rounded-[18px] bg-[#142438] text-white">
       <Image
-        src="/photos/brand/dash-banner.jpg"
+        src="/photos/brand/dash-office.jpg"
         alt=""
         fill
         priority
         sizes="(max-width: 1280px) 100vw, 1200px"
-        className="object-cover object-[center_35%] opacity-55"
+        className="object-cover object-center opacity-45"
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#142438]/92 via-[#142438]/62 to-[#142438]/20" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#142438]/94 via-[#142438]/72 to-[#142438]/35" />
       <div className="relative z-[1] grid items-center gap-6 px-5 py-7 sm:px-8 sm:py-9 lg:grid-cols-[1.2fr_0.8fr]">
         <div>
           <p className="m-0 text-[12px] font-medium uppercase tracking-[0.14em] text-[#e8c56a]">Website &amp; CMS Management</p>

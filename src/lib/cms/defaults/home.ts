@@ -199,7 +199,7 @@ export const HOME: DefaultPage = {
           'We support you at every step — from finding the right opportunity to settling and starting your new life in Portugal.',
         layout: 'journey',
         sideImage: '/photos/brand/journey-tram-real.jpg',
-        sideImageAlt: 'Yellow Lisbon tram on a cobbled street',
+        sideImageAlt: 'Yellow Lisbon tram on a tiled Alfama street',
         items: [
           {
             icon: 'users',

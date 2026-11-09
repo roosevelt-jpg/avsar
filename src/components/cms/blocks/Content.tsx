@@ -181,12 +181,12 @@ function StepsJourney({ data }: { data: BlockData }) {
   const stepCols =
     list.length >= 5 ? 'xl:grid-cols-5' : list.length === 4 ? 'xl:grid-cols-4' : 'xl:grid-cols-3';
 
-  /* Absolute fill on lg so the photo matches the step-row height instead of
-     forcing a tall portrait aspect beside shorter cards. */
+  /* Fixed portrait-leaning frame so the place photo stays sharp and cropped
+     intentionally — stretching to the short step row made older stills look warped. */
   const photo = sideImage ? (
-    <div className="relative aspect-[4/3] min-h-[220px] overflow-hidden rounded-[18px] bg-[#142438] lg:aspect-auto lg:min-h-0 lg:self-stretch">
+    <div className="relative aspect-[4/5] min-h-[260px] overflow-hidden rounded-[18px] bg-[#142438] lg:aspect-[3/4] lg:min-h-[320px] lg:self-center">
       <div className="absolute inset-0">
-        <CmsImage src={sideImage} alt={str(data, 'sideImageAlt')} sizes="(max-width: 1024px) 100vw, 38vw" />
+        <CmsImage src={sideImage} alt={str(data, 'sideImageAlt')} sizes="(max-width: 1024px) 100vw, 38vw" className="object-[center_40%]" />
       </div>
       {caption ? (
         <div className="absolute inset-x-4 bottom-4 z-[1] rounded-[12px] bg-[#f4f5f7]/95 px-4 py-3 text-[#142438] shadow-[0_8px_24px_-12px_rgba(20,36,56,0.45)]">
