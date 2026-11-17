@@ -266,6 +266,8 @@ export default async function DashboardPage({
             locale={locale}
             receipts={receipts}
             chargeCurrency={settings.pricing.chargeCurrency}
+            company={settings.company}
+            candidateName={candidate.fullName}
             highlight={justPaid}
           />
         ) : null}

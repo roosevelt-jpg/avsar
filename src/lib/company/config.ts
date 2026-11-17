@@ -246,19 +246,34 @@ export function feeMinor(pricing: PricingSettings, currency: ChargeCurrency = pr
 }
 
 /**
+ * Whether a phone looks UAE (+971). Everything else on this corridor is treated
+ * as India for checkout currency.
+ */
+export function isUaePhone(phone: string | null | undefined): boolean {
+  const digits = (phone ?? '').replace(/\D/g, '');
+  if (!digits) return false;
+  if (digits.startsWith('971')) return true;
+  if (digits.startsWith('00971')) return true;
+  return false;
+}
+
+/**
  * Which currency CCAvenue should charge for a checkout method.
  *
- * UPI and Indian net banking settle in INR. Card and wallets on the UAE
- * outlet settle in AED. The amount is always taken from Settings for that
- * currency — never from the browser.
+ * Indian candidates (the usual case): UPI, net banking and card all settle in
+ * INR so the unlock UI and the till match. UAE numbers paying by card settle
+ * in AED. Amount always comes from Settings for that currency — never the browser.
  */
 export function checkoutCurrencyForMethod(
   method: 'upi' | 'card' | 'netbanking' | 'apple_pay' | 'samsung_pay' | 'google_pay',
   railCurrencies: readonly ChargeCurrency[],
+  payerPhone?: string | null,
 ): ChargeCurrency {
-  const wantsInr = method === 'upi' || method === 'netbanking';
-  if (wantsInr && railCurrencies.includes('INR')) return 'INR';
-  if (!wantsInr && railCurrencies.includes('AED')) return 'AED';
+  const uaeCard =
+    isUaePhone(payerPhone) &&
+    (method === 'card' || method === 'apple_pay' || method === 'samsung_pay' || method === 'google_pay');
+
+  if (uaeCard && railCurrencies.includes('AED')) return 'AED';
   if (railCurrencies.includes('INR')) return 'INR';
   if (railCurrencies.includes('AED')) return 'AED';
   return railCurrencies[0] ?? 'INR';

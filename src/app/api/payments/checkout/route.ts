@@ -83,8 +83,20 @@ async function openCheckout(request: Request, candidate: SessionCandidate): Prom
   const provider = getPaymentProvider();
   const settings = await getSiteSettings();
   const railCurrencies = RAIL_CURRENCIES[provider.name] ?? [];
-  /* Method decides currency: UPI/net banking → INR, card on the UAE outlet → AED. */
-  const currency = checkoutCurrencyForMethod(method.data, railCurrencies);
+
+  /* Phone drives India vs UAE for card currency; amount still comes from Settings. */
+  let phone = '';
+  if (supabase) {
+    const { data: row } = await supabase
+      .from('candidates')
+      .select('phone')
+      .eq('id', candidate.id)
+      .maybeSingle();
+    phone = typeof row?.phone === 'string' ? row.phone : '';
+  }
+
+  /* India (default): UPI, net banking and card → INR. UAE card → AED. */
+  const currency = checkoutCurrencyForMethod(method.data, railCurrencies, phone);
   const price = priceBreakdown(settings.pricing, product.data, currency);
   const COHORT = settings.cohort;
 
@@ -113,7 +125,7 @@ async function openCheckout(request: Request, candidate: SessionCandidate): Prom
       currency: price.currency,
       receipt,
       description: `${settings.general.siteName} ${PRODUCT_LABEL[product.data]}`,
-      customer: { name: candidate.fullName, email: candidate.email, phone: '' },
+      customer: { name: candidate.fullName, email: candidate.email, phone },
       methodHint: method.data,
       /*
         Through the return handler rather than straight to the dashboard, so the

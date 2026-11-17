@@ -7,9 +7,9 @@ globs: src/lib/payments/**,src/app/api/payments/**,src/lib/company/**,src/lib/in
   (CCAvenue UAE Hosted Payment Page). Initiate URL is always
   `https://secure.ccavenue.ae/transaction/transaction.do?command=initiateTransaction`
   for test and live.
-- Method picks currency: UPI and net banking charge **INR**; card charges **AED**.
-  Amounts come from Settings prices for that currency via
-  `checkoutCurrencyForMethod()` + `priceBreakdown()` — never from the client.
+- Method + payer phone pick currency: India (default) charges **INR** for UPI,
+  card and net banking; UAE (+971) card charges **AED**. Amounts come from
+  Settings via `checkoutCurrencyForMethod()` + `priceBreakdown()` — never the client.
 - All rails implement `PaymentProvider` in `src/lib/payments/types.ts`. Code above that
   interface must not know which rail is active.
 - Amount comes from server pricing, never the client. Minor units everywhere; the

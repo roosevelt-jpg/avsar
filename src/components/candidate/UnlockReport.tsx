@@ -89,8 +89,8 @@ export function UnlockReport({
   const [method, setMethod] = useState<PaymentMethodHint>(
     preferUpi && methods.includes('upi') ? 'upi' : (methods[0] ?? 'card'),
   );
-  /* Display only — checkout re-derives currency and amount from the method. */
-  const payCurrency = checkoutCurrencyForMethod(method, ['AED', 'INR']);
+  /* Display only — checkout re-derives currency and amount from method + phone. */
+  const payCurrency = checkoutCurrencyForMethod(method, ['AED', 'INR'], null);
   const prices = pricesByCurrency[payCurrency] ?? pricesByCurrency.INR;
   const digits = whatsapp.replace(/[^\d]/g, '');
   const talkText =
@@ -445,7 +445,7 @@ export function UnlockReport({
         <p className="mt-2.5 mb-0 max-w-[62ch] text-[13px] leading-[1.6] text-muted">
           {siteText(
             locale,
-            'You pay on CCAvenue’s secure page. UPI and net banking are charged in rupees (INR). Card is charged in UAE dirhams (AED) to our UAE company. Never pay by cash, WhatsApp or an agent.',
+            'You pay on CCAvenue’s secure page. From India, UPI, card and net banking are charged in rupees (INR). Never pay by cash, WhatsApp or an agent.',
           )}
         </p>
       ) : provider === 'ngenius' ? (
