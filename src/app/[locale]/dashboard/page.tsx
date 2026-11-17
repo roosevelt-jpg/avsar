@@ -380,7 +380,7 @@ export default async function DashboardPage({
               whatsapp={settings.general.whatsapp}
               supportEmail={settings.general.supportEmail || settings.company.supportEmail}
               preferUpi={paymentCancelled}
-              methods={availablePaymentMethods()}
+              methods={availablePaymentMethods(settings.pricing.chargeCurrency)}
               lines={ownLines}
               voiceUrl={settings.general.familyVoiceUrl}
               shareUrl={shareUrl}

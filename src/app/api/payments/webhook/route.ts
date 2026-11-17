@@ -52,6 +52,8 @@ export async function POST(request: Request) {
     orderId: result.sessionId,
     paymentId: result.paymentId,
     status: result.status,
+    methodHint: result.methodHint,
+    currency: result.currency,
   });
 
   return NextResponse.json({ received: true });

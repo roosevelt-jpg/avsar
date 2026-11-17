@@ -3,12 +3,25 @@ import { emailStaff, notifyStaff } from '@/lib/notifications/staff';
 import { getMailer } from '@/lib/email';
 import { composeEmail } from '@/lib/email/compose';
 import { getSiteSettings } from '@/lib/cms/data';
-import { asPaidProduct, formatMoney, productGrants, type PaidProduct } from '@/lib/company/config';
+import {
+  asPaidProduct,
+  formatMoney,
+  productGrants,
+  type ChargeCurrency,
+  type PaidProduct,
+} from '@/lib/company/config';
 import { siteText } from '@/lib/cms/localize';
 import { fill, isLocale, localePath } from '@/lib/i18n';
 import { candidateEntitlements } from '@/lib/payments/entitlements';
 import { sendWhatsApp } from '@/lib/whatsapp';
-import type { PaymentStatus } from './types';
+import type { PaymentMethodHint, PaymentStatus } from './types';
+
+const CHARGE_CURRENCIES = new Set<ChargeCurrency>(['INR', 'EUR', 'AED']);
+
+function asChargeCurrency(value: string | null | undefined): ChargeCurrency | null {
+  if (!value) return null;
+  return CHARGE_CURRENCIES.has(value as ChargeCurrency) ? (value as ChargeCurrency) : null;
+}
 
 /**
  * Writes a confirmed payment down, and unlocks the candidate.
@@ -29,11 +42,19 @@ export async function recordPayment(input: {
   orderId: string;
   paymentId: string | null;
   status: PaymentStatus;
+  /** From the gateway when it reports how they paid; overwrites the checkout pick. */
+  methodHint?: PaymentMethodHint | null;
+  currency?: ChargeCurrency | null;
 }): Promise<void> {
   const supabase = getAdminSupabase();
   if (!supabase) return;
 
   const paid = input.status === 'paid';
+  const currency = asChargeCurrency(input.currency ?? null);
+  const gatewayPatch: Record<string, string> = {};
+  if (input.paymentId) gatewayPatch.provider_payment_id = input.paymentId;
+  if (input.methodHint) gatewayPatch.method_hint = input.methodHint;
+  if (currency) gatewayPatch.currency = currency;
 
   /* A late "pending" or "failed" event for an order that has already been
      paid must leave the paid status alone. A success is handled below, where
@@ -41,7 +62,7 @@ export async function recordPayment(input: {
   if (!paid) {
     const { error } = await supabase
       .from('payments')
-      .update({ provider_payment_id: input.paymentId, status: input.status })
+      .update({ ...gatewayPatch, status: input.status })
       .eq('provider_order_id', input.orderId)
       .neq('status', 'paid');
     if (error) console.error('[payments] row update failed', error);
@@ -53,17 +74,22 @@ export async function recordPayment(input: {
      would have swallowed the receipt for that purchase. */
   const { data: marked, error: markError } = await supabase
     .from('payments')
-    .update({ provider_payment_id: input.paymentId, status: 'paid', paid_at: new Date().toISOString() })
+    .update({
+      ...gatewayPatch,
+      status: 'paid',
+      paid_at: new Date().toISOString(),
+    })
     .eq('provider_order_id', input.orderId)
     .neq('status', 'paid')
-    .select('candidate_id, receipt_no, product, amount_paise');
+    .select('candidate_id, receipt_no, product, amount_paise, currency');
 
   if (markError) console.error('[payments] row update failed', markError);
 
   const payment = marked?.[0];
   if (!payment?.candidate_id) {
-    if (input.paymentId) {
-      await supabase.from('payments').update({ provider_payment_id: input.paymentId }).eq('provider_order_id', input.orderId);
+    /* Idempotent second hit (webhook after return): still correct method/currency. */
+    if (Object.keys(gatewayPatch).length > 0) {
+      await supabase.from('payments').update(gatewayPatch).eq('provider_order_id', input.orderId);
     }
     return;
   }
@@ -120,14 +146,18 @@ export async function recordPayment(input: {
   const settings = await getSiteSettings();
   const locale = typeof buyer.locale === 'string' && isLocale(buyer.locale) ? buyer.locale : 'en';
   const paidMinor = typeof payment.amount_paise === 'number' ? payment.amount_paise : 0;
-  const plainPrice = formatMoney(paidMinor, settings.pricing.chargeCurrency).replace(/[\u2066\u2069]/g, '');
+  const paidCurrency =
+    asChargeCurrency(typeof payment.currency === 'string' ? payment.currency : null) ??
+    currency ??
+    settings.pricing.chargeCurrency;
+  const plainPrice = formatMoney(paidMinor, paidCurrency).replace(/[\u2066\u2069]/g, '');
   const bought = productNoun(product);
   if (to) {
     try {
       const origin = process.env.SITE_ORIGIN ?? 'https://recruitment.smithandadams.com';
       const email = await composeEmail(
         'payment_received',
-        { first_name: firstName, price: formatMoney(paidMinor, settings.pricing.chargeCurrency) },
+        { first_name: firstName, price: formatMoney(paidMinor, paidCurrency) },
         {
           origin,
           actionUrl: `${origin}${localePath(locale, '/dashboard')}`,

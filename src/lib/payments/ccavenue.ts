@@ -2,6 +2,7 @@ import { createCipheriv, createDecipheriv, createHash } from 'node:crypto';
 import type {
   CheckoutRequest,
   CheckoutSession,
+  PaymentMethodHint,
   PaymentProvider,
   WebhookResult,
 } from './types';
@@ -119,11 +120,39 @@ function extractEncResp(rawBody: string): string | null {
 
 const SUCCESS = new Set(['success', 'successful', 'shipped']);
 
+/**
+ * Map CCAvenue's payment_mode / payment_option onto our method hints.
+ *
+ * Checkout only stores what the candidate tapped before redirect; the hosted
+ * page is authoritative for the receipt.
+ */
+function methodFromResponse(fields: Record<string, string>): PaymentMethodHint | null {
+  const mode = `${fields.payment_mode ?? ''} ${fields.payment_option ?? ''} ${fields.card_name ?? ''}`
+    .trim()
+    .toLowerCase();
+  if (!mode) return null;
+  if (/\bupi\b|optupi|unified payment/.test(mode)) return 'upi';
+  if (/\bnet\s*bank|optnbk|internet banking/.test(mode)) return 'netbanking';
+  if (/apple\s*pay|optapple/.test(mode)) return 'apple_pay';
+  if (/samsung\s*pay|optsamsung/.test(mode)) return 'samsung_pay';
+  if (/google\s*pay|gpay|optgpay|wallet/.test(mode)) return 'google_pay';
+  if (/\bcard\b|optcrdc|optdbcr|credit|debit|visa|master|rupay|amex/.test(mode)) return 'card';
+  return null;
+}
+
+function currencyFromResponse(fields: Record<string, string>): 'INR' | 'EUR' | 'AED' | null {
+  const raw = (fields.currency ?? fields.order_currency ?? '').trim().toUpperCase();
+  if (raw === 'INR' || raw === 'EUR' || raw === 'AED') return raw;
+  return null;
+}
+
 function outcomeFromResponse(fields: Record<string, string>): {
   paid: boolean;
   failed: boolean;
   orderId: string | null;
   paymentId: string | null;
+  methodHint: PaymentMethodHint | null;
+  currency: 'INR' | 'EUR' | 'AED' | null;
 } {
   const status = (fields.order_status ?? fields.order_status_type ?? '').trim().toLowerCase();
   const orderId = fields.order_id?.trim() || null;
@@ -133,6 +162,8 @@ function outcomeFromResponse(fields: Record<string, string>): {
     failed: status === 'failure' || status === 'aborted' || status === 'timeout' || status === 'invalid',
     orderId,
     paymentId,
+    methodHint: methodFromResponse(fields),
+    currency: currencyFromResponse(fields),
   };
 }
 
@@ -225,14 +256,15 @@ export const ccavenueProvider: PaymentProvider = {
     }
 
     const fields = parseResponse(plain);
-    const { paid, failed, orderId, paymentId } = outcomeFromResponse(fields);
+    const { paid, failed, orderId, paymentId, methodHint, currency } = outcomeFromResponse(fields);
     if (!orderId) {
       console.error('[ccavenue] response had no order_id');
       return null;
     }
 
-    if (paid) return { sessionId: orderId, paymentId, status: 'paid' };
-    if (failed) return { sessionId: orderId, paymentId, status: 'failed' };
-    return { sessionId: orderId, paymentId, status: 'created' };
+    const extras = { methodHint, currency };
+    if (paid) return { sessionId: orderId, paymentId, status: 'paid', ...extras };
+    if (failed) return { sessionId: orderId, paymentId, status: 'failed', ...extras };
+    return { sessionId: orderId, paymentId, status: 'created', ...extras };
   },
 };

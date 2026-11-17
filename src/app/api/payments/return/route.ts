@@ -101,6 +101,8 @@ export async function POST(request: Request) {
           orderId: result.sessionId,
           paymentId: result.paymentId,
           status: 'paid',
+          methodHint: result.methodHint,
+          currency: result.currency,
         });
         confirmedPaid = true;
       } else if (result?.status === 'failed') {
@@ -108,6 +110,8 @@ export async function POST(request: Request) {
           orderId: result.sessionId,
           paymentId: result.paymentId,
           status: 'failed',
+          methodHint: result.methodHint,
+          currency: result.currency,
         });
       }
     } catch (error) {

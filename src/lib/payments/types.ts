@@ -83,6 +83,14 @@ export type WebhookResult = {
   sessionId: string;
   paymentId: string | null;
   status: PaymentStatus;
+  /**
+   * How they actually paid, when the rail reports it.
+   * Checkout stores only the candidate's pick; the hosted page may differ
+   * (e.g. they tapped UPI on our UI then paid by card on CCAvenue).
+   */
+  methodHint?: PaymentMethodHint | null;
+  /** Currency the gateway charged, when present in the response. */
+  currency?: 'INR' | 'EUR' | 'AED' | null;
 };
 
 export interface PaymentProvider {

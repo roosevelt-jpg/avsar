@@ -144,7 +144,7 @@ async function openCheckout(request: Request, candidate: SessionCandidate): Prom
   const completesBoth = (status.ownsSkills || grants.skills) && (status.ownsVisa || grants.visa);
 
   if (supabase) {
-    const { error } = await supabase.from('payments').insert({
+    const paymentRow: Record<string, unknown> = {
       candidate_id: candidate.id,
       cohort_id: COHORT.id,
       provider: provider.name,
@@ -152,12 +152,19 @@ async function openCheckout(request: Request, candidate: SessionCandidate): Prom
       amount_paise: price.totalMinor,
       net_paise: price.netMinor,
       gst_paise: price.vatMinor,
+      currency: price.currency,
       method_hint: method.data,
       product: product.data,
       status: treatAsPaid ? 'paid' : session.simulated ? 'simulated' : 'created',
       paid_at: treatAsPaid ? new Date().toISOString() : null,
       receipt_no: receipt,
-    });
+    };
+    let { error } = await supabase.from('payments').insert(paymentRow);
+    /* Migration 0044 adds currency; until it is applied, drop the field and retry. */
+    if (error && /currency/i.test(error.message ?? '')) {
+      delete paymentRow.currency;
+      ({ error } = await supabase.from('payments').insert(paymentRow));
+    }
     if (error) {
       console.error('[checkout] payment insert failed', error);
       return NextResponse.json({ error: 'payment_init_failed' }, { status: 502 });

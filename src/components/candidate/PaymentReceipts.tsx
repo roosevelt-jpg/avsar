@@ -49,7 +49,7 @@ export function PaymentReceipts({
 
       <ul className="m-0 flex list-none flex-col gap-3 p-0">
         {receipts.map((receipt) => {
-          const currency = receiptCurrency(receipt.provider, chargeCurrency);
+          const currency = receiptCurrency(receipt.currency, chargeCurrency);
           const paidOn = new Date(receipt.paidAt);
           const dateLabel = Number.isNaN(paidOn.getTime())
             ? receipt.paidAt
