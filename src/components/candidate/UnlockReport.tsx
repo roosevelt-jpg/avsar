@@ -11,12 +11,19 @@ import { loadCashfree } from '@/lib/payments/cashfree-client';
 import { openRazorpayCheckout } from '@/lib/payments/razorpay-client';
 import { openPaytmCheckout, parsePaytmClientToken } from '@/lib/payments/paytm-client';
 import { openCcavenueCheckout, parseCcavenueClientToken } from '@/lib/payments/ccavenue-client';
-import type { CompanySettings, HiringSettings } from '@/lib/company/config';
+import {
+  checkoutCurrencyForMethod,
+  type ChargeCurrency,
+  type CheckoutProduct,
+  type CompanySettings,
+  type HiringSettings,
+} from '@/lib/company/config';
 import type { ConversionSettings } from '@/lib/cms/settings';
 import { siteText } from '@/lib/cms/localize';
 import { fill, localePath, type Dictionary, type Locale } from '@/lib/i18n';
-import type { CheckoutProduct } from '@/lib/company/config';
 import type { PaymentMethodHint, PaymentProvider } from '@/lib/payments/types';
+
+type UnlockPrices = { skills: string; visa: string; bundle: string; separate: string };
 
 /**
  * Asks for the fee, once the assessment is done.
@@ -40,7 +47,7 @@ const METHOD_LABELS: Record<PaymentMethodHint, string> = {
 export function UnlockReport({
   t,
   locale,
-  prices,
+  pricesByCurrency,
   owns,
   methods,
   provider,
@@ -57,8 +64,11 @@ export function UnlockReport({
 }: {
   t: Dictionary;
   locale: Locale;
-  /** Formatted on the server. The browser never decides an amount. */
-  prices: { skills: string; visa: string; bundle: string; separate: string };
+  /** Formatted on the server per currency. The browser never invents an amount. */
+  pricesByCurrency: Partial<Record<ChargeCurrency, UnlockPrices>> & {
+    INR: UnlockPrices;
+    AED: UnlockPrices;
+  };
   owns: { skills: boolean; visa: boolean };
   conversion: ConversionSettings;
   hiring: HiringSettings;
@@ -79,6 +89,9 @@ export function UnlockReport({
   const [method, setMethod] = useState<PaymentMethodHint>(
     preferUpi && methods.includes('upi') ? 'upi' : (methods[0] ?? 'card'),
   );
+  /* Display only — checkout re-derives currency and amount from the method. */
+  const payCurrency = checkoutCurrencyForMethod(method, ['AED', 'INR']);
+  const prices = pricesByCurrency[payCurrency] ?? pricesByCurrency.INR;
   const digits = whatsapp.replace(/[^\d]/g, '');
   const talkText =
     locale === 'hi'
@@ -432,7 +445,7 @@ export function UnlockReport({
         <p className="mt-2.5 mb-0 max-w-[62ch] text-[13px] leading-[1.6] text-muted">
           {siteText(
             locale,
-            'You pay on CCAvenue’s secure page. UPI, card and net banking are available when your bank supports them. Never pay by cash, WhatsApp or an agent.',
+            'You pay on CCAvenue’s secure page. UPI and net banking are charged in rupees (INR). Card is charged in UAE dirhams (AED) to our UAE company. Never pay by cash, WhatsApp or an agent.',
           )}
         </p>
       ) : provider === 'ngenius' ? (

@@ -2,7 +2,14 @@ import { refreshIntegrations } from '@/lib/integrations/runtime';
 import { localePath } from '@/lib/i18n';
 import { NextResponse } from 'next/server';
 import { getSiteSettings } from '@/lib/cms/data';
-import { CHECKOUT_PRODUCTS, RAIL_CURRENCIES, priceBreakdown, productGrants, type CheckoutProduct } from '@/lib/company/config';
+import {
+  CHECKOUT_PRODUCTS,
+  RAIL_CURRENCIES,
+  checkoutCurrencyForMethod,
+  priceBreakdown,
+  productGrants,
+  type CheckoutProduct,
+} from '@/lib/company/config';
 import { getPaymentProvider, receiptNumber } from '@/lib/payments';
 import { paymentMethodSchema } from '@/lib/validation';
 import { getAdminSupabase } from '@/lib/supabase/admin';
@@ -75,7 +82,10 @@ async function openCheckout(request: Request, candidate: SessionCandidate): Prom
   const supabase = getAdminSupabase();
   const provider = getPaymentProvider();
   const settings = await getSiteSettings();
-  const price = priceBreakdown(settings.pricing, product.data);
+  const railCurrencies = RAIL_CURRENCIES[provider.name] ?? [];
+  /* Method decides currency: UPI/net banking → INR, card on the UAE outlet → AED. */
+  const currency = checkoutCurrencyForMethod(method.data, railCurrencies);
+  const price = priceBreakdown(settings.pricing, product.data, currency);
   const COHORT = settings.cohort;
 
   /* A price of zero is a settings mistake, never a free package. */
@@ -84,11 +94,11 @@ async function openCheckout(request: Request, candidate: SessionCandidate): Prom
     return NextResponse.json({ error: 'payment_misconfigured' }, { status: 503 });
   }
 
-  /* A rail that cannot charge the configured currency must not be asked to:
-     EximPe would reject euros, and Viva would reject rupees. Refusing here
-     turns a silent misconfiguration into one clear log line. */
-  if (!(RAIL_CURRENCIES[provider.name] ?? []).includes(price.currency)) {
-    console.error(`[checkout] ${provider.name} cannot charge ${price.currency}. Change the charge currency on Settings › Company & pricing.`);
+  /* A rail that cannot charge this method's currency must not be asked to. */
+  if (!railCurrencies.includes(price.currency)) {
+    console.error(
+      `[checkout] ${provider.name} cannot charge ${price.currency} for ${method.data}. Enable that currency on the outlet or remove the method.`,
+    );
     return NextResponse.json({ error: 'payment_misconfigured' }, { status: 503 });
   }
   const locale = candidate.locale;

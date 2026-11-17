@@ -240,16 +240,39 @@ export const RAIL_CURRENCIES: Record<string, readonly ChargeCurrency[]> = {
   stripe: ['EUR', 'INR'],
 };
 
-/** The package price in the charge currency, in minor units. */
-export function feeMinor(pricing: PricingSettings): number {
-  return Math.max(0, Math.round(pricing.feeMinor[pricing.chargeCurrency] ?? 0));
+/** The package price in the given currency (defaults to Settings › charge currency). */
+export function feeMinor(pricing: PricingSettings, currency: ChargeCurrency = pricing.chargeCurrency): number {
+  return Math.max(0, Math.round(pricing.feeMinor[currency] ?? 0));
+}
+
+/**
+ * Which currency CCAvenue should charge for a checkout method.
+ *
+ * UPI and Indian net banking settle in INR. Card and wallets on the UAE
+ * outlet settle in AED. The amount is always taken from Settings for that
+ * currency — never from the browser.
+ */
+export function checkoutCurrencyForMethod(
+  method: 'upi' | 'card' | 'netbanking' | 'apple_pay' | 'samsung_pay' | 'google_pay',
+  railCurrencies: readonly ChargeCurrency[],
+): ChargeCurrency {
+  const wantsInr = method === 'upi' || method === 'netbanking';
+  if (wantsInr && railCurrencies.includes('INR')) return 'INR';
+  if (!wantsInr && railCurrencies.includes('AED')) return 'AED';
+  if (railCurrencies.includes('INR')) return 'INR';
+  if (railCurrencies.includes('AED')) return 'AED';
+  return railCurrencies[0] ?? 'INR';
 }
 
 /** VAT is inside the total, never added at the till. */
-export function priceBreakdown(pricing: PricingSettings, product: PaidProduct = 'package') {
-  const totalMinor = productFeeMinor(pricing, product);
+export function priceBreakdown(
+  pricing: PricingSettings,
+  product: PaidProduct = 'package',
+  currency: ChargeCurrency = pricing.chargeCurrency,
+) {
+  const totalMinor = productFeeMinor(pricing, product, currency);
   const netMinor = Math.round(totalMinor / (1 + pricing.vatBasisPoints / 10_000));
-  return { netMinor, vatMinor: totalMinor - netMinor, totalMinor, currency: pricing.chargeCurrency };
+  return { netMinor, vatMinor: totalMinor - netMinor, totalMinor, currency };
 }
 
 /**
@@ -268,15 +291,19 @@ export function formatFee(pricing: PricingSettings): string {
   return formatMoney(feeMinor(pricing), pricing.chargeCurrency);
 }
 
-export function productFeeMinor(pricing: PricingSettings, product: PaidProduct): number {
-  if (product === 'package') return feeMinor(pricing);
+export function productFeeMinor(
+  pricing: PricingSettings,
+  product: PaidProduct,
+  currency: ChargeCurrency = pricing.chargeCurrency,
+): number {
+  if (product === 'package') return feeMinor(pricing, currency);
   const map =
     product === 'skills_report'
       ? pricing.skillsReportFeeMinor
       : product === 'visa_requirements'
         ? pricing.visaRequirementsFeeMinor
         : pricing.bundleFeeMinor;
-  return Math.max(0, Math.round(map?.[pricing.chargeCurrency] ?? 0));
+  return Math.max(0, Math.round(map?.[currency] ?? 0));
 }
 
 export function asPaidProduct(value: unknown): PaidProduct {
@@ -286,8 +313,22 @@ export function asPaidProduct(value: unknown): PaidProduct {
   return 'package';
 }
 
-export function formatProductFee(pricing: PricingSettings, product: PaidProduct): string {
-  return formatMoney(productFeeMinor(pricing, product), pricing.chargeCurrency);
+export function formatProductFee(
+  pricing: PricingSettings,
+  product: PaidProduct,
+  currency: ChargeCurrency = pricing.chargeCurrency,
+): string {
+  return formatMoney(productFeeMinor(pricing, product, currency), currency);
+}
+
+/** Formatted unlock prices for one currency, used when the pay method switches INR/AED. */
+export function formatCheckoutPrices(pricing: PricingSettings, currency: ChargeCurrency) {
+  return {
+    skills: formatProductFee(pricing, 'skills_report', currency),
+    visa: formatProductFee(pricing, 'visa_requirements', currency),
+    bundle: formatProductFee(pricing, 'bundle', currency),
+    separate: formatMoney(feeMinor(pricing, currency), currency),
+  };
 }
 
 /** A bundle or an old package unlocks both documents. A single report unlocks one. */

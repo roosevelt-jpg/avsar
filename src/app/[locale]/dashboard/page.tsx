@@ -31,7 +31,7 @@ import { availablePaymentMethods, getPaymentProvider } from '@/lib/payments';
 import { listCandidateReceipts } from '@/lib/payments/receipts';
 import { PaymentReceipts } from '@/components/candidate/PaymentReceipts';
 import { getSiteSettings } from '@/lib/cms/data';
-import { formatFee, formatProductFee } from '@/lib/company/config';
+import { formatCheckoutPrices } from '@/lib/company/config';
 import { getCandidateStatus, type CandidateStatus } from '@/lib/candidate/status';
 import { CareerPack } from '@/components/candidate/CareerPack';
 import { getAdminSupabase } from '@/lib/supabase/admin';
@@ -90,12 +90,12 @@ export default async function DashboardPage({
   let ownLines: string[] = [];
   let whatsappOptIn = false;
   const settings = await getSiteSettings();
-  const prices = {
-    skills: formatProductFee(settings.pricing, 'skills_report'),
-    visa: formatProductFee(settings.pricing, 'visa_requirements'),
-    bundle: formatProductFee(settings.pricing, 'bundle'),
-    separate: formatFee(settings.pricing),
+  const pricesByCurrency = {
+    INR: formatCheckoutPrices(settings.pricing, 'INR'),
+    AED: formatCheckoutPrices(settings.pricing, 'AED'),
+    EUR: formatCheckoutPrices(settings.pricing, 'EUR'),
   };
+  const prices = pricesByCurrency[settings.pricing.chargeCurrency] ?? pricesByCurrency.INR;
 
   const candidate = await requireCandidate(locale, localePath(locale, '/dashboard'));
   const candidateId = candidate.id;
@@ -372,7 +372,7 @@ export default async function DashboardPage({
             <UnlockReport
               t={t}
               locale={locale}
-              prices={prices}
+              pricesByCurrency={pricesByCurrency}
               owns={{ skills: status.ownsSkills, visa: status.ownsVisa }}
               conversion={settings.conversion}
               hiring={settings.hiring}
@@ -380,7 +380,7 @@ export default async function DashboardPage({
               whatsapp={settings.general.whatsapp}
               supportEmail={settings.general.supportEmail || settings.company.supportEmail}
               preferUpi={paymentCancelled}
-              methods={availablePaymentMethods(settings.pricing.chargeCurrency)}
+              methods={availablePaymentMethods()}
               lines={ownLines}
               voiceUrl={settings.general.familyVoiceUrl}
               shareUrl={shareUrl}

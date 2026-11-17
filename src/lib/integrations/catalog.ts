@@ -36,7 +36,7 @@ export const INTEGRATIONS: IntegrationGroup[] = [
         id: 'ccavenue',
         name: 'CCAvenue UAE',
         description:
-          'The only payment gateway on this platform. Hosted Payment Page on secure.ccavenue.ae (same initiate URL for test and live). UPI, cards and net banking when enabled on the merchant account. Set redirect and cancel URLs in their portal to this site’s /api/payments/return. Charge currency should be INR for UPI.',
+          'The only payment gateway on this platform. Hosted Payment Page on secure.ccavenue.ae (same initiate URL for test and live). Checkout charges UPI/net banking in INR and card in AED — both currencies must be enabled on the outlet. Set redirect and cancel URLs in their portal to this site’s /api/payments/return.',
         docs: 'https://www.ccavenue.ae/',
         fields: [
           { name: 'CCAVENUE_MERCHANT_ID', label: 'Merchant ID', secret: false },
