@@ -1,7 +1,7 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import type { MediaItem, PageListEntry } from '@/lib/cms/data';
 import type { Locale } from '@/lib/i18n';
+import { DashHeroPanel, dashPrimaryBtn, dashSecondaryBtn } from '@/components/console/DashHeroPanel';
 
 export type PageStatusKind = 'live_default' | 'published' | 'dirty' | 'draft';
 
@@ -63,59 +63,23 @@ export function cmsSeoHealth(pages: PageListEntry[], locale: Locale = 'en') {
 
 export function CmsDashHero({ canEdit }: { canEdit: boolean }) {
   return (
-    <section className="relative overflow-hidden rounded-[18px] bg-[#142438] text-white">
-      <Image
-        src="/photos/brand/dash-office.jpg"
-        alt=""
-        fill
-        priority
-        sizes="(max-width: 1280px) 100vw, 1200px"
-        className="object-cover object-center opacity-45"
-      />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#142438]/94 via-[#142438]/72 to-[#142438]/35" />
-      <div className="relative z-[1] grid items-center gap-6 px-5 py-7 sm:px-8 sm:py-9 lg:grid-cols-[1.2fr_0.8fr]">
-        <div>
-          <p className="m-0 text-[12px] font-medium uppercase tracking-[0.14em] text-[#e8c56a]">Website &amp; CMS Management</p>
-          <h1
-            className="m-0 mt-2 text-[clamp(24px,3.2cqi,36px)] font-semibold leading-[1.12] tracking-[-0.02em]"
-            style={{ fontFamily: 'var(--font-display)' }}
-          >
-            Manage Your Website Content
-          </h1>
-          <p className="m-0 mt-3 max-w-[52ch] text-[15px] leading-[1.6] text-white/85">
-            Edit and publish pages, update navigation, manage media and SEO — all from one place. Nothing goes live until
-            you publish.
-          </p>
-          <div className="mt-5 flex flex-wrap gap-2.5">
-            <a
-              href="/"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex rounded-[8px] bg-[#b28a49] px-4 py-2.5 text-[14px] font-semibold text-[#142438] no-underline hover:bg-[#c9a35f]"
-            >
-              View Live Website
-            </a>
-            {canEdit ? (
-              <Link
-                href="/admin/cms/home"
-                className="inline-flex rounded-[8px] border border-white/55 px-4 py-2.5 text-[14px] font-medium text-white no-underline hover:bg-white/10"
-              >
-                Edit Homepage
-              </Link>
-            ) : null}
-          </div>
-        </div>
-        <div className="relative mx-auto hidden aspect-[4/3] w-full max-w-[320px] lg:block">
-          <Image
-            src="/photos/brand/jobs-hero-1.jpg"
-            alt=""
-            fill
-            sizes="320px"
-            className="rounded-[12px] object-cover shadow-[0_24px_60px_-28px_rgba(0,0,0,0.65)]"
-          />
-        </div>
-      </div>
-    </section>
+    <DashHeroPanel
+      eyebrow="Website & CMS"
+      title="Site content"
+      intro="Edit pages, navigation, media and SEO here. Nothing goes live until you publish."
+      actions={
+        <>
+          <a href="/" target="_blank" rel="noreferrer" className={dashPrimaryBtn}>
+            View live site
+          </a>
+          {canEdit ? (
+            <Link href="/admin/cms/home" className={dashSecondaryBtn}>
+              Edit homepage
+            </Link>
+          ) : null}
+        </>
+      }
+    />
   );
 }
 

@@ -1,11 +1,11 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import type { PlatformSnapshot } from '@/lib/console/platform-snapshot';
 import type { Kpi } from '@/lib/console/analytics';
+import { DashHeroPanel, dashPrimaryBtn, dashSecondaryBtn } from '@/components/console/DashHeroPanel';
 
 /**
- * Mockup-shaped blocks for the staff home: hero, platform totals, quick
- * actions, growth ring. Numbers are live; nothing invented for the shell.
+ * Staff home: hero, platform totals, quick actions, growth ring.
+ * Numbers are live; nothing invented for the shell.
  */
 
 export function StaffDashHero({
@@ -20,62 +20,37 @@ export function StaffDashHero({
   roleLabel?: string;
 }) {
   return (
-    <section className="relative overflow-hidden rounded-[18px] bg-[#142438] text-white">
-      <Image
-        src="/photos/brand/dash-office.jpg"
-        alt=""
-        fill
-        priority
-        sizes="(max-width: 1280px) 100vw, 1200px"
-        className="object-cover object-center opacity-45"
-      />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#142438]/94 via-[#142438]/72 to-[#142438]/35" />
-      <div className="relative z-[1] px-5 py-7 sm:px-8 sm:py-9 lg:max-w-[70%]">
-        <div className="flex flex-wrap items-center gap-2.5">
-          <p className="m-0 text-[12px] font-medium uppercase tracking-[0.14em] text-[#e8c56a]">Platform Overview</p>
-          {roleLabel ? (
-            <span className="inline-flex items-center rounded-[6px] bg-[#b28a49]/25 px-2.5 py-0.5 text-[11px] font-medium text-[#e8c56a]">
-              {roleLabel}
-            </span>
-          ) : null}
-        </div>
-        <h1
-          className="m-0 mt-2 text-[clamp(26px,3.4cqi,40px)] font-semibold leading-[1.1] tracking-[-0.02em] text-white"
-          style={{ fontFamily: 'var(--font-display)' }}
-        >
-          S&amp;A Recruitment Admin
-        </h1>
-        <p className="m-0 mt-3 max-w-[54ch] text-[15px] leading-[1.6] text-white/85">
-          Manage recruitment, candidates, employers, jobs, assessments, payments, and the entire platform.
-        </p>
-        <div className="mt-5 flex flex-wrap gap-2.5">
+    <DashHeroPanel
+      eyebrow="Platform overview"
+      badge={
+        roleLabel ? (
+          <span className="inline-flex items-center rounded-[5px] bg-white/10 px-2.5 py-0.5 text-[11px] font-medium text-[#d4b574]">
+            {roleLabel}
+          </span>
+        ) : null
+      }
+      title="S&A Recruitment console"
+      intro="Candidates, employers, jobs, assessments and payments — live numbers for the desk."
+      actions={
+        <>
           {canPostJob ? (
-            <Link
-              href="/admin/jobs/new"
-              className="inline-flex rounded-[8px] bg-[#b28a49] px-4 py-2.5 text-[14px] font-semibold text-[#142438] no-underline hover:bg-[#c9a35f]"
-            >
-              + Post a Job
+            <Link href="/admin/jobs/new" className={dashPrimaryBtn}>
+              Post a job
             </Link>
           ) : null}
           {canAddEmployer ? (
-            <Link
-              href="/admin/employers"
-              className="inline-flex rounded-[8px] border border-white/55 px-4 py-2.5 text-[14px] font-medium text-white no-underline hover:bg-white/10"
-            >
-              Add Employer
+            <Link href="/admin/employers" className={dashSecondaryBtn}>
+              Add employer
             </Link>
           ) : null}
           {canEditCms ? (
-            <Link
-              href="/admin/cms"
-              className="inline-flex rounded-[8px] border border-white/55 px-4 py-2.5 text-[14px] font-medium text-white no-underline hover:bg-white/10"
-            >
-              Manage Content
+            <Link href="/admin/cms" className={dashSecondaryBtn}>
+              Manage content
             </Link>
           ) : null}
-        </div>
-      </div>
-    </section>
+        </>
+      }
+    />
   );
 }
 

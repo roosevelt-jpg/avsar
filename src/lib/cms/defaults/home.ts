@@ -23,14 +23,14 @@ export const HOME: DefaultPage = {
     [
       'hero',
       {
-        eyebrow: 'INDIA TO PORTUGAL | VERIFIED OPPORTUNITIES',
-        title: 'Build Your Career in Portugal',
+        eyebrow: 'India → Portugal',
+        title: 'Real jobs in Portugal for skilled people from India',
         accentWord: 'Portugal',
         subtitle:
-          'Trusted recruitment, legal employment and relocation support for skilled professionals from India.',
-        primaryCta: { label: 'Create Free Profile', href: '/signup' },
-        secondaryCta: { label: 'Explore Jobs', href: '/jobs' },
-        badgeLabel: 'Work & Live in Portugal',
+          'Apply free on your phone. Verified Portuguese employers, written contracts, and visa support from application to arrival — no placement fee for candidates.',
+        primaryCta: { label: 'Create free profile', href: '/signup' },
+        secondaryCta: { label: 'See open jobs', href: '/jobs' },
+        badgeLabel: 'How relocation works',
         badgeHref: '/why-portugal',
         filmUrl: '',
         filmLabel: '',

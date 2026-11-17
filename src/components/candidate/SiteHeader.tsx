@@ -34,8 +34,8 @@ function whatsappCopy(locale: Locale, company: string): WhatsAppDeskCopy {
 }
 
 /**
- * Public header aligned to the HTML-44 pack: navy topline, white sticky nav,
- * gold primary CTA. Navigation and announcement still come from Site settings.
+ * Public header: navy topline, white sticky nav, navy primary CTA.
+ * Navigation and announcement still come from Site settings.
  */
 export async function SiteHeader({ locale }: { locale: Locale }) {
   const settings = await getSiteSettings();
@@ -133,7 +133,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
             {showCta ? (
               <Link
                 href={localHref(locale, navigation.headerCta.href)}
-                className="btn-gradient t-colors hidden items-center gap-1.5 rounded-[5px] px-3.5 py-2 text-[12px] font-bold normal-case tracking-normal no-underline lg:inline-flex"
+                className="btn-gradient t-colors hidden items-center gap-1.5 rounded-[6px] px-3.5 py-2 text-[12px] font-semibold normal-case tracking-normal no-underline lg:inline-flex"
               >
                 {ctaLabel(navigation.headerCta, locale)}
               </Link>

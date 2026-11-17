@@ -365,31 +365,35 @@ textarea {
   color: var(--color-gold);
 }
 
-/* Mockup primary CTA: gold fill, navy type, 8px radius. */
+/*
+  Primary CTA: solid navy — gold gradients and shiny fills read as kit UI.
+  Gold stays for eyebrows, rules and secondary emphasis only.
+*/
 .btn-gradient {
-  background-color: #b28a49;
-  background-image: linear-gradient(180deg, #c49a56 0%, #b28a49 55%, #9a743c 100%);
-  color: #142438;
-  border: 1px solid #b28a49;
-  border-radius: 8px;
+  background-color: #142438;
+  background-image: none;
+  color: #ffffff;
+  border: 1px solid #142438;
+  border-radius: 6px;
   box-shadow: none;
-  transition: background-color 180ms ease, filter 180ms ease;
+  transition: background-color 160ms ease, border-color 160ms ease;
 }
 .btn-gradient:hover {
-  background-color: #9a743c;
+  background-color: #1c3550;
   background-image: none;
-  color: #142438;
-  filter: brightness(0.97);
+  color: #ffffff;
+  border-color: #1c3550;
+  filter: none;
 }
 .btn-outline-light {
   background-color: transparent;
   color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  border-radius: 8px;
-  transition: background-color 180ms ease, border-color 180ms ease;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 6px;
+  transition: background-color 160ms ease, border-color 160ms ease;
 }
 .btn-outline-light:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.08);
   border-color: #ffffff;
   color: #ffffff;
 }
@@ -398,7 +402,7 @@ textarea {
   background-color: #142438;
   color: #ffffff;
   border-color: #142438;
-  border-radius: 8px;
+  border-radius: 6px;
 }
 .market :is(a, button).bg-ink:hover {
   background-color: #1c3550;
@@ -406,7 +410,8 @@ textarea {
 }
 
 .chip-gradient {
-  background-image: linear-gradient(100deg, #142438, #1c3550 52%, #b28a49);
+  background-color: #142438;
+  background-image: none;
   color: #fff;
 }
 

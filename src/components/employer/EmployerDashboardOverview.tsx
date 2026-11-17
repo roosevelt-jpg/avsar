@@ -1,14 +1,13 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import type { EmployerApplicant, VacancyRequest } from '@/lib/employer/portal';
 import { REQUEST_STATUS_LABELS } from '@/lib/employer/portal';
 import { STATUS_META } from '@/lib/applications/status';
 import { interviewTimes } from '@/lib/interviews/time';
+import { DashHeroPanel, dashPrimaryBtn, dashSecondaryBtn } from '@/components/console/DashHeroPanel';
 
 /**
- * Mockup-shaped employer home widgets. Counts come only from vacancies and
- * shortlisted-or-later applicants employers are allowed to see — never invented
- * funnel totals from pre-screen stages.
+ * Employer home widgets. Counts come only from vacancies and shortlisted-or-later
+ * applicants employers are allowed to see — never invented funnel totals.
  */
 
 export type EmployerDashStats = {
@@ -50,53 +49,30 @@ export function EmployerDashHero({
   verified?: boolean;
 }) {
   return (
-    <section className="relative overflow-hidden rounded-[18px] bg-[#142438] text-white">
-      {/* Employer-facing still (handshake) — not the admin office corridor. */}
-      <Image
-        src="/photos/brand/dash-employer.jpg"
-        alt=""
-        fill
-        priority
-        sizes="(max-width: 1024px) 100vw, 1000px"
-        className="object-cover object-center opacity-50"
-      />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#142438]/94 via-[#142438]/70 to-[#142438]/30" />
-      <div className="relative z-[1] px-5 py-7 sm:px-8 sm:py-9 lg:max-w-[62%]">
-        <div className="mb-2 flex flex-wrap items-center gap-2.5">
-          <p className="m-0 text-[12px] font-medium uppercase tracking-[0.14em] text-[#e8c56a]">Employer portal</p>
-          <span
-            className={`inline-flex items-center rounded-[6px] px-2.5 py-0.5 text-[11px] font-medium ${
-              verified ? 'bg-[#2f7d4a]/25 text-[#7dcea0]' : 'bg-[#b28a49]/25 text-[#e8c56a]'
-            }`}
-          >
-            {verified ? 'Verified Employer' : 'Employer'}
-          </span>
-        </div>
-        <h1
-          className="m-0 text-[clamp(26px,3.4cqi,40px)] font-semibold leading-[1.1] tracking-[-0.02em] text-[#e8c56a]"
-          style={{ fontFamily: 'var(--font-display)' }}
+    <DashHeroPanel
+      eyebrow="Employer portal"
+      badge={
+        <span
+          className={`inline-flex items-center rounded-[5px] px-2.5 py-0.5 text-[11px] font-medium ${
+            verified ? 'bg-[#2f7d4a]/30 text-[#9dd4b4]' : 'bg-white/10 text-[#d4b574]'
+          }`}
         >
-          Welcome Back, {companyName}!
-        </h1>
-        <p className="m-0 mt-3 max-w-[52ch] text-[15px] leading-[1.6] text-white/85">
-          Manage your job postings, review candidates, and hire top talent for your team in Portugal.
-        </p>
-        <div className="mt-5 flex flex-wrap gap-2.5">
-          <Link
-            href="/admin/vacancies#request"
-            className="inline-flex rounded-[8px] bg-[#b28a49] px-4 py-2.5 text-[14px] font-semibold text-[#142438] no-underline hover:bg-[#c9a35f]"
-          >
-            Post a New Job →
+          {verified ? 'Verified employer' : 'Employer'}
+        </span>
+      }
+      title={companyName}
+      intro="Vacancies, shortlists and interviews for your Portugal hiring — without candidate contact details until unlock."
+      actions={
+        <>
+          <Link href="/admin/vacancies#request" className={dashPrimaryBtn}>
+            Request a vacancy
           </Link>
-          <Link
-            href="#talent-search"
-            className="inline-flex rounded-[8px] border border-white/55 px-4 py-2.5 text-[14px] font-medium text-white no-underline hover:bg-white/10"
-          >
-            Browse Candidates
+          <Link href="#talent-search" className={dashSecondaryBtn}>
+            Browse talent
           </Link>
-        </div>
-      </div>
-    </section>
+        </>
+      }
+    />
   );
 }
 
@@ -283,25 +259,24 @@ export function HiringFunnelPanel({ applicants }: { applicants: EmployerApplican
 
 export function EmployerRelocationPromo() {
   return (
-    <section className="relative overflow-hidden rounded-[14px] bg-[#142438] text-white shadow-[0_8px_24px_-18px_rgba(20,36,56,0.35)]">
-      <Image
-        src="/photos/selected/visa.jpg"
-        alt=""
-        fill
-        sizes="(max-width: 1024px) 100vw, 320px"
-        className="object-cover opacity-40"
+    <section className="relative overflow-hidden rounded-[14px] border border-[#142438]/12 bg-[#142438] text-white">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background: 'radial-gradient(90% 70% at 100% 0%, rgba(178,138,73,0.16) 0%, transparent 50%)',
+        }}
       />
-      <div className="absolute inset-0 bg-[#142438]/55" />
-      <div className="relative z-[1] flex h-full min-h-[220px] flex-col justify-end p-5">
-        <h2 className="m-0 text-[17px] font-semibold tracking-[-0.02em]">Visa &amp; Relocation Support</h2>
-        <p className="m-0 mt-2 text-[13px] leading-[1.55] text-white/85">
-          We handle work visa guidance, documentation and relocation for your hired candidates.
+      <div className="relative z-[1] flex h-full min-h-[200px] flex-col justify-end p-5">
+        <h2 className="m-0 text-[17px] font-semibold tracking-[-0.02em]">Visa &amp; relocation</h2>
+        <p className="m-0 mt-2 text-[13px] leading-[1.55] text-white/80">
+          Work-visa guidance, documents and settling support for people you hire.
         </p>
         <Link
           href="/admin/bench"
-          className="mt-4 inline-flex w-fit rounded-[8px] bg-[#b28a49] px-3.5 py-2 text-[13px] font-semibold text-[#142438] no-underline hover:bg-[#c9a35f]"
+          className="mt-4 inline-flex w-fit rounded-[6px] bg-white px-3.5 py-2 text-[13px] font-semibold text-[#142438] no-underline hover:bg-[#f0f2f5]"
         >
-          Request Support →
+          Request support
         </Link>
       </div>
     </section>

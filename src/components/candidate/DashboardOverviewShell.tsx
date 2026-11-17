@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import type { CandidateApplication } from '@/lib/applications/data';
 import { PIPELINE, STATUS_META, pipelineIndex, type ApplicationStatus } from '@/lib/applications/status';
@@ -8,11 +7,12 @@ import { formatSalary } from '@/lib/jobs/types';
 import type { Milestone } from '@/lib/relocation/milestones';
 import { progress } from '@/lib/relocation/milestones';
 import { localePath, type Locale } from '@/lib/i18n';
+import { DashHeroPanel, dashPrimaryBtn, dashSecondaryBtn } from '@/components/console/DashHeroPanel';
 
 /**
- * Mockup-shaped overview widgets: hero, KPI strip, application progress,
- * next-steps checklist, relocation promo, recommended jobs, journey strip.
- * Numbers come only from live applications / jobs / status — no placeholders.
+ * Overview widgets: hero, KPI strip, application progress, next-steps,
+ * relocation promo, recommended jobs, journey strip. Numbers come only from
+ * live applications / jobs / status — no placeholders.
  */
 
 export function applicationProgressPct(status: ApplicationStatus): number {
@@ -47,52 +47,34 @@ export function DashboardHero({
   verified?: boolean;
 }) {
   return (
-    <section className="relative overflow-hidden rounded-[18px] bg-[#142438] text-white">
-      {/* Candidate-facing still (kitchen work) — not the admin office corridor. */}
-      <Image
-        src="/photos/brand/dash-candidate.jpg"
-        alt=""
-        fill
-        priority
-        sizes="(max-width: 1024px) 100vw, 900px"
-        className="object-cover object-[center_30%] opacity-50"
-      />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#142438]/94 via-[#142438]/70 to-[#142438]/30" />
-      <div className="relative z-[1] px-5 py-7 sm:px-8 sm:py-9 lg:max-w-[58%]">
-        <div className="mb-2 flex flex-wrap items-center gap-2.5">
-          <p className="m-0 text-[12px] font-medium uppercase tracking-[0.14em] text-[var(--dash-gold,#b28a49)]">Your dashboard</p>
-          <span
-            className={`inline-flex items-center rounded-[6px] px-2.5 py-0.5 text-[11px] font-medium ${
-              verified ? 'bg-[#b28a49]/25 text-[#b28a49]' : 'bg-white/15 text-white/80'
-            }`}
-          >
-            {verified ? 'Verified candidate' : 'Candidate'}
-          </span>
-        </div>
-        <h1
-          className="display-serif m-0 text-[clamp(26px,3.4cqi,40px)] font-normal leading-[1.1] tracking-[-0.02em] text-white"
+    <DashHeroPanel
+      eyebrow="Your dashboard"
+      badge={
+        <span
+          className={`inline-flex items-center rounded-[5px] px-2.5 py-0.5 text-[11px] font-medium ${
+            verified ? 'bg-white/12 text-[#d4b574]' : 'bg-white/10 text-white/75'
+          }`}
         >
-          Welcome Back, {firstName}!
-        </h1>
-        <p className="m-0 mt-3 max-w-[48ch] text-[15px] leading-[1.6] text-white/85">
-          Track your applications, discover new opportunities, and take the next step in your career in Portugal.
-        </p>
-        <div className="mt-5 flex flex-wrap gap-2.5">
-          <Link
-            href={localePath(locale, '/jobs')}
-            className="inline-flex rounded-[8px] bg-[#b28a49] px-4 py-2.5 text-[14px] font-semibold text-[#142438] no-underline hover:bg-[#c9a35f]"
-          >
-            Browse Jobs →
+          {verified ? 'Verified candidate' : 'Candidate'}
+        </span>
+      }
+      title={
+        <>
+          Hello, {firstName}
+        </>
+      }
+      intro="Applications, matched jobs and the next step toward work in Portugal — in one place."
+      actions={
+        <>
+          <Link href={localePath(locale, '/jobs')} className={dashPrimaryBtn}>
+            Browse jobs
           </Link>
-          <Link
-            href={localePath(locale, '/assessment')}
-            className="inline-flex rounded-[8px] border border-white/55 px-4 py-2.5 text-[14px] font-medium text-white no-underline hover:bg-white/10"
-          >
-            {assessmentComplete ? 'Retake a Skills Test' : 'Complete a Skills Test'}
+          <Link href={localePath(locale, '/assessment')} className={dashSecondaryBtn}>
+            {assessmentComplete ? 'Retake skills test' : 'Complete skills test'}
           </Link>
-        </div>
-      </div>
-    </section>
+        </>
+      }
+    />
   );
 }
 
@@ -318,25 +300,24 @@ export function NextStepsChecklist({
 
 export function RelocationPromoCard({ locale }: { locale: Locale }) {
   return (
-    <section className="relative overflow-hidden rounded-[14px] bg-[#142438] text-white shadow-[0_8px_24px_-18px_rgba(20,36,56,0.35)]">
-      <Image
-        src="/photos/selected/visa.jpg"
-        alt=""
-        fill
-        sizes="(max-width: 1024px) 100vw, 320px"
-        className="object-cover opacity-40"
+    <section className="relative overflow-hidden rounded-[14px] border border-[#142438]/12 bg-[#142438] text-white">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background: 'radial-gradient(90% 70% at 100% 0%, rgba(178,138,73,0.16) 0%, transparent 50%)',
+        }}
       />
-      <div className="absolute inset-0 bg-[#142438]/55" />
-      <div className="relative z-[1] flex h-full min-h-[220px] flex-col justify-end p-5">
-        <h2 className="m-0 text-[17px] font-semibold tracking-[-0.02em]">Visa &amp; Relocation Support</h2>
-        <p className="m-0 mt-2 text-[13px] leading-[1.55] text-white/85">
-          Get step-by-step guidance on work visas, travel and settling in Portugal.
+      <div className="relative z-[1] flex h-full min-h-[200px] flex-col justify-end p-5">
+        <h2 className="m-0 text-[17px] font-semibold tracking-[-0.02em]">Visa &amp; relocation</h2>
+        <p className="m-0 mt-2 text-[13px] leading-[1.55] text-white/80">
+          Step-by-step guidance on work visas, travel and settling in Portugal.
         </p>
         <Link
           href={localePath(locale, '/dashboard/relocation')}
-          className="mt-4 inline-flex w-fit rounded-[8px] bg-[#b28a49] px-3.5 py-2 text-[13px] font-semibold text-[#142438] no-underline hover:bg-[#c9a35f]"
+          className="mt-4 inline-flex w-fit rounded-[6px] bg-white px-3.5 py-2 text-[13px] font-semibold text-[#142438] no-underline hover:bg-[#f0f2f5]"
         >
-          View Relocation Guide →
+          Open relocation guide
         </Link>
       </div>
     </section>

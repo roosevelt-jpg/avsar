@@ -61,8 +61,8 @@ export function TrustBarBlock({ data }: Props) {
               index > 0 ? 'lg:border-s lg:border-line' : ''
             }`}
           >
-            <span className="mt-0.5 grid size-10 shrink-0 place-items-center rounded-full border border-[var(--color-gold)]/45 text-[var(--color-gold)]">
-              <Icon name={str(item, 'icon')} className="size-5" />
+            <span className="mt-0.5 grid size-9 shrink-0 place-items-center rounded-[6px] border border-[#142438]/14 text-[#142438]">
+              <Icon name={str(item, 'icon')} className="size-4" />
             </span>
             <div className="min-w-0">
               <p className="m-0 text-[15px] font-semibold text-[#142438]">{str(item, 'title')}</p>

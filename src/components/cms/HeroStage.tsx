@@ -95,39 +95,32 @@ export function HeroStage({
           })}
           {slides.length > 0 ? (
             <>
-              {/* Lighter wash so documentary place photos stay readable, not navy sludge. */}
-              <div className="absolute inset-0 bg-[#142438]/28" />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#142438]/88 via-[#142438]/55 to-[#142438]/12" />
+              {/* Strong left wash so type stays readable; photo stays visible on the right. */}
+              <div className="absolute inset-0 bg-[#0c1826]/35" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#0c1826]/92 via-[#142438]/62 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[#0c1826]/55 to-transparent" />
             </>
           ) : null}
           <div className="relative mx-auto flex min-h-[min(72dvh,760px)] w-full max-w-[1200px] flex-col justify-center px-[clamp(16px,4cqi,56px)] py-[clamp(40px,9cqi,112px)] sm:min-h-[min(88vh,760px)]">
-            <div className="max-w-[640px]">
+            <div className="max-w-[620px]">
               {lead ? <div className="mb-4">{lead}</div> : null}
               {children}
             </div>
 
             {badge?.label ? (
-              <div className={`mt-10 self-start lg:absolute lg:end-[clamp(20px,4cqi,56px)] lg:mt-0 lg:self-auto ${footer ? 'lg:bottom-28' : 'lg:bottom-10'}`}>
+              <div className={`mt-8 self-start ${footer ? 'sm:mb-2' : ''}`}>
                 {badge.href ? (
                   <Link
                     href={badge.href}
-                    className="inline-flex max-w-[min(100%,22rem)] items-center gap-3 rounded-full bg-white py-2.5 pe-2.5 ps-3.5 text-[#142438] no-underline shadow-[0_12px_32px_rgba(0,0,0,0.22)]"
+                    className="inline-flex max-w-[min(100%,22rem)] items-center gap-2.5 rounded-[6px] border border-white/25 bg-[#142438]/55 py-2 pe-3 ps-3 text-[#f4f8fb] no-underline backdrop-blur-[2px] transition-colors hover:border-white/45 hover:bg-[#142438]/7"
                   >
-                    <svg viewBox="0 0 24 16" className="h-4 w-6 shrink-0 rounded-[2px]" aria-hidden>
-                      <rect width="24" height="16" fill="#006600" />
-                      <rect x="9" width="15" height="16" fill="#FF0000" />
-                      <circle cx="9" cy="8" r="2.6" fill="#FFCC00" />
-                    </svg>
-                    <span className="text-[13px] font-semibold leading-tight">{badge.label}</span>
-                    <span
-                      aria-hidden
-                      className="grid size-8 shrink-0 place-items-center rounded-full bg-[#b28a49] text-[13px] font-semibold text-[#142438]"
-                    >
+                    <span className="text-[13px] font-medium leading-tight tracking-[-0.01em]">{badge.label}</span>
+                    <span aria-hidden className="text-[14px] text-[#d4b574]">
                       →
                     </span>
                   </Link>
                 ) : (
-                  <span className="inline-flex max-w-[min(100%,22rem)] items-center gap-3 rounded-full bg-white py-2.5 pe-2.5 ps-3.5 text-[13px] font-semibold text-[#142438] shadow-[0_12px_32px_rgba(0,0,0,0.22)]">
+                  <span className="inline-flex max-w-[min(100%,22rem)] items-center rounded-[6px] border border-white/25 bg-[#142438]/55 py-2 px-3 text-[13px] font-medium text-[#f4f8fb] backdrop-blur-[2px]">
                     {badge.label}
                   </span>
                 )}

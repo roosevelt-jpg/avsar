@@ -72,11 +72,11 @@ export function SectionHeading({
 }
 
 const BUTTON = {
-  /* Mockup CTAs: gold fill primary, outline secondary on dark heroes. */
+  /* Navy primary; gold is reserved for labels, not button fills. */
   primary: 'btn-gradient',
-  dark: 'border border-white/55 bg-transparent text-white hover:bg-white/10',
-  light: 'bg-white text-[#142438] border-[#142438]/20 hover:border-[#142438]',
-  ghostDark: 'bg-transparent text-white border-white/55 hover:bg-white/10',
+  dark: 'border border-white/45 bg-transparent text-white hover:bg-white/10',
+  light: 'bg-white text-[#142438] border-[#142438]/18 hover:border-[#142438]',
+  ghostDark: 'bg-transparent text-white border-white/45 hover:bg-white/10',
   white: 'bg-white text-[#142438] border-transparent hover:bg-[#f4f5f7]',
 } as const;
 
@@ -94,7 +94,7 @@ export function CmsButton({
   size?: 'sm' | 'md' | 'lg';
 }) {
   if (!href || !label) return null;
-  const className = `t-colors inline-flex items-center justify-center gap-2 rounded-[8px] border font-semibold normal-case tracking-normal no-underline ${
+  const className = `t-colors inline-flex items-center justify-center gap-2 rounded-[6px] border font-semibold normal-case tracking-normal no-underline ${
     size === 'lg' ? 'px-6 py-3.5 text-[16px]' : size === 'sm' ? 'px-3.5 py-2 text-[13px]' : 'px-5 py-3 text-[15px]'
   } ${BUTTON[variant]}`;
   const resolved = localHref(locale, href);

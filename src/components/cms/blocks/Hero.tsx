@@ -187,7 +187,7 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
               className={
                 onDark
                   ? 'btn-outline-light t-colors inline-flex items-center gap-2 px-5 py-3 text-[14px] font-semibold no-underline'
-                  : 't-colors inline-flex items-center rounded-[8px] border border-line-strong bg-white px-5 py-3 text-[14px] font-semibold text-ink no-underline hover:border-ink'
+                  : 't-colors inline-flex items-center rounded-[6px] border border-line-strong bg-white px-5 py-3 text-[14px] font-semibold text-ink no-underline hover:border-ink'
               }
             >
               {secondary.label}
