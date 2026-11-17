@@ -228,8 +228,9 @@ export const DEFAULT_COHORT: CohortSettings = {
 /** Rails that can charge each currency. Used to refuse a mismatched configuration. */
 export const RAIL_CURRENCIES: Record<string, readonly ChargeCurrency[]> = {
   ngenius: ['AED'],
-  /* CCAvenue UAE: INR for UPI; AED when the merchant account is AED-only. */
-  ccavenue: ['INR', 'AED'],
+  /* CCAvenue UAE: AED is the usual enabled currency. INR only if CCAvenue
+     enables it on the outlet (otherwise initiate returns error 31002). */
+  ccavenue: ['AED', 'INR'],
   eximpe: ['INR'],
   cashfree: ['INR'],
   razorpay: ['INR'],

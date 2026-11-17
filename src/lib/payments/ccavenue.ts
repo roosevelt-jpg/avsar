@@ -2,7 +2,6 @@ import { createCipheriv, createDecipheriv, createHash } from 'node:crypto';
 import type {
   CheckoutRequest,
   CheckoutSession,
-  PaymentMethodHint,
   PaymentProvider,
   WebhookResult,
 } from './types';
@@ -74,16 +73,15 @@ export function decryptCcavenue(encHex: string, workingKey: string): string {
   );
 }
 
-/** CCAvenue payment_option codes when we want to open on one method. */
-function paymentOption(hint: PaymentMethodHint): string | undefined {
-  if (hint === 'upi') return 'OPTUPI';
-  if (hint === 'card') return 'OPTCRDC';
-  if (hint === 'netbanking') return 'OPTNBK';
-  return undefined;
-}
-
 function toMajor(amountMinor: number): string {
   return (amountMinor / 100).toFixed(2);
+}
+
+/** Digits-only phone; CCAvenue rejects blank or oddly formatted billing_tel. */
+function billingTel(phone: string): string {
+  const digits = phone.replace(/\D/g, '');
+  if (digits.length >= 8) return digits.slice(0, 20);
+  return '0000000000';
 }
 
 /**
@@ -152,8 +150,16 @@ export const ccavenueProvider: PaymentProvider = {
     }
 
     const orderId = request.receipt.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 30) || `SA${Date.now()}`;
-    const option = paymentOption(request.methodHint);
+    const inIndia = request.currency === 'INR';
+    const name = (request.customer.name.trim() || 'Candidate').slice(0, 60);
 
+    /*
+      Do not send payment_option. Forcing OPTUPI/OPTCRDC fails with Invalid
+      Parameter when that method is not enabled on the outlet; the hosted page
+      shows whatever CCAvenue enabled (including UPI when they turn it on).
+      Error 31002 is specifically "currency: Invalid Parameter" — UAE test
+      accounts are usually AED-only until CCAvenue enables INR.
+    */
     const fields: Record<string, string> = {
       merchant_id: config.merchantId,
       order_id: orderId,
@@ -162,15 +168,25 @@ export const ccavenueProvider: PaymentProvider = {
       redirect_url: request.successUrl,
       cancel_url: request.cancelUrl,
       language: 'EN',
-      billing_name: request.customer.name.slice(0, 60),
+      billing_name: name,
+      billing_address: inIndia ? 'India' : 'Dubai',
+      billing_city: inIndia ? 'Mumbai' : 'Dubai',
+      billing_state: inIndia ? 'MH' : 'DU',
+      billing_zip: inIndia ? '400001' : '00000',
+      billing_country: inIndia ? 'India' : 'United Arab Emirates',
+      billing_tel: billingTel(request.customer.phone),
       billing_email: request.customer.email.slice(0, 70),
-      billing_tel: request.customer.phone.replace(/[^\d+]/g, '').slice(0, 20),
-      billing_country: request.currency === 'INR' ? 'India' : 'United Arab Emirates',
+      delivery_name: name,
+      delivery_address: inIndia ? 'India' : 'Dubai',
+      delivery_city: inIndia ? 'Mumbai' : 'Dubai',
+      delivery_state: inIndia ? 'MH' : 'DU',
+      delivery_zip: inIndia ? '400001' : '00000',
+      delivery_country: inIndia ? 'India' : 'United Arab Emirates',
+      delivery_tel: billingTel(request.customer.phone),
       merchant_param1: request.metadata.candidate_id?.slice(0, 100) ?? '',
       merchant_param2: request.metadata.product?.slice(0, 100) ?? '',
       merchant_param3: request.methodHint,
-      customer_identifier: (request.metadata.candidate_id || request.customer.email).slice(0, 100),
-      ...(option ? { payment_option: option } : {}),
+      customer_identifier: (request.metadata.candidate_id || request.customer.email).slice(0, 70),
     };
 
     const encRequest = encryptCcavenue(encodeFields(fields), config.workingKey);
