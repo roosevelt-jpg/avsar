@@ -182,15 +182,14 @@ export const DEFAULT_COMPANY: CompanySettings = {
 
 /* Deployments that set the currency in the environment before it moved to the
    console keep charging the same currency until somebody saves this page.
-   Fresh installs default to AED so Network International (N-Genius) matches
-   without a save; EximPe/INR remains available by setting the charge currency. */
+   Fresh installs default to INR so CCAvenue UPI matches without a save. */
 const LEGACY_CURRENCY = process.env.NEXT_PUBLIC_CHARGE_CURRENCY;
 
 export const DEFAULT_PRICING: PricingSettings = {
   chargeCurrency:
     LEGACY_CURRENCY === 'EUR' || LEGACY_CURRENCY === 'AED' || LEGACY_CURRENCY === 'INR'
       ? LEGACY_CURRENCY
-      : 'AED',
+      : 'INR',
   feeMinor: { INR: 240_000, EUR: 2_500, AED: 10_500 },
   /* €10, €15 and €20, with INR and AED at the same rate as the €25 figure above. */
   skillsReportFeeMinor: { INR: 96_000, EUR: 1_000, AED: 4_200 },
@@ -229,6 +228,8 @@ export const DEFAULT_COHORT: CohortSettings = {
 /** Rails that can charge each currency. Used to refuse a mismatched configuration. */
 export const RAIL_CURRENCIES: Record<string, readonly ChargeCurrency[]> = {
   ngenius: ['AED'],
+  /* CCAvenue UAE: INR for UPI; AED when the merchant account is AED-only. */
+  ccavenue: ['INR', 'AED'],
   eximpe: ['INR'],
   cashfree: ['INR'],
   razorpay: ['INR'],

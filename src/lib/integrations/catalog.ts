@@ -38,14 +38,32 @@ export const INTEGRATIONS: IntegrationGroup[] = [
         id: 'payments',
         name: 'Active payment rail',
         description:
-          'Which provider takes the package payment. Only one is live at a time. Production default is Network International (N-Genius) Hosted Payment Page in AED. Leave unset to use N-Genius. EximPe remains available for INR + UPI.',
+          'Which provider takes the package payment. Only one is live at a time. Production default is CCAvenue UAE (UPI, card, net banking). Leave unset to use CCAvenue. N-Genius remains available for AED cards/wallets.',
         fields: [
           {
             name: 'PAYMENT_PROVIDER',
             label: 'Provider',
             secret: false,
-            options: ['ngenius', 'eximpe', 'razorpay', 'paytm', 'cashfree', 'stripe', 'viva', 'dodo'],
-            hint: 'ngenius (AED: card, Apple Pay, Samsung Pay, Google Pay); eximpe for INR + UPI',
+            options: ['ccavenue', 'ngenius', 'eximpe', 'razorpay', 'paytm', 'cashfree', 'stripe', 'viva', 'dodo'],
+            hint: 'ccavenue for UPI on secure.ccavenue.ae; ngenius for AED cards/wallets',
+          },
+        ],
+      },
+      {
+        id: 'ccavenue',
+        name: 'CCAvenue UAE',
+        description:
+          'Hosted Payment Page on secure.ccavenue.ae (same initiate URL for test and live). Supports UPI, cards and net banking when enabled on the merchant account. Set redirect and cancel URLs in their portal to this site’s /api/payments/return. Charge currency is usually INR for UPI.',
+        docs: 'https://www.ccavenue.ae/',
+        fields: [
+          { name: 'CCAVENUE_MERCHANT_ID', label: 'Merchant ID', secret: false },
+          { name: 'CCAVENUE_ACCESS_CODE', label: 'Access code', secret: true },
+          { name: 'CCAVENUE_WORKING_KEY', label: 'Working key', secret: true, hint: '32-bit key used to encrypt/decrypt the request and response' },
+          {
+            name: 'CCAVENUE_METHODS',
+            label: 'Checkout method buttons',
+            secret: false,
+            hint: 'Comma-separated unlock UI: upi, card, netbanking. Leave blank for all three.',
           },
         ],
       },

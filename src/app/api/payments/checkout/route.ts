@@ -114,7 +114,15 @@ async function openCheckout(request: Request, candidate: SessionCandidate): Prom
         reads whichever it recognises.
       */
       successUrl: `${origin}/api/payments/return?locale=${locale}&paid=${receipt}`,
-      cancelUrl: `${origin}${localePath(locale, '/dashboard?status=cancelled')}`,
+      /*
+        CCAvenue POSTs encResp to cancel_url as well as redirect_url, so cancel
+        must hit the return handler (which decrypts) rather than the dashboard.
+        Other rails that only redirect on cancel still land cleanly here.
+      */
+      cancelUrl:
+        provider.name === 'ccavenue'
+          ? `${origin}/api/payments/return?locale=${locale}&cancelled=1`
+          : `${origin}${localePath(locale, '/dashboard?status=cancelled')}`,
       metadata: {
         cohort: COHORT.id,
         tier: 'standard',

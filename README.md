@@ -44,7 +44,7 @@ SQL editor, then `supabase/seed/bootstrap_super_admin.sql` with your email, then
 
 ## Payments
 
-For Network International (owner default): `PAYMENT_PROVIDER=ngenius` and `NEXT_PUBLIC_CHARGE_CURRENCY=AED`. For INR + UPI instead: `PAYMENT_PROVIDER=eximpe`
+For CCAvenue UAE (default, UPI): `PAYMENT_PROVIDER=ccavenue` and `NEXT_PUBLIC_CHARGE_CURRENCY=INR`. For N-Genius AED cards/wallets: `PAYMENT_PROVIDER=ngenius`
 and `NEXT_PUBLIC_CHARGE_CURRENCY=INR` (RBI PA-CB import authorisation; no Indian
 entity needed). Read `docs/payments.md` before wiring live keys: a Dubai-registered
 Stripe account cannot charge UPI.

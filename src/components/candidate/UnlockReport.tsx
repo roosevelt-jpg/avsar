@@ -10,6 +10,7 @@ import { loadEximpe } from '@/lib/payments/eximpe-client';
 import { loadCashfree } from '@/lib/payments/cashfree-client';
 import { openRazorpayCheckout } from '@/lib/payments/razorpay-client';
 import { openPaytmCheckout, parsePaytmClientToken } from '@/lib/payments/paytm-client';
+import { openCcavenueCheckout, parseCcavenueClientToken } from '@/lib/payments/ccavenue-client';
 import type { CompanySettings, HiringSettings } from '@/lib/company/config';
 import type { ConversionSettings } from '@/lib/cms/settings';
 import { siteText } from '@/lib/cms/localize';
@@ -242,6 +243,13 @@ export function UnlockReport({
         return;
       }
 
+      if (provider === 'ccavenue' && data.clientToken) {
+        const payload = parseCcavenueClientToken(data.clientToken);
+        if (!payload) throw new Error('ccavenue_token_invalid');
+        openCcavenueCheckout(payload);
+        return;
+      }
+
       if (data.redirectUrl) {
         window.location.assign(data.redirectUrl);
         return;
@@ -420,7 +428,14 @@ export function UnlockReport({
 
       {/* N-Genius (and other non-INR rails) charge abroad. Indian debit cards
           often block international e‑commerce until the candidate turns it on. */}
-      {provider === 'ngenius' ? (
+      {provider === 'ccavenue' ? (
+        <p className="mt-2.5 mb-0 max-w-[62ch] text-[13px] leading-[1.6] text-muted">
+          {siteText(
+            locale,
+            'You pay on CCAvenue’s secure page. UPI, card and net banking are available when your bank supports them. Never pay by cash, WhatsApp or an agent.',
+          )}
+        </p>
+      ) : provider === 'ngenius' ? (
         <p className="mt-2.5 mb-0 max-w-[62ch] text-[13px] leading-[1.6] text-muted">
           {siteText(
             locale,

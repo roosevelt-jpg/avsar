@@ -32,11 +32,11 @@
  *    European entity is the one charging, and therefore the one the site has to
  *    name. It does not do UPI, so India still needs a rail of its own.
  *  - **Network International (N-Genius)**, a UAE acquirer, on the Dubai
- *    company, settling in AED. The owner's chosen rail: Hosted Payment Page
- *    with card, Apple Pay, Samsung Pay and Google Pay (whatever Network has
- *    enabled on the outlet). UPI on that rail is only available if Network
- *    enabled it on the outlet; the HPP then surfaces it without a separate
- *    adapter.
+ *    company, settling in AED. Hosted Payment Page with card and wallets.
+ *  - **CCAvenue UAE**, Hosted Payment Page via
+ *    secure.ccavenue.ae (same initiate URL for test and live). Supports UPI,
+ *    cards and net banking when the merchant account has them. Non-seamless
+ *    POST with AES-encrypted request/response from their Node kit.
  *
  * Everything above this interface is rail-agnostic, so which one is active is a
  * commercial decision rather than a rewrite.
@@ -86,7 +86,16 @@ export type WebhookResult = {
 };
 
 export interface PaymentProvider {
-  readonly name: 'stripe' | 'razorpay' | 'paytm' | 'cashfree' | 'eximpe' | 'viva' | 'dodo' | 'ngenius';
+  readonly name:
+    | 'stripe'
+    | 'razorpay'
+    | 'paytm'
+    | 'cashfree'
+    | 'eximpe'
+    | 'viva'
+    | 'dodo'
+    | 'ngenius'
+    | 'ccavenue';
   isConfigured(): boolean;
   createCheckout(request: CheckoutRequest): Promise<CheckoutSession>;
   /**

@@ -6,14 +6,15 @@ import { eximpeProvider } from './eximpe';
 import { vivaProvider } from './viva';
 import { dodoProvider } from './dodo';
 import { ngeniusProvider } from './ngenius';
+import { ccavenueProvider } from './ccavenue';
 import type { PaymentMethodHint, PaymentProvider } from './types';
 
 /**
  * Which rail collects from candidates.
  *
- * Production default is Network International (N-Genius) Hosted Payment Page in
- * AED — the rail the owner signed with. Credentials live in Settings ›
- * Integrations. Other rails stay wired; only one is active via PAYMENT_PROVIDER.
+ * Production default is CCAvenue UAE (UPI + card + net banking on their hosted
+ * page). Credentials live in Settings › Integrations. Other rails stay wired;
+ * only one is active via PAYMENT_PROVIDER.
  */
 export function getPaymentProvider(): PaymentProvider {
   switch (process.env.PAYMENT_PROVIDER) {
@@ -32,8 +33,10 @@ export function getPaymentProvider(): PaymentProvider {
     case 'stripe':
       return stripeProvider;
     case 'ngenius':
-    default:
       return ngeniusProvider;
+    case 'ccavenue':
+    default:
+      return ccavenueProvider;
   }
 }
 
@@ -107,6 +110,11 @@ export function availablePaymentMethods(): PaymentMethodHint[] {
       'samsung_pay',
       'google_pay',
     ]);
+  }
+
+  /* CCAvenue UAE hosted page: UPI is the reason this rail exists. */
+  if (provider === 'ccavenue') {
+    return parseMethodList(process.env.CCAVENUE_METHODS, ['upi', 'card', 'netbanking']);
   }
 
   /* Razorpay, Paytm, EximPe, Cashfree: Indian methods by construction. */

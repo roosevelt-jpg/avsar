@@ -20,6 +20,11 @@ export const runtime = 'nodejs';
  * only a question to ask the provider, and the answer, including which order it
  * belongs to, comes back over an authenticated connection. Somebody editing the
  * URL changes which transaction gets looked up and nothing else.
+ *
+ * CCAvenue is different: they POST an encrypted `encResp` body. That ciphertext
+ * is the proof (decryptable only with our working key), so the POST handler
+ * feeds it to `handleWebhook` rather than inventing a status API the kit does
+ * not include.
  */
 export async function GET(request: Request) {
   await refreshIntegrations();
@@ -77,17 +82,51 @@ export async function GET(request: Request) {
 }
 
 /**
- * Paytm (and some other rails) POST the browser back to the callback URL with
- * form fields. Fold those into the same GET confirmation path.
+ * Paytm folds ORDERID into the query. CCAvenue posts encResp — decrypt and
+ * record, then send the candidate to the dashboard.
  */
 export async function POST(request: Request) {
+  await refreshIntegrations();
   const url = new URL(request.url);
-  const form = await request.formData().catch(() => null);
-  if (form) {
+  const raw = await request.text().catch(() => '');
+  const contentType = request.headers.get('content-type') ?? '';
+
+  if (/encResp=/i.test(raw)) {
+    const provider = getPaymentProvider();
+    let confirmedPaid = false;
+    try {
+      const result = await provider.handleWebhook(raw, request.headers);
+      if (result?.status === 'paid') {
+        await recordPayment({
+          orderId: result.sessionId,
+          paymentId: result.paymentId,
+          status: 'paid',
+        });
+        confirmedPaid = true;
+      } else if (result?.status === 'failed') {
+        await recordPayment({
+          orderId: result.sessionId,
+          paymentId: result.paymentId,
+          status: 'failed',
+        });
+      }
+    } catch (error) {
+      console.error('[payments] ccavenue return failed', error);
+    }
+
+    const requested = url.searchParams.get('locale') ?? '';
+    const dashboard = localePath(isLocale(requested) ? requested : defaultLocale, '/dashboard');
+    const dest = confirmedPaid ? `${dashboard}?paid=1#family-share` : dashboard;
+    return NextResponse.redirect(new URL(dest, url.origin), 303);
+  }
+
+  if (contentType.includes('application/x-www-form-urlencoded') || contentType.includes('multipart/form-data')) {
+    const form = new URLSearchParams(raw);
     for (const key of ['ORDERID', 'orderId', 'TXNID', 'STATUS', 'locale'] as const) {
       const value = form.get(key);
-      if (typeof value === 'string' && value) url.searchParams.set(key, value);
+      if (value) url.searchParams.set(key, value);
     }
   }
+
   return NextResponse.redirect(url, 303);
 }

@@ -1,44 +1,55 @@
 # Payments
 
-## Production default: Network International (N-Genius) + AED
+## Production default: CCAvenue UAE + INR (UPI)
 
-The owner signed with Network International. The code default is the Hosted
-Payment Page adapter in `src/lib/payments/ngenius.ts`:
+The current merchant kit is CCAvenue UAE (Node non-seamless). Test and live
+both use the same initiate URL — only the keys change:
 
 ```
-PAYMENT_PROVIDER=ngenius
-NEXT_PUBLIC_CHARGE_CURRENCY=AED
-NGENIUS_API_KEY=...
-NGENIUS_OUTLET_REF=...
-NGENIUS_ENV=production
-NGENIUS_WEBHOOK_HEADER=x-webhook-secret
-NGENIUS_WEBHOOK_SECRET=...
-NGENIUS_METHODS=card,apple_pay,samsung_pay,google_pay
+https://secure.ccavenue.ae/transaction/transaction.do?command=initiateTransaction
 ```
 
-Unset `PAYMENT_PROVIDER` also selects N-Genius. Checkout shows card, Apple Pay,
-Samsung Pay and Google Pay; the candidate is redirected to Network’s hosted
-page. Wallets and card schemes only appear on that page when Network has
-enabled them on the outlet. If Network enables UPI for this merchant’s
-e‑commerce outlet, add `upi` to `NGENIUS_METHODS` so the unlock UI offers it
-(the HPP still decides what it can actually charge).
+```
+PAYMENT_PROVIDER=ccavenue
+NEXT_PUBLIC_CHARGE_CURRENCY=INR
+CCAVENUE_MERCHANT_ID=...
+CCAVENUE_ACCESS_CODE=...
+CCAVENUE_WORKING_KEY=...
+CCAVENUE_METHODS=upi,card,netbanking
+```
+
+Unset `PAYMENT_PROVIDER` also selects CCAvenue. Checkout encrypts the order
+(AES, working key), the browser POSTs to the initiate URL, and CCAvenue POSTs
+`encResp` back to `/api/payments/return`. UPI / card / net banking appear when
+the merchant account has them; `payment_option` can open on one method.
+
+Redirect and cancel URLs in the CCAvenue portal must both point at:
+
+```
+https://avsar.myflynai.com/api/payments/return
+```
 
 Charge currency, fee and VAT are set in Settings › Company & pricing; checkout
 refuses (`payment_misconfigured`) if the currency does not match what the rail
 can charge (`RAIL_CURRENCIES` in `src/lib/company/config.ts`) or the fee is zero.
 
-## Alternative: EximPe + INR (UPI)
+## Alternative: Network International (N-Genius) + AED
 
-When candidates must pay by Indian UPI without relying on Network’s outlet
-configuration, switch to EximPe:
+```
+PAYMENT_PROVIDER=ngenius
+NEXT_PUBLIC_CHARGE_CURRENCY=AED
+```
+
+Cards and wallets on Network’s hosted page. See `src/lib/payments/ngenius.ts`.
+
+## Alternative: EximPe + INR (UPI)
 
 ```
 PAYMENT_PROVIDER=eximpe
 NEXT_PUBLIC_CHARGE_CURRENCY=INR
 ```
 
-The fee is charged in rupees by UPI, RuPay or Indian net banking under EximPe’s
-RBI PA-CB import authorisation.
+UPI under EximPe’s RBI PA-CB import authorisation.
 
 ---
 

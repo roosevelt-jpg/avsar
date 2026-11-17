@@ -16,7 +16,7 @@ export type PaymentRow = {
 };
 
 /** Rails that settle Indian rupees or dirhams; everything else on this platform charges euros. */
-const INR_RAILS = new Set(['eximpe', 'cashfree', 'razorpay', 'paytm']);
+const INR_RAILS = new Set(['eximpe', 'cashfree', 'razorpay', 'paytm', 'ccavenue']);
 const AED_RAILS = new Set(['ngenius']);
 
 function railCurrency(provider: string): ChargeCurrency {
