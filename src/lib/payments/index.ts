@@ -1,43 +1,14 @@
-import { stripeProvider } from './stripe';
-import { razorpayProvider } from './razorpay';
-import { paytmProvider } from './paytm';
-import { cashfreeProvider } from './cashfree';
-import { eximpeProvider } from './eximpe';
-import { vivaProvider } from './viva';
-import { dodoProvider } from './dodo';
-import { ngeniusProvider } from './ngenius';
 import { ccavenueProvider } from './ccavenue';
 import type { PaymentMethodHint, PaymentProvider } from './types';
 
 /**
  * Which rail collects from candidates.
  *
- * Production default is CCAvenue UAE (UPI + card + net banking on their hosted
- * page). Credentials live in Settings › Integrations. Other rails stay wired;
- * only one is active via PAYMENT_PROVIDER.
+ * CCAvenue UAE is the only gateway exposed in Settings › Integrations. Other
+ * adapters remain in the tree for history, but checkout always uses this one.
  */
 export function getPaymentProvider(): PaymentProvider {
-  switch (process.env.PAYMENT_PROVIDER) {
-    case 'eximpe':
-      return eximpeProvider;
-    case 'dodo':
-      return dodoProvider;
-    case 'viva':
-      return vivaProvider;
-    case 'cashfree':
-      return cashfreeProvider;
-    case 'razorpay':
-      return razorpayProvider;
-    case 'paytm':
-      return paytmProvider;
-    case 'stripe':
-      return stripeProvider;
-    case 'ngenius':
-      return ngeniusProvider;
-    case 'ccavenue':
-    default:
-      return ccavenueProvider;
-  }
+  return ccavenueProvider;
 }
 
 export type {
@@ -48,79 +19,21 @@ export type {
   PaymentMethodHint,
 } from './types';
 
-/**
- * Methods the active rail can charge.
- *
- * On Stripe this depends on the individual account, not on a rule we can state
- * here: what an account may offer follows its country, its activation status
- * and whatever Stripe currently supports, and that last part moves. So it is
- * read from STRIPE_METHODS rather than asserted in code, and the way to find
- * the answer is to create a session with a method and see whether Stripe takes
- * it:
- *
- *   curl https://api.stripe.com/v1/checkout/sessions -u "$STRIPE_SECRET_KEY:" \
- *     -d mode=payment -d success_url=... -d cancel_url=... \
- *     -d "payment_method_types[0]=upi" \
- *     -d "line_items[0][quantity]=1" \
- *     -d "line_items[0][price_data][currency]=inr" ...
- *
- * EximPe and Cashfree reach the Indian domestic rails from outside India, on a
- * PA-CB authorisation; Razorpay reaches them from inside it. All three offer
- * UPI by construction, so there is nothing to configure.
- */
-const ALL_HINTS: readonly PaymentMethodHint[] = [
-  'upi',
-  'card',
-  'netbanking',
-  'apple_pay',
-  'samsung_pay',
-  'google_pay',
-];
+/** Methods shown on the unlock UI. Override with CCAVENUE_METHODS if needed. */
+const CCAVENUE_HINTS: readonly PaymentMethodHint[] = ['upi', 'card', 'netbanking'];
 
 function parseMethodList(raw: string | undefined, fallback: PaymentMethodHint[]): PaymentMethodHint[] {
   const parsed = (raw ?? '')
     .split(',')
     .map((method) => method.trim())
     .filter((method): method is PaymentMethodHint =>
-      (ALL_HINTS as readonly string[]).includes(method),
+      (CCAVENUE_HINTS as readonly string[]).includes(method),
     );
   return parsed.length > 0 ? parsed : fallback;
 }
 
 export function availablePaymentMethods(): PaymentMethodHint[] {
-  const provider = getPaymentProvider().name;
-
-  /*
-    Viva is a European acquirer. It has no UPI and no Indian netbanking, and
-    offering them would put two choices in front of a candidate that the rail
-    cannot charge. Its hosted page decides the rest for itself from what is
-    enabled on the account, so one honest hint is enough here.
-  */
-  if (provider === 'dodo') return ['upi', 'card'];
-
-  if (provider === 'viva') return ['card'];
-
-  /* Network Hosted Payment Page: card plus the wallets Network enabled on the
-     outlet. Override with NGENIUS_METHODS (comma-separated) if the outlet only
-     has a subset, or to surface UPI when Network turns that on for e‑commerce. */
-  if (provider === 'ngenius') {
-    return parseMethodList(process.env.NGENIUS_METHODS, [
-      'card',
-      'apple_pay',
-      'samsung_pay',
-      'google_pay',
-    ]);
-  }
-
-  /* CCAvenue UAE hosted page: UPI is the reason this rail exists. */
-  if (provider === 'ccavenue') {
-    return parseMethodList(process.env.CCAVENUE_METHODS, ['upi', 'card', 'netbanking']);
-  }
-
-  /* Razorpay, Paytm, EximPe, Cashfree: Indian methods by construction. */
-  if (provider !== 'stripe') return ['upi', 'card', 'netbanking'];
-
-  return parseMethodList(process.env.STRIPE_METHODS, ['card']);
+  return parseMethodList(process.env.CCAVENUE_METHODS, [...CCAVENUE_HINTS]);
 }
 
 /**

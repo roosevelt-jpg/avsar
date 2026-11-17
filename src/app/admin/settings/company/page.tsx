@@ -4,6 +4,7 @@ import { CompanyForm } from '@/components/admin/settings/CompanyForm';
 import { getSiteSettings } from '@/lib/cms/data';
 import { RAIL_CURRENCIES } from '@/lib/company/config';
 import { refreshIntegrations } from '@/lib/integrations/runtime';
+import { getPaymentProvider } from '@/lib/payments';
 import { requirePermission } from '@/lib/rbac/server';
 
 export const metadata = { title: 'Company & pricing' };
@@ -13,7 +14,7 @@ export default async function CompanySettingsPage() {
   await requirePermission('company.manage', '/admin/settings/company');
   await refreshIntegrations();
   const settings = await getSiteSettings();
-  const provider = process.env.PAYMENT_PROVIDER ?? '';
+  const provider = getPaymentProvider().name;
   return (
     <AdminShell current="/admin/settings/company" isStaff>
       <AdminHeading

@@ -28,32 +28,15 @@ export type Integration = {
 
 export type IntegrationGroup = { group: string; items: Integration[] };
 
-const ENV_CHOICE = ['sandbox', 'production'] as const;
-
 export const INTEGRATIONS: IntegrationGroup[] = [
   {
     group: 'Payments',
     items: [
       {
-        id: 'payments',
-        name: 'Active payment rail',
-        description:
-          'Which provider takes the package payment. Only one is live at a time. Production default is CCAvenue UAE (UPI, card, net banking). Leave unset to use CCAvenue. N-Genius remains available for AED cards/wallets.',
-        fields: [
-          {
-            name: 'PAYMENT_PROVIDER',
-            label: 'Provider',
-            secret: false,
-            options: ['ccavenue', 'ngenius', 'eximpe', 'razorpay', 'paytm', 'cashfree', 'stripe', 'viva', 'dodo'],
-            hint: 'ccavenue for UPI on secure.ccavenue.ae; ngenius for AED cards/wallets',
-          },
-        ],
-      },
-      {
         id: 'ccavenue',
         name: 'CCAvenue UAE',
         description:
-          'Hosted Payment Page on secure.ccavenue.ae (same initiate URL for test and live). Supports UPI, cards and net banking when enabled on the merchant account. Set redirect and cancel URLs in their portal to this site’s /api/payments/return. Charge currency is usually INR for UPI.',
+          'The only payment gateway on this platform. Hosted Payment Page on secure.ccavenue.ae (same initiate URL for test and live). UPI, cards and net banking when enabled on the merchant account. Set redirect and cancel URLs in their portal to this site’s /api/payments/return. Charge currency should be INR for UPI.',
         docs: 'https://www.ccavenue.ae/',
         fields: [
           { name: 'CCAVENUE_MERCHANT_ID', label: 'Merchant ID', secret: false },
@@ -65,124 +48,6 @@ export const INTEGRATIONS: IntegrationGroup[] = [
             secret: false,
             hint: 'Comma-separated unlock UI: upi, card, netbanking. Leave blank for all three.',
           },
-        ],
-      },
-      {
-        id: 'stripe',
-        name: 'Stripe',
-        description:
-          'International cards (and UPI only on an India-registered Stripe account). Create a webhook for checkout.session.completed that posts to this site’s payments return endpoint (path ending in payments/webhook).',
-        docs: 'https://dashboard.stripe.com/apikeys',
-        fields: [
-          { name: 'STRIPE_SECRET_KEY', label: 'Secret key', secret: true, hint: 'sk_live_… or sk_test_…' },
-          { name: 'STRIPE_WEBHOOK_SECRET', label: 'Webhook signing secret', secret: true, hint: 'whsec_… from the Stripe webhook endpoint' },
-          {
-            name: 'STRIPE_METHODS',
-            label: 'Payment method hints',
-            secret: false,
-            hint: 'Comma-separated for the unlock UI: card, upi, netbanking. Hosted Checkout still shows what the Stripe account allows.',
-          },
-        ],
-      },
-      {
-        id: 'razorpay',
-        name: 'Razorpay',
-        description:
-          'UPI, cards and net banking for Indian payers (needs an Indian merchant entity). Also set NEXT_PUBLIC_RAZORPAY_KEY_ID in the hosting environment to the same Key ID, then point the provider webhook at this site’s payments webhook path.',
-        docs: 'https://dashboard.razorpay.com/app/keys',
-        fields: [
-          { name: 'RAZORPAY_KEY_ID', label: 'Key ID', secret: false, hint: 'rzp_live_… or rzp_test_…' },
-          { name: 'RAZORPAY_KEY_SECRET', label: 'Key secret', secret: true },
-          { name: 'RAZORPAY_WEBHOOK_SECRET', label: 'Webhook secret', secret: true, hint: 'From Razorpay › Webhooks' },
-        ],
-      },
-      {
-        id: 'paytm',
-        name: 'Paytm',
-        description:
-          'UPI, cards, Paytm wallet and net banking for Indian payers. Keys come from the Paytm business dashboard (API Keys). Point the provider webhook and return URL at this site’s payments webhook and return paths.',
-        docs: 'https://dashboard.paytmpayments.com/next/apikeys',
-        fields: [
-          { name: 'PAYTM_MID', label: 'Merchant ID (MID)', secret: false },
-          { name: 'PAYTM_MERCHANT_KEY', label: 'Merchant key', secret: true, hint: '16-character key used for checksums' },
-          {
-            name: 'PAYTM_WEBSITE',
-            label: 'Website name',
-            secret: false,
-            hint: 'WEBSTAGING for test, DEFAULT (or your assigned website) for production',
-          },
-          {
-            name: 'PAYTM_INDUSTRY_TYPE',
-            label: 'Industry type',
-            secret: false,
-            hint: 'Usually Retail. Leave blank to use Retail.',
-          },
-          { name: 'PAYTM_ENV', label: 'Environment', secret: false, options: ENV_CHOICE },
-        ],
-      },
-      {
-        id: 'ngenius',
-        name: 'Network International (N-Genius)',
-        description:
-          'Hosted Payment Page in AED to the UAE company: card, Apple Pay, Samsung Pay, Google Pay (and UPI if Network enabled it on the outlet). In the N-Genius portal, point the webhook at this site’s payments webhook path and send the secret in a custom header. Charge currency must be AED.',
-        docs: 'https://docs.ngenius-payments.com/reference/set-up-n-genius#hosted-payment-page',
-        fields: [
-          { name: 'NGENIUS_API_KEY', label: 'API key', secret: true },
-          { name: 'NGENIUS_OUTLET_REF', label: 'Outlet reference', secret: false },
-          { name: 'NGENIUS_WEBHOOK_SECRET', label: 'Webhook secret', secret: true },
-          { name: 'NGENIUS_WEBHOOK_HEADER', label: 'Webhook header name', secret: false, hint: 'Default: x-webhook-secret' },
-          { name: 'NGENIUS_ENV', label: 'Environment', secret: false, options: ENV_CHOICE },
-          {
-            name: 'NGENIUS_METHODS',
-            label: 'Checkout method buttons',
-            secret: false,
-            hint: 'Comma-separated unlock UI: card, apple_pay, samsung_pay, google_pay (add upi only if Network enabled it on the outlet). Leave blank for the default four.',
-          },
-        ],
-      },
-      {
-        id: 'eximpe',
-        name: 'EximPe',
-        description: 'UPI, cards and net banking for Indian payers (cross-border PA-CB).',
-        fields: [
-          { name: 'EXIMPE_CLIENT_ID', label: 'Client ID', secret: false },
-          { name: 'EXIMPE_CLIENT_SECRET', label: 'Client secret', secret: true },
-          { name: 'EXIMPE_ENCRYPTION_KEY', label: 'Encryption key', secret: true },
-          { name: 'EXIMPE_MERCHANT_ID', label: 'Merchant ID', secret: false },
-          { name: 'EXIMPE_ENV', label: 'Environment', secret: false, options: ENV_CHOICE },
-        ],
-      },
-      {
-        id: 'cashfree',
-        name: 'Cashfree',
-        description: 'UPI, cards and net banking for Indian payers (cross-border PA-CB).',
-        fields: [
-          { name: 'CASHFREE_APP_ID', label: 'App ID', secret: false },
-          { name: 'CASHFREE_SECRET_KEY', label: 'Secret key', secret: true },
-          { name: 'CASHFREE_WEBHOOK_SECRET', label: 'Webhook secret', secret: true },
-          { name: 'CASHFREE_ENV', label: 'Environment', secret: false, options: ENV_CHOICE },
-        ],
-      },
-      {
-        id: 'viva',
-        name: 'Viva Wallet',
-        description: 'Cards, for a European merchant account.',
-        fields: [
-          { name: 'VIVA_CLIENT_ID', label: 'Client ID', secret: false },
-          { name: 'VIVA_CLIENT_SECRET', label: 'Client secret', secret: true },
-          { name: 'VIVA_WEBHOOK_KEY', label: 'Webhook key', secret: true },
-          { name: 'VIVA_ENV', label: 'Environment', secret: false, options: ENV_CHOICE },
-        ],
-      },
-      {
-        id: 'dodo',
-        name: 'Dodo Payments',
-        description: 'Merchant of record for international cards.',
-        fields: [
-          { name: 'DODO_API_KEY', label: 'API key', secret: true },
-          { name: 'DODO_PRODUCT_ID', label: 'Product ID', secret: false },
-          { name: 'DODO_WEBHOOK_KEY', label: 'Webhook key', secret: true },
-          { name: 'DODO_ENV', label: 'Environment', secret: false, options: ENV_CHOICE },
         ],
       },
     ],
@@ -341,7 +206,6 @@ export const ENVIRONMENT_ONLY: { name: string; label: string }[] = [
   { name: 'INTEGRATIONS_MASTER_KEY', label: 'Key that encrypts the values on this page' },
   { name: 'IDENTITY_HASH_SALT', label: 'Duplicate-detection salt (never change once set)' },
   { name: 'NEXT_PUBLIC_TURNSTILE_SITE_KEY', label: 'Turnstile site key (browser)' },
-  { name: 'NEXT_PUBLIC_RAZORPAY_KEY_ID', label: 'Razorpay key ID (browser)' },
 ];
 
 export const MANAGED_FIELDS: IntegrationField[] = INTEGRATIONS.flatMap((g) => g.items.flatMap((i) => i.fields));
