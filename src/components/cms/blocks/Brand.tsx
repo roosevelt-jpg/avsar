@@ -90,20 +90,23 @@ export function EmployerBandBlock({ data, locale }: Props) {
   /* Home mockup: copy | handshake photo | bullets + Hire Talent. */
   if (str(data, 'layout') === 'home') {
     return (
-      <Section className="!bg-[#f4f5f7] !py-[clamp(40px,6cqi,72px)]">
-        <div className="overflow-hidden rounded-[22px] bg-[#142438] text-white shadow-[0_18px_40px_rgba(20,36,56,0.18)]">
+      <Section className="!bg-white !py-[clamp(40px,6cqi,72px)]">
+        <div className="overflow-hidden rounded-[12px] border border-[#142438]/12 bg-[#142438] text-white">
           <div className="grid grid-cols-1 items-stretch lg:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)_minmax(0,0.95fr)]">
             <div className="flex flex-col justify-center gap-4 px-[clamp(22px,3cqi,40px)] py-[clamp(28px,4cqi,44px)]">
               {str(data, 'eyebrow') ? (
-                <p className="m-0 inline-flex w-fit rounded-[6px] border border-[var(--color-gold)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-gold)]">
+                <p className="m-0 inline-flex items-center gap-2.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#d4b574]">
+                  <span aria-hidden className="h-px w-6 bg-[#d4b574]" />
                   {str(data, 'eyebrow')}
                 </p>
               ) : null}
               {title ? (
-                <h2 className="display-serif m-0 text-balance text-[clamp(26px,3.2cqi,38px)] leading-[1.12] text-white">{title}</h2>
+                <h2 className="m-0 text-balance text-[clamp(24px,3cqi,34px)] font-semibold leading-[1.15] tracking-[-0.03em] text-white">
+                  {title}
+                </h2>
               ) : null}
               {str(data, 'body') ? (
-                <p className="m-0 max-w-[36ch] text-[15px] leading-[1.55] text-white/85">{str(data, 'body')}</p>
+                <p className="m-0 max-w-[36ch] text-[15px] leading-[1.55] text-white/78">{str(data, 'body')}</p>
               ) : null}
             </div>
             {image ? (
@@ -111,13 +114,13 @@ export function EmployerBandBlock({ data, locale }: Props) {
                 <Image src={image} alt={str(data, 'imageAlt') || title} fill sizes="(max-width: 1024px) 100vw, 32vw" className="object-cover" />
               </div>
             ) : null}
-            <div className="flex flex-col justify-center gap-5 border-t border-white/15 px-[clamp(22px,3cqi,40px)] py-[clamp(28px,4cqi,44px)] lg:border-s lg:border-t-0">
+            <div className="flex flex-col justify-center gap-5 border-t border-white/12 px-[clamp(22px,3cqi,40px)] py-[clamp(28px,4cqi,44px)] lg:border-s lg:border-t-0">
               {bullets.length > 0 ? (
-                <ul className="m-0 flex list-none flex-col gap-3.5 p-0">
+                <ul className="m-0 flex list-none flex-col gap-3 p-0">
                   {bullets.map((bullet, index) => (
-                    <li key={index} className="flex items-start gap-3 text-[15px] leading-[1.45] text-white/92">
-                      <span className="mt-0.5 grid size-6 shrink-0 place-items-center text-[var(--color-gold)]">
-                        <Icon name={str(bullet, 'icon') || 'check'} className="size-4" />
+                    <li key={index} className="flex items-start gap-3 text-[14px] leading-[1.45] text-white/88">
+                      <span className="mt-0.5 grid size-5 shrink-0 place-items-center text-[#d4b574]">
+                        <Icon name={str(bullet, 'icon') || 'check'} className="size-3.5" />
                       </span>
                       <span>{str(bullet, 'text')}</span>
                     </li>
@@ -127,7 +130,7 @@ export function EmployerBandBlock({ data, locale }: Props) {
               {cta ? (
                 <Link
                   href={localHref(locale, cta.href)}
-                  className="t-colors inline-flex w-fit items-center gap-2 rounded-[10px] bg-[#b28a49] px-5 py-3 text-[14px] font-semibold text-[#142438] no-underline hover:bg-[#c49a58]"
+                  className="t-colors inline-flex w-fit items-center gap-2 rounded-[6px] bg-white px-5 py-3 text-[14px] font-semibold text-[#142438] no-underline hover:bg-[#f0f2f5]"
                 >
                   {cta.label}
                   <span aria-hidden>→</span>

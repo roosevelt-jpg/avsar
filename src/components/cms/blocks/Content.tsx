@@ -205,24 +205,18 @@ function StepsJourney({ data }: { data: BlockData }) {
   ) : null;
 
   const steps = (
-    <div className="rounded-[18px] border border-[#142438]/10 bg-white px-4 py-5 sm:px-5 lg:self-stretch">
-      <ol className={`m-0 grid list-none grid-cols-1 gap-5 p-0 sm:grid-cols-2 ${stepCols} xl:gap-2`}>
+    <div className="rounded-[12px] border border-[#142438]/10 bg-[#f7f8fa] px-4 py-5 sm:px-5 lg:self-stretch">
+      <ol className={`m-0 grid list-none grid-cols-1 gap-5 p-0 sm:grid-cols-2 ${stepCols} xl:gap-3`}>
         {list.map((item, index) => (
-          <li key={index} className="relative min-w-0 px-1 py-2">
-            {index < list.length - 1 ? (
-              <span
-                aria-hidden
-                className="absolute -end-1 top-6 z-10 hidden text-[18px] text-[var(--color-gold)] xl:block"
-              >
-                ›
-              </span>
-            ) : null}
-            <span className="grid size-10 place-items-center text-[var(--color-gold)]">
-              <Icon name={str(item, 'icon') || 'check'} className="size-6" />
+          <li key={index} className="relative min-w-0 px-1 py-1">
+            <span className="font-mono text-[11px] font-semibold tracking-[0.14em] text-[#b28a49]">
+              {String(index + 1).padStart(2, '0')}
             </span>
-            <h3 className="m-0 mt-3 text-[16px] font-semibold leading-[1.25] text-[#142438]">{str(item, 'title').replace(/^\d+\.\s*/, '')}</h3>
-            <p className="m-0 mt-2 text-[13px] leading-[1.5] text-ink-2">{str(item, 'body')}</p>
-            {str(item, 'meta') ? <p className="m-0 mt-3 text-[12px] font-medium text-muted">{str(item, 'meta')}</p> : null}
+            <h3 className="m-0 mt-2 text-[15px] font-semibold leading-[1.3] tracking-[-0.02em] text-[#142438]">
+              {str(item, 'title').replace(/^\d+\.\s*/, '')}
+            </h3>
+            <p className="m-0 mt-1.5 text-[13px] leading-[1.5] text-ink-2">{str(item, 'body')}</p>
+            {str(item, 'meta') ? <p className="m-0 mt-2 text-[12px] font-medium text-muted">{str(item, 'meta')}</p> : null}
           </li>
         ))}
       </ol>
@@ -239,9 +233,11 @@ function StepsJourney({ data }: { data: BlockData }) {
           </p>
         ) : null}
         {str(data, 'title') ? (
-          <h2 className="display-serif m-0 text-balance text-[clamp(30px,3.8cqi,46px)] leading-[1.1] text-[#142438]">{str(data, 'title')}</h2>
+          <h2 className="m-0 text-balance text-[clamp(26px,3.2cqi,38px)] font-semibold leading-[1.15] tracking-[-0.03em] text-[#142438]">
+            {str(data, 'title')}
+          </h2>
         ) : null}
-        {str(data, 'intro') ? <p className="m-0 mt-3 text-[16px] leading-[1.55] text-ink-2">{str(data, 'intro')}</p> : null}
+        {str(data, 'intro') ? <p className="m-0 mt-3 text-[15px] leading-[1.55] text-ink-2">{str(data, 'intro')}</p> : null}
       </div>
       <div
         className={`grid grid-cols-1 items-start gap-[clamp(24px,3.5cqi,40px)] lg:items-stretch ${
@@ -349,31 +345,34 @@ function featureColumns(columns: number): string {
  */
 function FeatureTiles({ data, locale, list, columns }: Props & { list: BlockData[]; columns: number }) {
   return (
-    <Section className="!bg-[#f4f5f7] !py-[clamp(28px,4cqi,52px)]">
+    <Section className="!bg-white !py-[clamp(40px,6cqi,72px)]">
       <SectionHeading eyebrow={str(data, 'eyebrow')} title={str(data, 'title')} intro={str(data, 'intro')} />
-      <ul className={`m-0 mt-5 grid list-none grid-cols-1 items-stretch gap-3.5 p-0 ${featureColumns(columns)}`}>
+      <ul className={`m-0 mt-2 grid list-none grid-cols-1 items-stretch gap-4 p-0 ${featureColumns(columns)}`}>
         {list.map((item, index) => {
           const cardLink = link(item, 'link');
           const rawImage = str(item, 'image');
           const image = rawImage ? scenePhoto(rawImage, index) : '';
           const body = str(item, 'body');
           return (
-            <li key={index} className="flex h-full flex-col overflow-hidden rounded-[12px] bg-white">
+            <li
+              key={index}
+              className="flex h-full flex-col overflow-hidden rounded-[10px] border border-[#142438]/10 bg-[#f7f8fa]"
+            >
               {image ? (
                 <div className="relative aspect-[16/10] bg-[#e8eaed]">
                   <CmsImage src={image} alt={str(item, 'title')} sizes="(max-width: 768px) 100vw, 25vw" />
                 </div>
               ) : (
-                <div className="grid aspect-[16/10] place-items-center bg-[#e8eaed] text-[var(--color-gold)]">
-                  <Icon name={str(item, 'icon')} className="size-7" />
+                <div className="grid aspect-[16/10] place-items-center bg-[#e8eaed] text-[#142438]">
+                  <Icon name={str(item, 'icon')} className="size-6" />
                 </div>
               )}
-              <div className="flex flex-1 flex-col px-3.5 py-3 text-[#142438]">
-                <h3 className="display-serif m-0 text-[17px] font-normal leading-[1.25]">{str(item, 'title')}</h3>
+              <div className="flex flex-1 flex-col px-4 py-4 text-[#142438]">
+                <h3 className="m-0 text-[16px] font-semibold leading-[1.3] tracking-[-0.02em]">{str(item, 'title')}</h3>
                 {data.typing === true ? (
-                  <TypeOnView text={body} className="m-0 mt-1.5 text-[13px] leading-[1.5] text-ink-2" />
+                  <TypeOnView text={body} className="m-0 mt-2 text-[14px] leading-[1.55] text-ink-2" />
                 ) : (
-                  <p className="m-0 mt-1.5 text-[13px] leading-[1.5] text-ink-2">{body}</p>
+                  <p className="m-0 mt-2 text-[14px] leading-[1.55] text-ink-2">{body}</p>
                 )}
                 {cardLink?.href && cardLink.label ? (
                   <TileArrow href={cardLink.href} label={cardLink.label} locale={locale} />
@@ -637,10 +636,7 @@ function FeatureSectorCards({ data, list }: { data: BlockData; list: BlockData[]
   );
 }
 
-/**
- * Category grid (DSS-style columns): centered heading, soft wash, icon columns separated
- * by dotted rules. Palette stays S&A navy/gold; copy is ours.
- */
+/** Sector grid: left-aligned heading, hairline cells — quiet product UI. */
 function FeatureVerticals({
   data,
   list,
@@ -651,80 +647,60 @@ function FeatureVerticals({
   locale: Locale;
 }) {
   return (
-    <Section className="relative overflow-hidden !bg-[#f4f6f8] !py-[clamp(48px,7cqi,88px)]">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.07]"
-        style={{
-          backgroundImage:
-            'radial-gradient(ellipse 70% 55% at 50% 40%, #142438 0%, transparent 70%)',
-        }}
-      />
-      <div className="relative z-10 mx-auto max-w-[1180px]">
-        <div className="mx-auto mb-[clamp(32px,4cqi,48px)] max-w-[640px] text-center">
-          {str(data, 'eyebrow') ? (
-            <p className="m-0 mb-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-[var(--color-gold)]">
-              {str(data, 'eyebrow')}
-            </p>
-          ) : null}
-          {str(data, 'title') ? (
-            <h2 className="m-0 text-balance text-[clamp(28px,3.6cqi,42px)] font-extrabold leading-[1.12] tracking-[-0.03em] text-[#142438]">
-              {str(data, 'title')}
-            </h2>
-          ) : null}
-          {str(data, 'title') ? (
-            <span aria-hidden className="mx-auto mt-4 block h-[3px] w-12 rounded-full bg-[var(--color-gold)]" />
-          ) : null}
-          {str(data, 'intro') ? (
-            <p className="m-0 mt-4 text-[15px] leading-[1.55] text-[#5c7084]">{str(data, 'intro')}</p>
-          ) : null}
-        </div>
-        <ul className="m-0 grid list-none grid-cols-1 divide-y divide-dashed divide-[#142438]/15 p-0 sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4">
-          {list.map((item, index) => {
-            const cardLink = link(item, 'link');
-            const inner = (
-              <>
-                <span className="mx-auto grid size-14 place-items-center text-[#142438]">
-                  <Icon name={str(item, 'icon') || 'briefcase'} className="size-8" />
-                </span>
-                <h3 className="m-0 mt-4 text-[16px] font-bold tracking-[-0.01em] text-[#142438]">
-                  {str(item, 'title')}
-                </h3>
-                {str(item, 'body') ? (
-                  <p className="m-0 mt-2 text-[13px] leading-[1.5] text-[#5c7084]">{str(item, 'body')}</p>
-                ) : null}
-              </>
-            );
-            /* Dotted column rules on larger screens; row rules via parent divide on phones. */
-            const colRule =
-              index % 2 === 1
-                ? 'sm:border-s sm:border-dashed sm:border-[#142438]/15'
-                : '';
-            const lgRule =
-              index % 4 !== 0 ? 'lg:border-s lg:border-dashed lg:border-[#142438]/15' : 'lg:border-s-0';
-            const rowRule = index >= 4 ? 'lg:border-t lg:border-dashed lg:border-[#142438]/15' : '';
-            return (
-              <li key={index} className={`px-5 py-8 text-center sm:px-6 ${colRule} ${lgRule} ${rowRule}`}>
-                {cardLink ? (
-                  <Link
-                    href={localHref(locale, cardLink.href)}
-                    className="t-colors block text-inherit no-underline hover:opacity-90"
-                  >
-                    {inner}
-                    {cardLink.label ? (
-                      <span className="mt-3 inline-block text-[12px] font-semibold text-[var(--color-gold)]">
-                        {cardLink.label} →
-                      </span>
-                    ) : null}
-                  </Link>
-                ) : (
-                  inner
-                )}
-              </li>
-            );
-          })}
-        </ul>
+    <Section className="!bg-[#f4f5f7] !py-[clamp(40px,6cqi,72px)]">
+      <div className="mb-[clamp(28px,4cqi,40px)] max-w-[640px]">
+        {str(data, 'eyebrow') ? (
+          <p className="m-0 mb-2.5 inline-flex items-center gap-2.5 text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--color-gold)]">
+            <span aria-hidden className="h-px w-6 bg-[var(--color-gold)]" />
+            {str(data, 'eyebrow')}
+          </p>
+        ) : null}
+        {str(data, 'title') ? (
+          <h2 className="m-0 text-balance text-[clamp(26px,3.2cqi,38px)] font-semibold leading-[1.15] tracking-[-0.03em] text-[#142438]">
+            {str(data, 'title')}
+          </h2>
+        ) : null}
+        {str(data, 'intro') ? (
+          <p className="m-0 mt-3 text-[15px] leading-[1.55] text-[#5c7084]">{str(data, 'intro')}</p>
+        ) : null}
       </div>
+      <ul className="m-0 grid list-none grid-cols-1 gap-px overflow-hidden rounded-[10px] border border-[#142438]/10 bg-[#142438]/10 p-0 sm:grid-cols-2 lg:grid-cols-4">
+        {list.map((item, index) => {
+          const cardLink = link(item, 'link');
+          const inner = (
+            <>
+              <span className="grid size-9 place-items-center rounded-[6px] border border-[#142438]/12 text-[#142438]">
+                <Icon name={str(item, 'icon') || 'briefcase'} className="size-4" />
+              </span>
+              <h3 className="m-0 mt-4 text-[15px] font-semibold tracking-[-0.02em] text-[#142438]">
+                {str(item, 'title')}
+              </h3>
+              {str(item, 'body') ? (
+                <p className="m-0 mt-2 text-[13px] leading-[1.5] text-[#5c7084]">{str(item, 'body')}</p>
+              ) : null}
+              {cardLink?.label ? (
+                <span className="mt-3 inline-block text-[12px] font-semibold text-[#142438]">
+                  {cardLink.label} →
+                </span>
+              ) : null}
+            </>
+          );
+          return (
+            <li key={index} className="bg-white px-5 py-6">
+              {cardLink ? (
+                <Link
+                  href={localHref(locale, cardLink.href)}
+                  className="t-colors block h-full text-inherit no-underline hover:opacity-90"
+                >
+                  {inner}
+                </Link>
+              ) : (
+                inner
+              )}
+            </li>
+          );
+        })}
+      </ul>
     </Section>
   );
 }

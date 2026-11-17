@@ -55,17 +55,22 @@ export function SectionHeading({
     /* min-w-0 and break-words: in a flex or grid row the heading would
        otherwise be as wide as its longest word, and some Tamil and Malayalam
        words are wider than a phone. */
-    <div className={`mb-[clamp(28px,4cqi,48px)] min-w-0 break-words ${align === 'center' ? 'mx-auto text-center' : ''} max-w-[760px]`}>
+    <div className={`mb-[clamp(28px,4cqi,48px)] min-w-0 break-words ${align === 'center' ? 'mx-auto text-center' : ''} max-w-[720px]`}>
       {eyebrow ? (
-        <p className="m-0 mb-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#b28a49]">
+        <p
+          className={`m-0 mb-3 inline-flex items-center gap-2.5 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#b28a49] ${
+            align === 'center' ? 'justify-center' : ''
+          }`}
+        >
+          {align === 'start' ? <span aria-hidden className="h-px w-6 bg-[#b28a49]" /> : null}
           {eyebrow}
         </p>
       ) : null}
       {title ? (
-        <h2 className="m-0 text-balance text-[clamp(28px,3.4cqi,42px)] font-semibold leading-[1.15] tracking-[-0.02em]">{title}</h2>
+        <h2 className="m-0 text-balance text-[clamp(26px,3.2cqi,38px)] font-semibold leading-[1.15] tracking-[-0.03em]">{title}</h2>
       ) : null}
       {intro ? (
-        <p className={`mt-4 mb-0 text-[clamp(16px,1.5cqi,18px)] leading-[1.6] ${dark ? 'text-dark-muted-2' : 'text-ink-2'}`}>{intro}</p>
+        <p className={`mt-3 mb-0 text-[clamp(15px,1.4cqi,17px)] leading-[1.55] ${dark ? 'text-dark-muted-2' : 'text-ink-2'}`}>{intro}</p>
       ) : null}
     </div>
   );

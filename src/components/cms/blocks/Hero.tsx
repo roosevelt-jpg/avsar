@@ -117,16 +117,16 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
   const onDark = brand || overlay;
   const overlayStats =
     stats.length > 0 ? (
-      <dl className="mx-auto m-0 grid w-full max-w-[1200px] grid-cols-2 gap-0 overflow-hidden rounded-[14px] border border-[#142438]/10 bg-white text-[#142438] shadow-[0_18px_40px_rgba(20,36,56,0.18)] sm:grid-cols-4">
+      <dl className="mx-auto m-0 grid w-full max-w-[1200px] grid-cols-2 gap-0 overflow-hidden rounded-[10px] border border-[#142438]/12 bg-white text-[#142438] sm:grid-cols-4">
         {stats.map((stat, index) => (
           <div
             key={index}
-            className={`min-w-0 px-4 py-5 text-center sm:px-5 sm:py-6 ${index > 0 ? 'border-s border-[#142438]/10' : ''} ${index > 1 ? 'border-t sm:border-t-0' : ''} ${index === 1 ? 'border-t-0' : ''} ${index === 2 ? 'sm:border-s' : ''}`}
+            className={`min-w-0 px-4 py-5 text-center sm:px-5 sm:py-5 ${index > 0 ? 'border-s border-[#142438]/10' : ''} ${index > 1 ? 'border-t sm:border-t-0' : ''} ${index === 1 ? 'border-t-0' : ''} ${index === 2 ? 'sm:border-s' : ''}`}
           >
-            <dd className="m-0 text-[clamp(26px,3.2cqi,36px)] font-semibold tracking-[-0.03em] tabular-nums">
+            <dd className="m-0 text-[clamp(24px,2.8cqi,32px)] font-semibold tracking-[-0.03em] tabular-nums">
               <CountUpValue value={str(stat, 'value')} />
             </dd>
-            <dt className="m-0 mt-1.5 text-[12px] leading-[1.35] text-[#3d5168] sm:text-[13px]">{str(stat, 'label')}</dt>
+            <dt className="m-0 mt-1.5 text-[12px] leading-[1.35] text-[#5c7084] sm:text-[13px]">{str(stat, 'label')}</dt>
           </div>
         ))}
       </dl>
@@ -156,16 +156,16 @@ export async function HeroBlock({ data, locale, first }: { data: BlockData; loca
       }
     >
       <Heading
-        className={`m-0 text-balance break-words leading-[1.08] tracking-[-0.02em] ${
+        className={`m-0 text-balance break-words leading-[1.1] tracking-[-0.03em] ${
           onDark
-            ? 'display-serif text-[clamp(28px,5.2cqi,64px)] font-normal text-white'
-            : 'text-[clamp(28px,4.6cqi,56px)] font-semibold'
+            ? 'text-[clamp(28px,4.8cqi,56px)] font-semibold text-white'
+            : 'text-[clamp(28px,4.2cqi,48px)] font-semibold'
         }`}
       >
         {accentTitle(str(data, 'title'), accentWord)}
       </Heading>
       {str(data, 'subtitle') ? (
-        <p className={`mt-5 mb-0 max-w-[46ch] text-[clamp(16px,1.7cqi,19px)] leading-[1.55] ${onDark ? 'text-white/85' : 'text-ink-2'}`}>
+        <p className={`mt-5 mb-0 max-w-[44ch] text-[clamp(15px,1.5cqi,18px)] leading-[1.55] ${onDark ? 'text-white/80' : 'text-ink-2'}`}>
           {str(data, 'subtitle')}
         </p>
       ) : null}
