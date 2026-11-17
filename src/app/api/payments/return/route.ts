@@ -76,8 +76,8 @@ export async function GET(request: Request) {
     console.error('[payments] return confirmation failed', error);
   }
 
-  /* ?paid=1 highlights the family-share next step once; it is not proof of payment. */
-  const dest = confirmedPaid ? `${dashboard}?paid=1#family-share` : dashboard;
+  /* ?paid=1 opens on the receipt block; it is not proof of payment by itself. */
+  const dest = confirmedPaid ? `${dashboard}?paid=1#receipt` : dashboard;
   return NextResponse.redirect(new URL(dest, url.origin));
 }
 
@@ -116,7 +116,7 @@ export async function POST(request: Request) {
 
     const requested = url.searchParams.get('locale') ?? '';
     const dashboard = localePath(isLocale(requested) ? requested : defaultLocale, '/dashboard');
-    const dest = confirmedPaid ? `${dashboard}?paid=1#family-share` : dashboard;
+    const dest = confirmedPaid ? `${dashboard}?paid=1#receipt` : dashboard;
     return NextResponse.redirect(new URL(dest, url.origin), 303);
   }
 

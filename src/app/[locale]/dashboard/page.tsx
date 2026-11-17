@@ -28,6 +28,8 @@ import { DemandStrip } from '@/components/candidate/DemandStrip';
 import { OfferScroll } from '@/components/candidate/OfferScroll';
 import { FamilyLinks } from '@/components/relocation/FamilyLinks';
 import { availablePaymentMethods, getPaymentProvider } from '@/lib/payments';
+import { listCandidateReceipts } from '@/lib/payments/receipts';
+import { PaymentReceipts } from '@/components/candidate/PaymentReceipts';
 import { getSiteSettings } from '@/lib/cms/data';
 import { formatFee, formatProductFee } from '@/lib/company/config';
 import { getCandidateStatus, type CandidateStatus } from '@/lib/candidate/status';
@@ -99,6 +101,7 @@ export default async function DashboardPage({
   const candidateId = candidate.id;
   const visible = candidate.visibleToEmployers;
   const status: CandidateStatus = await getCandidateStatus(candidate.id, candidate.paymentStatus);
+  const receipts = await listCandidateReceipts(candidate.id);
   /* Shown only while the address is unproved, and it is the only thing on this
      page that asks for anything. The report is what the proof releases. */
   const unverifiedEmail = candidate.emailConfirmed ? null : candidate.email;
@@ -258,7 +261,16 @@ export default async function DashboardPage({
           <PaymentFailedNotice locale={locale} whatsapp={settings.general.whatsapp} />
         ) : null}
 
-        {justPaid && status.paid ? (
+        {receipts.length > 0 ? (
+          <PaymentReceipts
+            locale={locale}
+            receipts={receipts}
+            chargeCurrency={settings.pricing.chargeCurrency}
+            highlight={justPaid}
+          />
+        ) : null}
+
+        {justPaid && (status.paid || status.ownsSkills || status.ownsVisa) ? (
           <section
             id="family-share"
             className="mb-6 scroll-mt-24 rounded-[16px] border border-[#b28a49] bg-[#b28a49]/12 p-5"
@@ -268,15 +280,23 @@ export default async function DashboardPage({
             </h2>
             <p className="m-0 mt-2 max-w-[62ch] text-[15px] leading-[1.6] text-ink-2">
               {tx(
-                'Create a private link so your family can see your job, city and visa steps — without salary, employer name or documents. Scroll to the family section below.',
+                'Your receipt is above. Create a private link so your family can see your job, city and visa steps — without salary, employer name or documents.',
               )}
             </p>
-            <a
-              href="#family"
-              className="t-colors mt-4 inline-flex rounded-[8px] bg-[#142438] px-4 py-2.5 text-[14px] font-medium text-white no-underline hover:bg-[#1e334d]"
-            >
-              {tx('Create a family link')}
-            </a>
+            <div className="mt-4 flex flex-wrap gap-2.5">
+              <a
+                href="#receipt"
+                className="t-colors inline-flex rounded-[8px] border border-[#142438] bg-transparent px-4 py-2.5 text-[14px] font-medium text-[#142438] no-underline hover:bg-[#142438]/08"
+              >
+                {tx('View receipt')}
+              </a>
+              <a
+                href="#family"
+                className="t-colors inline-flex rounded-[8px] bg-[#142438] px-4 py-2.5 text-[14px] font-medium text-white no-underline hover:bg-[#1e334d]"
+              >
+                {tx('Create a family link')}
+              </a>
+            </div>
           </section>
         ) : null}
 
